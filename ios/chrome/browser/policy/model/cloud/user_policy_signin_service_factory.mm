@@ -9,6 +9,7 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -78,6 +79,8 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
 void UserPolicySigninServiceFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   user_prefs->RegisterInt64Pref(policy_prefs::kLastPolicyCheckTime, 0);
+  user_prefs->RegisterIntegerPref(
+      prefs::kProfileSeparationDataMigrationSettings, 1);
 }
 
 }  // namespace policy

@@ -48,6 +48,10 @@ using OnProfileSwitchCompletion = base::OnceCallback<
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
+// Fetches the profile separation policies for the account linked to `identity`.
+- (void)fetchProfileSeparationPolicies:(ProfileIOS*)profile
+                           forIdentity:(id<SystemIdentity>)identity;
+
 // Signs `identity` with `currentProfile`.
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
@@ -76,7 +80,8 @@ using OnProfileSwitchCompletion = base::OnceCallback<
                                      userEmail:(NSString*)userEmail
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser
-                     skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration;
+                     skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
+                    mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault;
 
 // Completes the post-signin actions. In most cases the action is showing a
 // snackbar confirming sign-in with `identity` and an undo button to sign out

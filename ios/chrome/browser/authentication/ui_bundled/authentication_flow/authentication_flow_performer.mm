@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
+#import "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
@@ -93,6 +95,13 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   AlertCoordinator* _managedConfirmationAlertCoordinator;
   // Dialog to display an error.
   AlertCoordinator* _errorAlertCoordinator;
+  // Used to fetch the signin restriction policies for a single
+  // account without needing to register it for all policies.
+  // This needs to be a member of the class because it works asynchronously and
+  // should have its lifecycle tied to this class and not the function that
+  // calls it.
+  std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
+      _accountLevelSigninRestrictionPolicyFetcher;
   std::unique_ptr<base::OneShotTimer> _watchdogTimer;
   id<ChangeProfileCommands> _changeProfileHandler;
 }
@@ -143,6 +152,38 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
       identity, base::BindOnce(^(NSString* hostedDomain, NSError* error) {
         [weakSelf handleGetHostedDomain:hostedDomain error:error];
       }));
+}
+
+- (void)fetchProfileSeparationPolicies:(ProfileIOS*)profile
+                           forIdentity:(id<SystemIdentity>)identity {
+  CHECK(!_accountLevelSigninRestrictionPolicyFetcher);
+  _accountLevelSigninRestrictionPolicyFetcher =
+      std::make_unique<policy::UserCloudSigninRestrictionPolicyFetcher>(
+          GetApplicationContext()->GetBrowserPolicyConnector(),
+          GetApplicationContext()->GetSharedURLLoaderFactory());
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+
+  __weak __typeof(_delegate) weakDelegate = _delegate;
+
+  _accountLevelSigninRestrictionPolicyFetcher
+      ->GetManagedAccountsSigninRestriction(
+          identity_manager,
+          identity_manager->PickAccountIdForAccount(
+              GaiaId(identity.gaiaID),
+              base::SysNSStringToUTF8(identity.userEmail)),
+          base::BindOnce(^(const policy::ProfileSeparationPolicies& policies) {
+            auto profile_separation_data_migration_settings =
+                policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
+            if (policies.profile_separation_data_migration_settings()) {
+              profile_separation_data_migration_settings =
+                  static_cast<policy::ProfileSeparationDataMigrationSettings>(
+                      *policies.profile_separation_data_migration_settings());
+            }
+            [weakDelegate didFetchProfileSeparationPolicies:
+                              profile_separation_data_migration_settings];
+            self->_accountLevelSigninRestrictionPolicyFetcher.reset();
+          }));
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity
@@ -205,7 +246,9 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
                                      userEmail:(NSString*)userEmail
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser
-                     skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration {
+                     skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
+                    mergeBrowsingDataByDefault:
+                        (BOOL)mergeBrowsingDataByDefault {
   DCHECK(!_managedConfirmationScreenCoordinator);
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
@@ -221,7 +264,8 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
                              userEmail:userEmail
                           hostedDomain:hostedDomain
                                browser:browser
-             skipBrowsingDataMigration:skipBrowsingDataMigration];
+             skipBrowsingDataMigration:skipBrowsingDataMigration
+            mergeBrowsingDataByDefault:mergeBrowsingDataByDefault];
     _managedConfirmationScreenCoordinator.delegate = self;
     [_managedConfirmationScreenCoordinator start];
     return;

@@ -183,7 +183,8 @@ class AuthenticationFlowTest : public PlatformTest {
                                       userEmail:user_email
                                  viewController:view_controller_
                                         browser:browser_.get()
-                      skipBrowsingDataMigration:NO];
+                      skipBrowsingDataMigration:NO
+                     mergeBrowsingDataByDefault:NO];
 
       [[[performer_ expect] andDo:^(NSInvocation*) {
         [authentication_flow_

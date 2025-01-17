@@ -164,6 +164,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kFilePickerChooseFromDriveSettings,
     prefs::kIosChooseFromDriveFilePickerPolicySettings,
     base::Value::Type::INTEGER },
+  { policy::key::kProfileSeparationDataMigrationSettings,
+    prefs::kProfileSeparationDataMigrationSettings,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 
