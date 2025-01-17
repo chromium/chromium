@@ -21,19 +21,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "base/memory/shared_memory_mapping.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/test/pixel_test_utils.h"                     // nogncheck
 #include "components/enterprise/watermarking/features.h"  // nogncheck
 #include "components/enterprise/watermarking/mojom/watermark.mojom.h"  // nogncheck
 #include "components/enterprise/watermarking/watermark.h"  // nogncheck
-#include "skia/ext/font_utils.h"
+#include "components/enterprise/watermarking/watermark_test_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
-#include "third_party/skia/include/core/SkSerialProcs.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #endif
 
@@ -111,51 +106,14 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
 };
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-
-watermark::mojom::WatermarkBlockPtr MakeTestWatermarkBlock(
-    const std::string& watermark_text) {
-  // Initialize text blob
-  static constexpr SkScalar kTextSize = 30.0f;
-  SkFont font(skia::DefaultTypeface(), kTextSize, 1.0f, 0.0f);
-  sk_sp<SkTextBlob> blob =
-      SkTextBlob::MakeFromString(watermark_text.c_str(), font);
-
-  // Draw onto SkPicture-backed SkCanvas
-  SkPictureRecorder recorder;
-  SkCanvas* canvas = recorder.beginRecording(
-      SkRect{SkRect::MakeWH(kWatermarkSize.fWidth, kWatermarkSize.fHeight)});
-  SkPaint paint;
-  paint.setColor(SK_ColorWHITE);
-  canvas->drawTextBlob(blob.get(), 0.0f, 0.0f, paint);
-  sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
-
-  // Serialize SkPicture
-  SkDynamicMemoryWStream stream;
-  SkSerialProcs procs;
-  picture->serialize(&stream, &procs);
-  base::MappedReadOnlyRegion region_mapping =
-      base::ReadOnlySharedMemoryRegion::Create(stream.bytesWritten());
-  if (!region_mapping.IsValid()) {
-    return nullptr;
-  }
-  stream.copyTo(region_mapping.mapping.memory());
-
-  // Measure string dimensions
-  SkScalar text_width = font.measureText(
-      watermark_text.c_str(), watermark_text.size(), SkTextEncoding::kUTF8);
-
-  // Construct test data
-  return watermark::mojom::WatermarkBlockPtr(
-      std::in_place, std::move(region_mapping.region), text_width, kTextSize);
-}
-
 class MockPrintCompositorImplEnterpriseWatermark : public PrintCompositorImpl {
  public:
   MockPrintCompositorImplEnterpriseWatermark()
       : PrintCompositorImpl(mojo::NullReceiver(),
                             /*initialize_environment=*/false,
                             /*io_task_runner=*/nullptr) {
-    SetWatermarkBlock(MakeTestWatermarkBlock(kWatermarkText));
+    SetWatermarkBlock(enterprise_watermark::MakeTestWatermarkBlock(
+        kWatermarkText, kWatermarkSize));
   }
 
   ~MockPrintCompositorImplEnterpriseWatermark() override = default;
@@ -250,7 +208,8 @@ class PrintCompositorImplEnterpriseWatermarkTest
                                         kWatermarkSize.fHeight);
     SkCanvas canvas(reference_watermark_);
     canvas.clear(SK_ColorBLACK);
-    const auto watermark_block = MakeTestWatermarkBlock(kWatermarkText);
+    const auto watermark_block = enterprise_watermark::MakeTestWatermarkBlock(
+        kWatermarkText, kWatermarkSize);
     DrawWatermarkBlockForTesting(&canvas, kWatermarkSize, watermark_block);
   }
 

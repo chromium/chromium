@@ -32,3 +32,19 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("watermark_test_utils") {
+  testonly = true
+
+  sources = [
+    "watermark_test_utils.cc",
+    "watermark_test_utils.h",
+  ]
+
+  deps = [ "//components/enterprise/watermarking" ]
+
+  public_deps = [
+    "//components/enterprise/watermarking/mojom",
+    "//skia",
+  ]
+}
