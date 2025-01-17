@@ -65,7 +65,7 @@ MirroringGpuFactoriesFactory::GetInstance() {
   // NOTE: this Unretained is safe because `this` is deleted on the VIDEO
   // thread.
   cast_environment_->PostTask(
-      CastEnvironment::VIDEO, FROM_HERE,
+      CastEnvironment::ThreadId::kVideo, FROM_HERE,
       base::BindOnce(&MirroringGpuFactoriesFactory::BindOnVideoThread,
                      base::Unretained(this)));
 
@@ -75,15 +75,15 @@ MirroringGpuFactoriesFactory::GetInstance() {
       vea_provider.InitWithNewPipeAndPassReceiver());
 
   auto codec_factory = std::make_unique<media::MojoCodecFactoryDefault>(
-      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::VIDEO),
+      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kVideo),
       context_provider_,
       /*enable_video_decode_accelerator=*/false,
       /*enable_video_encode_accelerator=*/true, std::move(vea_provider));
 
   instance_ = media::MojoGpuVideoAcceleratorFactories::Create(
       std::move(gpu_channel_host),
-      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::MAIN),
-      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::VIDEO),
+      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain),
+      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kVideo),
       context_provider_, std::move(codec_factory),
       gpu_->gpu_memory_buffer_manager(),
       /*enable_video_gpu_memory_buffers=*/true,
@@ -95,7 +95,7 @@ MirroringGpuFactoriesFactory::GetInstance() {
 }
 
 void MirroringGpuFactoriesFactory::BindOnVideoThread() {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::VIDEO));
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
   CHECK(context_provider_);
   if (context_provider_->BindToCurrentSequence() !=
       gpu::ContextResult::kSuccess) {
@@ -107,7 +107,7 @@ void MirroringGpuFactoriesFactory::BindOnVideoThread() {
 
 void MirroringGpuFactoriesFactory::OnContextLost() {
   cast_environment_->PostTask(
-      CastEnvironment::VIDEO, FROM_HERE,
+      CastEnvironment::ThreadId::kVideo, FROM_HERE,
       base::BindOnce(&media::MojoGpuVideoAcceleratorFactories::DestroyContext,
                      base::Unretained(instance_.get())));
 
@@ -119,7 +119,7 @@ void MirroringGpuFactoriesFactory::DestroyInstance() {
   CHECK(instance_);
   // The GPU factories object, after construction, must only be accessed on the
   // video encoding thread (including for deletion).
-  cast_environment_->GetTaskRunner(CastEnvironment::VIDEO)
+  cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kVideo)
       ->DeleteSoon(FROM_HERE, std::move(instance_));
 }
 

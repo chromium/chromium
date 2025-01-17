@@ -32,10 +32,10 @@
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/constants.h"
-#include "media/cast/logging/simple_event_subscriber.h"
 #include "media/cast/test/fake_openscreen_clock.h"
 #include "media/cast/test/fake_video_encode_accelerator_factory.h"
 #include "media/cast/test/mock_openscreen_environment.h"
+#include "media/cast/test/test_with_cast_environment.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "media/video/fake_video_encode_accelerator.h"
@@ -86,31 +86,26 @@ int GetVideoNetworkBandwidth() {
 
 }  // namespace
 
-class VideoSenderTest : public ::testing::TestWithParam<bool> {
+class VideoSenderTest : public ::testing::TestWithParam<bool>,
+                        public WithCastEnvironment {
  public:
   VideoSenderTest(const VideoSenderTest&) = delete;
   VideoSenderTest& operator=(const VideoSenderTest&) = delete;
 
  protected:
-  VideoSenderTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    task_runner_ = task_environment_.GetMainThreadTaskRunner();
-    openscreen_task_runner_ =
-        std::make_unique<openscreen_platform::TaskRunner>(task_runner_);
+  VideoSenderTest() {
+    openscreen_task_runner_ = std::make_unique<openscreen_platform::TaskRunner>(
+        GetMainThreadTaskRunner());
     accelerator_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 
-    cast_environment_ = base::MakeRefCounted<CastEnvironment>(
-        task_environment_.GetMockTickClock(), task_runner_, task_runner_,
-        task_runner_);
 
     vea_factory_ = std::make_unique<FakeVideoEncodeAcceleratorFactory>(
         accelerator_task_runner_);
 
-    FakeOpenscreenClock::SetTickClock(task_environment_.GetMockTickClock());
-    task_environment_.AdvanceClock(base::TimeTicks::Now() - base::TimeTicks());
+    FakeOpenscreenClock::SetTickClock(GetMockTickClock());
     mock_openscreen_environment_ = std::make_unique<MockOpenscreenEnvironment>(
         &FakeOpenscreenClock::now, *openscreen_task_runner_);
     openscreen_packet_router_ =
@@ -132,13 +127,12 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
   }
 
   void RunTasksAndAdvanceClock(base::TimeDelta clock_delta = {}) {
-    task_environment_.AdvanceClock(clock_delta);
+    AdvanceClock(clock_delta);
 
-    accelerator_task_runner_->PostTask(FROM_HERE,
-                                       task_environment_.QuitClosure());
-    task_environment_.RunUntilQuit();
-    task_runner_->PostTask(FROM_HERE, task_environment_.QuitClosure());
-    task_environment_.RunUntilQuit();
+    accelerator_task_runner_->PostTask(FROM_HERE, QuitClosure());
+    RunUntilQuit();
+    GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
+    RunUntilQuit();
   }
 
   // Can be used to be notified when video capture feedback is created. This is
@@ -192,7 +186,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
     }
 
     video_sender_ = std::make_unique<VideoSender>(
-        cast_environment_, video_config,
+        cast_environment(), video_config,
         base::BindRepeating(&SaveOperationalStatus, &status_changes_),
         base::BindRepeating(
             &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
@@ -210,25 +204,18 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
 
   scoped_refptr<media::VideoFrame> GetNewVideoFrame() {
     if (first_frame_timestamp_.is_null()) {
-      first_frame_timestamp_ = Now();
+      first_frame_timestamp_ = NowTicks();
     }
     constexpr gfx::Size kSize(kWidth, kHeight);
     scoped_refptr<media::VideoFrame> video_frame =
         media::VideoFrame::CreateFrame(PIXEL_FORMAT_I420, kSize,
                                        gfx::Rect(kSize), kSize,
-                                       Now() - first_frame_timestamp_);
+                                       NowTicks() - first_frame_timestamp_);
     PopulateVideoFrame(video_frame.get(), last_pixel_value_++);
     return video_frame;
   }
 
-  base::TimeTicks Now() {
-    return task_environment_.GetMockTickClock()->NowTicks();
-  }
-
-  base::test::TaskEnvironment task_environment_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> accelerator_task_runner_;
-  scoped_refptr<CastEnvironment> cast_environment_;
 
   // openscreen::Sender related classes.
   std::unique_ptr<openscreen_platform::TaskRunner> openscreen_task_runner_;
@@ -255,11 +242,10 @@ TEST_P(VideoSenderTest, BuiltInEncoder) {
   ASSERT_EQ(STATUS_INITIALIZED, status_changes_.front());
 
   scoped_refptr<media::VideoFrame> video_frame = GetNewVideoFrame();
-  const base::TimeTicks reference_time = Now();
-  video_sender_->InsertRawVideoFrame(video_frame, reference_time);
+  video_sender_->InsertRawVideoFrame(video_frame, NowTicks());
 
-  SetVideoCaptureFeedbackClosure(task_environment_.QuitClosure());
-  task_environment_.RunUntilQuit();
+  SetVideoCaptureFeedbackClosure(task_environment().QuitClosure());
+  RunUntilQuit();
 }
 
 TEST_P(VideoSenderTest, ExternalEncoder) {
@@ -271,7 +257,7 @@ TEST_P(VideoSenderTest, ExternalEncoder) {
   // have occurred at this point.  Send a frame to spurn creation of the
   // underlying ExternalVideoEncoder instance.
   if (vea_factory_->vea_response_count() == 0) {
-    video_sender_->InsertRawVideoFrame(GetNewVideoFrame(), Now());
+    video_sender_->InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
     RunTasksAndAdvanceClock();
   }
   ASSERT_EQ(STATUS_INITIALIZED, status_changes_.front());
@@ -284,8 +270,7 @@ TEST_P(VideoSenderTest, ExternalEncoder) {
   scoped_refptr<media::VideoFrame> video_frame = GetNewVideoFrame();
 
   for (int i = 0; i < 3; ++i) {
-    const base::TimeTicks reference_time = Now();
-    video_sender_->InsertRawVideoFrame(video_frame, reference_time);
+    video_sender_->InsertRawVideoFrame(video_frame, NowTicks());
     RunTasksAndAdvanceClock(base::Milliseconds(33));
     // VideoSender re-created the encoder for the 320x240 frames we're
     // providing.
@@ -306,7 +291,7 @@ TEST_P(VideoSenderTest, ExternalEncoderInitFails) {
 
   // Send a frame to spurn creation of the underlying ExternalVideoEncoder
   // instance, which should result in failure.
-  video_sender_->InsertRawVideoFrame(GetNewVideoFrame(), Now());
+  video_sender_->InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
   RunTasksAndAdvanceClock();
 
   EXPECT_NE(std::ranges::find(status_changes_, STATUS_CODEC_INIT_FAILED),

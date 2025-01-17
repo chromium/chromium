@@ -19,8 +19,7 @@
   case enum:                      \
     return #enum
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 namespace {
 
@@ -53,7 +52,7 @@ void StatsEventSubscriber::SimpleHistogram::Add(int64_t sample) {
     ++buckets_.back();
   } else {
     size_t index = 1 + (sample - min_) / width_;
-    DCHECK_LT(index, buckets_.size());
+    CHECK_LT(index, buckets_.size());
     ++buckets_[index];
   }
 }
@@ -93,8 +92,8 @@ base::Value::List StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
 
 StatsEventSubscriber::StatsEventSubscriber(
     EventMediaType event_media_type,
-    const base::TickClock* clock,
-    ReceiverTimeOffsetEstimator* offset_estimator)
+    const base::TickClock& clock,
+    ReceiverTimeOffsetEstimator& offset_estimator)
     : event_media_type_(event_media_type),
       clock_(clock),
       offset_estimator_(offset_estimator),
@@ -108,7 +107,7 @@ StatsEventSubscriber::StatsEventSubscriber(
       num_frames_dropped_by_encoder_(0),
       num_frames_late_(0),
       start_time_(clock_->NowTicks()) {
-  DCHECK(event_media_type == AUDIO_EVENT || event_media_type == VIDEO_EVENT);
+  CHECK(event_media_type == AUDIO_EVENT || event_media_type == VIDEO_EVENT);
 
   InitHistograms();
 }
@@ -445,7 +444,7 @@ void StatsEventSubscriber::GetStatsInternal(StatsMap* stats_map) const {
 
 StatsEventSubscriber::SimpleHistogram*
 StatsEventSubscriber::GetHistogramForTesting(CastStat stats) const {
-  DCHECK(histograms_.find(stats) != histograms_.end());
+  CHECK(histograms_.find(stats) != histograms_.end());
   return histograms_.find(stats)->second.get();
 }
 
@@ -729,5 +728,4 @@ StatsEventSubscriber::PacketLogStats::~PacketLogStats() = default;
 StatsEventSubscriber::FrameInfo::FrameInfo() : encoded(false) {}
 StatsEventSubscriber::FrameInfo::~FrameInfo() = default;
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast

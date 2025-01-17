@@ -94,12 +94,11 @@ void LogVideoCaptureTimestamps(CastEnvironment* cast_environment,
     // The frame capture timestamps were not provided by the video capture
     // source.  Simply log the events as happening right now.
     capture_begin_event->timestamp = capture_end_event->timestamp =
-        cast_environment->Clock()->NowTicks();
+        cast_environment->NowTicks();
   }
 
-  cast_environment->logger()->DispatchFrameEvent(
-      std::move(capture_begin_event));
-  cast_environment->logger()->DispatchFrameEvent(std::move(capture_end_event));
+  cast_environment->logger().DispatchFrameEvent(std::move(capture_begin_event));
+  cast_environment->logger().DispatchFrameEvent(std::move(capture_end_event));
 }
 
 }  // namespace
@@ -148,7 +147,7 @@ VideoSender::~VideoSender() {
 void VideoSender::InsertRawVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks reference_time) {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   CHECK(video_encoder_);
 
   const RtpTimeTicks rtp_timestamp =
@@ -321,7 +320,7 @@ base::TimeDelta VideoSender::GetEncoderBacklogDuration() const {
 
 void VideoSender::OnEncodedVideoFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
 
   frames_in_encoder_--;
   CHECK_GE(frames_in_encoder_, 0);

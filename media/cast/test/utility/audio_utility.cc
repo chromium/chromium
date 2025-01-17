@@ -12,8 +12,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 TestAudioBusFactory::TestAudioBusFactory(int num_channels,
                                          int sample_rate,
@@ -31,6 +30,9 @@ TestAudioBusFactory::TestAudioBusFactory(int num_channels,
 
 TestAudioBusFactory::~TestAudioBusFactory() = default;
 
+// static
+constexpr int TestAudioBusFactory::kMiddleANoteFreq;
+
 std::unique_ptr<AudioBus> TestAudioBusFactory::NextAudioBus(
     const base::TimeDelta& duration) {
   const int num_samples = (sample_rate_ * duration).InSeconds();
@@ -40,5 +42,4 @@ std::unique_ptr<AudioBus> TestAudioBusFactory::NextAudioBus(
   return bus;
 }
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
