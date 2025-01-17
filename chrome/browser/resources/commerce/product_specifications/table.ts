@@ -26,6 +26,7 @@ import type {BuyingOptions} from './buying_options_section.js';
 import type {ProductDescription} from './description_section.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
 import type {SectionType} from './product_selection_menu.js';
+import type {ProductSelectorElement} from './product_selector.js';
 import {getTemplate} from './table.html.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -104,6 +105,13 @@ export class TableElement extends PolymerElement {
     ]);
 
     this.dispatchEvent(new Event('url-order-update'));
+  }
+
+  closeAllProductSelectionMenus() {
+    const productSelectors =
+        this.shadowRoot!.querySelectorAll<ProductSelectorElement>(
+            'product-selector');
+    productSelectors.forEach(productSelector => productSelector.closeMenu());
   }
 
   private onColumnsChanged_() {

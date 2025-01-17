@@ -887,6 +887,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
 
     if (urlSetChanged) {
+      this.closeAllProductSelectionMenus_();
       this.populateTable_(set.urls.map(url => url.url));
     } else if (orderChanged) {
       const newCols: TableColumn[] = [];
@@ -1050,6 +1051,11 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   private onHeaderMenuDeleteClick_() {
     this.deleteSet_();
+  }
+
+  private closeAllProductSelectionMenus_() {
+    this.$.summaryTable.closeAllProductSelectionMenus();
+    this.$.newColumnSelector.closeMenu();
   }
 }
 

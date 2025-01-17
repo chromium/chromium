@@ -52,6 +52,10 @@ export class ProductSelectorElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  closeMenu() {
+    this.$.productSelectionMenu.close();
+  }
+
   protected showMenu_() {
     this.$.productSelectionMenu.showAt(this.$.currentProductContainer);
     this.$.currentProductContainer.classList.add('showing-menu');

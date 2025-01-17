@@ -14,6 +14,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 suite('NewColumnSelectorTest', () => {
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
+  const SHOWING_MENU_CLASS = 'showing-menu';
 
   async function createSelector(): Promise<NewColumnSelectorElement> {
     const selector = document.createElement('new-column-selector');
@@ -47,35 +48,33 @@ suite('NewColumnSelectorTest', () => {
   test('menu shown on enter', async () => {
     initUrlInfos();
     const selector = await createSelector();
-    const showingMenuClass = 'showing-menu';
     const menu = selector.$.productSelectionMenu;
 
     assertEquals(menu.$.menu.getIfExists(), null);
-    assertFalse(selector.$.button.classList.contains(showingMenuClass));
+    assertFalse(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
 
     selector.$.button.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter'}));
     await microtasksFinished();
 
     assertNotEquals(menu.$.menu.getIfExists(), null);
-    assertTrue(selector.$.button.classList.contains(showingMenuClass));
+    assertTrue(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
   });
 
   test('updates showing menu class', async () => {
     initUrlInfos();
     const selector = await createSelector();
-    const showingMenuClass = 'showing-menu';
 
-    assertFalse(selector.$.button.classList.contains(showingMenuClass));
+    assertFalse(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
 
     selector.$.button.click();
     await microtasksFinished();
 
-    assertTrue(selector.$.button.classList.contains(showingMenuClass));
+    assertTrue(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
 
     selector.$.productSelectionMenu.close();
     await eventToPromise('close', selector.$.productSelectionMenu);
 
-    assertFalse(selector.$.button.classList.contains(showingMenuClass));
+    assertFalse(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
   });
 });
