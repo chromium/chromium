@@ -31,6 +31,10 @@ class MockAutofillAiClient : public AutofillAiClient {
               GetUserAnnotationsService,
               (),
               (override));
+  MOCK_METHOD(autofill::EntityDataManager*,
+              GetEntityDataManager,
+              (),
+              (override));
   MOCK_METHOD(bool, IsAutofillAiEnabledPref, (), (const override));
   MOCK_METHOD(void,
               TryToOpenFeedbackPage,

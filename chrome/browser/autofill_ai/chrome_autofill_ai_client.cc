@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/autofill_ai/autofill_ai_util.h"
@@ -132,6 +133,14 @@ ChromeAutofillAiClient::GetUserAnnotationsService() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   return profile ? UserAnnotationsServiceFactory::GetForProfile(profile)
+                 : nullptr;
+}
+
+autofill::EntityDataManager* ChromeAutofillAiClient::GetEntityDataManager() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  return profile ? autofill::AutofillEntityDataManagerFactory::GetForProfile(
+                       profile)
                  : nullptr;
 }
 

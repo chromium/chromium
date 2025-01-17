@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_CLIENT_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/user_annotations/user_annotations_types.h"
@@ -73,6 +74,10 @@ class AutofillAiClient {
   // `nullptr`.
   virtual user_annotations::UserAnnotationsService*
   GetUserAnnotationsService() = 0;
+
+  // Returns a pointer to the current profile's `autofill::EntityDataManager`.
+  // Can be `nullptr` if `features::kAutofillAiWithDataSchema` is disabled.
+  virtual autofill::EntityDataManager* GetEntityDataManager() = 0;
 
   // Returns whether the feature is enabled in the prefs
   // (`autofill::prefs::kAutofillAisEnabled`).
