@@ -520,6 +520,11 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_CHROMEOS_NAME_FRAGMENT" desc="Text fragment identifying the ChromeOS">
     ChromeOS
   </message>
+  <if expr="is_android">
+    <message name="IDS_ANDROID_NAME_FRAGMENT" desc="Text fragment identifying the Android">
+      Android
+    </message>
+  </if>
   <!--Embedded permission prompts: button labels-->
   <message name="IDS_EMBEDDED_PROMPT_OK_LABEL" desc="Label used on a button that allows the user to acknowledge and close an informational dialog">
     OK
@@ -530,6 +535,11 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_EMBEDDED_PROMPT_STOP_ALLOWING" desc="Label on button to stop allowing a permissions , when the user clicks on the embedded permission element but they have previously granted permission to the site">
     Stop allowing
   </message>
+  <if expr="is_android">
+    <message name="IDS_EMBEDDED_PROMPT_CANCEL_LABEL" desc="Label used on a button that allows the user to cancel and close an informational dialog">
+     Cancel
+    </message>
+  </if>
   <message name="IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS" desc="Label used on a button that on click sends the users to the system settings.">
     Go to <ph name="operating_system">$1<ex>macOS</ex></ph> settings
   </message>

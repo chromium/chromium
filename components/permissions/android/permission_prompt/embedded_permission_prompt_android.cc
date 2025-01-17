@@ -4,6 +4,7 @@
 
 #include "components/permissions/android/permission_prompt/embedded_permission_prompt_android.h"
 
+#include "base/android/jni_string.h"
 #include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
@@ -17,6 +18,7 @@
 namespace permissions {
 
 using Variant = EmbeddedPermissionPromptFlowModel::Variant;
+using base::android::ConvertUTF16ToJavaString;
 
 EmbeddedPermissionPromptAndroid::EmbeddedPermissionPromptAndroid(
     content::WebContents* web_contents,
@@ -73,18 +75,154 @@ EmbeddedPermissionPromptAndroid::ReasonForUsingQuietUi() const {
 
 PermissionRequest::AnnotatedMessageText
 EmbeddedPermissionPromptAndroid::GetAnnotatedMessageText() const {
-  // TODO(crbug.com/388407662): correct the title to send to Java.
-  return PermissionRequest::GetDialogAnnotatedMessageText(
-      url_formatter::FormatUrlForSecurityDisplay(
-          delegate()->GetRequestingOrigin(),
-          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
-      IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT,
-      /*format_origin_bold=*/
-      base::FeatureList::IsEnabled(permissions::features::kOneTimePermission));
+  switch (GetEmbeddedPromptVariant()) {
+    case Variant::kAsk: {
+      const auto& requests = Requests();
+      if (requests.size() == 1) {
+        return requests[0]->GetDialogAnnotatedMessageText(
+            delegate()->GetEmbeddingOrigin());
+      }
+      CheckValidRequestGroup(requests);
+      return GetDialogAnnotatedMessageTextWithOrigin(
+          IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT);
+    }
+    case Variant::kAdministratorGranted:
+      return GetDialogAnnotatedMessageTextWithOrigin(
+          IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED);
+    case Variant::kPreviouslyGranted: {
+      std::vector<size_t> offsets;
+      auto requesting_origin_formatted_for_display =
+          url_formatter::FormatUrlForSecurityDisplay(
+              delegate()->GetRequestingOrigin(),
+              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+      std::u16string text =
+          l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_PREVIOUSLY_ALLOWED,
+                                     {GetPermissionNameTextFragment(),
+                                      requesting_origin_formatted_for_display},
+                                     &offsets);
+
+      std::vector<std::pair<size_t, size_t>> bolded_ranges;
+      for (auto offset : offsets) {
+        bolded_ranges.emplace_back(
+            offset, offset + requesting_origin_formatted_for_display.length());
+      }
+
+      return PermissionRequest::AnnotatedMessageText(text, bolded_ranges);
+    }
+
+    case Variant::kOsSystemSettings: {
+      return PermissionRequest::AnnotatedMessageText(
+          l10n_util::GetStringFUTF16(IDS_PERMISSION_OFF_FOR_CHROME,
+                                     GetPermissionNameTextFragment()),
+          /*bolded_ranges=*/{});
+    }
+    case Variant::kPreviouslyDenied:
+      return GetDialogAnnotatedMessageTextWithOrigin(
+          IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED);
+    case Variant::kAdministratorDenied:
+      return GetDialogAnnotatedMessageTextWithOrigin(
+          IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED);
+    case Variant::kUninitialized:
+    case Variant::kOsPrompt:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
+base::android::ScopedJavaLocalRef<jstring>
+EmbeddedPermissionPromptAndroid::GetPositiveButtonText(JNIEnv* env,
+                                                       bool is_one_time) const {
+  switch (GetEmbeddedPromptVariant()) {
+    case Variant::kAsk:
+      return is_one_time
+                 ? ConvertUTF16ToJavaString(
+                       env, l10n_util::GetStringUTF16(
+                                permissions::feature_params::
+                                        kUseWhileVisitingLanguage.Get()
+                                    ? IDS_PERMISSION_ALLOW_WHILE_VISITING
+                                    : IDS_PERMISSION_ALLOW_EVERY_VISIT))
+                 : ConvertUTF16ToJavaString(
+                       env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+
+    case Variant::kAdministratorGranted:
+      return ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL));
+    case Variant::kPreviouslyGranted:
+      return ConvertUTF16ToJavaString(
+          env,
+          l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_ALLOWING));
+    case Variant::kOsSystemSettings:
+      return ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringFUTF16(
+                   IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS,
+                   l10n_util::GetStringUTF16(IDS_ANDROID_NAME_FRAGMENT)));
+    case Variant::kPreviouslyDenied:
+      return ConvertUTF16ToJavaString(
+          env,
+          l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING));
+    case Variant::kAdministratorDenied:
+      return ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL));
+    case Variant::kUninitialized:
+    case Variant::kOsPrompt:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
+base::android::ScopedJavaLocalRef<jstring>
+EmbeddedPermissionPromptAndroid::GetNegativeButtonText(JNIEnv* env,
+                                                       bool is_one_time) const {
+  switch (GetEmbeddedPromptVariant()) {
+    case Variant::kAsk:
+      return is_one_time
+                 ? ConvertUTF16ToJavaString(
+                       env, l10n_util::GetStringUTF16(
+                                permissions::feature_params::
+                                        kUseStrongerPromptLanguage.Get()
+                                    ? IDS_PERMISSION_NEVER_ALLOW
+                                    : IDS_PERMISSION_DONT_ALLOW))
+                 : ConvertUTF16ToJavaString(
+                       env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+
+    case Variant::kPreviouslyGranted:
+      return ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_STOP_ALLOWING));
+    case Variant::kOsSystemSettings:
+      return ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CANCEL_LABEL));
+    case Variant::kPreviouslyDenied:
+      return ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
+    case Variant::kAdministratorGranted:
+    case Variant::kAdministratorDenied:
+      return ConvertUTF16ToJavaString(env, std::u16string_view());
+    case Variant::kUninitialized:
+    case Variant::kOsPrompt:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+base::android::ScopedJavaLocalRef<jstring>
+EmbeddedPermissionPromptAndroid::GetPositiveEphemeralButtonText(
+    JNIEnv* env,
+    bool is_one_time) const {
+  if (!is_one_time || GetEmbeddedPromptVariant() !=
+                          EmbeddedPermissionPromptFlowModel::Variant::kAsk) {
+    return ConvertUTF16ToJavaString(env, std::u16string_view());
+  }
+
+  return ConvertUTF16ToJavaString(
+      env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
 }
 
 bool EmbeddedPermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {
   return false;
+}
+
+const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+EmbeddedPermissionPromptAndroid::Requests() const {
+  return prompt_model_->requests();
 }
 
 void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
@@ -94,6 +232,30 @@ void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
     return;
   }
   // TODO(crbug.com/388407640); update new screen.
+}
+
+PermissionRequest::AnnotatedMessageText
+EmbeddedPermissionPromptAndroid::GetDialogAnnotatedMessageTextWithOrigin(
+    int message_id) const {
+  return PermissionRequest::GetDialogAnnotatedMessageText(
+      url_formatter::FormatUrlForSecurityDisplay(
+          delegate()->GetRequestingOrigin(),
+          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
+      message_id,
+      /*format_origin_bold=*/
+      true);
+}
+
+std::u16string EmbeddedPermissionPromptAndroid::GetPermissionNameTextFragment()
+    const {
+  const auto& requests = Requests();
+  std::u16string permission_name;
+  if (requests.size() == 1) {
+    return requests[0]->GetPermissionNameTextFragment();
+  }
+  CheckValidRequestGroup(requests);
+  return l10n_util::GetStringUTF16(
+      IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT);
 }
 
 }  // namespace permissions

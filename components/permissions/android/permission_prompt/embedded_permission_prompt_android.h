@@ -46,12 +46,29 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
       const override;
   PermissionRequest::AnnotatedMessageText GetAnnotatedMessageText()
       const override;
+  base::android::ScopedJavaLocalRef<jstring> GetPositiveButtonText(
+      JNIEnv* env,
+      bool is_one_time) const override;
+  base::android::ScopedJavaLocalRef<jstring> GetNegativeButtonText(
+      JNIEnv* env,
+      bool is_one_time) const override;
+  base::android::ScopedJavaLocalRef<jstring> GetPositiveEphemeralButtonText(
+      JNIEnv* env,
+      bool is_one_time) const override;
   bool ShouldUseRequestingOriginFavicon() const override;
+  const std::vector<
+      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+  Requests() const override;
 
  private:
   // Decide to destroy the current dialog or update the dialog with new screen
   // variant.
   void MaybeUpdateDialogWithNewScreenVariant();
+
+  PermissionRequest::AnnotatedMessageText
+  GetDialogAnnotatedMessageTextWithOrigin(int message_id) const;
+
+  std::u16string GetPermissionNameTextFragment() const;
 
   std::unique_ptr<EmbeddedPermissionPromptFlowModel> prompt_model_;
 };
