@@ -5381,8 +5381,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledV2",
                     "params": {
+                        "disable_blend": "true",
+                        "enable_v2": "true",
                         "max_tiles_number": "1",
                         "show_see_more": "true",
                         "show_tabs_in_one_module": "true",
@@ -5394,10 +5396,8 @@
                     ]
                 },
                 {
-                    "name": "EnabledV2",
+                    "name": "Enabled",
                     "params": {
-                        "disable_blend": "true",
-                        "enable_v2": "true",
                         "max_tiles_number": "1",
                         "show_see_more": "true",
                         "show_tabs_in_one_module": "true",
