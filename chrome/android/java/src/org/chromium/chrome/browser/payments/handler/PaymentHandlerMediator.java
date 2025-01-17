@@ -67,6 +67,8 @@ import java.lang.annotation.RetentionPolicy;
     /** A token held while the payment sheet is obscuring all visible tabs. */
     private TabObscuringHandler.Token mTabObscuringToken;
 
+    private boolean mIsDestroyed;
+
     @IntDef({
         CloseReason.OTHERS,
         CloseReason.USER,
@@ -137,6 +139,48 @@ import java.lang.annotation.RetentionPolicy;
                     }
                 };
         ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
+    }
+
+    /** Destroy the dependencies of the Mediator. */
+    public void destroy() {
+        if (mIsDestroyed) return;
+        mIsDestroyed = true;
+
+        observe(null);
+
+        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+
+        switch (mCloseReason) {
+            case CloseReason.INSECURE_NAVIGATION:
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
+                break;
+            case CloseReason.USER:
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
+                break;
+            case CloseReason.FAIL_LOAD:
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME);
+                break;
+            case CloseReason.ACTIVITY_DIED:
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_ACTIVITY_DIED);
+                break;
+            case CloseReason.OTHERS:
+                // No need to notify ServiceWorkerPaymentAppBridge when merchant aborts the
+                // payment request (and thus {@link ChromePaymentRequestService} closes
+                // PaymentHandlerMediator). "OTHERS" category includes this cases.
+                // TODO(crbug.com/40134410): we should explicitly list merchant aborting payment
+                // request as a {@link CloseReason}, renames "OTHERS" as "UNKNOWN" and asserts
+                // that PaymentHandler wouldn't be closed for unknown reason.
+        }
+        mHandler.removeCallbacksAndMessages(null);
+        hideScrim();
     }
 
     // Implement View.OnLayoutChangeListener:
@@ -219,44 +263,6 @@ import java.lang.annotation.RetentionPolicy;
     @Override
     public void onSheetContentChanged(BottomSheetContent newContent) {}
 
-    // Implement WebContentsObserver:
-    @Override
-    public void onDestroy() {
-        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
-
-        switch (mCloseReason) {
-            case CloseReason.INSECURE_NAVIGATION:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
-                        mPaymentRequestWebContents,
-                        PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
-                break;
-            case CloseReason.USER:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
-                        mPaymentRequestWebContents,
-                        PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
-                break;
-            case CloseReason.FAIL_LOAD:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
-                        mPaymentRequestWebContents,
-                        PaymentEventResponseType.PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME);
-                break;
-            case CloseReason.ACTIVITY_DIED:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
-                        mPaymentRequestWebContents,
-                        PaymentEventResponseType.PAYMENT_HANDLER_ACTIVITY_DIED);
-                break;
-            case CloseReason.OTHERS:
-                // No need to notify ServiceWorkerPaymentAppBridge when merchant aborts the
-                // payment request (and thus {@link ChromePaymentRequestService} closes
-                // PaymentHandlerMediator). "OTHERS" category includes this cases.
-                // TODO(crbug.com/40134410): we should explicitly list merchant aborting payment
-                // request as a {@link CloseReason}, renames "OTHERS" as "UNKNOWN" and asserts
-                // that PaymentHandler wouldn't be closed for unknown reason.
-        }
-        mHandler.removeCallbacksAndMessages(null);
-        hideScrim();
-    }
-
     private void hideScrim() {
         setObscureState(false);
 
@@ -264,6 +270,12 @@ import java.lang.annotation.RetentionPolicy;
         if (coordinator != null && coordinator.isShowingScrim()) {
             coordinator.hideScrim(/* animate= */ true);
         }
+    }
+
+    // Implement WebContentsObserver:
+    @Override
+    public void webContentsDestroyed() {
+        destroy();
     }
 
     // Implement WebContentsObserver:

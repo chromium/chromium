@@ -464,7 +464,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
     private void dismissDialog() {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
         }
         if (mChipController != null) {
             mChipController.dismissChipIfShowing();

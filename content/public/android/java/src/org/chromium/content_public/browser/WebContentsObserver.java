@@ -245,30 +245,12 @@ public abstract class WebContentsObserver {
     public void mediaSessionCreated(MediaSession mediaSession) {}
 
     /**
-     * Notified when {@link #destroy()} has been triggered. This can be the result of the {@link
-     * #getWebContents()} being destroyed, or because an embedder has triggered {@link #onDestroy()}
-     * manually.
+     * Called when {@link #getWebContents()} is being destroyed.
      *
-     * <p>As an embedder, this method should be overridden and not called directly.
+     * <p>After this call, clients should assume that {@link #getWebContents()} will be imminently
+     * destroyed and the C++ counterpart deleted.
      */
-    protected void onDestroy() {}
-
-    /**
-     * To be called when this object should no longer observe any WebContents and also to carry out
-     * any cleanup handled in {@link #onDestroy}.
-     *
-     * <p>Only the first call to {@link #destroy()}} will trigger {@link #onDestroy()} and
-     * unregister this observer from the linked {@link #getWebContents()} (if one had been
-     * registered).
-     */
-    public final void destroy() {
-        if (mHasBeenDestroyed) return;
-        mHasBeenDestroyed = true;
-
-        onDestroy();
-
-        observe(null);
-    }
+    public void webContentsDestroyed() {}
 
     /**
      * Updates the {@link WebContents} that this class is observing, and if null, stops observing

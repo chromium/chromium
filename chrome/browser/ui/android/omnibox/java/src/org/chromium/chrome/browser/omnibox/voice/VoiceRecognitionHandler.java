@@ -257,7 +257,7 @@ public class VoiceRecognitionHandler {
             if (navigation.hasCommitted() && !navigation.isErrorPage()) {
                 setReceivedUserGesture(navigation.getUrl());
             }
-            destroy();
+            observe(null);
         }
     }
 
@@ -335,7 +335,7 @@ public class VoiceRecognitionHandler {
                     locationBarDataProvider != null ? locationBarDataProvider.getTab() : null;
             if (currentTab != null) {
                 if (mVoiceSearchWebContentsObserver != null) {
-                    mVoiceSearchWebContentsObserver.destroy();
+                    mVoiceSearchWebContentsObserver.observe(null);
                     mVoiceSearchWebContentsObserver = null;
                 }
                 if (currentTab.getWebContents() != null) {

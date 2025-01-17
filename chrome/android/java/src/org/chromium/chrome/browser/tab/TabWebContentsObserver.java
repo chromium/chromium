@@ -55,7 +55,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
     private final TabImpl mTab;
     private final ObserverList<Callback<WebContents>> mInitObservers = new ObserverList<>();
-    private WebContentsObserver mObserver;
+    private Observer mObserver;
     private GURL mLastUrl;
 
     public static TabWebContentsObserver from(Tab tab) {
@@ -110,7 +110,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     @Override
     public void cleanupWebContents(WebContents webContents) {
         if (mObserver != null) {
-            mObserver.destroy();
+            mObserver.updateNotificationsForTab();
+            mObserver.observe(null);
             mObserver = null;
         }
     }
@@ -381,7 +382,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void onDestroy() {
+        public void webContentsDestroyed() {
+            updateNotificationsForTab();
+        }
+
+        void updateNotificationsForTab() {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(), mTab.getId(), null, mLastUrl);
             BluetoothNotificationManager.updateBluetoothNotificationForTab(

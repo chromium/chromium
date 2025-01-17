@@ -324,9 +324,7 @@ public class PageInfoController
                     }
 
                     @Override
-                    public void onDestroy() {
-                        // Force the dialog to close immediately in case the destroy was from Chrome
-                        // quitting.
+                    public void webContentsDestroyed() {
                         PageInfoController.this.destroy();
                     }
 
@@ -351,6 +349,11 @@ public class PageInfoController
     }
 
     private void destroy() {
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+            mWebContentsObserver = null;
+        }
+
         if (mDialog != null) {
             mDialog.destroy();
             mDialog = null;
@@ -457,8 +460,9 @@ public class PageInfoController
             mCurrentSubpageController.onSubpageRemoved();
             mCurrentSubpageController = null;
         }
-        mWebContentsObserver.destroy();
-        mWebContentsObserver = null;
+
+        destroy();
+
         PageInfoControllerJni.get().destroy(mNativePageInfoController, PageInfoController.this);
         mNativePageInfoController = 0;
         mContext = null;

@@ -852,7 +852,7 @@ public class TabsTest {
                     WebContentsObserver observer =
                             new WebContentsObserver(tab.getWebContents()) {
                                 @Override
-                                public void onDestroy() {
+                                public void webContentsDestroyed() {
                                     webContentsDestroyed.notifyCalled();
                                 }
                             };

@@ -302,7 +302,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         if (mThinWebView != null) {
             mWebContents.destroy();
             mWebContents = null;
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
             mThinWebView.destroy();
             mThinWebView = null;

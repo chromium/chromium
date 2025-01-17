@@ -334,7 +334,7 @@ public class EdgeToEdgeControllerImpl
      * @param tab The {@link Tab} whose {@link WebContents} we want to observe.
      */
     private void updateWebContentsObserver(Tab tab) {
-        if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
         mWebContentsObserver =
                 new WebContentsObserver(tab.getWebContents()) {
                     @Override
@@ -564,7 +564,7 @@ public class EdgeToEdgeControllerImpl
     @Override
     public void destroy() {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);

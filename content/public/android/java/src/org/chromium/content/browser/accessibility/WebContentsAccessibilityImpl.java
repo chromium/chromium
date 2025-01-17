@@ -666,7 +666,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // opening the Tab Switcher. Timers will restart during the next onAttach.
             if (mWebContentsObserver != null) {
                 mHistogramRecorder.recordAccessibilityUsageHistograms();
-                mWebContentsObserver.destroy();
+                mWebContentsObserver.observe(null);
                 mWebContentsObserver = null;
             }
 
@@ -781,7 +781,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (mDelegate.getWebContents() == null) {
             deleteEarly();
         } else {
-            if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+            if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
             WindowEventObserverManager.from(mDelegate.getWebContents()).removeObserver(this);
             ((WebContentsImpl) mDelegate.getWebContents())
                     .removeUserData(WebContentsAccessibilityImpl.class);

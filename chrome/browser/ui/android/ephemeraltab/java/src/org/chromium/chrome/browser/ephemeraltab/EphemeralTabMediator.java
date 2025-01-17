@@ -271,7 +271,7 @@ public class EphemeralTabMediator {
     /** Destroys the objects used for the current preview tab. */
     void destroyContent() {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         mWebContentsDelegate = null;

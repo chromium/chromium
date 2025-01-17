@@ -228,7 +228,7 @@ public class MerchantTrustBottomSheetMediator {
 
     void destroyWebContents() {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         if (mWebContents != null) {

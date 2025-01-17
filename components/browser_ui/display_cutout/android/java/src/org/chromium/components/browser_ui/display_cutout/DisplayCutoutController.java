@@ -223,7 +223,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         updateInsetObserver(null);
         updateBrowserCutoutObserver(null);
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         mWindow = null;
@@ -271,7 +271,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         }
 
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
 

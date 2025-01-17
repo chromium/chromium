@@ -505,15 +505,17 @@ class WebContentsObserverProxy extends WebContentsObserver {
         finishObserverCall();
     }
 
+    @Override
     @CalledByNative
-    protected void webContentsDestroyed() {
+    public void webContentsDestroyed() {
         ThreadUtils.assertOnUiThread();
         RewindableIterator<WebContentsObserver> observersIterator = mObservers.rewindableIterator();
         for (; observersIterator.hasNext(); ) {
-            observersIterator.next().destroy();
+            WebContentsObserver observer = observersIterator.next();
+            observer.webContentsDestroyed();
+            observer.observe(null);
         }
-        // All observer destroy() implementations should result in their removal
-        // from the proxy.
+        // All observer observe(null) implementations should result in their removal from the proxy.
         String remainingObservers = "These observers were not removed: ";
         if (!mObservers.isEmpty()) {
             for (observersIterator.rewind(); observersIterator.hasNext(); ) {

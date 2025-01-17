@@ -310,7 +310,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         mNativeWebContentsAndroid = 0;
         mNavigationController = null;
         if (mObserverProxy != null) {
-            mObserverProxy.destroy();
+            mObserverProxy.webContentsDestroyed();
             mObserverProxy = null;
         }
     }
