@@ -3584,21 +3584,31 @@ enum class ToolbarKind {
     return @[];
   }
 
-  LensOverlayTabHelper* lensOverlayTabHelper =
-      LensOverlayTabHelper::FromWebState(webState);
-
-  BOOL webStateHasLensOverlay =
-      IsLensOverlayAvailable() && lensOverlayTabHelper &&
-      lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
-
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
 
-  // A lens overlay is mapped to the given web state.
-  if (webStateHasLensOverlay) {
-    UIView* lensOverlayView = _lensOverlayCoordinator.viewController.view;
+  if (IsLensOverlayAvailable()) {
+    LensOverlayTabHelper* lensOverlayTabHelper =
+        LensOverlayTabHelper::FromWebState(webState);
 
-    if (lensOverlayView) {
-      [overlays addObject:lensOverlayView];
+    if (lensOverlayTabHelper) {
+      BOOL isLensOverlayCurrentlyInvoked;
+
+      if (IsLensOverlaySameTabNavigationEnabled()) {
+        isLensOverlayCurrentlyInvoked =
+            lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
+      } else {
+        isLensOverlayCurrentlyInvoked =
+            lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+      }
+
+      // A lens overlay is invoked in the given web state.
+      if (isLensOverlayCurrentlyInvoked) {
+        UIView* lensOverlayView = _lensOverlayCoordinator.viewController.view;
+
+        if (lensOverlayView) {
+          [overlays addObject:lensOverlayView];
+        }
+      }
     }
   }
 

@@ -174,6 +174,13 @@ void LensOverlayTabHelper::UpdateSnapshot() {
 }
 
 void LensOverlayTabHelper::UpdateSnapshotStorage() {
+  // Skip updating the snapshot storage if the Lens Overlay is not invoked on
+  // the current navigation item.
+  if (IsLensOverlaySameTabNavigationEnabled() &&
+      !IsLensOverlayInvokedOnCurrentNavigationItem()) {
+    return;
+  }
+
   SnapshotTabHelper* snapshotTabHelper =
       SnapshotTabHelper::FromWebState(web_state_);
 

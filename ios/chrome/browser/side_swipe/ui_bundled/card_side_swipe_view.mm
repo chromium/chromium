@@ -181,8 +181,16 @@ const CGFloat kResizeFactor = 4;
   if (IsLensOverlayAvailable()) {
     if (LensOverlayTabHelper* lensOverlayTabHelper =
             LensOverlayTabHelper::FromWebState(webState)) {
-      BOOL lensOverlayShown =
-          lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+      BOOL lensOverlayShown;
+
+      if (IsLensOverlaySameTabNavigationEnabled()) {
+        lensOverlayShown =
+            lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
+      } else {
+        lensOverlayShown =
+            lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+      }
+
       UIImage* lensOverlaySnapshot =
           lensOverlayTabHelper->GetViewportSnapshot();
       if (lensOverlayShown && lensOverlaySnapshot) {
