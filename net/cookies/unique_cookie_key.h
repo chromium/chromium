@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_UNIQUE_COOKIE_KEY_H_
 #define NET_COOKIES_UNIQUE_COOKIE_KEY_H_
 
+#include <compare>
 #include <optional>
 #include <string>
 
@@ -63,8 +64,8 @@ class NET_EXPORT UniqueCookieKey {
 
   ~UniqueCookieKey();
 
-  bool operator==(const UniqueCookieKey& other) const;
-  bool operator<(const UniqueCookieKey& other) const;
+  std::strong_ordering operator<=>(const UniqueCookieKey& other) const =
+      default;
 
   const std::string& name() const { return name_; }
   const std::string& domain() const { return domain_; }

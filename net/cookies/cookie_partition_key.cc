@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_partition_key.h"
 
+#include <compare>
 #include <ostream>
 #include <tuple>
 
@@ -99,21 +100,14 @@ CookiePartitionKey& CookiePartitionKey::operator=(CookiePartitionKey&& other) =
 CookiePartitionKey::~CookiePartitionKey() = default;
 
 bool CookiePartitionKey::operator==(const CookiePartitionKey& other) const {
-  AncestorChainBit this_bit = MaybeAncestorChainBit();
-  AncestorChainBit other_bit = other.MaybeAncestorChainBit();
-
-  return std::tie(site_, nonce_, this_bit) ==
-         std::tie(other.site_, other.nonce_, other_bit);
+  return (*this <=> other) == 0;
 }
 
-bool CookiePartitionKey::operator!=(const CookiePartitionKey& other) const {
-  return !(*this == other);
-}
-
-bool CookiePartitionKey::operator<(const CookiePartitionKey& other) const {
+std::strong_ordering CookiePartitionKey::operator<=>(
+    const CookiePartitionKey& other) const {
   AncestorChainBit this_bit = MaybeAncestorChainBit();
   AncestorChainBit other_bit = other.MaybeAncestorChainBit();
-  return std::tie(site_, nonce_, this_bit) <
+  return std::tie(site_, nonce_, this_bit) <=>
          std::tie(other.site_, other.nonce_, other_bit);
 }
 
