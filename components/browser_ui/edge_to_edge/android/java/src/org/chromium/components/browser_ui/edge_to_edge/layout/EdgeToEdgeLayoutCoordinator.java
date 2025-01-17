@@ -21,7 +21,13 @@ import org.chromium.components.browser_ui.edge_to_edge.R;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 
-/** Coordinator used to adjust the padding and paint color for {@link EdgeToEdgeBaseLayout}. */
+/**
+ * Coordinator used to adjust the padding and paint color for {@link EdgeToEdgeBaseLayout}. This is
+ * a house-made version of a base edge to edge component, different than the AndroidX Coordinator
+ * layout that applies some Chrome specific insets coordination.
+ *
+ * <p>Currently the layout supports systemBars / displayCutout / IME
+ */
 public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         implements WindowInsetsConsumer {
     private final Activity mActivity;
@@ -102,10 +108,11 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         mView.setDisplayCutoutInsetLeft(cutout.left > 0 ? cutout : Insets.NONE);
         mView.setDisplayCutoutInsetRight(cutout.right > 0 ? cutout : Insets.NONE);
 
-        // Currently the EdgeToEdgeLayout cannot color the caption bar, but it should add padding if
-        // necessary to account for the captionBar insets (e.g. on some OEMs).
+        // Currently the EdgeToEdgeLayout does not color the caption bar, but it should add padding
+        // if necessary to account for the captionBar insets (e.g. on some OEMs).
         // See https://crbug.com/377620837
-        Insets overallInsets = windowInsets.getInsets(Type.systemBars() + Type.displayCutout());
+        Insets overallInsets =
+                windowInsets.getInsets(Type.systemBars() + Type.displayCutout() + Type.ime());
         mView.setPadding(
                 overallInsets.left, overallInsets.top, overallInsets.right, overallInsets.bottom);
 
@@ -115,6 +122,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                 .setInsets(Type.navigationBars(), Insets.NONE)
                 .setInsets(Type.captionBar(), Insets.NONE)
                 .setInsets(Type.displayCutout(), Insets.NONE)
+                .setInsets(Type.ime(), Insets.NONE)
                 .build();
     }
 

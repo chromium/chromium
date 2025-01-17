@@ -22,6 +22,7 @@ public class WindowInsetsTestUtils {
         private static final int NAVIGATION_BARS = WindowInsetsCompat.Type.navigationBars();
         private static final int CAPTION_BAR = WindowInsetsCompat.Type.captionBar();
         private static final int SYSTEM_BARS = WindowInsetsCompat.Type.systemBars();
+        private static final int IME = WindowInsetsCompat.Type.ime();
         private static final int DISPLAY_CUTOUT = WindowInsetsCompat.Type.displayCutout();
 
         private final WindowInsetsCompat mSpyWindowInsets;
@@ -29,6 +30,7 @@ public class WindowInsetsTestUtils {
         // Temporary storing all insets as Rect since Insets are mutable.
         private final Rect mAllInsets = new Rect();
         private final Rect mSystemBarInsets = new Rect();
+        private final Rect mKeyboardInsets = new Rect();
 
         public SpyWindowInsetsBuilder() {
             mSpyWindowInsets = Mockito.spy(new WindowInsetsCompat.Builder().build());
@@ -36,7 +38,13 @@ public class WindowInsetsTestUtils {
 
         public SpyWindowInsetsBuilder setInsets(int typeMask, Insets insets) {
             doReturn(insets).when(mSpyWindowInsets).getInsets(typeMask);
-            insetRect(mAllInsets, insets);
+            if (typeMask == IME) {
+                // Keyboard could overlap with nav bar.
+                mKeyboardInsets.set(0, 0, 0, insets.bottom);
+            } else {
+                insetRect(mAllInsets, insets);
+            }
+
             if (typeMask == STATUS_BARS || typeMask == NAVIGATION_BARS || typeMask == CAPTION_BAR) {
                 insetRect(mSystemBarInsets, insets);
             }
@@ -45,9 +53,10 @@ public class WindowInsetsTestUtils {
         }
 
         public WindowInsetsCompat build() {
+            mAllInsets.bottom = Math.max(mAllInsets.bottom, mKeyboardInsets.bottom);
             doReturn(Insets.of(mAllInsets))
                     .when(mSpyWindowInsets)
-                    .getInsets(SYSTEM_BARS + DISPLAY_CUTOUT);
+                    .getInsets(SYSTEM_BARS + DISPLAY_CUTOUT + IME);
             doReturn(Insets.of(mSystemBarInsets)).when(mSpyWindowInsets).getInsets(SYSTEM_BARS);
             return mSpyWindowInsets;
         }
