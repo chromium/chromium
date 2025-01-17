@@ -161,9 +161,10 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
   std::string SerializeInternal(url::Parsed* parsed) const;
 
  private:
+  // Note: `port_` is declared first to control the sort order.
+  uint16_t port_ = 0;
   std::string scheme_;
   std::string host_;
-  uint16_t port_ = 0;
 };
 
 COMPONENT_EXPORT(URL)
