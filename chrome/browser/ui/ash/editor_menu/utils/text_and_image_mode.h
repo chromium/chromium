@@ -26,9 +26,6 @@ enum class TextAndImageMode {
   kEditorRewriteAndLobster,
 };
 
-TextAndImageMode CalculateTextAndImageMode(EditorMode editor_mode,
-                                           LobsterMode lobster_menu_mode);
-
 }  // namespace chromeos::editor_menu
 
 #endif  // CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_TEXT_AND_IMAGE_MODE_H_

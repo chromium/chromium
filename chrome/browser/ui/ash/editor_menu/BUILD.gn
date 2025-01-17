@@ -15,7 +15,6 @@ source_set("utils") {
     "utils/pre_target_handler.h",
     "utils/pre_target_handler_view.cc",
     "utils/pre_target_handler_view.h",
-    "utils/text_and_image_mode.cc",
     "utils/text_and_image_mode.h",
     "utils/utils.cc",
     "utils/utils.h",

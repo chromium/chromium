@@ -17,7 +17,32 @@ EditorMenuCardContext::EditorMenuCardContext(const EditorMenuCardContext&) =
 EditorMenuCardContext::~EditorMenuCardContext() = default;
 
 TextAndImageMode EditorMenuCardContext::text_and_image_mode() const {
-  return CalculateTextAndImageMode(editor_mode_, lobster_mode_);
+  if (lobster_mode_ == LobsterMode::kBlocked) {
+    if (editor_mode_ == EditorMode::kRewrite) {
+      return TextAndImageMode::kEditorRewriteOnly;
+    }
+    if (editor_mode_ == EditorMode::kWrite) {
+      return TextAndImageMode::kEditorWriteOnly;
+    }
+    if (editor_mode_ == EditorMode::kConsentNeeded) {
+      return TextAndImageMode::kPromoCard;
+    }
+    return TextAndImageMode::kBlocked;
+  }
+
+  if (editor_mode_ == EditorMode::kRewrite) {
+    return TextAndImageMode::kEditorRewriteAndLobster;
+  }
+  if (editor_mode_ == EditorMode::kWrite) {
+    return TextAndImageMode::kEditorWriteAndLobster;
+  }
+  if (editor_mode_ == EditorMode::kConsentNeeded) {
+    return TextAndImageMode::kPromoCard;
+  }
+  if (lobster_mode_ == LobsterMode::kNoSelectedText) {
+    return TextAndImageMode::kLobsterWithNoSelectedText;
+  }
+  return TextAndImageMode::kLobsterWithSelectedText;
 }
 
 bool EditorMenuCardContext::consent_status_settled() const {
