@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -1344,13 +1345,22 @@ TEST_F(WebAppRegistrarTest_ScopeExtensions, IsUrlInAppExtendedScope) {
 
   // Full scope
   auto associate_url3 = GURL("https://example.co.uk");
-  auto associate_extended_scope3 = GURL(associate_url3.spec());
+
+  // Scope with query and fragment
+  auto associate_url4 =
+      GURL("https://example.com.jp/search?q=asdf+text#fragment");
+  auto associate_extended_scope4 = GURL(associate_url4.spec());
+
+  auto associate_url5 = GURL("https://example.com/index.html/#fragment");
+  auto associate_extended_scope5 = GURL(associate_url5.spec());
 
   web_app->SetValidatedScopeExtensions(
       {ScopeExtensionInfo::CreateForScope(associate_extended_scope),
        ScopeExtensionInfo::CreateForScope(associate_url2,
                                           /*has_origin_wildcard=*/true),
-       ScopeExtensionInfo::CreateForScope(associate_extended_scope3)});
+       ScopeExtensionInfo::CreateForScope(associate_url3),
+       ScopeExtensionInfo::CreateForScope(associate_extended_scope4),
+       ScopeExtensionInfo::CreateForScope(associate_extended_scope5)});
   RegisterAppUnsafe(std::move(web_app));
 
   EXPECT_EQ(
@@ -1378,6 +1388,18 @@ TEST_F(WebAppRegistrarTest_ScopeExtensions, IsUrlInAppExtendedScope) {
             0);
   EXPECT_GT(registrar().GetAppExtendedScopeScore(GURL("https://example.co.uk"),
                                                  app_id),
+            0);
+  EXPECT_GT(registrar().GetAppExtendedScopeScore(
+                GURL("https://example.com.jp/search"), app_id),
+            0);
+  EXPECT_GT(registrar().GetAppExtendedScopeScore(
+                GURL("https://example.com.jp/search?q=something"), app_id),
+            0);
+  EXPECT_GT(registrar().GetAppExtendedScopeScore(
+                GURL("https://example.com/index.html"), app_id),
+            0);
+  EXPECT_GT(registrar().GetAppExtendedScopeScore(
+                GURL("https://example.com/index.html#asdfragment"), app_id),
             0);
 
   // Scope is extended to the example.app domain but not to the sub-domain

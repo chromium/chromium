@@ -389,6 +389,9 @@ struct WebAppInstallInfo {
 
   // The app intends to have an extended scope containing URLs described by this
   // information.
+  // Note: All specified 'scope' members of these extensions will have queries
+  // and fragments stripped, per specification.
+  // https://w3c.github.io/manifest/#scope-member
   base::flat_set<web_app::ScopeExtensionInfo> scope_extensions;
 
   // `scope_extensions` after going through validation with associated origins.
@@ -396,6 +399,9 @@ struct WebAppInstallInfo {
   // See
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // for association requirements.
+  // Note: All specified 'scope' members of these extensions will have queries
+  // and fragments stripped, per specification.
+  // https://w3c.github.io/manifest/#scope-member
   std::optional<base::flat_set<web_app::ScopeExtensionInfo>>
       validated_scope_extensions;
 

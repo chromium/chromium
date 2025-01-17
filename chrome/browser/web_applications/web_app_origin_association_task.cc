@@ -87,7 +87,13 @@ void WebAppOriginAssociationManager::Task::OnAssociationParsed(
   for (webapps::mojom::AssociatedWebAppPtr& associated_app :
        association->apps) {
     if (associated_app->web_app_identity == web_app_identity_) {
-      scope_extension.scope = associated_app->scope;
+      // Must drop the fragments and queries per `scope` rules
+      // https://w3c.github.io/manifest/#scope-member
+      GURL::Replacements replacements;
+      replacements.ClearRef();
+      replacements.ClearQuery();
+      scope_extension.scope =
+          associated_app->scope.ReplaceComponents(replacements);
       result_.insert(scope_extension);
       scope_extension.Reset();
       // Only information in the first valid app is saved.

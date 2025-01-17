@@ -585,4 +585,68 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
   EXPECT_EQ(ScopeExtensions(), installed_app->validated_scope_extensions());
 }
 
+class WebAppInstallFinalizerUnitTestQueriesAndFragments
+    : public WebAppInstallFinalizerUnitTest,
+      public testing::WithParamInterface<std::tuple<std::string, std::string>> {
+ public:
+  WebAppInstallFinalizerUnitTestQueriesAndFragments() = default;
+  WebAppInstallFinalizerUnitTestQueriesAndFragments(
+      const WebAppInstallFinalizerUnitTestQueriesAndFragments&) = delete;
+  WebAppInstallFinalizerUnitTestQueriesAndFragments& operator=(
+      const WebAppInstallFinalizerUnitTestQueriesAndFragments&) = delete;
+  ~WebAppInstallFinalizerUnitTestQueriesAndFragments() override = default;
+};
+
+TEST_P(WebAppInstallFinalizerUnitTestQueriesAndFragments,
+       ValidateOriginAssociationsDropQueriesAndFragments) {
+  std::string start_url_str, expected_sanitized_start_url_str;
+  std::tie(start_url_str, expected_sanitized_start_url_str) = GetParam();
+  GURL start_url(start_url_str);
+  GURL expected_sanitized_start_url(expected_sanitized_start_url_str);
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(start_url,
+                                         /*has_origin_wildcard=*/true);
+  CHECK(!scope_extension.origin.opaque());
+  info->scope_extensions = {scope_extension};
+
+  // Set data such that scope_extension will be returned in validated data.
+  std::map<ScopeExtensionInfo, ScopeExtensionInfo> data = {
+      {scope_extension, scope_extension}};
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetData(data);
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+  EXPECT_EQ(installed_app->install_state(),
+            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  EXPECT_EQ(ScopeExtensions({scope_extension}),
+            installed_app->validated_scope_extensions());
+  for (const auto& scope_ext_info :
+       installed_app->validated_scope_extensions()) {
+    ASSERT_EQ(expected_sanitized_start_url, scope_ext_info.scope);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WebAppInstallFinalizerUnitTestQueriesAndFragments,
+    testing::Values(
+        std::tuple<std::string, std::string>("https://foo.example/path",
+                                             "https://foo.example/path"),
+        std::tuple<std::string, std::string>(
+            "https://foo.example/search?q=querystring",
+            "https://foo.example/search"),
+        std::tuple<std::string, std::string>("https://foo.example/#hello",
+                                             "https://foo.example"),
+        std::tuple<std::string, std::string>(
+            "https://foo.example/search?q=querystring#hello",
+            "https://foo.example/search")));
 }  // namespace web_app
