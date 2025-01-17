@@ -1642,27 +1642,6 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
-<histogram name="Sync.SyncedHistoryFaviconAvailability.{RequestOrigin}"
-    enum="FaviconAvailabilityStatus" expires_after="2025-01-26">
-  <owner>mastiz@chromium.org</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Records the availability status (local, sync or non-available) for favicons
-    associated with synced history entries. Recorded when one of the following
-    is displayed: entries in chrome://history that are known to be present in
-    remote history data; all entries in chrome://history/syncedTabs; tabs from
-    other devices in the 3 dots history menu (desktop); tabs from other devices
-    in the android Recent Tabs UI.
-  </summary>
-  <token key="RequestOrigin">
-    <variant name="HISTORY" summary="Request made by chrome://history."/>
-    <variant name="RECENTLY_CLOSED_TABS"
-        summary="Request made by the recently closed tabs menu."/>
-    <variant name="SYNCED_TABS"
-        summary="Request made by chrome://history/syncedTabs."/>
-  </token>
-</histogram>
-
 <histogram name="Sync.SyncErrorCard{SyncErrorReason}" enum="SyncErrorUiAction"
     expires_after="2025-06-22">
   <owner>ankushkush@google.com</owner>

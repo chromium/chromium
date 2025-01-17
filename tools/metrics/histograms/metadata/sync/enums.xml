@@ -149,16 +149,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/nigori/nigori_sync_bridge_impl.cc:CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
 
-<!-- LINT.IfChange(FaviconAvailabilityStatus) -->
-
-<enum name="FaviconAvailabilityStatus">
-  <int value="0" label="Favicon available locally"/>
-  <int value="1" label="(obsolete) Favicon available via sync"/>
-  <int value="2" label="Favicon not available"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/favicon/core/history_ui_favicon_request_handler_impl.h:FaviconAvailabilityStatus) -->
-
 <!-- LINT.IfChange(InvalidBookmarkSpecificsError) -->
 
 <enum name="InvalidBookmarkSpecificsError">

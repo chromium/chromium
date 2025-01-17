@@ -11,20 +11,9 @@
 
 namespace favicon {
 
-// The UI origin of an icon request. Used to do metrics recording per UI.
-enum class HistoryUiFaviconRequestOrigin {
-  // History page.
-  kHistory,
-  // History synced tabs page (desktop only).
-  kHistorySyncedTabs,
-  // Recent tabs user interface.
-  kRecentTabs,
-};
-
 // Keyed service for handling favicon requests made by a history UI, forwarding
-// them to local storage or Google server accordingly. This service should
-// only be used by the UIs listed in the HistoryUiFaviconRequestOrigin enum.
-// Requests must be made by page url, as opposed to icon url.
+// them to local storage or Google server accordingly. Requests must be made by
+// page url, as opposed to icon url.
 class HistoryUiFaviconRequestHandler : public KeyedService {
  public:
   // Requests favicon bitmap at `page_url` of size `desired_size_in_pixel`.
@@ -33,16 +22,14 @@ class HistoryUiFaviconRequestHandler : public KeyedService {
   virtual void GetRawFaviconForPageURL(
       const GURL& page_url,
       int desired_size_in_pixel,
-      favicon_base::FaviconRawBitmapCallback callback,
-      HistoryUiFaviconRequestOrigin request_origin_for_uma) = 0;
+      favicon_base::FaviconRawBitmapCallback callback) = 0;
 
   // Requests favicon image at `page_url`. The same fallback considerations for
   // GetRawFaviconForPageURL apply.
   // This method is only called by desktop code.
   virtual void GetFaviconImageForPageURL(
       const GURL& page_url,
-      favicon_base::FaviconImageCallback callback,
-      HistoryUiFaviconRequestOrigin request_origin_for_uma) = 0;
+      favicon_base::FaviconImageCallback callback) = 0;
 };
 
 }  // namespace favicon

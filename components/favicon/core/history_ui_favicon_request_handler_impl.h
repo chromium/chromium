@@ -16,23 +16,6 @@ namespace favicon {
 class FaviconService;
 class LargeIconService;
 
-// Where the icon sent in the response is coming from. These values are
-// persisted to logs. Entries should not be renumbered and numeric values should
-// never be reused. Update tools/metrics/histograms/metadata/sync/enums.xml
-// accordingly.
-// LINT.IfChange(FaviconAvailabilityStatus)
-enum class FaviconAvailability {
-  // Icon recovered from local storage (but may originally come from server).
-  kLocal = 0,
-  // DEPRECATED: No icon is retrieved using sync in this layer anymore.
-  // Icon recovered using sync.
-  // kDeprecatedSync = 1,
-  // Icon not found.
-  kNotAvailable = 2,
-  kMaxValue = kNotAvailable,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:FaviconAvailabilityStatus)
-
 // Implementation class for HistoryUiFaviconRequestHandler.
 class HistoryUiFaviconRequestHandlerImpl
     : public HistoryUiFaviconRequestHandler {
@@ -57,12 +40,10 @@ class HistoryUiFaviconRequestHandlerImpl
   void GetRawFaviconForPageURL(
       const GURL& page_url,
       int desired_size_in_pixel,
-      favicon_base::FaviconRawBitmapCallback callback,
-      HistoryUiFaviconRequestOrigin request_origin_for_uma) override;
+      favicon_base::FaviconRawBitmapCallback callback) override;
   void GetFaviconImageForPageURL(
       const GURL& page_url,
-      favicon_base::FaviconImageCallback callback,
-      HistoryUiFaviconRequestOrigin request_origin_for_uma) override;
+      favicon_base::FaviconImageCallback callback) override;
 
  private:
   // Called after the first attempt to retrieve the icon bitmap from local
@@ -73,7 +54,6 @@ class HistoryUiFaviconRequestHandlerImpl
       const GURL& page_url,
       int desired_size_in_pixel,
       favicon_base::FaviconRawBitmapCallback response_callback,
-      HistoryUiFaviconRequestOrigin origin_for_uma,
       const favicon_base::FaviconRawBitmapResult& bitmap_result);
 
   // Called after the first attempt to retrieve the icon image from local
@@ -83,7 +63,6 @@ class HistoryUiFaviconRequestHandlerImpl
   void OnImageLocalDataAvailable(
       const GURL& page_url,
       favicon_base::FaviconImageCallback response_callback,
-      HistoryUiFaviconRequestOrigin origin_for_uma,
       const favicon_base::FaviconImageResult& image_result);
 
   // Requests an icon from Google favicon server. Since requests work by
@@ -92,8 +71,7 @@ class HistoryUiFaviconRequestHandlerImpl
   // callback is run if `this` is deleted before completion.
   void RequestFromGoogleServer(const GURL& page_url,
                                base::OnceClosure empty_response_callback,
-                               base::OnceClosure local_lookup_callback,
-                               HistoryUiFaviconRequestOrigin origin_for_uma);
+                               base::OnceClosure local_lookup_callback);
 
   // Called once the request to the favicon server has finished. If the request
   // succeeded, `local_lookup_callback` is called to effectively retrieve the
@@ -101,7 +79,6 @@ class HistoryUiFaviconRequestHandlerImpl
   void OnGoogleServerDataAvailable(
       base::OnceClosure empty_response_callback,
       base::OnceClosure local_lookup_callback,
-      HistoryUiFaviconRequestOrigin origin_for_uma,
       favicon_base::GoogleFaviconServerRequestStatus status);
 
   const raw_ptr<FaviconService> favicon_service_;

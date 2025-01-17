@@ -37,18 +37,14 @@ class MockHistoryUiFaviconRequestHandler
   MockHistoryUiFaviconRequestHandler() = default;
   ~MockHistoryUiFaviconRequestHandler() override = default;
 
-  MOCK_METHOD4(
-      GetRawFaviconForPageURL,
-      void(const GURL& page_url,
-           int desired_size_in_pixel,
-           favicon_base::FaviconRawBitmapCallback callback,
-           favicon::HistoryUiFaviconRequestOrigin request_origin_for_uma));
+  MOCK_METHOD3(GetRawFaviconForPageURL,
+               void(const GURL& page_url,
+                    int desired_size_in_pixel,
+                    favicon_base::FaviconRawBitmapCallback callback));
 
-  MOCK_METHOD3(
-      GetFaviconImageForPageURL,
-      void(const GURL& page_url,
-           favicon_base::FaviconImageCallback callback,
-           favicon::HistoryUiFaviconRequestOrigin request_origin_for_uma));
+  MOCK_METHOD2(GetFaviconImageForPageURL,
+               void(const GURL& page_url,
+                    favicon_base::FaviconImageCallback callback));
 };
 
 gfx::Image GetDummyImage() {
@@ -118,10 +114,9 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
 
   void ExpectFaviconUrlFetchAttempt(const GURL& url) {
     EXPECT_CALL(favicon_request_handler_,
-                GetFaviconImageForPageURL(url, /*callback=*/_,
-                                          /*request_origin_for_uma=*/_))
+                GetFaviconImageForPageURL(url, /*callback=*/_))
         .WillRepeatedly(
-            [&](auto, favicon_base::FaviconImageCallback callback, auto) {
+            [&](auto, favicon_base::FaviconImageCallback callback) {
               // Randomize the order in which callbacks may return.
               if (std::rand() % 2) {
                 favicon_request_handler_responses_.emplace_front(

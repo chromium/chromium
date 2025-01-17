@@ -50,15 +50,12 @@ GURL GetUnsafeRequestOrigin(const content::WebContents::Getter& wc_getter) {
   return web_contents ? web_contents->GetLastCommittedURL() : GURL();
 }
 
-bool ParseHistoryUiOrigin(const GURL& url,
-                          favicon::HistoryUiFaviconRequestOrigin* origin) {
+bool IsHistoryUiOrigin(const GURL& url) {
   GURL history_url(chrome::kChromeUIHistoryURL);
   if (url == history_url) {
-    *origin = favicon::HistoryUiFaviconRequestOrigin::kHistory;
     return true;
   }
   if (url == history_url.Resolve(chrome::kChromeUIHistorySyncedTabs)) {
-    *origin = favicon::HistoryUiFaviconRequestOrigin::kHistorySyncedTabs;
     return true;
   }
   return false;
@@ -150,10 +147,8 @@ void FaviconSource::StartDataRequest(
       }
     }
 
-    favicon::HistoryUiFaviconRequestOrigin parsed_history_ui_origin;
     if (!parsed.allow_favicon_server_fallback ||
-        !ParseHistoryUiOrigin(GetUnsafeRequestOrigin(wc_getter),
-                              &parsed_history_ui_origin)) {
+        !IsHistoryUiOrigin(GetUnsafeRequestOrigin(wc_getter))) {
       // Request from local storage only.
       const bool fallback_to_host = true;
       favicon_service->GetRawFaviconForPageURL(
@@ -180,8 +175,7 @@ void FaviconSource::StartDataRequest(
         page_url, desired_size_in_pixel,
         base::BindOnce(&FaviconSource::OnFaviconDataAvailable,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       parsed, wc_getter),
-        parsed_history_ui_origin);
+                       parsed, wc_getter));
   }
 }
 
