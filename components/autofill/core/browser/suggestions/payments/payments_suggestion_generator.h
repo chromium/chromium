@@ -133,6 +133,14 @@ Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo);
 // `SuggestionType`. This distinction is needed for metrics recording.
 Suggestion CreateManageIbansSuggestion();
 
+// Generates a "Save and Fill" suggestion for users who don't have any cards
+// saved in Autofill. This suggestion is shown above the footer.
+// `display_gpay_logo` is an  output parameter that is set to true if credit
+// card upload is enabled, indicating that the GPay logo should be displayed
+// with the suggestion.
+Suggestion CreateSaveAndFillSuggestion(const AutofillClient& client,
+                                       bool& display_gpay_logo);
+
 // Generates suggestions for all available IBANs.
 std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans);
 
@@ -140,6 +148,10 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans);
 // suggestions that can be displayed to the user for a promo code field.
 std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     const std::vector<const AutofillOfferData*>& promo_code_offers);
+
+//  Returns true if all the conditions for enabling the upload of credit card
+//  are satisfied.
+bool IsCreditCardUploadEnabled(const AutofillClient& client);
 
 // Returns true if the suggestion created from the card can be accepted by the
 // user. Returns false when merchant does not accept the given card for example
@@ -180,6 +192,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_cards_from_account,
     bool is_autofilled,
     bool with_gpay_logo);
+
+void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled);
 
 // Exposes `ShouldShowVirtualCardOption` in tests.
 bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,

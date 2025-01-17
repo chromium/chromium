@@ -907,6 +907,9 @@ Suggestion CreateBnplSuggestion() {
   return bnpl_suggestion;
 }
 
+// Used to manually enable credit card upload in tests.
+std::optional<bool> credit_card_upload_enabled_test_;
+
 }  // namespace
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
@@ -918,6 +921,22 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool should_show_cards_from_account,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering) {
+  std::vector<Suggestion> suggestions;
+  if (client.GetPersonalDataManager()
+          .payments_data_manager()
+          .GetCreditCards()
+          .empty() &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill)) {
+    bool display_gpay_logo = false;
+    suggestions.push_back(
+        CreateSaveAndFillSuggestion(client, display_gpay_logo));
+    base::ranges::move(
+        GetCreditCardFooterSuggestions(
+            should_show_scan_credit_card, should_show_cards_from_account,
+            trigger_field.is_autofilled(), display_gpay_logo),
+        std::back_inserter(suggestions));
+    return suggestions;
+  }
   // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's standalone
   // CVC field.
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
@@ -931,7 +950,6 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   // Non-empty virtual_card_guid_to_last_four_map indicates this is standalone
   // CVC form AND there is matched VCN (based on the VCN usages and last four
   // from the DOM).
-  std::vector<Suggestion> suggestions;
   if (!virtual_card_guid_to_last_four_map.empty()) {
     suggestions = GetVirtualCardStandaloneCvcFieldSuggestions(
         client, trigger_field, summary.metadata_logging_context,
@@ -1257,6 +1275,23 @@ Suggestion CreateManageIbansSuggestion() {
                                          /*with_gpay_logo=*/false);
 }
 
+Suggestion CreateSaveAndFillSuggestion(const AutofillClient& client,
+                                       bool& display_gpay_logo) {
+  Suggestion save_and_fill(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE),
+      SuggestionType::kSaveAndFillCreditCardEntry);
+  if (IsCreditCardUploadEnabled(client)) {
+    save_and_fill.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SERVER_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}};
+    display_gpay_logo = true;
+  } else {
+    save_and_fill.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_LOCAL_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}};
+  }
+  save_and_fill.icon = Suggestion::Icon::kSaveAndFill;
+  return save_and_fill;
+}
+
 std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
   if (ibans.empty()) {
     return {};
@@ -1358,6 +1393,21 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     suggestion.trailing_icon = Suggestion::Icon::kGoogle;
   }
   return suggestions;
+}
+
+bool IsCreditCardUploadEnabled(const AutofillClient& client) {
+  if (credit_card_upload_enabled_test_.has_value()) {
+    return credit_card_upload_enabled_test_.value();
+  }
+  return ::autofill::IsCreditCardUploadEnabled(
+      client.GetSyncService(), *client.GetPrefs(),
+      client.GetPersonalDataManager()
+          .payments_data_manager()
+          .GetCountryCodeForExperimentGroup(),
+      client.GetPersonalDataManager()
+          .payments_data_manager()
+          .GetPaymentsSigninStateForMetrics(),
+      const_cast<AutofillClient*>(&client)->GetCurrentLogManager());
 }
 
 bool IsCardSuggestionAcceptable(const CreditCard& card,
@@ -1480,6 +1530,10 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
   return GetCreditCardFooterSuggestions(should_show_scan_credit_card,
                                         should_show_cards_from_account,
                                         is_autofilled, with_gpay_logo);
+}
+
+void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled) {
+  credit_card_upload_enabled_test_ = credit_card_upload_enabled;
 }
 
 bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,
