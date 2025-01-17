@@ -86,8 +86,7 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_body_{
     kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kObjectClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kIdlObservableArray,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 // static

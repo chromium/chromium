@@ -32,19 +32,7 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
     case kIdlNamespace:
       v8_template = v8::ObjectTemplate::New(isolate);
       break;
-    case kIdlCallbackInterface:
-      v8_template = v8::FunctionTemplate::New(
-          isolate, V8ObjectConstructor::IsValidConstructorMode);
-      break;
-    case kIdlBufferSourceType:
-      NOTREACHED();
-    case kIdlObservableArray:
-      v8_template = v8::FunctionTemplate::New(isolate);
-      break;
-    case kIdlAsyncOrSyncIterator:
-      v8_template = v8::FunctionTemplate::New(isolate);
-      break;
-    case kCustomWrappableKind:
+    case kIdlOtherType:
       v8_template = v8::FunctionTemplate::New(isolate);
       break;
     default:

@@ -6452,7 +6452,6 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
     ${class_name}::kMaxSubclassTag,
     {wrapper_type_prototype},
     {wrapper_class_id},
-    {active_script_wrappable_inheritance},
     {idl_definition_kind},
     {is_skipped_in_interface_object_prototype_chain},
 }};
@@ -6480,20 +6479,12 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
         wrapper_class_id = "WrapperTypeInfo::kNodeClassId"
     else:
         wrapper_class_id = "WrapperTypeInfo::kObjectClassId"
-    if class_like.code_generator_info.is_active_script_wrappable:
-        active_script_wrappable_inheritance = (
-            "WrapperTypeInfo::kInheritFromActiveScriptWrappable")
-    else:
-        active_script_wrappable_inheritance = (
-            "WrapperTypeInfo::kNotInheritFromActiveScriptWrappable")
-    if class_like.is_interface:
+    if class_like.is_interface or class_like.is_callback_interface:
         idl_definition_kind = "WrapperTypeInfo::kIdlInterface"
     elif class_like.is_namespace:
         idl_definition_kind = "WrapperTypeInfo::kIdlNamespace"
-    elif class_like.is_callback_interface:
-        idl_definition_kind = "WrapperTypeInfo::kIdlCallbackInterface"
     elif class_like.is_async_iterator or class_like.is_sync_iterator:
-        idl_definition_kind = "WrapperTypeInfo::kIdlAsyncOrSyncIterator"
+        idl_definition_kind = "WrapperTypeInfo::kIdlOtherType"
     else:
         assert False
     is_skipped_in_interface_object_prototype_chain = (
@@ -6505,8 +6496,6 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
           wrapper_type_info_of_inherited=wrapper_type_info_of_inherited,
           wrapper_type_prototype=wrapper_type_prototype,
           wrapper_class_id=wrapper_class_id,
-          active_script_wrappable_inheritance=(
-              active_script_wrappable_inheritance),
           idl_definition_kind=idl_definition_kind,
           is_skipped_in_interface_object_prototype_chain=(
               is_skipped_in_interface_object_prototype_chain)))
