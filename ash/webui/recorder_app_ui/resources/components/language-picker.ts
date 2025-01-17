@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mwc/@material/web/progress/circular-progress.js';
-import './cra/cra-button.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './settings-row.js';
+import './language-list.js';
 
-import {css, html, map, nothing} from 'chrome://resources/mwc/lit/index.js';
+import {css, html} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {LangPackInfo, LanguageCode} from '../core/soda/language_info.js';
+import {LanguageCode} from '../core/soda/language_info.js';
 import {setTranscriptionLanguage} from '../core/state/transcription.js';
-import {assertExhaustive} from '../core/utils/assert.js';
 
 import {withTooltip} from './directives/with-tooltip.js';
 
@@ -81,29 +79,6 @@ export class LanguagePicker extends ReactiveLitElement {
         overflow: hidden;
       }
     }
-
-    /*
-     * TODO: b/377885042 - Move the circular progress to a separate component.
-     */
-    settings-row cra-button md-circular-progress {
-      --md-circular-progress-active-indicator-color: var(--cros-sys-disabled);
-
-      /*
-       * This has a lower precedence than the size override in cros-button,
-       * but still need to be set to have correct line width.
-       */
-      --md-circular-progress-size: 24px;
-
-      /*
-       * This is to override the size setting for slotted element in
-       * cros-button. On figma the circular progress have 2px padding, but
-       * md-circular-progres has a non-configurable 4px padding. Setting a
-       * negative margin so the extra padding doesn't expand the button size.
-       */
-      height: 24px;
-      margin: -2px;
-      width: 24px;
-    }
   `;
 
   private readonly platformHandler = usePlatformHandler();
@@ -112,130 +87,41 @@ export class LanguagePicker extends ReactiveLitElement {
     this.dispatchEvent(new Event('close'));
   }
 
-  private renderLanguageRow(
-    {displayName, languageCode}: LangPackInfo,
-    selectedLanguage: LanguageCode|null,
-  ): RenderResult {
-    const sodaState = this.platformHandler.getSodaState(languageCode).value;
-    if (sodaState.kind === 'unavailable') {
-      return nothing;
-    }
-
-    const name = html`<span slot="label">${displayName}</span>`;
-
-    function onSelectAndDownload() {
-      setTranscriptionLanguage(languageCode);
-    }
-
-    const downloadButton = html`
-      <cra-button
-        slot="action"
-        button-style="secondary"
-        .label=${i18n.languagePickerLanguageDownloadButton}
-        @click=${onSelectAndDownload}
-      ></cra-button>
-    `;
-    switch (sodaState.kind) {
-      case 'notInstalled': {
-        return html`<settings-row>${name} ${downloadButton}</settings-row>`;
-      }
-      // Shows the download button for users to try again.
-      case 'error': {
-        return html`
-          <settings-row>
-            ${name}
-            <span slot="description" class="error">
-              ${i18n.languagePickerLanguageErrorDescription}
-            </span>
-            ${downloadButton}
-          </settings-row>
-        `;
-      }
-      case 'installing': {
-        const progressDescription =
-          i18n.languagePickerLanguageDownloadingProgressDescription(
-            sodaState.progress,
-          );
-        return html`
-          <settings-row>
-            ${name}
-            <span slot="description">${progressDescription}</span>
-            <cra-button
-              slot="action"
-              button-style="secondary"
-              .label=${i18n.languagePickerLanguageDownloadingButton}
-              disabled
-            >
-              <md-circular-progress indeterminate slot="leading-icon">
-              </md-circular-progress>
-            </cra-button>
-          </settings-row>
-        `;
-      }
-      case 'installed': {
-        if (languageCode === selectedLanguage) {
-          return html`
-            <settings-row>
-              ${name}
-              <cra-icon slot="action" name="checked"></cra-icon>
-            </settings-row>
-          `;
-        } else {
-          // Set and install the language to avoid inconsistent SODA state.
-          // TODO: b/375306309 - Separate set and install steps when the state
-          // become consistent after implementing `OnSodaUninstalled`.
-          return html`
-            <settings-row>
-              ${name}
-              <span slot="action" @click=${onSelectAndDownload}></span>
-            </settings-row>
-          `;
-        }
-      }
-      default:
-        return assertExhaustive(sodaState.kind);
-    }
+  private onSelectAndDownload(ev: CustomEvent<LanguageCode>) {
+    setTranscriptionLanguage(ev.detail);
   }
 
-  private renderSelectedLanguage(): RenderResult {
-    const selectedLanguage = this.platformHandler.getSelectedLanguage();
+  private renderSelectedLanguage(
+    selectedLanguage: LanguageCode|null,
+  ): RenderResult {
+    const noSelectionRow = html`
+      <settings-row>
+        <span slot="label">
+          ${i18n.languagePickerSelectedLanguageNoneLabel}
+        </span>
+      </settings-row>
+    `;
     if (selectedLanguage === null) {
-      return html`
-        <settings-row>
-          <span slot="label">
-            ${i18n.languagePickerSelectedLanguageNoneLabel}
-          </span>
-        </settings-row>
-      `;
+      return noSelectionRow;
     }
     const sodaState = this.platformHandler.getSodaState(selectedLanguage).value;
     if (sodaState.kind !== 'installed' && sodaState.kind !== 'installing') {
-      return html`
-        <settings-row>
-          <span slot="label">
-            ${i18n.languagePickerSelectedLanguageNoneLabel}
-          </span>
-        </settings-row>
-      `;
+      return noSelectionRow;
     }
-    return this.renderLanguageRow(
-      this.platformHandler.getLangPackInfo(selectedLanguage),
-      selectedLanguage,
-    );
-  }
-
-  private renderAvailableLanguages(): RenderResult {
-    const list = this.platformHandler.getLangPackList();
-    const selectedLanguage = this.platformHandler.getSelectedLanguage();
-    return map(
-      list,
-      (langPack) => this.renderLanguageRow(langPack, selectedLanguage),
-    );
+    const langPack = this.platformHandler.getLangPackInfo(selectedLanguage);
+    return html`
+      <settings-row>
+        <span slot="label">
+          ${langPack.displayName}
+        </span>
+      </settings-row>
+    `;
   }
 
   override render(): RenderResult {
-    // TODO: b/377885042 - Render "close" button when language picker is not
-    // inside the setting menu.
+    const selectedLanguage = this.platformHandler.getSelectedLanguage();
+    // TODO: b/384418702 - Update back button aria label and language list role
+    // after spec is ready.
     return html`
       <div id="root">
         <div id="header">
@@ -255,13 +141,21 @@ export class LanguagePicker extends ReactiveLitElement {
         <div id="content">
           <div class="section">
             <h4 class="title">${i18n.languagePickerSelectedLanguageHeader}</h4>
-            <div class="body">${this.renderSelectedLanguage()}</div>
+            <div class="body">
+              ${this.renderSelectedLanguage(selectedLanguage)}
+            </div>
           </div>
           <div class="section">
             <h4 class="title">
               ${i18n.languagePickerAvailableLanguagesHeader}
             </h4>
-            <div class="body">${this.renderAvailableLanguages()}</div>
+            <language-list
+              class="body"
+              .selectedLanguage=${selectedLanguage}
+              @language-select-click=${this.onSelectAndDownload}
+              @language-download-click=${this.onSelectAndDownload}
+            >
+            </language-list>
           </div>
         </div>
       </div>

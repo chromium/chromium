@@ -16598,6 +16598,7 @@
     "PasswordLeakToggleMove": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "fuchsia",
                 "linux",
@@ -24077,22 +24078,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UploadOfficeToCloud"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseAdHocSigningForWebAppShims": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MachPortRendezvousValidatePeerRequirements",
-                        "UseAdHocSigningForWebAppShims"
                     ]
                 }
             ]

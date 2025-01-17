@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "headless/public/headless_export.h"
+#include "headless/public/headless_window_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -53,8 +54,8 @@ class HEADLESS_EXPORT HeadlessWebContents::Builder {
   // options).
   Builder& SetWindowBounds(const gfx::Rect& bounds);
 
-  // Specify the initial window state. Default is 'normal'.
-  Builder& SetWindowState(std::string_view window_state);
+  // Specify the initial window state, default is kNormal.
+  Builder& SetWindowState(HeadlessWindowState window_state);
 
   // Specify whether BeginFrames should be controlled via DevTools commands.
   Builder& SetEnableBeginFrameControl(bool enable_begin_frame_control);
@@ -75,7 +76,7 @@ class HEADLESS_EXPORT HeadlessWebContents::Builder {
 
   GURL initial_url_ = GURL("about:blank");
   gfx::Rect window_bounds_;
-  std::string window_state_ = "normal";
+  HeadlessWindowState window_state_ = HeadlessWindowState::kNormal;
   bool enable_begin_frame_control_ = false;
 };
 

@@ -531,6 +531,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool HasAncestorInvisibleForPositionVisibility() const;
 
  private:
+  void UpdateHasVisibleContent();
   void Update3DTransformedDescendantStatus();
 
   // Bounding box in the coordinates of this layer.

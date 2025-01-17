@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -79,6 +80,7 @@ public class EnhancedProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
+    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
     public void testSafeBrowsingSettingsEnhancedProtection() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -91,8 +93,8 @@ public class EnhancedProtectionSettingsFragmentTest {
                 () -> {
                     // Check that the learn more label is shown
                     Assert.assertNotNull(mEnhancedProtectionLearnMore);
-                    // Check that password leak detection bullet is visible
-                    Assert.assertTrue(mEnhancedProtectionBulletFive.isVisible());
+                    // Check that password leak detection bullet is not visible
+                    Assert.assertFalse(mEnhancedProtectionBulletFive.isVisible());
 
                     EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
 
@@ -117,10 +119,6 @@ public class EnhancedProtectionSettingsFragmentTest {
                             fragment.getContext()
                                     .getString(
                                             R.string.safe_browsing_enhanced_protection_bullet_four);
-                    String bulletFive =
-                            fragment.getContext()
-                                    .getString(
-                                            R.string.safe_browsing_enhanced_protection_bullet_five);
                     String thingsToConsider =
                             fragment.getContext()
                                     .getString(R.string.privacy_guide_things_to_consider);
@@ -146,7 +144,6 @@ public class EnhancedProtectionSettingsFragmentTest {
                     Assert.assertEquals(bulletTwo, mEnhancedProtectionBulletTwo.getSummary());
                     Assert.assertEquals(bulletThree, mEnhancedProtectionBulletThree.getSummary());
                     Assert.assertEquals(bulletFour, mEnhancedProtectionBulletFour.getSummary());
-                    Assert.assertEquals(bulletFive, mEnhancedProtectionBulletFive.getSummary());
                     Assert.assertEquals(
                             thingsToConsider, mEnhancedProtectionThingsToConsider.getTitle());
                     Assert.assertEquals(bulletSix, mEnhancedProtectionBulletSix.getSummary());
@@ -158,8 +155,8 @@ public class EnhancedProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
-    public void testPasswordLeakDetectionBulletGone() {
+    @DisableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
+    public void testPasswordLeakDetectionBulletVisible() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
@@ -169,8 +166,8 @@ public class EnhancedProtectionSettingsFragmentTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Check that the password leak detection bullet is not visible
-                    Assert.assertFalse(mEnhancedProtectionBulletFive.isVisible());
+                    // Check that the password leak detection bullet is visible
+                    Assert.assertTrue(mEnhancedProtectionBulletFive.isVisible());
                 });
     }
 }

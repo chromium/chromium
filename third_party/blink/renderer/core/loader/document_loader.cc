@@ -2904,7 +2904,7 @@ void DocumentLoader::CommitNavigation() {
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
     security_init.ApplyPermissionsPolicy(
         *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,
-        FencedFrameProperties());
+        FencedFrameProperties(), url_);
 
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide
