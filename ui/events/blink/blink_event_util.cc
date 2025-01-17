@@ -649,14 +649,18 @@ WebInputEvent::Type ToWebMouseEventType(MotionEvent::Action action) {
     case MotionEvent::Action::UP:
     case MotionEvent::Action::BUTTON_RELEASE:
       return WebInputEvent::Type::kMouseUp;
-    case MotionEvent::Action::NONE:
     case MotionEvent::Action::CANCEL:
     case MotionEvent::Action::POINTER_DOWN:
     case MotionEvent::Action::POINTER_UP:
-      break;
+      // TODO(https://crbug.com/390453017): We occasionally see these apparently
+      // unexpected MotionEvent::Action values in Android native events.
+      // Unfortunately, MotionEvent documentation is not clear what actions are
+      // acceptable.  We are returning kUndefined here so that the caller can
+      // gracefully drop any events it cannot handle.
+      return WebInputEvent::Type::kUndefined;
+    default:
+      NOTREACHED() << "Invalid MotionEvent::Action = " << action;
   }
-  DUMP_WILL_BE_NOTREACHED() << "Invalid MotionEvent::Action = " << action;
-  return WebInputEvent::Type::kUndefined;
 }
 
 void SetWebPointerPropertiesFromMotionEventData(
