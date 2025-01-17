@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v1.0.0...chromium-bidi-v1.1.0) (2025-01-17)
+
+
+### Features
+
+* support `goog:channel` along with `channel` ([#2996](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2996)) ([d7ed911](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d7ed9112dd3c81f893f9a4e902ffa6e237e7d5ac))
+
+
+### Bug Fixes
+
+* multi headers reporting incorrectly ([#2987](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2987)) ([0e58eb7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0e58eb7d43b859b477686aedde6125169b0f14ad))
+* wait for context should respect already existing contexts ([#2998](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2998)) ([f6cb8ec](https://github.com/GoogleChromeLabs/chromium-bidi/commit/f6cb8ec43e9b915f3de7bf51d3627db6b12b2d51))
+
 ## [1.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.12.0...chromium-bidi-v1.0.0) (2025-01-15)
 
 
