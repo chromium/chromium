@@ -422,13 +422,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
 // Tests that submission is detected when change password form is reset.
 // TODO(crbug.com/382342234): Re-enable this test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ChangePwdFormCleared DISABLED_ChangePwdFormCleared
-#else
-#define MAYBE_ChangePwdFormCleared ChangePwdFormCleared
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       MAYBE_ChangePwdFormCleared) {
+                       DISABLED_ChangePwdFormCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
