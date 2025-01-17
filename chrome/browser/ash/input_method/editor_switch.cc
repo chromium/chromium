@@ -28,6 +28,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -459,6 +460,13 @@ chromeos::editor_menu::EditorMode EditorSwitch::GetEditorMode() const {
   } else {
     return chromeos::editor_menu::EditorMode::kWrite;
   }
+}
+
+chromeos::editor_menu::EditorTextSelectionMode
+EditorSwitch::GetEditorTextSelectionMode() const {
+  return context_->selected_text_length() > 0
+             ? chromeos::editor_menu::EditorTextSelectionMode::kHasSelection
+             : chromeos::editor_menu::EditorTextSelectionMode::kNoSelection;
 }
 
 void EditorSwitch::OnContextUpdated() {

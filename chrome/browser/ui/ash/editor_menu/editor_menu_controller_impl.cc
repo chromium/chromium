@@ -100,7 +100,11 @@ void EditorMenuControllerImpl::OnTextAvailable(
   if (card_session_->editor_manager() == nullptr) {
     OnGetAnchorBoundsAndEditorContext(
         anchor_bounds, lobster_mode,
-        EditorContext(EditorMode::kHardBlocked, false, {}));
+        EditorContext(EditorMode::kHardBlocked,
+                      /*text_selection_mode=*/selected_text.length() > 0
+                          ? EditorTextSelectionMode::kHasSelection
+                          : EditorTextSelectionMode::kNoSelection,
+                      false, {}));
   }
 
   card_session_->editor_manager()->GetEditorPanelContext(base::BindOnce(

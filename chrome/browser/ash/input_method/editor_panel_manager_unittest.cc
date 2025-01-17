@@ -110,6 +110,11 @@ class EditorPanelManagerDelegateForTesting
 
   EditorMode GetEditorMode() const override { return EditorMode::kSoftBlocked; }
 
+  chromeos::editor_menu::EditorTextSelectionMode GetEditorTextSelectionMode()
+      const override {
+    return chromeos::editor_menu::EditorTextSelectionMode::kNoSelection;
+  }
+
   ConsentStatus GetConsentStatus() const override { return consent_status_; }
 
  private:
@@ -149,6 +154,7 @@ TEST_F(EditorPanelManagerTest,
   EXPECT_EQ(future.Get(),
             chromeos::editor_menu::EditorContext(
                 EditorMode::kSoftBlocked,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
                 /*consent_status_settled=*/true, /*preset_queries=*/{}));
 }
 
@@ -169,6 +175,7 @@ TEST_F(EditorPanelManagerTest,
   EXPECT_EQ(future.Get(),
             chromeos::editor_menu::EditorContext(
                 EditorMode::kSoftBlocked,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
                 /*consent_status_settled=*/false, /*preset_queries=*/{}));
 }
 

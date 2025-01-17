@@ -104,6 +104,12 @@ EditorMenuCardContext& EditorMenuCardContext::set_lobster_mode(
   return *this;
 }
 
+EditorMenuCardContext& EditorMenuCardContext::set_text_selection_mode(
+    EditorMenuCardTextSelectionMode text_selection_mode) {
+  text_selection_mode_ = text_selection_mode;
+  return *this;
+}
+
 EditorMenuCardContext& EditorMenuCardContext::build() {
   return *this;
 }

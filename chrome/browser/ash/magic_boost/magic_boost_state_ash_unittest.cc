@@ -242,6 +242,7 @@ TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInBlocked) {
                  const chromeos::editor_menu::EditorContext&)> callback) {
             std::move(callback).Run(chromeos::editor_menu::EditorContext(
                 chromeos::editor_menu::EditorMode::kHardBlocked,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
                 /*consent_status_settled=*/false, {}));
           });
 
@@ -260,6 +261,7 @@ TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInConsentStatusSettled) {
                  const chromeos::editor_menu::EditorContext&)> callback) {
             std::move(callback).Run(chromeos::editor_menu::EditorContext(
                 chromeos::editor_menu::EditorMode::kWrite,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
                 /*consent_status_settled=*/true, {}));
           });
 
@@ -278,6 +280,7 @@ TEST_F(MagicBoostStateAshTest,
                  const chromeos::editor_menu::EditorContext&)> callback) {
             std::move(callback).Run(chromeos::editor_menu::EditorContext(
                 chromeos::editor_menu::EditorMode::kWrite,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
                 /*consent_status_settled=*/false, {}));
           });
 

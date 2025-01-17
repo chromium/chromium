@@ -15,6 +15,7 @@ component("cpp") {
     "editor_helpers.cc",
     "editor_helpers.h",
     "editor_mode.h",
+    "editor_text_selection_mode.h",
     "icon.cc",
     "icon.h",
     "preset_text_query.cc",

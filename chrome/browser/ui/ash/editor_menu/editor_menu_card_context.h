@@ -10,6 +10,11 @@
 
 namespace chromeos::editor_menu {
 
+enum class EditorMenuCardTextSelectionMode {
+  kNoSelection,
+  kHasSelection,
+};
+
 struct EditorMenuCardContext {
  public:
   EditorMenuCardContext();
@@ -26,6 +31,8 @@ struct EditorMenuCardContext {
       const PresetTextQueries& preset_queries);
   EditorMenuCardContext& set_editor_mode(EditorMode editor_mode);
   EditorMenuCardContext& set_lobster_mode(LobsterMode lobster_mode);
+  EditorMenuCardContext& set_text_selection_mode(
+      EditorMenuCardTextSelectionMode text_selection_mode);
   EditorMenuCardContext& build();
 
  private:
@@ -35,6 +42,8 @@ struct EditorMenuCardContext {
   PresetTextQueries editor_preset_queries_;
   EditorMode editor_mode_ = EditorMode::kHardBlocked;
   LobsterMode lobster_mode_ = LobsterMode::kBlocked;
+  EditorMenuCardTextSelectionMode text_selection_mode_ =
+      EditorMenuCardTextSelectionMode::kNoSelection;
 };
 
 }  // namespace chromeos::editor_menu

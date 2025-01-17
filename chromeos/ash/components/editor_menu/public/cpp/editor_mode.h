@@ -18,6 +18,8 @@ enum class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) EditorMode {
   kSoftBlocked,
   // Mode that requires users to provide consent before using the feature.
   kConsentNeeded,
+  // TODO: b:389553095 - With the introduction of EditorTextSelectionMode,
+  // merge kRewrite and kWrite into a single enum value.
   // Feature in rewrite mode.
   kRewrite,
   // Feature in write mode.

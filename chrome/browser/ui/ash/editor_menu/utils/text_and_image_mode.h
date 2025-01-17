@@ -10,6 +10,8 @@
 namespace chromeos::editor_menu {
 
 enum class LobsterMode {
+  // TODO: b:388964690 - Merge kNoSelectedText and kSelectedText into one enum
+  // value.
   kNoSelectedText = 0,
   kSelectedText,
   kBlocked,

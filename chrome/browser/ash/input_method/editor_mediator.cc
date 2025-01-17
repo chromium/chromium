@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_helpers.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
@@ -372,6 +373,11 @@ chromeos::editor_menu::EditorMode EditorMediator::GetEditorMode() const {
     return *editor_mode_override_for_testing_;
   }
   return editor_switch_->GetEditorMode();
+}
+
+chromeos::editor_menu::EditorTextSelectionMode
+EditorMediator::GetEditorTextSelectionMode() const {
+  return editor_switch_->GetEditorTextSelectionMode();
 }
 
 ConsentStatus EditorMediator::GetConsentStatus() const {

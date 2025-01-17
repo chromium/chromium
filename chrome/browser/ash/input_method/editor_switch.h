@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
 namespace ash::input_method {
@@ -38,6 +39,9 @@ class EditorSwitch {
   bool CanShowNoticeBanner() const;
 
   chromeos::editor_menu::EditorMode GetEditorMode() const;
+
+  chromeos::editor_menu::EditorTextSelectionMode GetEditorTextSelectionMode()
+      const;
 
   EditorOpportunityMode GetEditorOpportunityMode() const;
 

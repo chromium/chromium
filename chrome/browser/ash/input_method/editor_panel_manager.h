@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -88,6 +89,8 @@ class EditorPanelManagerImpl : public EditorPanelManager {
         std::optional<std::string_view> preset_query_id,
         std::optional<std::string_view> freeform_text) = 0;
     virtual chromeos::editor_menu::EditorMode GetEditorMode() const = 0;
+    virtual chromeos::editor_menu::EditorTextSelectionMode
+    GetEditorTextSelectionMode() const = 0;
     virtual ConsentStatus GetConsentStatus() const = 0;
     virtual EditorMetricsRecorder* GetMetricsRecorder() = 0;
     virtual EditorOpportunityMode GetEditorOpportunityMode() const = 0;
