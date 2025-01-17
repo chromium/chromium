@@ -493,11 +493,6 @@ class VideoResourceUpdater::SoftwarePlaneResource
 
   void* pixels() { return mapping_->GetMemoryForPlane(0).data(); }
 
-  // Returns a memory dump GUID consistent across processes.
-  base::UnguessableToken GetSharedMemoryGuid() const {
-    return mapping_->GetSharedMemoryGuid();
-  }
-
  private:
   // Used for SharedImage.
   // SoftwarePlaneResource is called only in VideoResourceUpdater.
@@ -1527,9 +1522,8 @@ bool VideoResourceUpdater::OnMemoryDump(
     // Resources are shared across processes and require a shared GUID to
     // prevent double counting the memory.
     if (software_compositor()) {
-      base::UnguessableToken shm_guid =
-          resource->AsSoftware()->GetSharedMemoryGuid();
-      pmd->CreateSharedMemoryOwnershipEdge(dump->guid(), shm_guid, kImportance);
+      resource->AsSoftware()->shared_image()->OnMemoryDump(pmd, dump->guid(),
+                                                           kImportance);
     } else {
       resource->AsHardware()->shared_image()->OnMemoryDump(pmd, dump->guid(),
                                                            kImportance);
