@@ -557,6 +557,13 @@
       status: "stable",
       base_feature: "none",
     },
+    // A developer opt-out for background page freezing.
+    {
+      name: "BackgroundPageFreezeOptOut",
+      base_feature: "none",
+      origin_trial_feature_name: "BackgroundPageFreezeOptOut",
+      origin_trial_type: "deprecation",
+    },
     {
       name: "BarcodeDetector",
       status: {
@@ -3141,13 +3148,6 @@
     {
       name: "OverscrollCustomization",
       status: "experimental",
-    },
-    // A developer opt-out for page freezing.
-    {
-      name: "PageFreezeOptOut",
-      base_feature: "none",
-      origin_trial_feature_name: "PageFreezeOptOut",
-      origin_trial_type: "deprecation",
     },
     // Support for page margin boxes.
     // https://www.w3.org/TR/css-page-3/#margin-boxes
