@@ -3138,13 +3138,13 @@
   {
     "name": "enable-hardware_mirror-mode",
     "owners": [
-      "gildekel@chromium.org",
+      "vincentchiang@chromium.org",
       "//ui/display/OWNERS"
     ],
     // A temporary flag to control hardware mirroring until it is decided
-    // whether to permanently remove hardware mirroring. See crbug.com/1161556
-    // for more details.
-    "expiry_milestone": 134
+    // whether to permanently remove hardware mirroring. See b/207072219 for
+    // more details.
+    "expiry_milestone": 150
   },
   {
     "name": "enable-hardware-secure-decryption",
