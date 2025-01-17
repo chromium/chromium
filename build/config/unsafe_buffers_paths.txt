@@ -77,9 +77,6 @@
 # as system headers when building with DEPOT_TOOLS_WIN_TOOLCHAIN=0 ?
 -Program Files (x86)/Windows Kits/
 
-# Please check 'linux-v4l2-codec-rel' bot before removing this opt-out.
--media/gpu/v4l2/
-
 # //codelabs is a directory that contains examples for developers to modify as
 # they learn about chromium development. This is indefinitely opt-out because
 # it is not part of the main build, and we don't want developers to be blocked
