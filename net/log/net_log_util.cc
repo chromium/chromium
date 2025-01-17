@@ -310,10 +310,6 @@ base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
     constants_dict.Set("secureDnsMode", std::move(dict));
   }
 
-  if (request_mode == NetConstantsRequestMode::kTracing) {
-    return constants_dict;
-  }
-
   // Information about how the "time ticks" values we have given it relate to
   // actual system times.  Time ticks are used throughout since they are stable
   // across system clock changes. Note: |timeTickOffset| is only comparable to
@@ -339,6 +335,10 @@ base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
   // "clientInfo" key is required for some log readers. Provide a default empty
   // value for compatibility.
   constants_dict.Set("clientInfo", base::Value::Dict());
+
+  if (request_mode == NetConstantsRequestMode::kTracing) {
+    return constants_dict;
+  }
 
   // Add a list of field experiments active at the start of the capture.
   // Additional trials may be enabled later in the browser session.
