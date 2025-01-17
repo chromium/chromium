@@ -440,7 +440,8 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
   }
 
   std::vector<SkDocumentPage> pages(page_count);
-  SkDeserialProcs procs = DeserializationProcs(&subframes, &typefaces_);
+  SkDeserialProcs procs =
+      DeserializationProcs(&subframes, &typefaces_, &images_);
   if (!SkMultiPictureDocument::Read(&stream, pages.data(), page_count,
                                     &procs)) {
     DLOG(ERROR) << "CompositePages: Page reading failed.";
@@ -499,8 +500,8 @@ void PrintCompositorImpl::CompositeSubframe(FrameInfo* frame_info) {
   // Composite the entire frame.
   SkMemoryStream stream(frame_info->serialized_content.data(),
                         frame_info->serialized_content.size());
-  SkDeserialProcs procs =
-      DeserializationProcs(&subframes, &frame_info->typefaces);
+  SkDeserialProcs procs = DeserializationProcs(
+      &subframes, &frame_info->typefaces, &frame_info->images);
   frame_info->content = SkPicture::MakeFromStream(&stream, &procs);
 }
 
