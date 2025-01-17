@@ -33,6 +33,8 @@ class ASH_EXPORT MouseKeysBubbleController : public views::ViewObserver {
       delete;
   ~MouseKeysBubbleController() override;
 
+  void UpdateMouseKeysBubblePosition(gfx::Point position);
+
   // Updates the bubble's visibility and text content.
   void UpdateBubble(bool visible,
                     MouseKeysBubbleIconType icon,

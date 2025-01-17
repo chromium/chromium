@@ -333,6 +333,19 @@ class MouseKeysTest : public AshTestBase {
     prefs->SetDouble(prefs::kAccessibilityMouseKeysMaxSpeed, factor);
   }
 
+  gfx::Point GetLastMousePositionFromEvents() {
+    auto events = CheckForMouseEvents();
+    EXPECT_FALSE(events.empty());
+    return events.back().location();
+  }
+
+  void ShowMouseKeysBubble() {
+    EXPECT_FALSE(IsBubbleVisible());
+    PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+    EXPECT_TRUE(IsBubbleVisible());
+    EXPECT_EQ(GetBubbleText(), u"Right mouse button");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestEventCapturer event_capturer_;
@@ -525,6 +538,7 @@ TEST_F(MouseKeysTest, SelectButtonLeftHand) {
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_W);
   EXPECT_EQ(0u, CheckForKeyEvents().size());
+  LOG(ERROR) << "[LKupo] this is the first click event";
   ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
               kDefaultPosition);
 
@@ -618,6 +632,37 @@ TEST_F(MouseKeysTest, IgnoreKeyRepeat) {
   EXPECT_EQ(ui::EventType::kMouseReleased, mouse_events[0].type());
   EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
   EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+}
+
+TEST_F(MouseKeysTest, MouseKeysBubbleMovesWithMouse) {
+  // Initialize mouse and enable Mouse Keys.
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  ClearEvents();
+
+  // Get initial mouse position with a small move up-left.
+  PressAndReleaseKey(ui::VKEY_7);
+  gfx::Point initialMousePosition = GetLastMousePositionFromEvents();
+
+  // Show the bubble and get its initial position.
+  ShowMouseKeysBubble();
+  gfx::Point initialBubblePosition =
+      GetBubbleView()->GetAnchorRect().CenterPoint();
+
+  // Simulate mouse movement up-left.
+  PressAndReleaseKey(ui::VKEY_7);
+
+  // Get the final mouse position.
+  auto finalMousePosition = GetLastMousePositionFromEvents();
+
+  // Get the final bubble position.
+  gfx::Point finalBubblePosition =
+      GetBubbleView()->GetAnchorRect().CenterPoint();
+
+  // Verify mouse and bubble movements match.
+  EXPECT_EQ(finalMousePosition - initialMousePosition,
+            finalBubblePosition - initialBubblePosition);
 }
 
 TEST_F(MouseKeysTest, Move) {
