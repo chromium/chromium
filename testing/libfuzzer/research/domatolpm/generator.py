@@ -476,13 +476,17 @@ class DomatoBuilder:
     return True
 
   def get_root(self) -> typing.Tuple[ProtoMessage, CppFunctionHandler]:
-    root_handler = f'{CPP_HANDLER_PREFIX}{self.root}'
-    fuzz_case = ProtoMessage(name='fuzzcase',
-                             fields=[
-                                 ProtoField(type=ProtoType(name=self.root),
-                                            name='root',
-                                            proto_id=1)
-                             ])
+    # If the root is 'line', we actually want to generate an arbitrary number
+    # of lines. In this case, we'll invoke the special proto message 'lines'.
+    # In any other case, we just use the existing root, which has been defined
+    # during grammar construction.
+    root = self.root
+    if self.root == 'line':
+      root = 'lines'
+    root_handler = f'{CPP_HANDLER_PREFIX}{root}'
+    fuzz_case = ProtoMessage(
+        name='fuzzcase',
+        fields=[ProtoField(type=ProtoType(name=root), name='root', proto_id=1)])
     fuzz_fct = CppProtoMessageFunctionHandler(
         name='fuzzcase',
         exprs=[CppHandlerCallExpr(handler=root_handler, field_name='root')])
