@@ -4,8 +4,6 @@
 
 source_set("coordinator") {
   sources = [
-    "parent_access_constants.h",
-    "parent_access_constants.mm",
     "parent_access_coordinator.h",
     "parent_access_coordinator.mm",
     "parent_access_mediator.h",
@@ -13,18 +11,19 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
-    "//components/signin/public/identity_manager",
     "//components/supervised_user/core/common",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/signin/model:system_identity",
-    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/supervised_user/ui",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/web/model:delegate",
     "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }

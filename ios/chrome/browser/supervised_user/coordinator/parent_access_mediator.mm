@@ -6,46 +6,39 @@
 
 #import <memory>
 
-#import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/supervised_user/coordinator/parent_access_constants.h"
-#import "ios/chrome/browser/supervised_user/ui/parent_access_view_controller_delegate.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "url/gurl.h"
 
 @implementation ParentAccessMediator {
-  // TODO(crbug.com/384514294): Handle changes in the identity state while
-  // permissions are in progress and bottom sheet is displayed.
-  raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  raw_ptr<signin::IdentityManager> _identityManager;
-  raw_ptr<SystemIdentityManager> _systemIdentityManager;
+  std::unique_ptr<web::WebState> _webState;
 }
 
-- (instancetype)initWithAccountManagerService:
-                    (ChromeAccountManagerService*)accountManagerService
-                              identityManager:
-                                  (signin::IdentityManager*)identityManager
-                        systemIdentityManager:
-                            (SystemIdentityManager*)systemIdentityManager {
+- (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState {
   if ((self = [super init])) {
-    CHECK(accountManagerService);
-    CHECK(identityManager);
-    CHECK(systemIdentityManager);
-    _accountManagerService = accountManagerService;
-    _identityManager = identityManager;
-    _systemIdentityManager = systemIdentityManager;
+    CHECK(webState);
+    _webState = std::move(webState);
   }
   return self;
 }
 
-#pragma mark - ParentAccessViewControllerDelegate
+- (void)setConsumer:(id<ParentAccessConsumer>)consumer {
+  _consumer = consumer;
 
-- (void)handleParentAccessRequest:(AuthenticatedURLCallback)callback {
-  id<SystemIdentity> identity = signin::GetDefaultIdentityOnDevice(
-      _identityManager, _accountManagerService);
-  _systemIdentityManager->FetchTokenAuthURL(identity, ParentAccessURL(),
-                                            std::move(callback));
+  _webState->SetWebUsageEnabled(true);
+  web::NavigationManager::WebLoadParams webParams =
+      web::NavigationManager::WebLoadParams(
+          supervised_user::GetParentAccessURLForIOS());
+  _webState->GetNavigationManager()->LoadURLWithParams(webParams);
+  // TODO(crbug.com/41407753): For a newly created WebState, the session
+  // will not be restored until LoadIfNecessary call. Remove when fixed.
+  _webState->GetNavigationManager()->LoadIfNecessary();
+
+  [_consumer setWebView:_webState->GetView()];
+}
+
+- (void)disconnect {
+  _webState.reset();
 }
 
 @end

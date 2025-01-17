@@ -7,11 +7,14 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller.h"
+#import "ios/web/public/web_state.h"
+
+@interface ParentAccessCoordinator () <UIAdaptivePresentationControllerDelegate>
+@end
 
 @implementation ParentAccessCoordinator {
   ParentAccessCallbackCompletion _completion;
@@ -32,16 +35,13 @@
 
 - (void)start {
   ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
-  SystemIdentityManager* systemIdentityManager =
-      GetApplicationContext()->GetSystemIdentityManager();
+  web::WebState::CreateParams params = web::WebState::CreateParams(profile);
   _mediator = [[ParentAccessMediator alloc]
-      initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForProfile(profile)
-                    identityManager:IdentityManagerFactory::GetForProfile(
-                                        profile)
-              systemIdentityManager:systemIdentityManager];
+      initWithWebState:web::WebState::Create(params)];
+
   _viewController = [[ParentAccessBottomSheetViewController alloc] init];
-  _viewController.delegate = _mediator;
+  _viewController.presentationController.delegate = self;
+  _mediator.consumer = _viewController;
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -49,8 +49,20 @@
 }
 
 - (void)stop {
+  [_mediator disconnect];
   _mediator = nil;
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
   _viewController = nil;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  id<ParentAccessCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ParentAccessCommands);
+  [handler hideParentAccessBottomSheet];
 }
 
 #pragma mark - WKScriptMessageHandler

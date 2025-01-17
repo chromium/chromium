@@ -7,27 +7,20 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/supervised_user/ui/parent_access_view_controller_delegate.h"
-
-class ChromeAccountManagerService;
-class SystemIdentityManager;
-
-@protocol SystemIdentity;
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
+#import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
+#import "ios/web/public/web_state.h"
 
 // Mediator for ParentAccessCoordinator.
-@interface ParentAccessMediator : NSObject <ParentAccessViewControllerDelegate>
+@interface ParentAccessMediator : NSObject
+
+@property(nonatomic, weak) id<ParentAccessConsumer> consumer;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)
-    initWithAccountManagerService:
-        (ChromeAccountManagerService*)accountManagerService
-                  identityManager:(signin::IdentityManager*)identityManager
-            systemIdentityManager:(SystemIdentityManager*)systemIdentityManager
+- (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
     NS_DESIGNATED_INITIALIZER;
+
+// Disconnects the mediator.
+- (void)disconnect;
 
 @end
 
