@@ -692,7 +692,10 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
 
         if (window.tabs.empty()) {
           // Remove the entry if there is nothing left to restore.
-          entries_.erase(entry_iterator);
+          // The entries_ may by changed after the tabs restored and the
+          // entry_iterator may be no longer valid. So call RemoveEntryById here
+          // instead of entries_.erase(entry_iterator).
+          RemoveEntryById(id);
         }
       }
 
@@ -745,7 +748,10 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
             CHECK(ValidateGroup(group));
             group.tabs.erase(group.tabs.begin() + i);
             if (group.tabs.empty()) {
-              entries_.erase(entry_iterator);
+              // The entries_ may by changed after the tabs restored and the
+              // entry_iterator may be no longer valid. So call RemoveEntryById
+              // here instead of entries_.erase(entry_iterator).
+              RemoveEntryById(id);
             }
 
             break;
@@ -759,7 +765,10 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
   }
 
   if (entry_id_matches_restore_id) {
-    entries_.erase(entry_iterator);
+    // The entries_ may by changed after the tabs restored and the
+    // entry_iterator may be no longer valid. So call RemoveEntryById here
+    // instead of entries_.erase(entry_iterator).
+    RemoveEntryById(id);
   }
 
   restoring_ = false;
