@@ -86,10 +86,6 @@ VideoFrameResource::MapGMBOrSharedImage() const {
   return frame_->MapGMBOrSharedImage();
 }
 
-gfx::GenericSharedMemoryId VideoFrameResource::GetSharedMemoryId() const {
-  return media::GetSharedMemoryId(*frame_);
-}
-
 const VideoFrameLayout& VideoFrameResource::layout() const {
   return frame_->layout();
 }

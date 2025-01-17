@@ -74,14 +74,13 @@ class NativePixmapFrameResource : public FrameResource {
   scoped_refptr<const gfx::NativePixmapDmaBuf> GetNativePixmapDmaBuf()
       const override;
   // CreateGpuMemoryBufferHandle() will duplicate file descriptors to make a
-  // gfx::GpuMemoryBufferHandle. The GpuMemoryBufferId will match
-  // GetSharedMemoryId(). Doing this helps with identification of original
-  // FrameResource from a VideoFrame produced by CreateVideoFrame().
+  // gfx::GpuMemoryBufferHandle. The GpuMemoryBufferId will be set to a
+  // consistent value in subsequent calls for |this| or for any wrapping frame
+  // of |this|.
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
   // Always returns nullptr.
   std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
       const override;
-  gfx::GenericSharedMemoryId GetSharedMemoryId() const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;
   int stride(size_t plane) const override;
@@ -148,7 +147,9 @@ class NativePixmapFrameResource : public FrameResource {
   // is wrapped, |id_| is copied to the wrapping frame. The ID's will be unique
   // per underlying NativePixmapDmaBuf object, per process. The ID is generated
   // by and stored in NativePixmapFrameResource because the ID returned by
-  // gxf::NativePixmapDmaBuf::GetUniqueId() is currently always zero.
+  // gxf::NativePixmapDmaBuf::GetUniqueId() is currently always zero. It is used
+  // by CreateGpuMemoryBufferHandle to create GpuMemoryBufferHandle's with
+  // consistent ID's.
   const gfx::GenericSharedMemoryId id_;
 
   // |buffer_usage_| affects how a buffer can be used. It is only set if it was

@@ -98,11 +98,6 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
       const = 0;
 
-  // Returns an identifier based on the frame data's underlying storage. This
-  // returns consistent results even if the frame gets wrapped. Returns an
-  // invalid GenericSharedMemoryId if an identifier cannot be determined.
-  virtual gfx::GenericSharedMemoryId GetSharedMemoryId() const = 0;
-
   virtual const VideoFrameLayout& layout() const = 0;
 
   virtual VideoPixelFormat format() const = 0;
