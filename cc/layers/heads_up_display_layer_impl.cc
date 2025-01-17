@@ -179,10 +179,11 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
       int importance) const override {
-    base::UnguessableToken resource_guid =
-        shared_image->Map()->GetSharedMemoryGuid();
-    pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, resource_guid,
-                                         importance);
+    if (!shared_image) {
+      return;
+    }
+
+    shared_image->OnMemoryDump(pmd, buffer_dump_guid, importance);
   }
 
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink;
