@@ -10,10 +10,9 @@
       <div id="keyboardShortcut" aria-hidden>$i18n{glicKeyboardShortcut}</div>
       <div class="secondary">$i18n{glicKeyboardShortcutSublabel}</div>
     </div>
-    <!-- TODO(crbug.com/379166610): This is a placeholder until keyboard
-        shortcut is implemented. -->
-    <cr-input disabled aria-labelledby="keyboardShortcut"></cr-input>
-    <cr-icon-button id="editIconButton" class="icon-edit" title="$i18n{edit}">
-    </cr-icon-button>
+    <cr-shortcut-input id="shortcutInput"
+        input-aria-label="$i18n{glicKeyboardShortcut}"
+        on-shortcut-updated="onShortcutUpdated_">
+    </cr-shortcut-input>
   </div>
 </cr-collapse>

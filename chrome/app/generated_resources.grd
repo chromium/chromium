@@ -298,6 +298,9 @@ are declared in tools/grit/grit_args.gni.
       <!-- Profiles specific strings -->
       <part file="profiles_strings.grdp" />
 
+      <!-- Shortcut Input specific strings -->
+      <part file="shortcut_input_strings.grdp" />
+
       <!-- Chrome-OS-specific strings -->
       <if expr="is_chromeos">
         <part file="chromeos_shared_strings.grdp" />

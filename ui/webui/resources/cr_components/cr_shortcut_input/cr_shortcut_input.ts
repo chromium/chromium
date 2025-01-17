@@ -77,6 +77,10 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
     node.addEventListener('keyup', this.onKeyUp_.bind(this));
   }
 
+  getBubbleAnchor() {
+    return this.$.edit;
+  }
+
   private async startCapture_() {
     if (this.capturing_ || this.readonly_) {
       return;
