@@ -1431,12 +1431,17 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   if (!change.IsChildInsertion())
     return;
   Node* inserted_node = change.sibling_changed;
-  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode())
+  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode()) {
     inserted_node->ClearFlatTreeNodeDataIfHostChanged(*this);
+  } else {
+    return;
+  }
   if (!InActiveDocument())
     return;
   if (Element* element = DynamicTo<Element>(this)) {
     if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+      // This is always safe, since `inserted_node` is either an element or text
+      // node, whose style can be dirtied.
       inserted_node->FlatTreeParentChanged();
     }
     if (!element->GetComputedStyle()) {
@@ -1448,8 +1453,7 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
       return;
     }
   }
-  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode())
-    inserted_node->SetStyleChangeOnInsertion();
+  inserted_node->SetStyleChangeOnInsertion();
 }
 
 bool ContainerNode::ChildrenChangedAllChildrenRemovedNeedsList() const {

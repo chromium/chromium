@@ -151,16 +151,27 @@ test(t => {
     document.body.moveBefore(doc, null);
   });
 }, "moveBefore() with a non-{Element, CharacterData} throws a HierarchyRequestError");
-test(t => {
+promise_test(async t => {
   const text = new Text("child text");
   document.body.prepend(text);
 
   const childElement = document.createElement('p');
   document.body.prepend(childElement);
 
+  const comment = new Comment("comment");
+  document.body.prepend(comment);
+
   t.add_cleanup(() => {
     text.remove();
     childElement.remove();
+    comment.remove();
+  });
+
+  // Wait until style is computed once, then continue after. This is necessary
+  // to reproduce a Chromium crash regression with moving Comment nodes in the
+  // DOM.
+  await new Promise(r => {
+    requestAnimationFrame(() => requestAnimationFrame(() => r()));
   });
 
   document.body.moveBefore(text, null);
@@ -171,6 +182,9 @@ test(t => {
 
   document.body.moveBefore(text, null);
   assert_equals(document.body.lastChild, text);
+
+  document.body.moveBefore(comment, null);
+  assert_equals(document.body.lastChild, comment);
 }, "moveBefore with an Element or CharacterData succeeds");
 test(t => {
   const p = document.createElement('p');
