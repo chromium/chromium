@@ -5,6 +5,8 @@
 #ifndef NET_BASE_FEATURES_H_
 #define NET_BASE_FEATURES_H_
 
+#include <stddef.h>
+
 #include <string>
 #include <string_view>
 
@@ -692,6 +694,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNewClientCertPathBuilding);
 
 // When enabled HSTS upgrades will only apply to top-level navigations.
 NET_EXPORT BASE_DECLARE_FEATURE(kHstsTopLevelNavigationsOnly);
+
+// Whether or not to apply No-Vary-Search processing in the HTTP disk cache.
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheNoVarySearch);
+
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                      kHttpCacheNoVarySearchCacheMaxEntries);
 
 }  // namespace net::features
 

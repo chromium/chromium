@@ -672,4 +672,14 @@ BASE_FEATURE(kHstsTopLevelNavigationsOnly,
              "HstsTopLevelNavigationsOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHttpCacheNoVarySearch,
+             "HttpCacheNoVarySearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kHttpCacheNoVarySearchCacheMaxEntries,
+                   &kHttpCacheNoVarySearch,
+                   "max_entries",
+                   1000);
+
 }  // namespace net::features
