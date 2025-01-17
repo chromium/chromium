@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_host_frame_sink_client.h"
@@ -146,7 +145,7 @@ class EmbeddedFrameSinkProviderImplTest : public testing::Test {
 
     // The FrameSinkManagerImpl implementation is in-process here for tests.
     frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
-        viz::FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_));
+        viz::FrameSinkManagerImpl::InitParams());
     host_frame_sink_manager_->SetLocalManager(frame_sink_manager_.get());
     frame_sink_manager_->SetLocalClient(host_frame_sink_manager_.get());
 
@@ -169,7 +168,6 @@ class EmbeddedFrameSinkProviderImplTest : public testing::Test {
   // A MessageLoop is required for mojo bindings which are used to
   // connect to graphics services.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  viz::ServerSharedBitmapManager shared_bitmap_manager_;
   viz::FakeHostFrameSinkClient host_frame_sink_client_;
   std::unique_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;

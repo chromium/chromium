@@ -12,7 +12,6 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/compositor_frame_fuzzer/compositor_frame_fuzzer_util.h"
 #include "components/viz/service/compositor_frame_fuzzer/fuzzer_software_output_surface_provider.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/fake_display_client.h"
@@ -52,7 +51,6 @@ class FuzzerBrowserProcess {
 
   const LocalSurfaceId root_local_surface_id_;
 
-  ServerSharedBitmapManager shared_bitmap_manager_;
   FuzzerSoftwareOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl frame_sink_manager_;
 

@@ -50,7 +50,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   static std::unique_ptr<SurfaceAnimationManager> CreateWithSave(
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
-      SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
       SaveDirectiveCompleteCallback sequence_id_finished_callback);
@@ -91,7 +90,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   SurfaceAnimationManager(
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
-      SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
       SaveDirectiveCompleteCallback sequence_id_finished_callback);

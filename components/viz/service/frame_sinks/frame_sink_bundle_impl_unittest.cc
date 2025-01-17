@@ -28,7 +28,6 @@
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
@@ -282,11 +281,9 @@ class FrameSinkBundleImplTest : public testing::Test {
 
   base::SimpleTestTickClock test_clock_;
   DebugRendererSettings debug_settings_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   TestOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl manager_{
-      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
-                                       &output_surface_provider_)};
+      FrameSinkManagerImpl::InitParams(&output_surface_provider_)};
   FakeExternalBeginFrameSource begin_frame_source_{0.0f, false};
 
   TestBundleClient test_client_;

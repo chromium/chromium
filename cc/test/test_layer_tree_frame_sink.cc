@@ -96,8 +96,7 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     return false;
 
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
-      viz::FrameSinkManagerImpl::InitParams(
-          /*shared_bitmap_manager_.get()*/ nullptr));
+      viz::FrameSinkManagerImpl::InitParams());
   frame_sink_manager_->SetSharedImageInterfaceProviderForTest(
       shared_image_interface_provider_.get());
 
@@ -187,11 +186,6 @@ void TestLayerTreeFrameSink::UnregisterBeginFrameSource() {
 }
 
 void TestLayerTreeFrameSink::DetachFromClient() {
-  // This acts like the |shared_bitmap_manager_| is a global object, while
-  // in fact it is tied to the lifetime of this class and is destroyed below:
-  // The shared_bitmap_manager_ has ownership of shared memory for each
-  // SharedBitmapId that has been reported from the client. Since the client is
-  // gone that memory can be freed. If we don't then it would leak.
   DebugScopedSetImplThread impl(task_runner_provider_);
 
   if (display_begin_frame_source_) {

@@ -27,7 +27,6 @@
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/viz_perftest.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -80,11 +79,9 @@ class ExpectedOutput {
 
 class SurfaceAggregatorPerfTest : public VizPerfTest {
  public:
-  SurfaceAggregatorPerfTest()
-      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)) {
+  SurfaceAggregatorPerfTest() : manager_(FrameSinkManagerImpl::InitParams()) {
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        /*shared_image_manager=*/nullptr,
-        /*gpu_scheduler=*/nullptr);
+        /*shared_image_manager=*/nullptr, /*gpu_scheduler=*/nullptr);
   }
 
   void RunTest(int num_surfaces,
@@ -522,7 +519,6 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
     std::map<ResourceId, TransferableResource> created_resources;
   };
 
-  ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
   std::unique_ptr<SurfaceAggregator> aggregator_;
