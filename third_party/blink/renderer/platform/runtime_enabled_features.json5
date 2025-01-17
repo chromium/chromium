@@ -1770,11 +1770,6 @@
     },
     // Kill switch.
     {
-      name: "Fast3DTransformedDescendantStatus",
-      status: "stable",
-    },
-    // Kill switch.
-    {
       name: "FastClearNeedsRepaint",
       status: "stable",
     },
@@ -3177,6 +3172,11 @@
     },
     {
       name: "PaintHoldingForLocalIframes",
+      status: "stable",
+    },
+    // Kill switch.
+    {
+      name: "PaintLayerUpdateOptimizations",
       status: "stable",
     },
     {

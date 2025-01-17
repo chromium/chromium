@@ -404,9 +404,10 @@ void PaintLayer::UpdateDescendantDependentFlags() {
 
       child->UpdateDescendantDependentFlags();
 
-      if ((child->has_visible_content_ && child->IsSelfPaintingLayer()) ||
-          child->has_visible_self_painting_descendant_)
+      if ((child->HasVisibleContent() && child->IsSelfPaintingLayer()) ||
+          child->HasVisibleSelfPaintingDescendant()) {
         has_visible_self_painting_descendant_ = true;
+      }
 
       has_non_isolated_descendant_with_blend_mode_ |=
           (!child->GetLayoutObject().IsStackingContext() &&
@@ -461,7 +462,8 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       GetLayoutObject().SetNeedsPaintPropertyUpdate();
     }
 
-    if (RuntimeEnabledFeatures::Fast3DTransformedDescendantStatusEnabled()) {
+    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
+      UpdateHasVisibleContent();
       Update3DTransformedDescendantStatus();
     }
 
@@ -478,7 +480,15 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     needs_visual_overflow_recalc_ = false;
   }
 
+  if (!RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
+    UpdateHasVisibleContent();
+    Update3DTransformedDescendantStatus();
+  }
+}
+
+void PaintLayer::UpdateHasVisibleContent() {
   bool previously_has_visible_content = has_visible_content_;
+
   if (GetLayoutObject().StyleRef().Visibility() == EVisibility::kVisible) {
     has_visible_content_ = true;
   } else {
@@ -509,16 +519,12 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     }
   }
 
-  if (HasVisibleContent() != previously_has_visible_content) {
+  if (has_visible_content_ != previously_has_visible_content) {
     // We need to tell layout_object_ to recheck its rect because we pretend
     // that invisible LayoutObjects have 0x0 rects. Changing visibility
     // therefore changes our rect and we need to visit this LayoutObject during
     // the PrePaintTreeWalk.
     layout_object_->SetShouldCheckForPaintInvalidation();
-  }
-
-  if (!RuntimeEnabledFeatures::Fast3DTransformedDescendantStatusEnabled()) {
-    Update3DTransformedDescendantStatus();
   }
 }
 
