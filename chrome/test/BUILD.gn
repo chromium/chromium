@@ -11054,6 +11054,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/commerce/price_tracking_icon_view_interactive_uitest.cc",
         "../browser/ui/views/constrained_window_views_browsertest.cc",
         "../browser/ui/views/content_setting_bubble_contents_interactive_uitest.cc",
+        "../browser/ui/views/data_sharing/collaboration_controller_delegate_desktop_interactive_uitest.cc",
         "../browser/ui/views/data_sharing/data_sharing_chrome_native_interactive_uitest.cc",
         "../browser/ui/views/exclusive_access_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/extensions/extension_popup_interactive_uitest.cc",

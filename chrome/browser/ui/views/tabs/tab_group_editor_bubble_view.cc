@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
@@ -827,12 +828,14 @@ void TabGroupEditorBubbleView::UngroupPressed() {
 }
 
 void TabGroupEditorBubbleView::ShareOrManagePressed() {
+  collaboration::CollaborationService* service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser_->profile());
+  auto delegate = std::make_unique<CollaborationControllerDelegateDesktop>(
+      const_cast<Browser*>(browser_.get()));
+  service->StartShareOrManageFlow(std::move(delegate), group_);
+
   bool is_group_shared = IsGroupShared();
-
-  DataSharingBubbleController::GetOrCreateForBrowser(
-      const_cast<Browser*>(browser_.get()))
-      ->Show(group_);
-
   if (!is_group_shared) {
     shared_tab_group_metrics::RecordSharedTabGroupManageType(
         shared_tab_group_metrics::SharedTabGroupManageTypeDesktop::kShareGroup);

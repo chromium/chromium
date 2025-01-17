@@ -146,6 +146,10 @@ void DataSharingBubbleController::Show(
     constrained_window::CreateBrowserModalDialogViews(
         std::move(bubble_view), browser_view->GetNativeWindow());
   }
+
+  views::Widget* widget = bubble_view_->GetWidget();
+  CHECK(widget);
+  bubble_widget_observation_.Observe(widget);
 }
 
 void DataSharingBubbleController::Close() {
@@ -156,6 +160,18 @@ void DataSharingBubbleController::Close() {
   bubble_view_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
   bubble_view_ = nullptr;
+}
+
+void DataSharingBubbleController::SetOnCloseCallback(
+    base::OnceCallback<void()> callback) {
+  on_close_callback_ = std::move(callback);
+}
+
+void DataSharingBubbleController::OnWidgetClosing(views::Widget* widget) {
+  bubble_widget_observation_.Reset();
+  if (on_close_callback_) {
+    std::move(on_close_callback_).Run();
+  }
 }
 
 DataSharingBubbleController::DataSharingBubbleController(Browser* browser)
