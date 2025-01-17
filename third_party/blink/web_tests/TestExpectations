@@ -1332,6 +1332,7 @@ crbug.com/1500288 external/wpt/css/css-pseudo/spelling-error-001.html [ Failure 
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-error-001.html [ Failure ]
 crbug.com/1500288 external/wpt/css/css-pseudo/selection-overlay-and-grammar-001.html [ Failure ]
 crbug.com/1500288 external/wpt/css/css-pseudo/selection-overlay-and-spelling-001.html [ Failure ]
+crbug.com/387708209 wpt_internal/css/css-pseudo/spelling-error-007-crash.html [ Pass Timeout ]
 
 # All browsers fail
 crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure ]
