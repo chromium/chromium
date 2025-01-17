@@ -103,6 +103,12 @@ class TestSharedImageInterface : public SharedImageInterface {
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(
       const Mailbox& mailbox) override;
 
+  void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote)
+      override {}
+  void DestroySharedImagePool(const SharedImagePoolId& pool_id) override {}
+
   size_t shared_image_count() const { return shared_images_.size(); }
   const gfx::Size& MostRecentSize() const { return most_recent_size_; }
   const SyncToken& MostRecentGeneratedToken() const {
