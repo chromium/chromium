@@ -307,6 +307,22 @@ export class SettingsNearbyShareSubpageElement extends
     if (visibility === undefined) {
       return '';
     }
+
+    if (this.isQuickShareV2Enabled_) {
+      switch (visibility) {
+        case Visibility.kAllContacts:
+          return this.i18n('nearbyShareContactVisiblityContactsButton');
+        case Visibility.kNoOne:
+          return this.i18n('nearbyShareContactVisibilityNone');
+        case Visibility.kUnknown:
+          return this.i18n('nearbyShareContactVisibilityUnknown');
+        case Visibility.kYourDevices:
+          return this.i18n('nearbyShareContactVisibilityYourDevices');
+        default:
+          assertNotReached();
+      }
+    }
+
     switch (visibility) {
       case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityAll');
