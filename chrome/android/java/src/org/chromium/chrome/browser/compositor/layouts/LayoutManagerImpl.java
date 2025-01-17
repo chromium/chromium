@@ -613,7 +613,8 @@ public class LayoutManagerImpl
                         selector,
                         mTabContentManagerSupplier.get(),
                         mBrowserControlsStateProvider,
-                        mTopUiThemeColorProvider);
+                        mTopUiThemeColorProvider,
+                        !hasTabletUi());
 
         setNextLayout(null, true);
 
@@ -1413,5 +1414,9 @@ public class LayoutManagerImpl
     @Override
     public void removeObserver(LayoutStateObserver listener) {
         mLayoutObservers.removeObserver(listener);
+    }
+
+    public boolean hasTabletUi() {
+        return false;
     }
 }
