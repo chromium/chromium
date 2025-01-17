@@ -149,7 +149,7 @@ SurfaceAnimationManager::SurfaceAnimationManager(
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
     SaveDirectiveCompleteCallback sequence_id_finished_callback)
-    : transferable_resource_tracker_(shared_bitmap_manager, id_tracker),
+    : transferable_resource_tracker_(id_tracker),
       saved_frame_(directive, shared_image_interface) {
   DCHECK(directive.type() == CompositorFrameTransitionDirective::Type::kSave);
 
