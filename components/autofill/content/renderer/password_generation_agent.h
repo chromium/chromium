@@ -157,7 +157,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   void GenerationRejectedByTyping();
 
   // Stops treating a password as generated.
-  void PasswordNoLongerGenerated(const SynchronousFormCache& form_cache);
+  void PasswordNoLongerGenerated();
 
   // Creates |current_generation_item_| for |element| if |element| is a
   // generation enabled element. If |current_generation_item_| is already
