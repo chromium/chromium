@@ -540,7 +540,6 @@ CGFloat const kContentOptimalWidth = 327;
 - (UIView*)turnOffInstructionView {
   if (!_turnOffInstructionView) {
     UITextView* captionTextView = [self drawCaptionTextView];
-    NSLog(@"%@", captionTextView.text);
     UIImage* checkmark = [[UIImage imageNamed:@"settings_safe_state"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     UIImageView* checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
@@ -619,9 +618,7 @@ CGFloat const kContentOptimalWidth = 327;
 }
 
 - (BOOL)useShortInstruction {
-  return ios::provider::SupportShortenedInstructionForPasswordAutoFill() &&
-         base::FeatureList::IsEnabled(
-             kEnableShortenedPasswordAutoFillInstruction);
+  return ios::provider::SupportShortenedInstructionForPasswordAutoFill();
 }
 
 - (NSArray<NSString*>*)steps {

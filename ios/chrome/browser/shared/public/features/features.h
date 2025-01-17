@@ -357,10 +357,6 @@ BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);
 // Feature flag to enable duplicate NTP cleanup.
 BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
 
-// Feature flag to enable shortened instruction to turn on Password AutoFill for
-// Chrome.
-BASE_DECLARE_FEATURE(kEnableShortenedPasswordAutoFillInstruction);
-
 // Feature flag / Kill Switch for TCRex.
 BASE_DECLARE_FEATURE(kTCRexKillSwitch);
 
