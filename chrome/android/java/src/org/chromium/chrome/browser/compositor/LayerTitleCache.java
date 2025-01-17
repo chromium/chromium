@@ -336,6 +336,13 @@ public class LayerTitleCache {
         mSharedAvatarResIds.put(rootId, resId);
     }
 
+    public void transferAvatarToNewRootId(int oldRootId, int newRootId) {
+        int avatarResId = mSharedAvatarResIds.get(oldRootId, ResourcesCompat.ID_NULL);
+        if (avatarResId == ResourcesCompat.ID_NULL) return;
+        mSharedAvatarResIds.delete(oldRootId);
+        mSharedAvatarResIds.put(newRootId, avatarResId);
+    }
+
     private void unregisterSharedGroupAvatar(int resId) {
         DynamicResourceLoader dynamicResourceLoader = mResourceManager.getDynamicResourceLoader();
         dynamicResourceLoader.unregisterResource(resId);
