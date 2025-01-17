@@ -62,9 +62,6 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
       </tab-search-item>
     `)}
   </cr-page-selector>
-  <auto-tab-groups-results-actions
-      @create-group-click="${this.onCreateGroupClick_}">
-  </auto-tab-groups-results-actions>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on
