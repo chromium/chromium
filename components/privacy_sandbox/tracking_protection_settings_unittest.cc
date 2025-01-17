@@ -104,11 +104,15 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
   EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
 }
 
-TEST_F(TrackingProtectionSettingsTest, ReturnsFpProtectionStatus) {
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kFingerprintingProtectionEnabled));
-  EXPECT_FALSE(tracking_protection_settings()->IsFpProtectionEnabled());
+TEST_F(TrackingProtectionSettingsTest,
+       IsFpProtectionEnabledOnlyReturnsTrueInIncognito) {
   prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
-  EXPECT_TRUE(tracking_protection_settings()->IsFpProtectionEnabled());
+  EXPECT_TRUE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                         /*is_incognito=*/true)
+                  .IsFpProtectionEnabled());
+  EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                          /*is_incognito=*/false)
+                   .IsFpProtectionEnabled());
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
