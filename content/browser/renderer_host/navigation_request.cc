@@ -5867,7 +5867,50 @@ void NavigationRequest::OnWillCommitWithoutUrlLoaderChecksComplete(
   // Cases with a UrlLoader are handled in OnStartChecksComplete.
   MaybeDispatchNavigateEventForCrossDocumentTraversal();
 
+  InheritServiceWorkerControllerFromParentIfNeeded();
+
   CommitNavigation();
+}
+
+void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
+  if (!base::FeatureList::IsEnabled(features::kServiceWorkerSrcdocSupport)) {
+    return;
+  }
+
+  CHECK(!loader_);
+  CHECK(!service_worker_handle_);
+  RenderFrameHostImpl* parent = frame_tree_node()->parent();
+  if (!parent || !GetURL().IsAboutSrcdoc()) {
+    return;
+  }
+  base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
+      parent->GetLastCommittedServiceWorkerClient();
+  if (!parent_service_worker_client) {
+    return;
+  }
+
+  if ((frame_tree_node_->pending_frame_policy().sandbox_flags &
+       network::mojom::WebSandboxFlags::kOrigin) ==
+      network::mojom::WebSandboxFlags::kOrigin) {
+    return;
+  }
+  StoragePartition* partition = GetStoragePartitionWithCurrentSiteInfo();
+  auto* service_worker_context = static_cast<ServiceWorkerContextWrapper*>(
+      partition->GetServiceWorkerContext());
+  // As ServiceWorkerMainResourceHandle is not used for intercepting the srcdoc
+  // iframe main resource, the fetch event client id is not used. Use empty
+  // string as fetch_event_client_id when creating it.
+  service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
+      service_worker_context, base::DoNothing(),
+      /*fetch_event_client_id=*/std::string(), parent_service_worker_client);
+  service_worker_handle_->set_service_worker_client(
+      service_worker_context->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWindow(
+              IsSecureFrame(frame_tree_node_->parent()),
+              frame_tree_node_->frame_tree_node_id()));
+  service_worker_handle_->service_worker_client()->InheritControllerFrom(
+      *parent_service_worker_client, net::SimplifyUrlForRequest(GetURL()));
 }
 
 void NavigationRequest::RunCommitDeferringConditions() {

@@ -1695,7 +1695,7 @@ void ServiceWorkerVersion::GetClient(const std::string& client_uuid,
       context_->service_worker_client_owner().GetServiceWorkerClientByClientID(
           client_uuid);
   if (!service_worker_client ||
-      service_worker_client->url().DeprecatedGetOriginAsURL() !=
+      service_worker_client->GetUrlForScopeMatch().DeprecatedGetOriginAsURL() !=
           script_url_.DeprecatedGetOriginAsURL()) {
     // The promise will be resolved to 'undefined'.
     // Note that we don't BadMessage here since Clients#get() can be passed an
@@ -1795,7 +1795,7 @@ void ServiceWorkerVersion::PostMessageToClient(
     }
   }
 
-  if (service_worker_client->url().DeprecatedGetOriginAsURL() !=
+  if (service_worker_client->GetUrlForScopeMatch().DeprecatedGetOriginAsURL() !=
       script_url_.DeprecatedGetOriginAsURL()) {
     associated_interface_receiver_.ReportBadMessage(
         "Received Client#postMessage() request for a cross-origin client.");
@@ -1851,7 +1851,7 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
     std::move(callback).Run(nullptr /* client */);
     return;
   }
-  if (service_worker_client->url().DeprecatedGetOriginAsURL() !=
+  if (service_worker_client->GetUrlForScopeMatch().DeprecatedGetOriginAsURL() !=
       script_url_.DeprecatedGetOriginAsURL()) {
     associated_interface_receiver_.ReportBadMessage(
         "Received WindowClient#focus() request for a cross-origin client.");
@@ -1908,7 +1908,7 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
                             std::string("The client was not found."));
     return;
   }
-  if (service_worker_client->url().DeprecatedGetOriginAsURL() !=
+  if (service_worker_client->GetUrlForScopeMatch().DeprecatedGetOriginAsURL() !=
       script_url_.DeprecatedGetOriginAsURL()) {
     associated_interface_receiver_.ReportBadMessage(
         "Received WindowClient#navigate() request for a cross-origin client.");

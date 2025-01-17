@@ -2148,6 +2148,13 @@ class CONTENT_EXPORT NavigationRequest
   // contexts or if DocumentIsolationPolicy is not supported.
   void SanitizeDocumentIsolationPolicyHeader();
 
+  // Sets up service worker client info to inherit controller from the parent
+  // frame if it is a same origin srcdoc iframe.
+  // This method creates a ServiceWorkerClient associated with the navigating
+  // frame. It should not be called when NavigationURLLoader is used as that
+  // would also create ServiceWorkerClient and cause conflict.
+  void InheritServiceWorkerControllerFromParentIfNeeded();
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.

@@ -335,6 +335,8 @@ void GetWindowClients(
     return;
   }
 
+  const url::Origin controller_origin =
+      url::Origin::Create(controller->script_url());
   for (const auto& it : clients_info) {
     blink::mojom::ServiceWorkerClientInfoPtr info =
         GetWindowClientInfo(std::get<0>(it), std::get<1>(it), std::get<2>(it));
@@ -347,12 +349,15 @@ void GetWindowClients(
       continue;
     DCHECK(!info->client_uuid.empty());
 
-    // We can get info for a frame that was navigating end ended up with a
+    // TODO(crbug.com/385901567): Investigate/clarify the intention of this
+    // check.
+    // We can get info for a frame that was navigating and ended up with a
     // different URL than expected. In such case, we should make sure to not
     // expose cross-origin WindowClient.
-    if (info->url.DeprecatedGetOriginAsURL() !=
-        controller->script_url().DeprecatedGetOriginAsURL())
+    auto* rfh = RenderFrameHostImpl::FromID(std::get<0>(it));
+    if (!controller_origin.IsSameOriginWith(rfh->GetLastCommittedOrigin())) {
       continue;
+    }
 
     clients.push_back(std::move(info));
   }
