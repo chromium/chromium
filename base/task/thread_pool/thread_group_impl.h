@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/profiler/thread_group_profiler.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/task_source.h"
@@ -23,6 +24,7 @@
 namespace base {
 
 class WorkerThreadObserver;
+class ThreadGroupProfiler;
 
 namespace internal {
 
@@ -141,6 +143,12 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // https://crbug.com/810464. Uses AtomicRefCount to make its only public
   // method thread-safe.
   TrackedRefFactory<ThreadGroupImpl> tracked_ref_factory_;
+
+  // This is set in Start() if profiling is enabled, before any worker thread is
+  // created. If profiling is not enabled, this will remain std::nullopt. If
+  // created the ThreadGroupProfiler instance will exist until ThreadGroupImpl
+  // destruction.
+  std::optional<ThreadGroupProfiler> thread_group_profiler_;
 };
 
 }  // namespace internal
