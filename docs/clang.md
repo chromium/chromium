@@ -102,3 +102,6 @@ trying to build with is closer to clang trunk than to Chromium's pinned clang
 
 * [Clang Tool Refactoring](clang_tool_refactoring.md) has notes on how to build
   and run refactoring tools based on clang's libraries.
+
+* [Updating Clang format binaries](updating_clang_format_binaries.md) has notes
+  on how to update clang-format.
