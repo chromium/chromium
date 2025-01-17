@@ -252,7 +252,6 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/org.chromium.chrome.tests/"
-                + "accepted-trigger-rate/1.0/"
                 + "eea-accepted-trigger-id/"
                 + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
@@ -278,7 +277,6 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/org.chromium.chrome.tests/"
-                + "accepted-trigger-rate/1.0/"
                 + "eea-accepted-trigger-id/"
                 + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
@@ -304,7 +302,6 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/org.chromium.chrome.tests/"
-                + "accepted-trigger-rate/1.0/"
                 + "eea-control-trigger-id/"
                 + TestSurveyUtils.TEST_TRIGGER_ID_FOO
                 + "/row-control-trigger-id/"
@@ -331,28 +328,6 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/org.chromium.chrome.tests/"
-                + "accepted-trigger-rate/0.0/"
-                + "eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaAcceptedNotShownSurveyDueToAcceptedTriggerRate() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
-        Assert.assertFalse(
-                "Survey was displayed.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/1.0/"
                 + "eea-declined-trigger-id/"
                 + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
@@ -378,7 +353,6 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/1.0/"
                 + "eea-declined-trigger-id/"
                 + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
@@ -404,28 +378,6 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/0.0/"
-                + "eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaDeclinedNotShownSurveyDueToDeclinedTriggerRate() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
-        Assert.assertFalse(
-                "Survey was displayed.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/1.0/"
                 + "eea-control-trigger-id/"
                 + TestSurveyUtils.TEST_TRIGGER_ID_FOO
                 + "/row-control-trigger-id/"
@@ -452,7 +404,6 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/1.0/"
                 + "eea-declined-trigger-id/"
                 + TestSurveyUtils.TEST_TRIGGER_ID_FOO
                 + "/eea-control-trigger-id/"
