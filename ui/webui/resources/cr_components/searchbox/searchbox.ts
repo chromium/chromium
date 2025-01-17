@@ -263,12 +263,14 @@ export class SearchboxElement extends SearchboxElementBase {
     };
   }
 
+  canShowSecondarySide: boolean;
   colorSourceIsBaseline: boolean;
   dropdownIsVisible: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
   isDark: boolean;
   matchSearchbox: boolean;
+  searchboxAriaDescription: string;
   searchboxLensSearchEnabled: boolean;
   searchboxChromeRefreshTheming: boolean;
   searchboxSteadyStateShadow: boolean;
