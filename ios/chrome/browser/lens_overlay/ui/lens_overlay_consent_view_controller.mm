@@ -48,7 +48,7 @@ const CGFloat kDialogFixedItemsHeight = 160;
 bool UseUpdatedStrings() {
   auto treatment = GetLensOverlayOnboardingTreatment();
   return treatment ==
-             LensOverlayOnboardingTreatment::kUpdatedOnboardingString ||
+             LensOverlayOnboardingTreatment::kUpdatedOnboardingStrings ||
          treatment == LensOverlayOnboardingTreatment::
                           kUpdatedOnboardingStringsAndVisuals;
 }
