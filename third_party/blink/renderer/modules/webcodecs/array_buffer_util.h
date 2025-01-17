@@ -49,7 +49,9 @@ base::span<T> AsSpan(const AllowSharedBufferSource* buffer_union) {
 // Ensures that the underlying memory for `buffer_union` remains valid
 // (owned by a returned instance of ArrayBufferContents)
 // even if the buffer is detached or truncated by client activity.
-ArrayBufferContents PinArrayBufferContent(
+// Returns a valid ArrayBufferContents only for shared buffers, otherwise
+// returns an empty ArrayBufferContents.
+ArrayBufferContents PinSharedArrayBufferContent(
     const AllowSharedBufferSource* buffer_union);
 
 // 1. Check if any on the array buffers from the `transfer_list` contain

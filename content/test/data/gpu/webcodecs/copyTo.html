@@ -21,6 +21,23 @@ Take frames coming from various sources and read them using copyTo().
     return { r: r, g: g, b: b };
   }
 
+  function compareArrayBuffers(buffer1, buffer2) {
+    const view1 = new DataView(buffer1);
+    const view2 = new DataView(buffer2);
+
+    if (view1.byteLength !== view2.byteLength) {
+      return false;
+    }
+
+    for (let i = 0; i < view1.byteLength; i++) {
+      if (view1.getUint8(i) !== view2.getUint8(i)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   async function validateFourColorsBytes(frame) {
     const m = 4;
     const tolerance = 8;
@@ -42,7 +59,11 @@ Take frames coming from various sources and read them using copyTo().
       }
       let size = frame.allocationSize(options);
       let buffer = new ArrayBuffer(size);
+      let shared_buffer = new SharedArrayBuffer(size);
       let layout = await frame.copyTo(buffer, options);
+      await frame.copyTo(shared_buffer, options);
+      TEST.assert(compareArrayBuffers(buffer, shared_buffer),
+                  'Readback mismatch between shared and non-shared buffers');
       let view = new DataView(buffer);
       let rgb = null;
 
