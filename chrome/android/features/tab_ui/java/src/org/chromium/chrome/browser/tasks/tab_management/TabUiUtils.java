@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
@@ -220,12 +221,20 @@ public class TabUiUtils {
                                 memberRole);
                     }
                 };
+
+        // The default title is not included in the savedTabGroup data. Use the filter to get the
+        // last known title for the tab group.
+        String title = savedTabGroup.title;
+        @Nullable Tab tab = tabModel.getTabById(tabId);
+        if (tab != null) {
+            int rootId = tab.getRootId();
+            title = TabGroupTitleUtils.getDisplayableTitle(context, filter, rootId);
+        }
+
         if (memberRole == MemberRole.OWNER) {
-            actionConfirmationManager.processDeleteSharedGroupAttempt(
-                    savedTabGroup.title, onActionConfirmation);
+            actionConfirmationManager.processDeleteSharedGroupAttempt(title, onActionConfirmation);
         } else if (memberRole == MemberRole.MEMBER) {
-            actionConfirmationManager.processLeaveGroupAttempt(
-                    savedTabGroup.title, onActionConfirmation);
+            actionConfirmationManager.processLeaveGroupAttempt(title, onActionConfirmation);
         } else {
             showGenericErrorDialog(context, modalDialogManager);
         }
