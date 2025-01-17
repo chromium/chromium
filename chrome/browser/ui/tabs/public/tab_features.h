@@ -135,10 +135,6 @@ class TabFeatures {
     return commerce_ui_tab_helper_.get();
   }
 
-  contextual_cueing::ContextualCueingHelper* contextual_cueing_tab_helper() {
-    return contextual_cueing_helper_.get();
-  }
-
   privacy_sandbox::PrivacySandboxTabObserver* privacy_sandbox_tab_observer() {
     return privacy_sandbox_tab_observer_.get();
   }
@@ -211,10 +207,6 @@ class TabFeatures {
 
   // Responsible for commerce related features.
   std::unique_ptr<commerce::CommerceUiTabHelper> commerce_ui_tab_helper_;
-
-  // Responsible for contextual cueing features.
-  std::unique_ptr<contextual_cueing::ContextualCueingHelper>
-      contextual_cueing_helper_;
 
   // Responsible for updating status indicator of the pinned translate button.
   std::unique_ptr<PinnedTranslateActionListener>

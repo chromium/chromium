@@ -1676,6 +1676,7 @@ static_library("ui") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/contextual_cueing",
 
       # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
       # gets modularized.
@@ -3089,7 +3090,6 @@ static_library("ui") {
 
     deps += [
       "//chrome/app:generated_resources",
-      "//chrome/browser/contextual_cueing:contextual_cueing",
       "//chrome/browser/on_device_translation:language_pack_util",
       "//chrome/browser/shortcuts",
       "//components/capture_mode",

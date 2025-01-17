@@ -10,9 +10,11 @@
 #include "chrome/browser/ui/tabs/glic_nudge_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class BrowserWindowInterface;
+
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace tabs {
 
@@ -20,7 +22,8 @@ namespace tabs {
 // targeted.
 class GlicNudgeController {
  public:
-  GlicNudgeController();
+  explicit GlicNudgeController(
+      BrowserWindowInterface* browser_window_interface);
   GlicNudgeController(const GlicNudgeController&) = delete;
   GlicNudgeController& operator=(const GlicNudgeController& other) = delete;
   virtual ~GlicNudgeController();
@@ -37,14 +40,24 @@ class GlicNudgeController {
     return observers_.HasObserver(observer);
   }
 
+  // Updates the `nudge_label` for `web_contents`, if the WebContents is active.
   void UpdateNudgeLabel(content::WebContents* web_contents,
                         const std::string& nudge_label);
 
  private:
+  // Called when the active tab changes, to update the nudge UI appropriate for
+  // the tab.
+  void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
+
   // Returns whether the nudge should be shown in the tabstrip for glic.
   bool GlicNudgeCriteriaMet();
 
+  // The BrowserWindowInterface that owns `this`.
+  const raw_ptr<BrowserWindowInterface> browser_window_interface_;
+
   base::ObserverList<GlicNudgeObserver> observers_;
+
+  std::vector<base::CallbackListSubscription> browser_subscriptions_;
 };
 
 }  // namespace tabs

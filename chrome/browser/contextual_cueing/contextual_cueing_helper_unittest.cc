@@ -9,6 +9,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -47,8 +48,10 @@ std::unique_ptr<KeyedService> CreateOptimizationGuideKeyedService(
 class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   ContextualCueingHelperTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        contextual_cueing::kContextualCueing);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton,
+         contextual_cueing::kContextualCueing},
+        {});
   }
 
   void SetUp() override {
@@ -70,11 +73,6 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
                 local_state_.get(),
                 optimization_guide::ModelExecutionFeaturesController::
                     DogfoodStatus::NON_DOGFOOD));
-  }
-
-  void TearDown() override {
-    contextual_cueing_helper_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void EnableSignIn() {
@@ -101,9 +99,6 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&CreateOptimizationGuideKeyedService)}};
   }
 
- protected:
-  std::unique_ptr<ContextualCueingHelper> contextual_cueing_helper_;
-
  private:
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -111,24 +106,30 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(ENABLE_GLIC)
+
 TEST_F(ContextualCueingHelperTest, NullTabHelperWithoutSignin) {
-  contextual_cueing_helper_ =
-      ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
-  EXPECT_FALSE(contextual_cueing_helper_);
+  ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
+  auto* contextual_cueing_helper =
+      ContextualCueingHelper::FromWebContents(web_contents());
+  EXPECT_FALSE(contextual_cueing_helper);
 }
 
 TEST_F(ContextualCueingHelperTest, NullTabHelperIfWithoutCapability) {
   EnableSignInWithoutCapability();
-  contextual_cueing_helper_ =
-      ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
-  EXPECT_FALSE(contextual_cueing_helper_);
+  ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
+  auto* contextual_cueing_helper =
+      ContextualCueingHelper::FromWebContents(web_contents());
+  EXPECT_FALSE(contextual_cueing_helper);
 }
 
 TEST_F(ContextualCueingHelperTest, TabHelperStartsUp) {
   EnableSignIn();
-  contextual_cueing_helper_ =
-      ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
-  EXPECT_TRUE(contextual_cueing_helper_);
+  ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
+  auto* contextual_cueing_helper =
+      ContextualCueingHelper::FromWebContents(web_contents());
+  EXPECT_TRUE(contextual_cueing_helper);
 }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace contextual_cueing
