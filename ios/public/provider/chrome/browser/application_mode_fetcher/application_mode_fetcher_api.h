@@ -16,12 +16,18 @@ namespace ios::provider {
 // mean that the URL will open in regular mode, it means that chrome should
 // resume its original flow.
 using AppModeFetchingCallback = base::OnceCallback<void(bool is_incognito)>;
+using AppModeFetchingResponse =
+    base::OnceCallback<void(bool is_incognito, NSError* error)>;
 
 // Fetches the application mode for a given `url` and `app_id`. The callback
 // will be invoked asynchronously on the calling sequence
 void FetchApplicationMode(const GURL& url,
                           NSString* app_id,
                           AppModeFetchingCallback callback);
+
+void FetchApplicationMode(const GURL& url,
+                          NSString* app_id,
+                          AppModeFetchingResponse fetching_response);
 
 }  // namespace ios::provider
 
