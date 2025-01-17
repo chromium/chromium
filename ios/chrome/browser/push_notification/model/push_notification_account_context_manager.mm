@@ -195,7 +195,8 @@ struct PermissionsPref {
     case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
-    case PushNotificationClientId::kSendTab: {
+    case PushNotificationClientId::kSendTab:
+    case PushNotificationClientId::kReminders: {
       ProfileIOS* profile = [self profileFrom:gaiaID];
       if (!profile) {
         // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome

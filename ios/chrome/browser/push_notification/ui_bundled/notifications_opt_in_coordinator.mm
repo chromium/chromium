@@ -207,6 +207,9 @@
         base::RecordAction(
             base::UserMetricsAction(kNotificationsOptInPromptSendTabEnabled));
         break;
+      case PushNotificationClientId::kReminders:
+        // Reminders are enabled with SendTab.
+        NOTREACHED();
     }
   }
 }

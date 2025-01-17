@@ -247,13 +247,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case PushNotificationClientId::kSports:
       settingsAction.toggleChanged = SettingsToggleTypeSports;
       break;
-    case PushNotificationClientId::kCommerce:
-    case PushNotificationClientId::kTips:
-    case PushNotificationClientId::kSafetyCheck:
-    case PushNotificationClientId::kSendTab:
-      // This should never be reached.
-      DCHECK(FALSE);
-      break;
+    default:
+      NOTREACHED();
   }
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
@@ -274,10 +269,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       return _contentNotificationsItem;
     case PushNotificationClientId::kSports:
       return _sportsNotificationsItem;
-    case PushNotificationClientId::kTips:
-    case PushNotificationClientId::kSendTab:
-    case PushNotificationClientId::kSafetyCheck:
-    case PushNotificationClientId::kCommerce:
+    default:
       // Not a switch.
       NOTREACHED();
   }

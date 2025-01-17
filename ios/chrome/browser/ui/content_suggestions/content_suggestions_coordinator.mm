@@ -1585,6 +1585,7 @@ using segmentation_platform::TipIdentifier;
       return ContentSuggestionsModuleType::kSendTabPromo;
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
+    case PushNotificationClientId::kReminders:
       NOTREACHED();
   }
 }

@@ -440,6 +440,9 @@
               PushNotificationClientId::kSafetyCheck, _gaiaID);
       [self.consumer reconfigureCellsForItems:@[ self.safetyCheckItem ]];
       break;
+    case PushNotificationClientId::kReminders:
+      // Reminders does not exist as an item in the UI.
+      NOTREACHED();
   }
   // If Send Tab has not previously been disabled, then whenever another
   // notification type is enabled through the notification settings, Send Tab
@@ -481,6 +484,7 @@
     case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
+    case PushNotificationClientId::kReminders:
       // Not a switch.
       NOTREACHED();
   }
