@@ -114,6 +114,7 @@ class ReadAnythingUntrustedPageHandler :
       ui::AXLocationAndScrollUpdates& details);
   void PrimaryPageChanged();
   void WebContentsDestroyed();
+  void OnActiveAXTreeIDChanged();
 
   // read_anything::mojom::UntrustedPageHandler:
   void OnVoiceChange(const std::string& voice,
@@ -140,6 +141,7 @@ class ReadAnythingUntrustedPageHandler :
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
+  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
 
   // ash::SessionObserver
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -168,9 +170,6 @@ class ReadAnythingUntrustedPageHandler :
   void OnExtensionReady(content::BrowserContext* browser_context,
                         const extensions::Extension* extension) override;
 #endif
-
-  // TranslateDriver::LanguageDetectionObserver:
-  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
 
   // ui::AXActionHandlerObserver:
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;
@@ -205,8 +204,6 @@ class ReadAnythingUntrustedPageHandler :
   void OnSidePanelControllerDestroyed() override;
 
   void SetUpPdfObserver();
-
-  void OnActiveAXTreeIDChanged();
 
   void OnGetVoicePackInfo(read_anything::mojom::VoicePackInfoPtr info);
 
