@@ -12,7 +12,7 @@ import {getInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_ann
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {BottomLeftLayout as DiagramBottomLeftLayout, BottomRightLayout as DiagramBottomRightLayout, KeyboardDiagramElement, MechanicalLayout as DiagramMechanicalLayout, NumberPadLayout as DiagramNumberPadLayout, PhysicalLayout as DiagramPhysicalLayout, TopRightKey as DiagramTopRightKey, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
+import {BottomLeftLayout as DiagramBottomLeftLayout, BottomRightLayout as DiagramBottomRightLayout, KeyboardDiagramElement, MechanicalLayout as DiagramMechanicalLayout, NumberPadLayout as DiagramNumberPadLayout, PhysicalLayout as DiagramPhysicalLayout, SplitModifierTopRowKey as DiagramSplitModifierTopRowKey, TopRightKey as DiagramTopRightKey, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -83,6 +83,14 @@ const topRowKeyMap: {[index: number]: KeyboardDiagramTopRowKey} = {
   [TopRowKey.kDictation]: DiagramTopRowKey['kDictation'],
   [TopRowKey.kDelete]: DiagramTopRowKey['kDelete'],
   [TopRowKey.kUnknown]: DiagramTopRowKey['kUnknown'],
+};
+
+/**
+ * Map from Mojo TopRowKey constants to split modifier specific
+ * keyboard diagram top row key definitions.
+ */
+const splitModifierTopRowKeyMap: {[index: number]: KeyboardDiagramTopRowKey} = {
+  [TopRowKey.kOverview]: DiagramSplitModifierTopRowKey['kOverview'],
 };
 
 /** Maps top-right key evdev codes to the corresponding DiagramTopRightKey. */
@@ -312,6 +320,12 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
       KeyboardDiagramTopRowKey[] {
     if (!keyboard) {
       return [];
+    }
+    if (this.computeDiagramPhysicalLayout(keyboard) ===
+        DiagramPhysicalLayout.SPLIT_MODIFIER) {
+      return keyboard.topRowKeys.map(
+          (keyId: TopRowKey) =>
+              splitModifierTopRowKeyMap[keyId] ?? topRowKeyMap[keyId]);
     }
     return keyboard.topRowKeys.map((keyId: TopRowKey) => topRowKeyMap[keyId]);
   }

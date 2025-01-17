@@ -54,6 +54,7 @@ export class KeyboardDiagramElement extends HTMLElement {
 }
 
 export const TopRowKey: TopRowKeyInterface;
+export const SplitModifierTopRowKey: TopRowKeyInterface;
 
 declare global {
   interface HTMLElementTagNameMap {
