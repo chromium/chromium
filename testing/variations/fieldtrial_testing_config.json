@@ -16598,6 +16598,7 @@
     "PasswordLeakToggleMove": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "fuchsia",
                 "linux",
