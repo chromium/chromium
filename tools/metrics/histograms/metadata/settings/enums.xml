@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
   <int value="-67456740" label="MainSettings"/>
   <int value="-45144853" label="DownloadSettings"/>
   <int value="-27162861" label="FledgeFragment"/>
-  <int value="19814032" label="ClearBrowsingDataFragmentAdvanced"/>
+  <int value="19814032" label="ClearBrowsingDataFragment"/>
   <int value="51577713" label="AccessibilitySettings"/>
   <int value="91451948" label="ContextualSearchSettingsFragment"/>
   <int value="383093746" label="PrivacySandboxSettingsFragment"/>
@@ -84,8 +84,8 @@ chromium-metrics-reviews@google.com.
   <int value="1849593145" label="AndroidPaymentAppsFragment"/>
   <int value="1891640238" label="AutofillPaymentMethodsFragment"/>
   <int value="1952237285" label="TracingSettings"/>
-  <int value="1968319616" label="ClearBrowsingDataFragmentBasic"/>
-  <int value="2070921964" label="ClearBrowsingDataTabsFragment"/>
+  <int value="1968319616" label="(Obsolete) ClearBrowsingDataFragmentBasic"/>
+  <int value="2070921964" label="(Obsolete) ClearBrowsingDataTabsFragment"/>
 </enum>
 
 <enum name="BooleanRedirected">

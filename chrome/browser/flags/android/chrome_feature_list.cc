@@ -301,7 +301,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShortCircuitUnfocusAnimation,
     &kShowNewTabAnimations,
     &kPartnerCustomizationsUma,
-    &kQuickDeleteAndroidFollowup,
     &kQuickDeleteAndroidSurvey,
     &kReadAloud,
     &kReadAloudInOverflowMenuInCCT,
@@ -931,10 +930,6 @@ BASE_FEATURE(kShowNewTabAnimations,
 BASE_FEATURE(kPartnerCustomizationsUma,
              "PartnerCustomizationsUma",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kQuickDeleteAndroidFollowup,
-             "QuickDeleteAndroidFollowup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuickDeleteAndroidSurvey,
              "QuickDeleteAndroidSurvey",

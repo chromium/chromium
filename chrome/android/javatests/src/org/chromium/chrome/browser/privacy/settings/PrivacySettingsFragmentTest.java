@@ -543,38 +543,6 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP)
-    public void testClearBrowsingData_withQuickDeleteV2Disabled() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
-
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        Preference ClearBrowsingDataPreference =
-                fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA);
-        Preference ClearBrowsingDataAdvancedPreference =
-                fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA_ADVANCED);
-        assertTrue(ClearBrowsingDataPreference.isVisible());
-        assertFalse(ClearBrowsingDataAdvancedPreference.isVisible());
-    }
-
-    @Test
-    @LargeTest
-    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
-    public void testClearBrowsingData_withQuickDeleteV2Enabled() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
-
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        Preference ClearBrowsingDataPreference =
-                fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA);
-        Preference ClearBrowsingDataAdvancedPreference =
-                fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA_ADVANCED);
-        assertTrue(ClearBrowsingDataAdvancedPreference.isVisible());
-        assertFalse(ClearBrowsingDataPreference.isVisible());
-    }
-
-    @Test
-    @LargeTest
     public void testSignedOutFooterLink() {
         mSettingsActivityTestRule.startSettingsActivity();
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);

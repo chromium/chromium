@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -405,17 +404,9 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void launchClearBrowsingDataDialog(Activity currentActivity) {
-        if (QuickDeleteController.isQuickDeleteFollowupEnabled()) {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(
-                            currentActivity,
-                            SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
-        } else {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(
-                            currentActivity,
-                            SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
-        }
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        currentActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
     }
 
     @Override

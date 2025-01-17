@@ -447,7 +447,6 @@ public abstract class ChromeFeatureList {
     public static final String PWA_UPDATE_DIALOG_FOR_ICON = "PwaUpdateDialogForIcon";
     public static final String PWA_RESTORE_UI = "PwaRestoreUi";
     public static final String PWA_RESTORE_UI_AT_STARTUP = "PwaRestoreUiAtStartup";
-    public static final String QUICK_DELETE_ANDROID_FOLLOWUP = "QuickDeleteAndroidFollowup";
     public static final String QUICK_DELETE_ANDROID_SURVEY = "QuickDeleteAndroidSurvey";
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
     public static final String READALOUD = "ReadAloud";
@@ -968,8 +967,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
-    public static final MutableFlagWithSafeDefault sQuickDeleteAndroidFollowup =
-            newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_FOLLOWUP, true);
     public static final MutableFlagWithSafeDefault sQuickDeleteAndroidSurvey =
             newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sReadAloudTapToSeek =

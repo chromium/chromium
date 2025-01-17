@@ -8480,11 +8480,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(download::features::kSmartSuggestionForLargeDownloads)},
 
-    {"quick-delete-android-followup",
-     flag_descriptions::kQuickDeleteAndroidFollowupName,
-     flag_descriptions::kQuickDeleteAndroidFollowupDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kQuickDeleteAndroidFollowup)},
-
     {"quick-delete-android-survey",
      flag_descriptions::kQuickDeleteAndroidSurveyName,
      flag_descriptions::kQuickDeleteAndroidSurveyDescription, kOsAndroid,

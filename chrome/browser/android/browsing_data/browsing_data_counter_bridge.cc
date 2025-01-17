@@ -23,26 +23,19 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     const JavaParamRef<jobject>& obj,
     Profile* profile,
     jint selected_time_period,
-    jint data_type,
-    jint clear_browsing_data_tab)
+    jint data_type)
     : jobject_(obj) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
             static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
-  DCHECK_GE(clear_browsing_data_tab, 0);
-  DCHECK_LE(clear_browsing_data_tab,
-            static_cast<int>(browsing_data::ClearBrowsingDataTab::MAX_VALUE));
   TRACE_EVENT1("browsing_data",
                "BrowsingDataCounterBridge::BrowsingDataCounterBridge",
                "data_type", data_type);
 
-  clear_browsing_data_tab_ =
-      static_cast<browsing_data::ClearBrowsingDataTab>(clear_browsing_data_tab);
-
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
           static_cast<browsing_data::BrowsingDataType>(data_type),
-          clear_browsing_data_tab_, &pref)) {
+          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
     return;
   }
 
@@ -53,7 +46,7 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     return;
 
   counter_->InitWithoutPeriodPref(
-      profile_->GetPrefs(), clear_browsing_data_tab_,
+      profile_->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
       CalculateBeginDeleteTime(
           static_cast<browsing_data::TimePeriod>(selected_time_period)),
       base::BindRepeating(&BrowsingDataCounterBridge::onCounterFinished,
@@ -94,9 +87,7 @@ static jlong JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
     const JavaParamRef<jobject>& obj,
     Profile* profile,
     jint selected_time_period,
-    jint data_type,
-    jint clear_browsing_data_tab) {
-  return reinterpret_cast<intptr_t>(
-      new BrowsingDataCounterBridge(env, obj, profile, selected_time_period,
-                                    data_type, clear_browsing_data_tab));
+    jint data_type) {
+  return reinterpret_cast<intptr_t>(new BrowsingDataCounterBridge(
+      env, obj, profile, selected_time_period, data_type));
 }

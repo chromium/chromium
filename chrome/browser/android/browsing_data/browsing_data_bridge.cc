@@ -64,15 +64,6 @@ PrefService* GetPrefService(Profile* profile) {
   return profile->GetOriginalProfile()->GetPrefs();
 }
 
-browsing_data::ClearBrowsingDataTab ToTabEnum(jint clear_browsing_data_tab) {
-  DCHECK_GE(clear_browsing_data_tab, 0);
-  DCHECK_LE(clear_browsing_data_tab,
-            static_cast<int>(browsing_data::ClearBrowsingDataTab::MAX_VALUE));
-
-  return static_cast<browsing_data::ClearBrowsingDataTab>(
-      clear_browsing_data_tab);
-}
-
 void OnBrowsingDataModelBuilt(JNIEnv* env,
                               const ScopedJavaGlobalRef<jobject>& java_callback,
                               std::unique_ptr<BrowsingDataModel> model) {
@@ -225,8 +216,7 @@ static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
 static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
-    jint data_type,
-    jint clear_browsing_data_tab) {
+    jint data_type) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
             static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
@@ -238,7 +228,7 @@ static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
           static_cast<browsing_data::BrowsingDataType>(data_type),
-          ToTabEnum(clear_browsing_data_tab), &pref)) {
+          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
     return false;
   }
 
@@ -249,7 +239,6 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
     jint data_type,
-    jint clear_browsing_data_tab,
     jboolean value) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
@@ -258,7 +247,7 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
           static_cast<browsing_data::BrowsingDataType>(data_type),
-          ToTabEnum(clear_browsing_data_tab), &pref)) {
+          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
     return;
   }
 
@@ -267,23 +256,21 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
 
 static jint JNI_BrowsingDataBridge_GetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
-    Profile* profile,
-    jint clear_browsing_data_tab) {
+    Profile* profile) {
   return GetPrefService(profile)->GetInteger(
       browsing_data::GetTimePeriodPreferenceName(
-          ToTabEnum(clear_browsing_data_tab)));
+          browsing_data::ClearBrowsingDataTab::ADVANCED));
 }
 
 static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
     Profile* profile,
-    jint clear_browsing_data_tab,
     jint time_period) {
   DCHECK_GE(time_period, 0);
   DCHECK_LE(time_period,
             static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));
   const char* pref_name = browsing_data::GetTimePeriodPreferenceName(
-      ToTabEnum(clear_browsing_data_tab));
+      browsing_data::ClearBrowsingDataTab::ADVANCED);
   PrefService* prefs = GetPrefService(profile);
   int previous_value = prefs->GetInteger(pref_name);
   if (time_period != previous_value) {
@@ -291,22 +278,6 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
         static_cast<browsing_data::TimePeriod>(time_period));
     prefs->SetInteger(pref_name, time_period);
   }
-}
-
-static jint JNI_BrowsingDataBridge_GetLastClearBrowsingDataTab(
-    JNIEnv* env,
-    Profile* profile) {
-  return GetPrefService(profile)->GetInteger(
-      browsing_data::prefs::kLastClearBrowsingDataTab);
-}
-
-static void JNI_BrowsingDataBridge_SetLastClearBrowsingDataTab(JNIEnv* env,
-                                                               Profile* profile,
-                                                               jint tab_index) {
-  DCHECK_GE(tab_index, 0);
-  DCHECK_LT(tab_index, 2);
-  GetPrefService(profile)->SetInteger(
-      browsing_data::prefs::kLastClearBrowsingDataTab, tab_index);
 }
 
 static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(

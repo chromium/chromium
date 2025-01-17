@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -397,7 +397,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
-    public void testMoreOptions_Triggers_ClearBrowsingData_Advanced() {
+    public void testMoreOptions_OpensClearBrowsingData() {
         final Instrumentation.ActivityMonitor activityMonitor =
                 new Instrumentation.ActivityMonitor(SettingsActivity.class.getName(), null, false);
         InstrumentationRegistry.getInstrumentation().addMonitor(activityMonitor);
@@ -412,7 +412,7 @@ public class QuickDeleteControllerTest {
                         InstrumentationRegistry.getInstrumentation()
                                 .waitForMonitorWithTimeout(activityMonitor, ACTIVITY_WAIT_LONG_MS);
 
-        assertTrue(activity.getMainFragment() instanceof ClearBrowsingDataFragmentAdvanced);
+        assertTrue(activity.getMainFragment() instanceof ClearBrowsingDataFragment);
     }
 
     @Test

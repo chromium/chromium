@@ -122,11 +122,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.Task) -->
 
-<enum name="ClearBrowsingDataTab">
-  <int value="0" label="Basic"/>
-  <int value="1" label="Advanced"/>
-</enum>
-
 <enum name="ClusterFilterReason">
   <int value="0" label="Not filtered"/>
   <int value="1" label="Not enough visits with images"/>

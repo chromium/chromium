@@ -347,12 +347,6 @@ found in the LICENSE file.
     </style>
 
     <!-- Misc styles -->
-    <style name="TabBarShadow">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/action_bar_shadow_height</item>
-        <item name="android:src">@drawable/modern_toolbar_shadow</item>
-        <item name="android:scaleType">fitXY</item>
-    </style>
     <style name="TabBarLineShadow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>

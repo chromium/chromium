@@ -51,7 +51,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
         if (mOpenQuickDeleteCb != null) {
             mOpenQuickDeleteCb.run();
         } else {
-            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA);
         }
     }
 

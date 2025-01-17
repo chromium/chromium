@@ -198,9 +198,7 @@ class QuickDeleteDialogDelegate {
         QuickDeleteMetricsDelegate.recordHistogram(
                 QuickDeleteMetricsDelegate.QuickDeleteAction.MORE_OPTIONS_CLICKED);
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(
-                        mContext,
-                        SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
         mModalDialogManager.dismissDialog(
                 mModalDialogPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
