@@ -28,7 +28,6 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/uuid_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -225,11 +224,6 @@ class BookmarkModel : public BookmarkUndoProvider,
   // * Move(B, new_parent, 2) -> [A, B, C]
   // * Move(B, new_parent, 3) -> [A, C, B]
   void Move(const BookmarkNode* node,
-            const BookmarkNode* new_parent,
-            size_t index);
-
-  // Inserts a copy of `node` into `new_parent` at `index`.
-  void Copy(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
 

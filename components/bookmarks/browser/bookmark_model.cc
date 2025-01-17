@@ -28,7 +28,6 @@
 #include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
@@ -541,26 +540,6 @@ void BookmarkModel::ClearLastUsedTimeInRangeRecursive(
     ClearLastUsedTimeInRangeRecursive(node->children()[i].get(), delete_begin,
                                       delete_end);
   }
-}
-
-void BookmarkModel::Copy(const BookmarkNode* node,
-                         const BookmarkNode* new_parent,
-                         size_t index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(loaded_);
-  DCHECK(node);
-  DCHECK(IsValidIndex(new_parent, index, true));
-  DCHECK(!is_root_node(new_parent));
-  DCHECK(!is_permanent_node(node));
-  DCHECK(!new_parent->HasAncestor(node));
-  DCHECK(node->HasAncestor(root_node()));
-  DCHECK(new_parent->HasAncestor(root_node()));
-
-  SetDateFolderModified(new_parent, Time::Now());
-  BookmarkNodeData drag_data(node);
-  // CloneBookmarkNode will use BookmarkModel methods to do the job, so we
-  // don't need to send notifications here or schedule a save.
-  CloneBookmarkNode(this, drag_data.elements, new_parent, index, true);
 }
 
 const gfx::Image& BookmarkModel::GetFavicon(const BookmarkNode* node) {

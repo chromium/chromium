@@ -1478,63 +1478,6 @@ TEST_F(BookmarkModelTest, MoveWithUuidCollisionInDescendant) {
                                   NodeTypeForUuidLookup::kAccountNodes));
 }
 
-TEST_F(BookmarkModelTest, Copy) {
-  const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
-  const std::string kModelString("a 1:[ b c ] d 2:[ e f g ] h ");
-  test::AddNodesFromModelString(model_.get(), bookmark_bar_node, kModelString);
-
-  // Validate initial model.
-  std::string actual_model_string =
-      test::ModelStringFromNode(bookmark_bar_node);
-  EXPECT_EQ(kModelString, actual_model_string);
-
-  // Copy 'd' to be after '1:b': URL item from bar to folder.
-  const BookmarkNode* node_to_copy = bookmark_bar_node->children()[2].get();
-  const BookmarkNode* destination = bookmark_bar_node->children()[1].get();
-  model_->Copy(node_to_copy, destination, 1);
-  actual_model_string = test::ModelStringFromNode(bookmark_bar_node);
-  EXPECT_EQ("a 1:[ b d c ] d 2:[ e f g ] h ", actual_model_string);
-
-  // Copy '1:d' to be after 'a': URL item from folder to bar.
-  const BookmarkNode* folder = bookmark_bar_node->children()[1].get();
-  node_to_copy = folder->children()[1].get();
-  model_->Copy(node_to_copy, bookmark_bar_node, 1);
-  actual_model_string = test::ModelStringFromNode(bookmark_bar_node);
-  EXPECT_EQ("a d 1:[ b d c ] d 2:[ e f g ] h ", actual_model_string);
-
-  // Copy '1' to be after '2:e': Folder from bar to folder.
-  node_to_copy = bookmark_bar_node->children()[2].get();
-  destination = bookmark_bar_node->children()[4].get();
-  model_->Copy(node_to_copy, destination, 1);
-  actual_model_string = test::ModelStringFromNode(bookmark_bar_node);
-  EXPECT_EQ("a d 1:[ b d c ] d 2:[ e 1:[ b d c ] f g ] h ",
-            actual_model_string);
-
-  // Copy '2:1' to be after '2:f': Folder within same folder.
-  folder = bookmark_bar_node->children()[4].get();
-  node_to_copy = folder->children()[1].get();
-  model_->Copy(node_to_copy, folder, 3);
-  actual_model_string = test::ModelStringFromNode(bookmark_bar_node);
-  EXPECT_EQ("a d 1:[ b d c ] d 2:[ e 1:[ b d c ] f 1:[ b d c ] g ] h ",
-            actual_model_string);
-
-  // Copy first 'd' to be after 'h': URL item within the bar.
-  node_to_copy = bookmark_bar_node->children()[1].get();
-  model_->Copy(node_to_copy, bookmark_bar_node, 6);
-  actual_model_string = test::ModelStringFromNode(bookmark_bar_node);
-  EXPECT_EQ("a d 1:[ b d c ] d 2:[ e 1:[ b d c ] f 1:[ b d c ] g ] h d ",
-            actual_model_string);
-
-  // Copy '2' to be after 'a': Folder within the bar.
-  node_to_copy = bookmark_bar_node->children()[4].get();
-  model_->Copy(node_to_copy, bookmark_bar_node, 1);
-  actual_model_string = test::ModelStringFromNode(bookmark_bar_node);
-  EXPECT_EQ(
-      "a 2:[ e 1:[ b d c ] f 1:[ b d c ] g ] d 1:[ b d c ] "
-      "d 2:[ e 1:[ b d c ] f 1:[ b d c ] g ] h d ",
-      actual_model_string);
-}
-
 // Tests the default node if no bookmarks have been added yet
 TEST_F(BookmarkModelTest, ParentForNewNodesWithEmptyModel) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
