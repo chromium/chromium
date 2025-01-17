@@ -1555,6 +1555,7 @@ TEST_F(ClientSideDetectionHostTest,
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
   GURL example_url("http://suspiciousurl.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
   ExpectPreClassificationChecks(
@@ -1624,6 +1625,9 @@ TEST_F(ClientSideDetectionHostTest,
       ClientSideDetectionType::FORCE_REQUEST, 1);
   histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
                                      true, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo", false,
+      1);
 }
 
 class ClientSideDetectionHostNotificationTest
@@ -2546,6 +2550,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
               {});
 
@@ -2668,6 +2673,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       ClientSideDetectionType::FORCE_REQUEST, 1);
   histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
                                      true, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo", true,
+      1);
   IntelligentScanInfo intelligent_scan_info =
       verdict_sent->intelligent_scan_info();
   EXPECT_EQ(intelligent_scan_info.brand(), "Example Brand");
@@ -2687,6 +2695,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
               {});
 
@@ -2796,6 +2805,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       ClientSideDetectionType::FORCE_REQUEST, 1);
   histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
                                      true, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo", true,
+      1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", 0);
 }
@@ -2811,6 +2823,7 @@ TEST_F(
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
               {});
 
@@ -2893,6 +2906,11 @@ TEST_F(
       ClientSideDetectionType::FORCE_REQUEST, 1);
   histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
                                      true, 1);
+  // LlamaForcedTriggerInfo was never added to the response, so it doesn't have
+  // it.
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo", false,
+      1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", 0);
 }

@@ -965,8 +965,9 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
     verdict->set_client_side_detection_type(
         safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
     force_request_from_rt_url_lookup = true;
+
     if (base::FeatureList::IsEnabled(
-            kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) {
+            kClientSideDetectionSendLlamaForcedTriggerInfo)) {
       raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
 
       if (cache_manager && current_url_.is_valid()) {
@@ -982,6 +983,11 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
 
   base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",
                             force_request_from_rt_url_lookup);
+  if (force_request_from_rt_url_lookup) {
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo",
+        verdict->has_llama_forced_trigger_info());
+  }
 
   base::UmaHistogramExactLinear(
       "SBClientPhishing.ClientSideDetectionTypeRequest",

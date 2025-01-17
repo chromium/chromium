@@ -174,12 +174,16 @@ void ClientSideDetectionService::OnPrefsUpdated() {
     if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       client_side_phishing_model_->SubscribeToImageEmbedderOptimizationGuide();
       if (base::FeatureList::IsEnabled(
-              kClientSideDetectionBrandAndIntentForScamDetection)) {
+              kClientSideDetectionBrandAndIntentForScamDetection) ||
+          base::FeatureList::IsEnabled(
+              kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) {
         delegate_->StartListeningToOnDeviceModelUpdate();
       }
     } else {
       if (base::FeatureList::IsEnabled(
-              kClientSideDetectionBrandAndIntentForScamDetection)) {
+              kClientSideDetectionBrandAndIntentForScamDetection) ||
+          base::FeatureList::IsEnabled(
+              kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) {
         delegate_->StopListeningToOnDeviceModelUpdate();
         on_device_model_available_ = false;
       }
