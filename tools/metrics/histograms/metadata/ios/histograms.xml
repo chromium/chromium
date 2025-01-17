@@ -2827,14 +2827,14 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Cleared" enum="IOSTipsNotificationType"
-    expires_after="2024-12-29">
+    expires_after="2025-07-13">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>Logs when a tips notification is cleared by the client.</summary>
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.ClientStatus.Enabled.ByProvider"
-    enum="Boolean" expires_after="2025-07-06">
+    enum="Boolean" expires_after="2025-07-13">
   <owner>hiramahmood@google.com</owner>
   <owner>scottyoder@chromium.org</owner>
   <summary>
@@ -2845,7 +2845,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Dismissed"
-    enum="IOSTipsNotificationType" expires_after="2024-12-29">
+    enum="IOSTipsNotificationType" expires_after="2025-07-13">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -2856,14 +2856,14 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Interaction"
-    enum="IOSTipsNotificationType" expires_after="2024-12-29">
+    enum="IOSTipsNotificationType" expires_after="2025-07-13">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>Logs when the user interacts with a Tips notification.</summary>
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Sent" enum="IOSTipsNotificationType"
-    expires_after="2025-06-08">
+    expires_after="2025-07-13">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -2884,7 +2884,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.UserType"
-    enum="IOSTipsNotificationUserType" expires_after="2025-07-06">
+    enum="IOSTipsNotificationUserType" expires_after="2025-07-13">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
