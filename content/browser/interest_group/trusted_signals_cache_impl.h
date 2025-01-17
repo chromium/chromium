@@ -116,6 +116,28 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback)>;
 
+  // The cached compression group of a trusted signals response, or an error
+  // message. May be for bidding signals or scoring signals, but not both.
+  // CompressionGroupData are indexed by UnguessableTokens which can be used to
+  // retrieve them over the auction_worklet::mojom::TrustedSignalsCache Mojo
+  // interface.
+  //
+  // Public so that Handle can depend on it.
+  //
+  // CompressionGroupData objects are created when RequestTrusted*Signals() is
+  // called and can't reuse an existing one, at which point a new or existing
+  // Fetch in `fetch_map_` is also associated with the CompressionGroupData.
+  // Each CompressionGroupData owns all CacheEntries that refer to it, and the
+  // compression group of the associated fetch as well.  No two
+  // CompressionGroupData objects represent the same compression group from a
+  // single Fetch.
+  //
+  // CompressionGroupData objects are refcounted, and when the last reference is
+  // released, all associated CacheEntries are destroyed, and the compression
+  // group of the associated fetch (if the fetche associated with the
+  // CompressionGroupData has not yet completed) is destroyed as well.
+  class CompressionGroupData;
+
   // As long as a Handle is alive, any Mojo
   // auction_worklet::mojom::TrustedSignalsCache created by invoking
   // CreateMojoPipe() can retrieve the response associated with the
@@ -124,33 +146,27 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // any point in time, but the fetch may be made asynchronously, so there's no
   // guarantee of a timely response.
   //
-  // Refcounted so that one handle can be reused for all requests with the same
-  // `compression_group_token`, so when the Handle is destroyed, we know there
-  // are no Handles that refer to the corresponding entry in the cache, and it
-  // may be deleted.
-  //
   // Any pending or future requests through a handed out
   // auction_worklet::mojom::TrustedSignalsCache pipe for the
   // `compression_group_token` associated with a destroyed Handle will be sent
   // an error message.
   //
-  // All outstanding Handles must be released before the TrustedSignalsCacheImpl
-  // may be destroyed.
+  // All outstanding Handles must be destroyed before the underlying
+  // CompressionGroupData may be destroyed.
   //
-  // Currently, the internal CompressionGroupData class is a subclass of this,
-  // so callers are hanging on to data associated with a compression group
-  // directly, but that's not a fundamental design requirement of the API.
-  class Handle : public base::RefCounted<Handle> {
+  // TODO(https://crbug.com/333445540): Remove refcounting, which is only done
+  // for legacy reasons.
+  class CONTENT_EXPORT Handle : public base::RefCounted<Handle> {
    public:
+    // Takes ownership of a reference to CompressionGroupData.
+    explicit Handle(scoped_refptr<CompressionGroupData> compression_group_data);
     Handle(Handle&) = delete;
     Handle& operator=(Handle&) = delete;
 
     // The token that needs to be passed to GetTrustedSignals() to retrieve the
     // response through the auction_worklet::mojom::TrustedSignalsCache API.
     // Will not change for the lifetime of the handle.
-    const base::UnguessableToken& compression_group_token() const {
-      return compression_group_token_;
-    }
+    base::UnguessableToken compression_group_token() const;
 
     // Attempts to start the network fetch, if it hasn't started already. Not
     // guaranteed to immediately start the fetch, as it may currently be
@@ -162,16 +178,15 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     //
     // Handles that share a `compression_group_token` always share a Fetch,
     // though other Handles may share the fetch as well.
-    virtual void StartFetch() = 0;
+    void StartFetch();
 
    protected:
     friend class base::RefCounted<Handle>;
 
-    Handle();
     virtual ~Handle();
 
-    const base::UnguessableToken compression_group_token_{
-        base::UnguessableToken::Create()};
+    // The underlying CompressionGroupData. Only released on destruction.
+    scoped_refptr<CompressionGroupData> compression_group_data_;
   };
 
   static constexpr size_t kNonceCacheSize = 50;
@@ -366,26 +381,6 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // signals, but not both.
   struct Fetch;
   using FetchMap = std::multimap<FetchKey, Fetch>;
-
-  // The cached compression group of a trusted signals response, or an error
-  // message. May be for bidding signals or scoring signals, but not both.
-  // CompressionGroupData are indexed by UnguessableTokens which can be used to
-  // retrieve them over the auction_worklet::mojom::TrustedSignalsCache Mojo
-  // interface.
-  //
-  // CompressionGroupData objects are created when RequestTrusted*Signals() is
-  // called and can't reuse an existing one, at which point a new or existing
-  // Fetch in `fetch_map_` is also associated with the CompressionGroupData.
-  // Each CompressionGroupData owns all CacheEntries that refer to it, and the
-  // compression group of the associated fetch as well.  No two
-  // CompressionGroupData objects represent the same compression group from a
-  // single Fetch.
-  //
-  // CompressionGroupData objects are refcounted, and when the last reference is
-  // released, all associated CacheEntries are destroyed, and the compression
-  // group of the associated fetch (if the fetche associated with the
-  // CompressionGroupData has not yet completed) is destroyed as well.
-  class CompressionGroupData;
 
   // A key that distinguishes bidding signals entries in the cache. The key is
   // used to find all potential matching entries whenever

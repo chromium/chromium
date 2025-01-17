@@ -1397,7 +1397,8 @@ TYPED_TEST(TrustedSignalsCacheTest, AutoStartTwoRequests) {
       TrustedSignalsCacheImpl::kAutoStartDelay - kTinyTime);
   auto [handle2, partition_id2] =
       this->RequestTrustedSignals(params, /*start_fetch=*/false);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   // No fetches should have been started.
@@ -1699,7 +1700,8 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReused) {
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
 
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   // Destroying the first handle should not cancel the request. This should be
@@ -1715,7 +1717,8 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReused) {
   // Create yet another handle, which should again be merged, and destroy the
   // second handle.
   auto [handle3, partition_id3] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle2, handle3);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle3->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id3);
   handle2.reset();
 
@@ -1725,7 +1728,8 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReused) {
   // Create yet another handle, which should again be merged, and destroy the
   // third handle.
   auto [handle4, partition_id4] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle3, handle4);
+  EXPECT_EQ(handle3->compression_group_token(),
+            handle4->compression_group_token());
   EXPECT_EQ(partition_id3, partition_id4);
   handle3.reset();
 
@@ -1745,7 +1749,8 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReusedLateStartFetch) {
       this->RequestTrustedSignals(params, /*start_fetch=*/false);
   auto [handle2, partition_id2] =
       this->RequestTrustedSignals(params, /*start_fetch=*/true);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   // Wait for Fetcher.
@@ -1864,7 +1869,8 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
   // Re-requesting the data before expiration time should return the same Handle
   // and partition.
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   // Run until the expiration time. When the time exactly equals the expiration
@@ -1914,7 +1920,8 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleError) {
   // Re-requesting the data before the response is received should return the
   // same Handle and partition.
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   RespondToFetchWithError(fetch);
@@ -1960,7 +1967,8 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleSuccessZeroTTL) {
     // Re-requesting the data before a response is received should return the
     // same Handle and partition.
     auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
-    EXPECT_EQ(handle1, handle2);
+    EXPECT_EQ(handle1->compression_group_token(),
+              handle2->compression_group_token());
     EXPECT_EQ(partition_id1, partition_id2);
 
     RespondToFetchWithSuccess(
@@ -2022,7 +2030,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_NE(partition_id1, partition_id2);
   auto fetch = this->WaitForSignalsFetch();
 
@@ -2044,10 +2053,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // Re-requesting either set of parameters should return the same Handle and
   // partition as the first requests.
   auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle1, handle3);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle3->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id3);
   auto [handle4, partition_id4] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle4);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle4->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id4);
 
   // Run until the expiration time. When the time exactly equals the expiration
@@ -2063,7 +2074,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
   auto [handle6, partition_id6] = this->RequestTrustedSignals(params2);
   EXPECT_NE(handle2->compression_group_token(),
             handle6->compression_group_token());
-  EXPECT_EQ(handle5, handle6);
+  EXPECT_EQ(handle5->compression_group_token(),
+            handle6->compression_group_token());
   EXPECT_NE(partition_id5, partition_id6);
 
   // Give a different response for the second fetch.
@@ -2104,7 +2116,6 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
-  EXPECT_NE(handle1, handle2);
   EXPECT_NE(handle1->compression_group_token(),
             handle2->compression_group_token());
   auto fetch = this->WaitForSignalsFetch();
@@ -2128,10 +2139,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   // Re-request both sets of parameters. The same Handles should be returned.
   auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle1, handle3);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle3->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id3);
   auto [handle4, partition_id4] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle4);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle4->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id4);
 
   // Wait until the first compression group's data has expired.
@@ -2141,9 +2154,11 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // a new handle, and trigger a new fetch. The second set of parameters should
   // get the same Handle, since it has yet to expire.
   auto [handle5, partition_id5] = this->RequestTrustedSignals(params1);
-  EXPECT_NE(handle1, handle5);
+  EXPECT_NE(handle1->compression_group_token(),
+            handle5->compression_group_token());
   auto [handle6, partition_id6] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle6);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle6->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id6);
 
   // Validate there is indeed a new fetch for the first set of parameters, and
@@ -2161,10 +2176,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // Re-request both sets of parameters. The same Handles should be returned as
   // the last time.
   auto [handle7, partition_id7] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle5, handle7);
+  EXPECT_EQ(handle5->compression_group_token(),
+            handle7->compression_group_token());
   EXPECT_EQ(partition_id5, partition_id7);
   auto [handle8, partition_id8] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle8);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle8->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id8);
 
   // Wait until the second compression group's data has expired.
@@ -2173,10 +2190,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // Re-request both sets of parameters. This time, only the second set of
   // parameters should get a new Handle.
   auto [handle9, partition_id9] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle5, handle9);
+  EXPECT_EQ(handle5->compression_group_token(),
+            handle9->compression_group_token());
   EXPECT_EQ(partition_id5, partition_id9);
   auto [handle10, partition_id10] = this->RequestTrustedSignals(params2);
-  EXPECT_NE(handle2, handle10);
+  EXPECT_NE(handle2->compression_group_token(),
+            handle10->compression_group_token());
 
   // Validate there is indeed a new fetch for the second set of parameters, and
   // provide a response.
@@ -2339,7 +2358,6 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
       }
 
       case RequestRelation::kDifferentCompressionGroups: {
-        EXPECT_NE(handle1, handle2);
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
         auto fetch = this->WaitForSignalsFetch();
@@ -2367,7 +2385,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_NE(partition_id1, partition_id2);
         auto fetch = this->WaitForSignalsFetch();
 
@@ -2390,7 +2409,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
 
       case RequestRelation::kSamePartitionModified:
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
         auto fetch = this->WaitForSignalsFetch();
 
@@ -2467,7 +2487,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
       }
 
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
 
         // Respond with a single response for the partition, and read it - no
@@ -2538,7 +2559,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
       }
 
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
         TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
         client2.WaitForSuccess();
@@ -2604,7 +2626,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Make a second request using `params2`. It should result in a new
         // request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_NE(handle1, handle3);
+        EXPECT_NE(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         auto fetch3 = this->WaitForSignalsFetch();
         ValidateFetchParams(fetch3, params2,
                             /*expected_compression_group_id=*/0, partition_id3);
@@ -2641,7 +2664,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Make a second request using `params2`. It should reuse the response
         // to the initial request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_EQ(handle1, handle3);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_NE(partition_id1, partition_id3);
         EXPECT_EQ(partition_id2, partition_id3);
         TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
@@ -2663,7 +2687,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Make a second request using `params2`. It should reuse the response
         // to the initial request, including the same partition ID.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_EQ(handle1, handle3);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id3);
 
         // For the sake of completeness, read the response again.
@@ -2716,7 +2741,6 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Make a second request using `params1`. It should result in a new
         // request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-        EXPECT_NE(handle1, handle3);
         auto fetch3 = this->WaitForSignalsFetch();
         ValidateFetchParams(fetch3, params1,
                             /*expected_compression_group_id=*/0, partition_id3);
@@ -2752,7 +2776,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Make a second request using `params1`. It should reuse the response
         // to the initial request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-        EXPECT_EQ(handle2, handle3);
+        EXPECT_EQ(handle2->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id3);
         EXPECT_NE(partition_id2, partition_id3);
         TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
@@ -2774,7 +2799,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Make a second request using `params1`. It should reuse the response
         // to the initial request, including the same partition ID.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-        EXPECT_EQ(handle2, handle3);
+        EXPECT_EQ(handle2->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id2, partition_id3);
 
         // For the sake of completeness, read the response again.
@@ -2864,7 +2890,6 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentCompressionGroups: {
-        EXPECT_NE(handle1, handle2);
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
         auto fetch1 = this->WaitForSignalsFetch();
@@ -2923,7 +2948,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_NE(partition_id1, partition_id2);
         auto fetch1 = this->WaitForSignalsFetch();
 
@@ -2945,7 +2971,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // request ID as the other requests, and the same partition ID as the
         // second request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_EQ(handle1, handle3);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id2, partition_id3);
 
         // Respond with a single response for the partition, and read it - no
@@ -2958,7 +2985,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
       case RequestRelation::kSamePartitionModified:
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
         auto fetch1 = this->WaitForSignalsFetch();
 
@@ -2974,7 +3002,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Reissue second request, which should result in the same signals
         // request ID and partition ID as the other requests.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_EQ(handle1, handle3);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id3);
 
         // Respond with a single request for the partition, and read it - no
@@ -3199,7 +3228,6 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentCompressionGroups: {
-        EXPECT_NE(handle1, handle2);
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
         std::move(callback1).Run(BiddingAndAuctionServerKey{
@@ -3230,7 +3258,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_NE(partition_id1, partition_id2);
         std::move(callback1).Run(BiddingAndAuctionServerKey{
             /*key=*/params1.coordinator.Serialize(), /*id=*/1});
@@ -3256,7 +3285,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
       case RequestRelation::kSamePartitionModified:
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
         std::move(callback1).Run(BiddingAndAuctionServerKey{
             /*key=*/params1.coordinator.Serialize(), /*id=*/1});
@@ -3386,14 +3416,16 @@ TEST_F(TrustedBiddingSignalsCacheTest, MultipleRequestsSameCacheKey) {
   auto params2 = this->CreateDefaultParams();
   params2.trusted_bidding_signals_keys = {{"othey_key2"}};
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
-  EXPECT_NE(handle1, handle2);
+  EXPECT_NE(handle1->compression_group_token(),
+            handle2->compression_group_token());
 
   // Create another fetch with the default set of parameters. It's merged into
   // the second request, not the first. This is because the first and second
   // request have the same cache key, so the second request overwrite the cache
   // key of the first, though its compression group ID should still be valid.
   auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle2, handle3);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle3->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id3);
 
   // Wait for the combined fetch.
@@ -3404,10 +3436,12 @@ TEST_F(TrustedBiddingSignalsCacheTest, MultipleRequestsSameCacheKey) {
   // Reissuing a request with either previous set of params should reuse the
   // partition shared by the second and third fetches.
   auto [handle4, partition_id4] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle2, handle4);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle4->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id4);
   auto [handle5, partition_id5] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle5);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle5->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id5);
 
   // Complete second fetch before first, just to make sure there's no

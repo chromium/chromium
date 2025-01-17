@@ -82,10 +82,6 @@ void SendNoLiveEntryErrorToClient(
 
 }  // namespace
 
-TrustedSignalsCacheImpl::Handle::Handle() = default;
-
-TrustedSignalsCacheImpl::Handle::~Handle() = default;
-
 TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey() =
     default;
 
@@ -406,7 +402,8 @@ struct TrustedSignalsCacheImpl::ScoringCacheEntry {
   int partition_id = 0;
 };
 
-class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
+class TrustedSignalsCacheImpl::CompressionGroupData
+    : public base::RefCounted<CompressionGroupData> {
  public:
   // Creates a CompressionGroupData.
   //
@@ -572,8 +569,7 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   // Fetch starts, but safest to track this separately.
   int GetNextPartitionId() { return next_partition_id_++; }
 
-  // Handle implementation:
-  void StartFetch() override {
+  void StartFetch() {
     // If there's no fetch,  the fetch has already completed (or failed), so
     // there's nothing to do.
     if (!fetch_) {
@@ -583,10 +579,14 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
     cache_->SetFetchCanStart(*fetch_);
   }
 
+  base::UnguessableToken compression_group_token() const {
+    return compression_group_token_;
+  }
+
  private:
   friend class base::RefCounted<CompressionGroupData>;
 
-  ~CompressionGroupData() override {
+  virtual ~CompressionGroupData() {
     cache_->OnCompressionGroupDataDestroyed(*this);
   }
 
@@ -633,7 +633,27 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
       pending_clients_;
 
   int next_partition_id_ = 0;
+
+  // The token that needs to be passed to GetTrustedSignals() to retrieve the
+  // response.
+  const base::UnguessableToken compression_group_token_{
+      base::UnguessableToken::Create()};
 };
+
+TrustedSignalsCacheImpl::Handle::Handle(
+    scoped_refptr<CompressionGroupData> compression_group_data)
+    : compression_group_data_(std::move(compression_group_data)) {}
+
+base::UnguessableToken
+TrustedSignalsCacheImpl::Handle::compression_group_token() const {
+  return compression_group_data_->compression_group_token();
+}
+
+void TrustedSignalsCacheImpl::Handle::StartFetch() {
+  compression_group_data_->StartFetch();
+}
+
+TrustedSignalsCacheImpl::Handle::~Handle() = default;
 
 bool TrustedSignalsCacheImpl::ReceiverRestrictions::operator==(
     const ReceiverRestrictions& other) const = default;
@@ -696,7 +716,8 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
       cache_entry->AddInterestGroup(interest_group_name,
                                     trusted_bidding_signals_keys);
       partition_id = cache_entry->partition_id;
-      return scoped_refptr<Handle>(compression_group_data);
+      return base::MakeRefCounted<Handle>(
+          scoped_refptr(compression_group_data));
     }
 
     // Otherwise, check if the entry is not expired and all necessary value that
@@ -706,7 +727,8 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
         cache_entry->ContainsInterestGroup(interest_group_name,
                                            trusted_bidding_signals_keys)) {
       partition_id = cache_entry->partition_id;
-      return scoped_refptr<Handle>(compression_group_data);
+      return base::MakeRefCounted<Handle>(
+          scoped_refptr(compression_group_data));
     }
 
     // Otherwise, delete the cache entry. Even if its `compression_group_data`
@@ -758,7 +780,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
   compression_group_data->AddBiddingEntry(cache_entry_it);
 
   partition_id = cache_entry_it->second.partition_id;
-  return compression_group_data;
+  return base::MakeRefCounted<Handle>(std::move(compression_group_data));
 }
 
 scoped_refptr<TrustedSignalsCacheImpl::Handle>
@@ -793,7 +815,8 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     if (!compression_group_data->has_data() ||
         !compression_group_data->IsExpired()) {
       partition_id = cache_entry->partition_id;
-      return scoped_refptr<Handle>(compression_group_data);
+      return base::MakeRefCounted<Handle>(
+          scoped_refptr(compression_group_data));
     }
 
     // Otherwise, delete the cache entry. Even if its `compression_group_data`
@@ -838,7 +861,7 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
   compression_group_data->AddScoringEntry(cache_entry_it);
 
   partition_id = cache_entry_it->second.partition_id;
-  return compression_group_data;
+  return base::MakeRefCounted<Handle>(scoped_refptr(compression_group_data));
 }
 
 scoped_refptr<TrustedSignalsCacheImpl::CompressionGroupData>
