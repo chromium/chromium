@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoubleConsumer;
 
 /** A {@link Pane} representing the incognito tab switcher. */
@@ -49,14 +51,50 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
                 @Override
                 public void didBecomeEmpty() {
-                    mReferenceButtonDataSupplier.set(null);
-                    if (isFocused()) {
-                        @Nullable PaneHubController controller = getPaneHubController();
-                        assert controller != null
-                                : "isFocused requires a non-null PaneHubController.";
-                        controller.focusPane(PaneId.TAB_SWITCHER);
-                    }
-                    destroyTabSwitcherPaneCoordinator();
+                    TabSwitcherPaneCoordinator paneCoordinator = getTabSwitcherPaneCoordinator();
+                    assert paneCoordinator != null;
+
+                    ObservableSupplier<Boolean> isAnimatingSupplier =
+                            paneCoordinator.getIsRecyclerViewAnimatorRunning();
+
+                    AtomicBoolean startedAnimating = new AtomicBoolean(false);
+
+                    // Create Callback object to allow us to pass a reference to said callback
+                    // inside the onResult method.
+                    Callback<Boolean> onAnimationStatusChange =
+                            new Callback<>() {
+                                @Override
+                                public void onResult(Boolean isAnimating) {
+                                    // This ensures that:
+                                    // a) The RecyclerView has started any final
+                                    //        animation prior to changing tab switcher panes.
+                                    // b) The animation only runs when the tab grid dialog is not
+                                    // visible.
+                                    Supplier<Boolean> dialogShowingOrAnimationSupplier =
+                                            paneCoordinator
+                                                    .getTabGridDialogShowingOrAnimationSupplier();
+                                    boolean isTabGridDialogVisible =
+                                            dialogShowingOrAnimationSupplier != null
+                                                    && dialogShowingOrAnimationSupplier.get();
+                                    if (!isTabGridDialogVisible
+                                            && (isAnimating || !startedAnimating.get())) {
+                                        startedAnimating.set(isAnimating);
+                                        return;
+                                    }
+                                    mReferenceButtonDataSupplier.set(null);
+                                    if (isFocused()) {
+                                        @Nullable
+                                        PaneHubController controller = getPaneHubController();
+                                        assert controller != null
+                                                : "isFocused requires a non-null"
+                                                        + " PaneHubController.";
+                                        controller.focusPane(PaneId.TAB_SWITCHER);
+                                    }
+                                    destroyTabSwitcherPaneCoordinator();
+                                    isAnimatingSupplier.removeObserver(this);
+                                }
+                            };
+                    isAnimatingSupplier.addObserver(onAnimationStatusChange);
                 }
             };
 
