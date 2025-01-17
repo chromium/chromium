@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
@@ -216,6 +217,7 @@ CredentialProviderService::CredentialProviderService(
   OnPrefOrPolicyStatusChanged();
   UpdatePasswordSyncSetting();
   UpdatePasskeyPRFSetting();
+  UpdatePasskeysM2Availability();
 }
 
 CredentialProviderService::~CredentialProviderService() {}
@@ -543,6 +545,12 @@ void CredentialProviderService::UpdatePasskeyPRFSetting() {
          forKey:AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled()];
 }
 
+void CredentialProviderService::UpdatePasskeysM2Availability() {
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:IOSPasskeysM2Enabled()]
+         forKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()];
+}
+
 void CredentialProviderService::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
     password_manager::LoginsResultOrError results) {
@@ -644,13 +652,13 @@ void CredentialProviderService::OnPasskeyModelIsReady(bool is_ready) {}
 void CredentialProviderService::OnPrefOrPolicyStatusChanged() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passwords_enabled_.GetValue()]
-         forKey:AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()];
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()];
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passwords_enabled_.IsManaged()]
-         forKey:AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged()];
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged()];
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passkeys_enabled_.GetValue()]
-         forKey:AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled()];
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()];
 }
 
 MemoryCredentialStore* CredentialProviderService::GetCredentialStore(

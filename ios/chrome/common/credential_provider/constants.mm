@@ -61,6 +61,11 @@ NSString* const kUserDefaultsCredentialProviderPasswordSyncSetting =
 NSString* const kUserDefaultsCredentialProviderPasskeyPRFSetting =
     @"kUserDefaultsCredentialProviderPasskeyPRFSetting";
 
+// Used to generate the key for the app group user defaults containing whether
+// the passkeys M2 feature is currently enabled.
+NSString* const kUserDefaultsCredentialProviderPasskeysM2Enabled =
+    @"kUserDefaultsCredentialProviderPasskeysM2Enabled";
+
 // Used to generate a unique AppGroupPrefix to differentiate between different
 // versions of Chrome running in the same device.
 NSString* AppGroupPrefix() {
@@ -115,19 +120,19 @@ NSString* AppGroupUserDefaultsCredentialProviderNewCredentials() {
       stringByAppendingString:kUserDefaultsCredentialProviderNewCredentials];
 }
 
-NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled() {
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:
           kUserDefaulsCredentialProviderSavingPasswordsEnabled];
 }
 
-NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged() {
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged() {
   return [AppGroupPrefix()
       stringByAppendingString:
           kUserDefaultsCredentialProviderSavingPasswordsManaged];
 }
 
-NSString* AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled() {
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:
           kUserDefaulsCredentialProviderSavingPasskeysEnabled];
@@ -142,4 +147,9 @@ NSString* AppGroupUserDefaultsCredentialProviderPasswordSyncSetting() {
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:kUserDefaultsCredentialProviderPasskeyPRFSetting];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled() {
+  return [AppGroupPrefix()
+      stringByAppendingString:kUserDefaultsCredentialProviderPasskeysM2Enabled];
 }

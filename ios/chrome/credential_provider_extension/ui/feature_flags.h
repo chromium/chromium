@@ -27,4 +27,7 @@ BOOL IsPasswordSyncEnabled();
 // policy.
 BOOL IsPasskeyCreationAllowedByPolicy();
 
+// Whether the passkeys M2 feature is currently enabled.
+BOOL IsPasskeysM2Enabled();
+
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_FEATURE_FLAGS_H_

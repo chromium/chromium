@@ -23,18 +23,18 @@ NSString* AppGroupUserDefaultsCredentialProviderNewCredentials();
 
 // Key for the app group user defaults containing whether saving passwords and
 // passkeys is currently enabled.
-NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled();
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled();
 
 // Key for the app group user defaults containing whether saving passwords is
 // currently managed by an enterprise policy.
-NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged();
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged();
 
 // Key for the app group user defaults indicating whether saving passkeys is
 // allowed by enterprise policy. Even if this is set to `YES`, passkey creation
 // could still be blocked by `...CredentialProviderSavingPasswordsEnabled`
 // above. This pref is only configurable by enterprise policy, not by users, so
 // if this is set to `NO` then it is because the behavior is managed.
-NSString* AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled();
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled();
 
 // Key for the app group user defaults containing whether syncing passwords is
 // currently enabled.
@@ -43,6 +43,10 @@ NSString* AppGroupUserDefaultsCredentialProviderPasswordSyncSetting();
 // Key for the app group user defaults containing whether passkey PRF support is
 // currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled();
+
+// Key for the app group user defaults containing whether the passkeys M2
+// feature is currently enabled.
+NSString* AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled();
 
 // Key for the app group user defaults indicating if the credentials have been
 // synced with iOS via AuthenticationServices.
