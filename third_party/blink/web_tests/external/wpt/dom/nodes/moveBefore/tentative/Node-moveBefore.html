@@ -339,4 +339,11 @@ test(t => {
   const div = outer.appendChild(document.createElement('div'));
   assert_throws_dom("HIERARCHY_REQUEST_ERR", () => div.moveBefore(outer, null));
 }, "Invalid node hierarchy with null old parent does not crash");
+
+test(t => {
+  const outerDiv = document.createElement('div');
+  const innerDiv = outerDiv.appendChild(document.createElement('div'));
+  const iframe = innerDiv.appendChild(document.createElement('iframe'));
+  outerDiv.moveBefore(iframe, null);
+}, "Move disconnected iframe does not crash");
 </script>
