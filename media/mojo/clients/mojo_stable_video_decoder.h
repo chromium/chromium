@@ -5,7 +5,7 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_STABLE_VIDEO_DECODER_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_STABLE_VIDEO_DECODER_H_
 
-#include "base/containers/id_map.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -95,7 +95,7 @@ class MojoStableVideoDecoder final : public VideoDecoder {
   scoped_refptr<SharedImageHolder> CreateOrUpdateSharedImageForFrame(
       const scoped_refptr<FrameResource>& frame_resource);
 
-  void UnregisterSharedImage(gfx::GenericSharedMemoryId frame_id);
+  void UnregisterSharedImage(base::UnguessableToken frame_token);
 
   void OnFrameResourceDecoded(scoped_refptr<FrameResource> frame_resource);
 
@@ -136,8 +136,7 @@ class MojoStableVideoDecoder final : public VideoDecoder {
   // possible. The fact that we keep a reference to a SharedImageHolder
   // guarantees that the corresponding SharedImage lives for at least as long as
   // the OOPVideoDecoder knows about the corresponding buffer.
-  base::IDMap</*V=*/scoped_refptr<SharedImageHolder>,
-              /*K=*/gfx::GenericSharedMemoryId>
+  base::flat_map<base::UnguessableToken, scoped_refptr<SharedImageHolder>>
       shared_images_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
