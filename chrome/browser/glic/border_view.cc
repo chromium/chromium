@@ -21,19 +21,18 @@
 
 namespace glic {
 namespace {
-// Note: |           |           |
-//       |<-- 5px -->|<-- 5px -->|
-//       |  outside  |  visible  |
-//
-// So only half of the full width are inside the visible viewport.
-constexpr static int kBorderWidthMin = 2;
-constexpr static int kBorderWidthMax = 10;
+constexpr static int kBorderWidthMin = 1;
+constexpr static int kBorderWidthMax = 5;
 
 constexpr static base::TimeDelta kAnimationDuration = base::Seconds(2);
 
 // Maps `progress` in [0, 1] to its radian value in [0, M_PI/2].
 float GetProgressInRadian(base::TimeDelta since_first_frame) {
   return (since_first_frame / kAnimationDuration) * (M_PI / 2);
+}
+
+SkV4 SkRGBA4fToSkV4(SkRGBA4f<kPremul_SkAlphaType> color) {
+  return SkV4{color.fR, color.fG, color.fB, color.fA};
 }
 
 }  // namespace
@@ -139,15 +138,43 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  int border_width =
-      kBorderWidthMin + ((kBorderWidthMax - kBorderWidthMin) * progress_);
+  float border_width =
+      (kBorderWidthMin + ((kBorderWidthMax - kBorderWidthMin) * progress_));
+  SkColor4f border_color =
+      SkColor4f::FromColor(GetColorProvider()->GetColor(ui::kColorSysPrimary));
+  border_color.fA = progress_;
+
+  const std::string_view kDrawRect(R"(
+      const float4 transparent = vec4(0);
+      uniform float2 u_top_left;
+      uniform float2 u_btm_right;
+      uniform float4 u_border_color;
+      vec4 main(float2 coord) {
+        if (all(greaterThanEqual(coord, u_top_left)) &&
+            all(lessThan(coord, u_btm_right))) {
+          return transparent;
+        } else {
+          return u_border_color;
+        }
+      }
+    )");
+
+  std::vector<cc::PaintShader::Float2Uniform> float2_uniforms = {
+      {.name = SkString("u_top_left"),
+       .value = SkV2{bounds().origin().x() + border_width,
+                     bounds().origin().y() + border_width}},
+      {.name = SkString("u_btm_right"),
+       .value = SkV2{bounds().bottom_right().x() - border_width,
+                     bounds().bottom_right().y() - border_width}}};
+  std::vector<cc::PaintShader::Float4Uniform> float4_uniforms = {
+      {.name = SkString("u_border_color"),
+       .value = SkRGBA4fToSkV4(border_color.premul())}};
 
   views::View::OnPaint(canvas);
   cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setColor(GetColorProvider()->GetColor(ui::kColorSysPrimary));
-  flags.setStrokeWidth(border_width);
-  flags.setAlphaf(progress_);
+  flags.setShader(cc::PaintShader::MakeSkSLCommand(
+      kDrawRect, /*float_uniforms=*/{}, std::move(float2_uniforms),
+      std::move(float4_uniforms)));
   canvas->DrawRect(gfx::RectF(bounds()), flags);
 }
 

@@ -83,7 +83,7 @@ class BorderViewBrowserTest : public InteractiveBrowserTest {
   static SkBitmap ConstructExpectedBitmap(const gfx::Size& size,
                                           SkColor border_color,
                                           SkColor center_color,
-                                          int border_width,
+                                          float border_width,
                                           float alpha) {
     SkBitmap bitmap;
     SkImageInfo info =
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/2, /*alpha=*/0.f);
+        /*center_color=*/kBlack, /*border_width=*/2.f, /*alpha=*/0.f);
 
     EXPECT_TRUE(cc::MatchesBitmap(
         actual_bitmap, expected_bitmap,
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
     // The border width is calculated as:
     // `kBorderWidthMin` + ((`kBorderWidthMax` - `kBorderWidthMin`) *
     // `progress`).
-    int border_width = 2 + (8 * progress);
+    float border_width = 2 + (8 * progress);
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
     SkBitmap expected_bitmap =
         ConstructExpectedBitmap(capture_rect.size(),
                                 /*border_color=*/BorderColor(),
-                                /*center_color=*/kBlack, /*border_width=*/10,
+                                /*center_color=*/kBlack, /*border_width=*/10.f,
                                 /*alpha=*/1.f);
 
     EXPECT_TRUE(cc::MatchesBitmap(
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/10, /*alpha=*/1.f);
+        /*center_color=*/kBlack, /*border_width=*/10.f, /*alpha=*/1.f);
 
     EXPECT_TRUE(cc::MatchesBitmap(
         actual_bitmap, expected_bitmap,
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/2, /*alpha=*/0.f);
+        /*center_color=*/kBlack, /*border_width=*/2.f, /*alpha=*/0.f);
 
     EXPECT_TRUE(cc::MatchesBitmap(
         actual_bitmap, expected_bitmap,
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
     SkBitmap actual_bitmap = PaintBorder(border);
 
     float progress = sin(0.125 * M_PI);
-    int border_width = 2 + (8 * progress);
+    float border_width = 2 + (8 * progress);
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
     SkBitmap expected_bitmap =
         ConstructExpectedBitmap(capture_rect.size(),
                                 /*border_color=*/BorderColor(),
-                                /*center_color=*/kBlack, /*border_width=*/2,
+                                /*center_color=*/kBlack, /*border_width=*/2.f,
                                 /*alpha=*/0.f);
 
     EXPECT_TRUE(cc::MatchesBitmap(
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
     SkBitmap actual_bitmap = PaintBorder(border);
 
     float progress = sin(0.125 * M_PI);
-    int border_width = 2 + (8 * progress);
+    float border_width = 2 + (8 * progress);
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedWindowChange) {
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/2, /*alpha=*/0.f);
+        /*center_color=*/kBlack, /*border_width=*/2.f, /*alpha=*/0.f);
 
     EXPECT_TRUE(cc::MatchesBitmap(
         actual_bitmap, expected_bitmap,
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedWindowChange) {
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/2, /*alpha=*/0.f);
+        /*center_color=*/kBlack, /*border_width=*/2.f, /*alpha=*/0.f);
 
     EXPECT_TRUE(cc::MatchesBitmap(
         actual_bitmap, expected_bitmap,
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedWindowChange) {
     SkBitmap actual_bitmap = PaintBorder(new_border);
 
     float progress = sin(0.25 * M_PI);
-    int border_width = 2 + (8 * progress);
+    float border_width = 2 + (8 * progress);
     SkBitmap expected_bitmap = ConstructExpectedBitmap(
         capture_rect.size(),
         /*border_color=*/BorderColor(),
