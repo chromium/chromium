@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected_macros.h"
 #include "base/types/fixed_array.h"
 #include "services/webnn/ort/error_ort.h"
@@ -569,7 +570,8 @@ void GraphBuilderOrt::AddElementWiseLogicalOperation(
              OperandTypeToONNXTensorElementDataType(output_data_type));
 }
 
-void GraphBuilderOrt::AddElementWiseBinaryOperation(
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddElementWiseBinaryOperation(
     const mojom::ElementWiseBinary& element_wise_binary) {
   switch (element_wise_binary.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
@@ -604,6 +606,11 @@ void GraphBuilderOrt::AddElementWiseBinaryOperation(
       AddElementWiseLogicalOperation(&element_wise_binary, kOpTypeEqual);
       break;
     }
+    // TODO(https://github.com/shiyi9801/chromium/issues/102): Support NotEqual
+    case mojom::ElementWiseBinary::Kind::kNotEqual: {
+      return NewNotSupportedError(
+          "NotEqual operation is not supported in ONNX.");
+    }
     case mojom::ElementWiseBinary::Kind::kGreater: {
       AddElementWiseLogicalOperation(&element_wise_binary, kOpTypeGreater);
       break;
@@ -635,6 +642,8 @@ void GraphBuilderOrt::AddElementWiseBinaryOperation(
       break;
     }
   }
+
+  return base::ok();
 }
 
 template <typename T>
@@ -1650,7 +1659,8 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
-        AddElementWiseBinaryOperation(*operation->get_element_wise_binary());
+        RETURN_IF_ERROR(AddElementWiseBinaryOperation(
+            *operation->get_element_wise_binary()));
         break;
       }
       case mojom::Operation::Tag::kElementWiseUnary: {

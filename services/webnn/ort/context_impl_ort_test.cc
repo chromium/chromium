@@ -55,7 +55,8 @@ CreateTensorSuccess CreateWebNNTensor(
   base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
   webnn_context_remote->CreateTensor(
       mojom::TensorInfo::New(
-          *OperandDescriptor::Create(data_type, shape),
+          *OperandDescriptor::Create(webnn::GetContextPropertiesForTesting(),
+                                     data_type, shape, "tensor"),
           MLTensorUsage{MLTensorUsageFlags::kWrite, MLTensorUsageFlags::kRead}),
       create_tensor_future.GetCallback());
   mojom::CreateTensorResultPtr create_tensor_result =

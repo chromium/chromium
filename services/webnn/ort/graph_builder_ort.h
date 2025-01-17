@@ -190,7 +190,8 @@ class GraphBuilderOrt {
   template <typename T>
   void AddUnaryOperation(const T& operation, std::string_view op_type);
 
-  void AddElementWiseBinaryOperation(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddElementWiseBinaryOperation(
       const mojom::ElementWiseBinary& element_wise_binary);
   void AddElementWiseUnaryOperation(
       const mojom::ElementWiseUnary& element_wise_unary);

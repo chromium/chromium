@@ -48,10 +48,16 @@ ContextImplOrt::ContextImplOrt(
 
 ContextImplOrt::~ContextImplOrt() = default;
 
+// TODO(https://github.com/shiyi9801/chromium/issues/103): Investigate how to
+// set the tensor byte length limit and supported tensor ranks
+static constexpr uint64_t kTensorByteLengthLimit =
+    std::numeric_limits<int32_t>::max();
+
 // static
 ContextProperties ContextImplOrt::GetContextProperties() {
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
+      /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
        /*arg_min_max_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
@@ -65,21 +71,37 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*cumulative_sum_input=*/{},
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},
-       /*add_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*sub_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*mul_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*div_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*max_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*min_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*pow_input=*/DataTypeConstraint::kFloat16To32,
-       /*equal_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*greater_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*greater_or_equal_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*lesser_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*lesser_or_equal_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*logical_and_input=*/DataTypeConstraint::kUint8,
-       /*logical_or_input=*/DataTypeConstraint::kUint8,
-       /*logical_xor_input=*/DataTypeConstraint::kUint8,
+       /*add_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*sub_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*mul_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*div_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*max_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*min_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*pow_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*equal_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*greater_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*greater_or_equal_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*lesser_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*lesser_or_equal_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       /*not_equal_input=*/{},
+       /*logical_and_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       /*logical_or_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       /*logical_xor_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
        /*logical_not_input=*/DataTypeConstraint::kUint8,
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
@@ -116,7 +138,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*linear_input=*/{},
        /*lstm_input=*/{},
        /*lstm_cell_input=*/{},
-       /*matmul_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
+       /*matmul_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::UpTo(8)},
        // TODO: Support more data types including int4.
        // https://github.com/shiyi9801/chromium/issues/85
        /*pad_input=*/DataTypeConstraint::kFloat16To32,
