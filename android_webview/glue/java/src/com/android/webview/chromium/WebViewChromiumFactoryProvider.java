@@ -879,7 +879,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @RequiresApi(Build.VERSION_CODES.P)
     @Override
     public TracingController getTracingController() {
-        synchronized (mAwInit.getLock()) {
+        synchronized (mAwInit.mLock) {
             mAwInit.ensureChromiumStartedLocked(
                     true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
             // ensureChromiumStartedLocked() can release the lock on first call while
