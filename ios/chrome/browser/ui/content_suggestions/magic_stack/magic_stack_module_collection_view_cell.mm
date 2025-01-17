@@ -196,6 +196,7 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kMostVisited:
       return YES;
     default:
       return NO;
@@ -327,6 +328,9 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kTips:
       return l10n_util::GetNSString(
           IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_DESCRIPTION);
+    case ContentSuggestionsModuleType::kMostVisited:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_CONTEXT_MENU_DESCRIPTION);
     default:
       NOTREACHED();
   }
@@ -371,6 +375,9 @@ const float kCornerRadius = 24;
           IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_HIDE_CHROME_TIPS,
           base::SysNSStringToUTF16(
               l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE)));
+    case ContentSuggestionsModuleType::kMostVisited:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_HIDE_CARD);
     default:
       NOTREACHED();
   }

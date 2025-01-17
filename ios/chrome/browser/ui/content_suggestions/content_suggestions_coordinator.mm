@@ -854,6 +854,9 @@ using segmentation_platform::TipIdentifier;
 
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type {
   switch (type) {
+    case ContentSuggestionsModuleType::kMostVisited:
+      [_mostVisitedTilesMediator disableModule];
+      break;
     case ContentSuggestionsModuleType::kTabResumption:
       [_tabResumptionMediator disableModule];
       break;

@@ -1201,8 +1201,14 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_HISTORY" desc="The History title on the new tab page [Length: 10em]">
         History
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_CONTEXT_MENU_DESCRIPTION" desc="Descripiton for the long-press context menu of the module that presents the most visite sites.">
+        This card shows your most visited sites.
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_HIDE_CARD" desc="Button text indicating most visited sites module can be removed">
+        Hide "Your Top Sites"
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE" desc="The Most Visited module title on the new tab page [Length: 10em]">
-        Most visited sites
+        Your Top Sites
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS" desc="The Parcel Tracking module package arriving status description on the Home surface [Length: 10em]">
         Arriving <ph name="Date"><ex>Monday, September 13</ex>$1</ph>
