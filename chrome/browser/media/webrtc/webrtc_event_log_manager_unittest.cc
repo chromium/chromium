@@ -38,7 +38,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -353,7 +352,6 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
       event_log_manager_->SetRemoteLogFileWriterFactoryForTesting(
           std::move(factory));
     } else {
-      // kWebRtcRemoteEventLogGzipped is turned on by default.
       remote_log_extension_ = kWebRtcEventLogGzippedExtension;
     }
   }
@@ -825,7 +823,6 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
   // Testing utilities.
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
   base::SimpleTestClock frozen_clock_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -909,8 +906,6 @@ class WebRtcEventLogManagerTest : public WebRtcEventLogManagerTestBase,
                                   public ::testing::WithParamInterface<bool> {
  public:
   WebRtcEventLogManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWebRtcRemoteEventLog);
-
     // Use a low delay, or the tests would run for quite a long time.
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ::switches::kWebRtcRemoteEventLogUploadDelayMs, "100");
@@ -1011,14 +1006,7 @@ class WebRtcEventLogManagerTestWithRemoteLoggingDisabled
       public ::testing::WithParamInterface<bool> {
  public:
   WebRtcEventLogManagerTestWithRemoteLoggingDisabled()
-      : feature_enabled_(GetParam()), policy_enabled_(!feature_enabled_) {
-    if (feature_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kWebRtcRemoteEventLog);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kWebRtcRemoteEventLog);
-    }
+      : policy_enabled_(GetParam()) {
     CreateWebRtcEventLogManager();
   }
 
@@ -1046,8 +1034,7 @@ class WebRtcEventLogManagerTestWithRemoteLoggingDisabled
   }
 
  private:
-  const bool feature_enabled_;  // Whether the Finch kill-switch is engaged.
-  const bool policy_enabled_;  // Whether the policy is enabled for the profile.
+  const bool policy_enabled_;
 };
 
 class WebRtcEventLogManagerTestPolicy : public WebRtcEventLogManagerTestBase {
@@ -1055,17 +1042,7 @@ class WebRtcEventLogManagerTestPolicy : public WebRtcEventLogManagerTestBase {
   ~WebRtcEventLogManagerTestPolicy() override = default;
 
   // Defer to setup from the body.
-  void SetUp() override {}
-
-  void SetUp(bool feature_enabled) {
-    if (feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kWebRtcRemoteEventLog);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kWebRtcRemoteEventLog);
-    }
-
+  void SetUp() override {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ::switches::kWebRtcRemoteEventLogUploadDelayMs, "0");
 
@@ -1086,8 +1063,6 @@ class WebRtcEventLogManagerTestUploadSuppressionDisablingFlag
     : public WebRtcEventLogManagerTestBase {
  public:
   WebRtcEventLogManagerTestUploadSuppressionDisablingFlag() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWebRtcRemoteEventLog);
-
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         ::switches::kWebRtcRemoteEventLogUploadNoSuppression);
 
@@ -1112,8 +1087,6 @@ class WebRtcEventLogManagerTestForNetworkConnectivity
       : get_conn_type_is_sync_(std::get<0>(GetParam())),
         supported_type_(std::get<1>(GetParam())),
         unsupported_type_(std::get<2>(GetParam())) {
-    scoped_feature_list_.InitAndEnableFeature(features::kWebRtcRemoteEventLog);
-
     // Use a low delay, or the tests would run for quite a long time.
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ::switches::kWebRtcRemoteEventLogUploadDelayMs, "100");
@@ -1165,8 +1138,6 @@ class WebRtcEventLogManagerTestUploadDelay
   }
 
   void SetUp(size_t upload_delay_ms) {
-    scoped_feature_list_.InitAndEnableFeature(features::kWebRtcRemoteEventLog);
-
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ::switches::kWebRtcRemoteEventLogUploadDelayMs,
         base::NumberToString(upload_delay_ms));
@@ -1192,8 +1163,6 @@ class WebRtcEventLogManagerTestCompression
     : public WebRtcEventLogManagerTestBase {
  public:
   WebRtcEventLogManagerTestCompression() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWebRtcRemoteEventLog);
-
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ::switches::kWebRtcRemoteEventLogUploadDelayMs, "0");
   }
@@ -1216,7 +1185,6 @@ class WebRtcEventLogManagerTestIncognito
     : public WebRtcEventLogManagerTestBase {
  public:
   WebRtcEventLogManagerTestIncognito() : incognito_profile_(nullptr) {
-    scoped_feature_list_.InitAndEnableFeature(features::kWebRtcRemoteEventLog);
     CreateWebRtcEventLogManager();
   }
 
@@ -3935,6 +3903,7 @@ TEST_P(WebRtcEventLogManagerTestWithRemoteLoggingDisabled,
   EXPECT_TRUE(DisableLocalLogging());
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(WebRtcEventLogManagerTestWithRemoteLoggingDisabled,
        SanityStartRemoteLogging) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
@@ -3953,6 +3922,7 @@ TEST_P(WebRtcEventLogManagerTestWithRemoteLoggingDisabled,
   ASSERT_FALSE(StartRemoteLogging(key));
   EXPECT_EQ(OnWebRtcEventLogWrite(key, "log"), std::make_pair(false, false));
 }
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebRtcEventLogManagerTestWithRemoteLoggingDisabled,
@@ -3960,8 +3930,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // This test is redundant; it is provided for completeness; see following tests.
 TEST_F(WebRtcEventLogManagerTestPolicy, StartsEnabledAllowsRemoteLogging) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   const bool allow_remote_logging = true;
   auto browser_context = CreateBrowserContext(
       "name", true /* is_managed_profile */,
@@ -3977,8 +3945,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy, StartsEnabledAllowsRemoteLogging) {
 
 // This test is redundant; it is provided for completeness; see following tests.
 TEST_F(WebRtcEventLogManagerTestPolicy, StartsDisabledRejectsRemoteLogging) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   const bool allow_remote_logging = false;
   auto browser_context = CreateBrowserContext(
       "name", true /* is_managed_profile */,
@@ -3993,8 +3959,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy, StartsDisabledRejectsRemoteLogging) {
 }
 
 TEST_F(WebRtcEventLogManagerTestPolicy, NotManagedRejectsRemoteLogging) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   const bool allow_remote_logging = false;
   auto browser_context =
       CreateBrowserContext("name", false /* is_managed_profile */,
@@ -4030,8 +3994,6 @@ WebRtcEventLogManagerTestPolicy::GetScopedUserManager(
 
 TEST_F(WebRtcEventLogManagerTestPolicy,
        ManagedProfileAllowsRemoteLoggingByDefault) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   const bool allow_remote_logging = true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4062,8 +4024,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebRtcEventLogManagerTestPolicy,
        ManagedProfileDoesNotAllowRemoteLoggingForSupervisedProfiles) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   const bool allow_remote_logging = false;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
@@ -4086,8 +4046,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebRtcEventLogManagerTestPolicy,
        OnlyManagedByPlatformPoliciesDoesNotAllowRemoteLoggingByDefault) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   const bool allow_remote_logging = false;
   auto browser_context =
       CreateBrowserContext("name", false /* is_managed_profile */,
@@ -4104,8 +4062,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 
 void WebRtcEventLogManagerTestPolicy::TestManagedProfileAfterBeingExplicitlySet(
     bool explicitly_set_value) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   auto profile =
       CreateBrowserContext("name", true /* is_managed_profile */,
                            false /* has_device_level_policies */, std::nullopt);
@@ -4135,8 +4091,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // the pref value.
 TEST_F(WebRtcEventLogManagerTestPolicy,
        StartsEnabledThenDisabledRejectsRemoteLogging1) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   bool allow_remote_logging = true;
   auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
                                       false /* has_device_level_policies */,
@@ -4159,8 +4113,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // the pref value.
 TEST_F(WebRtcEventLogManagerTestPolicy,
        StartsEnabledThenDisabledRejectsRemoteLogging2) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   bool allow_remote_logging = true;
   auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
                                       false /* has_device_level_policies */,
@@ -4183,8 +4135,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // the pref value.
 TEST_F(WebRtcEventLogManagerTestPolicy,
        StartsDisabledThenEnabledAllowsRemoteLogging1) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   bool allow_remote_logging = false;
   auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
                                       false /* has_device_level_policies */,
@@ -4207,8 +4157,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // the pref value.
 TEST_F(WebRtcEventLogManagerTestPolicy,
        StartsDisabledThenEnabledAllowsRemoteLogging2) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   bool allow_remote_logging = false;
   auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
                                       false /* has_device_level_policies */,
@@ -4229,8 +4177,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 
 TEST_F(WebRtcEventLogManagerTestPolicy,
        StartsDisabledThenEnabledUploadsPendingLogFiles) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   bool allow_remote_logging = false;
   auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
                                       false /* has_device_level_policies */,
@@ -4267,8 +4213,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 
 TEST_F(WebRtcEventLogManagerTestPolicy,
        StartsEnabledThenDisabledDoesNotUploadPendingLogFiles) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   SuppressUploading();
 
   std::list<WebRtcLogFileInfo> empty_list;
@@ -4303,8 +4247,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 
 TEST_F(WebRtcEventLogManagerTestPolicy,
        StartsEnabledThenDisabledDeletesPendingLogFiles) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   SuppressUploading();
 
   std::list<WebRtcLogFileInfo> empty_list;
@@ -4351,8 +4293,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 
 TEST_F(WebRtcEventLogManagerTestPolicy,
        StartsEnabledThenDisabledCancelsAndDeletesCurrentlyUploadedLogFile) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   // This factory expects exactly one log to be uploaded, then cancelled.
   SetWebRtcEventLogUploaderFactoryForTesting(
       std::make_unique<NullWebRtcEventLogUploader::Factory>(true, 1));
@@ -4399,8 +4339,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // earlier session will be deleted from disk.
 TEST_F(WebRtcEventLogManagerTestPolicy,
        PendingLogsFromPreviousSessionRemovedIfPolicyDisabledAtNewSessionStart) {
-  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
-
   SuppressUploading();
 
   SetWebRtcEventLogUploaderFactoryForTesting(
@@ -4445,39 +4383,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   // the deleted log file was never uploaded.
   UnsuppressUploading();
   WaitForPendingTasks();
-}
-
-TEST_F(WebRtcEventLogManagerTestPolicy,
-       PendingLogsFromPreviousSessionRemovedIfRemoteLoggingKillSwitchEngaged) {
-  SetUp(false);  // Feature generally disabled (kill-switch engaged).
-
-  SetWebRtcEventLogUploaderFactoryForTesting(
-      std::make_unique<NullWebRtcEventLogUploader::Factory>(true, 0));
-
-  const std::string name = "name";
-  const base::FilePath browser_context_dir =
-      profiles_dir_.GetPath().AppendASCII(name);
-  const base::FilePath remote_bound_dir =
-      RemoteBoundLogsDir(browser_context_dir);
-  ASSERT_FALSE(base::PathExists(remote_bound_dir));
-
-  base::FilePath file_path;
-  base::File file;
-  ASSERT_TRUE(base::CreateDirectory(remote_bound_dir));
-  ASSERT_TRUE(CreateRemoteBoundLogFile(remote_bound_dir, kWebAppId,
-                                       remote_log_extension_, base::Time::Now(),
-                                       &file_path, &file));
-  file.Close();
-
-  const bool allow_remote_logging = true;
-  auto browser_context = CreateBrowserContext(
-      "name", true /* is_managed_profile */,
-      false /* has_device_level_policies */, allow_remote_logging);
-  ASSERT_EQ(browser_context->GetPath(), browser_context_dir);  // Test sanity
-
-  WaitForPendingTasks();
-
-  EXPECT_FALSE(base::PathExists(remote_bound_dir));
 }
 
 TEST_F(WebRtcEventLogManagerTestUploadSuppressionDisablingFlag,
