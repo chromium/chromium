@@ -42,8 +42,9 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     const SimpleFontData* font_data = font.PrimaryFont();
     ASSERT_TRUE(font_data);
 
-    TextRun text_run(text);
-    text_run.SetNormalizeSpace(true);
+    TextRun text_run(text, TextDirection::kLtr,
+                     /* directional_override */ false,
+                     /* normalize_space */ true);
     gfx::RectF text_bounds = font.SelectionRectForText(
         text_run, gfx::PointF(), font.GetFontDescription().ComputedSize(), 0,
         -1);
@@ -76,9 +77,9 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     Font font = Font(font_description);
 
     gfx::PointF location(0, 0);
-    TextRun text_run(text);
-    text_run.SetNormalizeSpace(true);
-
+    TextRun text_run(text, TextDirection::kLtr,
+                     /* directional_override */ false,
+                     /* normalize_space */ true);
     TextRunPaintInfo text_run_paint_info(text_run);
 
     MockPaintCanvas mpc;

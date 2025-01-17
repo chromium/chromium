@@ -3607,8 +3607,7 @@ void BaseRenderingContext2D::DrawTextInternal(
   bool bidi_override =
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
-  TextRun text_run(text, direction, bidi_override);
-  text_run.SetNormalizeSpace(true);
+  TextRun text_run(text, direction, bidi_override, /* normalize_space */ true);
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
   gfx::RectF bounds;
@@ -3661,8 +3660,8 @@ void BaseRenderingContext2D::DrawTextInternal(
        run_start, run_end,
        canvas](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
-        TextRun text_run(text, direction, bidi_override);
-        text_run.SetNormalizeSpace(true);
+        TextRun text_run(text, direction, bidi_override,
+                         /* normalize_space */ true);
         TextRunPaintInfo text_run_paint_info(text_run);
         text_run_paint_info.from = run_start;
         text_run_paint_info.to = run_end;

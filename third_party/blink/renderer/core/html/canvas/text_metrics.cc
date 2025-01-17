@@ -137,8 +137,8 @@ void TextMetrics::Update(const Font& font,
   for (const auto& run : runs) {
     // Measure each run.
     TextRun text_run(StringView(text, run.start, run.Length()), run.Direction(),
-                     /* directional_override */ false);
-    text_run.SetNormalizeSpace(true);
+                     /* directional_override */ false,
+                     /* normalize_space */ true);
 
     // Save the run for computing additional metrics. Whether we calculate the
     // ShapeResult objects right away, or lazily when needed, depends on the
