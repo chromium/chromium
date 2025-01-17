@@ -1043,9 +1043,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
     const auto& main_surfaces =
         surface_manager_->GetSurfacesReferencedByParent(current_surface_id_);
-    const bool main_frame_only_adpf_renderer_main =
-        base::FeatureList::IsEnabled(
-            features::kEnableMainFrameOnlyADPFRendererMain);
 
     const bool interactive_only_adpf_renderer = base::FeatureList::IsEnabled(
         features::kEnableInteractiveOnlyADPFRenderer);
@@ -1091,11 +1088,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         }
         std::vector<Thread> surface_threads = surface->GetThreads();
         for (const auto& thread : surface_threads) {
-          if (thread.type == Thread::Type::kMain &&
-              main_frame_only_adpf_renderer_main && !is_for_main_frame) {
-            continue;
-          }
-
           if (thread.type == Thread::Type::kMain &&
               surface_id != current_surface_id_) {
             renderer_main_thread_ids.insert(thread.id);
