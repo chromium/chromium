@@ -85,7 +85,6 @@ public class ExternalNavigationParams {
     private final RedirectHandler mRedirectHandler;
     private final boolean mOpenInNewTab;
     private final boolean mIsBackgroundTabNavigation;
-    private final boolean mIntentLaunchesAllowedInBackgroundTabs;
     private final boolean mIsMainFrame;
     private final String mNativeClientPackageName;
     private final boolean mHasUserGesture;
@@ -110,7 +109,6 @@ public class ExternalNavigationParams {
             @NonNull RedirectHandler redirectHandler,
             boolean openInNewTab,
             boolean isBackgroundTabNavigation,
-            boolean intentLaunchesAllowedInBackgroundTabs,
             boolean isMainFrame,
             String nativeClientPackageName,
             boolean hasUserGesture,
@@ -130,7 +128,6 @@ public class ExternalNavigationParams {
         mRedirectHandler = redirectHandler;
         mOpenInNewTab = openInNewTab;
         mIsBackgroundTabNavigation = isBackgroundTabNavigation;
-        mIntentLaunchesAllowedInBackgroundTabs = intentLaunchesAllowedInBackgroundTabs;
         mIsMainFrame = isMainFrame;
         mNativeClientPackageName = nativeClientPackageName;
         mHasUserGesture = hasUserGesture;
@@ -197,12 +194,9 @@ public class ExternalNavigationParams {
         return mIsBackgroundTabNavigation;
     }
 
-    /** @return Whether intent launches are allowed in background tabs. */
-    public boolean areIntentLaunchesAllowedInBackgroundTabs() {
-        return mIntentLaunchesAllowedInBackgroundTabs;
-    }
-
-    /** @return Whether this navigation happens in main frame. */
+    /**
+     * @return Whether this navigation happens in main frame.
+     */
     public boolean isMainFrame() {
         return mIsMainFrame;
     }
@@ -274,7 +268,6 @@ public class ExternalNavigationParams {
         private RedirectHandler mRedirectHandler;
         private boolean mOpenInNewTab;
         private boolean mIsBackgroundTabNavigation;
-        private boolean mIntentLaunchesAllowedInBackgroundTabs;
         private boolean mIsMainFrame;
         private String mNativeClientPackageName;
         private boolean mHasUserGesture;
@@ -325,12 +318,6 @@ public class ExternalNavigationParams {
         /** Sets whether this navigation happens in background tab. */
         public Builder setIsBackgroundTabNavigation(boolean v) {
             mIsBackgroundTabNavigation = v;
-            return this;
-        }
-
-        /** Sets whether intent launches are allowed in background tabs. */
-        public Builder setIntentLaunchesAllowedInBackgroundTabs(boolean v) {
-            mIntentLaunchesAllowedInBackgroundTabs = v;
             return this;
         }
 
@@ -407,7 +394,6 @@ public class ExternalNavigationParams {
                     mRedirectHandler,
                     mOpenInNewTab,
                     mIsBackgroundTabNavigation,
-                    mIntentLaunchesAllowedInBackgroundTabs,
                     mIsMainFrame,
                     mNativeClientPackageName,
                     mHasUserGesture,

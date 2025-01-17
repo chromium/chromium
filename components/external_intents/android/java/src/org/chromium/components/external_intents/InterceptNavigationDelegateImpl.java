@@ -181,8 +181,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         // We should never get here for non-main-frame navigations.
         if (!navigationHandle.isInPrimaryMainFrame()) throw new RuntimeException();
 
-        mClient.onNavigationStarted(navigationHandle);
-
         RedirectHandler redirectHandler = mClient.getOrCreateRedirectHandler();
 
         OverrideUrlLoadingResult result =
@@ -197,13 +195,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         navigationHandle.isInPrimaryMainFrame(),
                         navigationHandle.getInitiatorOrigin(),
                         navigationHandle.isExternalProtocol(),
-                        mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle),
                         this::onDidAsyncActionInMainFrame,
                         hiddenCrossFrame,
                         isSandboxedFrame,
                         navigationHandle.getNavigationId());
-
-        mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
@@ -256,7 +251,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         /* isInPrimaryMainFrame= */ false,
                         initiatorOrigin,
                         /* isExternalProtocol= */ true,
-                        /* areIntentLaunchesAllowedInHiddenTabsForNavigation= */ false,
                         this::onDidAsyncActionInSubFrame,
                         /* hiddenCrossFrame= */ false,
                         /* isSandboxedMainFrame= */ false,
@@ -289,7 +283,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             boolean isInPrimaryMainFrame,
             Origin initiatorOrigin,
             boolean isExternalProtocol,
-            boolean areIntentLaunchesAllowedInHiddenTabsForNavigation,
             Callback<AsyncActionTakenParams> asyncActionTakenCallback,
             boolean hiddenCrossFrame,
             boolean isSandboxedMainFrame,
@@ -320,8 +313,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setRedirectHandler(redirectHandler)
                         .setOpenInNewTab(onInitialNavigationChain)
                         .setIsBackgroundTabNavigation(!isWebContentsVisible)
-                        .setIntentLaunchesAllowedInBackgroundTabs(
-                                areIntentLaunchesAllowedInHiddenTabsForNavigation)
                         .setIsMainFrame(isInPrimaryMainFrame)
                         .setHasUserGesture(hasUserGesture)
                         .setIsRendererInitiated(isRendererInitiated)
