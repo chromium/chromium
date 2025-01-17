@@ -61,11 +61,11 @@ class V4RiceDecoder {
   // |first_value| = 3, |num_entries| = 2 and decoding the |encoded_data| will
   // produce the offsets: [4, 18].
   static V4DecodeResult DecodeIntegers(
-      const ::google::protobuf::int64 first_value,
-      const ::google::protobuf::int32 rice_parameter,
-      const ::google::protobuf::int32 num_entries,
+      const int64_t first_value,
+      const int32_t rice_parameter,
+      const int32_t num_entries,
       const std::string& encoded_data,
-      ::google::protobuf::RepeatedField<::google::protobuf::int32>* out);
+      ::google::protobuf::RepeatedField<int32_t>* out);
 
   // Decodes the Rice-encoded string in |encoded_data| as a string of 4-byte
   // hash prefixes and stores them in |out|. The rest of the arguments are the
@@ -83,12 +83,11 @@ class V4RiceDecoder {
   //    consumed as a concatenated list of 4-byte hash prefixes, when merging
   //    the
   //    update with the existing state.
-  static V4DecodeResult DecodePrefixes(
-      const ::google::protobuf::int64 first_value,
-      const ::google::protobuf::int32 rice_parameter,
-      const ::google::protobuf::int32 num_entries,
-      const std::string& encoded_data,
-      std::vector<uint32_t>* out);
+  static V4DecodeResult DecodePrefixes(const int64_t first_value,
+                                       const int32_t rice_parameter,
+                                       const int32_t num_entries,
+                                       const std::string& encoded_data,
+                                       std::vector<uint32_t>* out);
 
   virtual ~V4RiceDecoder();
 
@@ -102,16 +101,15 @@ class V4RiceDecoder {
   friend class V4RiceTest;
 
   // Validate some of the parameters passed to the decode methods.
-  static V4DecodeResult ValidateInput(
-      const ::google::protobuf::int32 rice_parameter,
-      const ::google::protobuf::int32 num_entries,
-      const std::string& encoded_data);
+  static V4DecodeResult ValidateInput(const int32_t rice_parameter,
+                                      const int32_t num_entries,
+                                      const std::string& encoded_data);
 
   // The |rice_parameter| is the exponent of 2 for calculating 'M',
   // |num_entries| is the number of encoded entries in the |encoded_data| and
   // |encoded_data| is the Rice-encoded string to decode.
-  V4RiceDecoder(const ::google::protobuf::int32 rice_parameter,
-                const ::google::protobuf::int32 num_entries,
+  V4RiceDecoder(const int32_t rice_parameter,
+                const int32_t num_entries,
                 const std::string& encoded_data);
 
   // Returns true until |num_entries| entries have been decoded.
@@ -138,7 +136,7 @@ class V4RiceDecoder {
   const unsigned int rice_parameter_;
 
   // The number of entries encoded in the data stream.
-  ::google::protobuf::int32 num_entries_;
+  int32_t num_entries_;
 
   // The Rice-encoded string.
   const std::string data_;

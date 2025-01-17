@@ -183,8 +183,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
 
   // Helper functions to convert from/to the internal representation that is
   // used to store TimeDelta values in the |SiteDataProto| protobuf.
-  static base::TimeDelta InternalRepresentationToTimeDelta(
-      ::google::protobuf::int64 value) {
+  static base::TimeDelta InternalRepresentationToTimeDelta(int64_t value) {
     return base::Seconds(value);
   }
   static int64_t TimeDeltaToInternalRepresentation(base::TimeDelta delta) {
