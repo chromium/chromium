@@ -29,18 +29,18 @@
     Exposed=Window
 ] interface SVGComponentTransferFunctionElement : SVGElement {
     // Component Transfer Types
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_UNKNOWN  = 0;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY = 1;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_TABLE    = 2;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_DISCRETE = 3;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_LINEAR   = 4;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_GAMMA    = 5;
+    const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_UNKNOWN  = 0;
+    const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY = 1;
+    const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_TABLE    = 2;
+    const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_DISCRETE = 3;
+    const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_LINEAR   = 4;
+    const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_GAMMA    = 5;
 
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration type;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumberList  tableValues;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber      slope;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber      intercept;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber      amplitude;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber      exponent;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber      offset;
+    readonly attribute SVGAnimatedEnumeration type;
+    readonly attribute SVGAnimatedNumberList  tableValues;
+    readonly attribute SVGAnimatedNumber      slope;
+    readonly attribute SVGAnimatedNumber      intercept;
+    readonly attribute SVGAnimatedNumber      amplitude;
+    readonly attribute SVGAnimatedNumber      exponent;
+    readonly attribute SVGAnimatedNumber      offset;
 };

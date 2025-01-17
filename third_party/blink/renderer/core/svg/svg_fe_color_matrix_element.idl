@@ -29,15 +29,15 @@
     Exposed=Window
 ] interface SVGFEColorMatrixElement : SVGElement {
     // Color Matrix Types
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOLORMATRIX_TYPE_UNKNOWN = 0;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOLORMATRIX_TYPE_MATRIX = 1;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOLORMATRIX_TYPE_SATURATE = 2;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOLORMATRIX_TYPE_HUEROTATE = 3;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOLORMATRIX_TYPE_LUMINANCETOALPHA = 4;
+    const unsigned short SVG_FECOLORMATRIX_TYPE_UNKNOWN = 0;
+    const unsigned short SVG_FECOLORMATRIX_TYPE_MATRIX = 1;
+    const unsigned short SVG_FECOLORMATRIX_TYPE_SATURATE = 2;
+    const unsigned short SVG_FECOLORMATRIX_TYPE_HUEROTATE = 3;
+    const unsigned short SVG_FECOLORMATRIX_TYPE_LUMINANCETOALPHA = 4;
 
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration type;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumberList values;
+    readonly attribute SVGAnimatedString in1;
+    readonly attribute SVGAnimatedEnumeration type;
+    readonly attribute SVGAnimatedNumberList values;
 };
 
 SVGFEColorMatrixElement includes SVGFilterPrimitiveStandardAttributes;

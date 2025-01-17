@@ -28,12 +28,12 @@
 [Exposed=Window]
 interface SVGTextContentElement : SVGGraphicsElement {
     // lengthAdjust Types
-    [MeasureAs=SVG1DOMText] const unsigned short LENGTHADJUST_UNKNOWN          = 0;
-    [MeasureAs=SVG1DOMText] const unsigned short LENGTHADJUST_SPACING          = 1;
-    [MeasureAs=SVG1DOMText] const unsigned short LENGTHADJUST_SPACINGANDGLYPHS = 2;
+    const unsigned short LENGTHADJUST_UNKNOWN          = 0;
+    const unsigned short LENGTHADJUST_SPACING          = 1;
+    const unsigned short LENGTHADJUST_SPACINGANDGLYPHS = 2;
 
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLength      textLength;
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedEnumeration lengthAdjust;
+    readonly attribute SVGAnimatedLength      textLength;
+    readonly attribute SVGAnimatedEnumeration lengthAdjust;
 
     long getNumberOfChars();
     [HighEntropy, Measure] float getComputedTextLength();

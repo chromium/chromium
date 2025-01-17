@@ -503,31 +503,6 @@ void IDLMemberInstaller::InstallConstants(
     v8::Local<v8::Template> prototype_template,
     v8::Local<v8::Template> interface_template,
     v8::Local<v8::Signature> signature,
-    base::span<const ConstantCallbackConfig> configs) {
-  const bool has_prototype_template = !prototype_template.IsEmpty();
-  const v8::PropertyAttribute v8_property_attribute =
-      static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontDelete);
-  for (const auto& config : configs) {
-    v8::Local<v8::String> name = V8AtomicString(isolate, config.name);
-    if (has_prototype_template) {
-      prototype_template->SetLazyDataProperty(
-          name, config.callback, v8::Local<v8::Value>(), v8_property_attribute,
-          v8::SideEffectType::kHasNoSideEffect);
-    }
-    interface_template->SetLazyDataProperty(
-        name, config.callback, v8::Local<v8::Value>(), v8_property_attribute,
-        v8::SideEffectType::kHasNoSideEffect);
-  }
-}
-
-// static
-void IDLMemberInstaller::InstallConstants(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world,
-    v8::Local<v8::Template> instance_template,
-    v8::Local<v8::Template> prototype_template,
-    v8::Local<v8::Template> interface_template,
-    v8::Local<v8::Signature> signature,
     base::span<const ConstantValueConfig> configs) {
   const bool has_prototype_template = !prototype_template.IsEmpty();
   const v8::PropertyAttribute v8_property_attribute =

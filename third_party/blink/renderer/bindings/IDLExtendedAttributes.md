@@ -707,7 +707,6 @@ Both methods and attribute/constant getters annotated with this attribute are wi
 ```webidl
 [HighEntropy] attribute Node interestingAttribute;
 [HighEntropy] Node getInterestingNode();
-[HighEntropy] const INTERESTING_CONSTANT = 1;
 ```
 
 Attributes and methods labeled with `[HighEntropy=Direct]` are simple surfaces which can be expressed as a sequence of bytes without any need for additional parsing logic.
@@ -764,7 +763,7 @@ The generated feature name must be added to `WebFeature` (in [blink/public/mojom
 ```webidl
 [Measure] attribute Node interestingAttribute;
 [Measure] Node getInterestingNode();
-[Measure] const INTERESTING_CONSTANT = 1;
+// Note that Measure is longer supported on constants.
 ```
 
 ### [MeasureAs]
@@ -781,7 +780,7 @@ The value must match one of the enumeration values in `WebFeature` (in [blink/pu
 ```webidl
 [MeasureAs=AttributeWeAreInterestedIn] attribute Node interestingAttribute;
 [MeasureAs=MethodsAreInterestingToo] Node getInterestingNode();
-[MeasureAs=EvenSomeConstantsAreInteresting] const INTERESTING_CONSTANT = 1;
+// Note that MeasureAs is longer supported on constants.
 ```
 
 ### [NotEnumerable]
