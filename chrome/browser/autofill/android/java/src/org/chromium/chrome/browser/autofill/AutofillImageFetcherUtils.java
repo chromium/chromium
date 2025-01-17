@@ -57,6 +57,36 @@ final class AutofillImageFetcherUtils {
     }
 
     /**
+     * Adds a background and center aligns the input bitmap.
+     *
+     * <p>The input bitmap dimensions should not be larger than the background dimensions. If it is
+     * larger, the input bitmap will be returned without any modifications.
+     *
+     * @param bitmap The input bitmap to which the background has to be added.
+     * @param backgroundWidth Background width in Px.
+     * @param backgroundHeight Background height in Px.
+     * @param backgroundColor Background color.
+     * @return A new bitmap which is a composite of the input bitmap placed on a background.
+     */
+    static Bitmap addCenterAlignedBackground(
+            Bitmap bitmap, @Px int backgroundWidth, @Px int backgroundHeight, int backgroundColor) {
+        if (bitmap.getWidth() > backgroundWidth || bitmap.getHeight() > backgroundHeight) {
+            return bitmap;
+        }
+        Bitmap outputBitmap =
+                Bitmap.createBitmap(backgroundWidth, backgroundHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(outputBitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(backgroundColor);
+        canvas.drawRect(0, 0, backgroundWidth, backgroundHeight, paint);
+        float left = (backgroundWidth - bitmap.getWidth()) / 2f;
+        float top = (backgroundHeight - bitmap.getHeight()) / 2f;
+        canvas.drawBitmap(bitmap, left, top, /* paint= */ null);
+
+        return outputBitmap;
+    }
+
+    /**
      * Treats Pix account image as per specifications:
      *
      * <p>Resizes the logo to 18dp x 18dp if the logo is of a different dimension, and adds a corner
@@ -88,19 +118,12 @@ final class AutofillImageFetcherUtils {
                 roundCorners(bitmap, getPixelSize(R.dimen.square_card_icon_corner_radius));
 
         // Create a white background and place the square logo in the center.
-        Bitmap backgroundBitmap =
-                Bitmap.createBitmap(iconWidth, iconHeight, Bitmap.Config.ARGB_8888);
-        Canvas backgroundCanvas = new Canvas(backgroundBitmap);
-        Paint backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.WHITE);
-        backgroundPaint.setAntiAlias(true);
-        backgroundCanvas.drawRect(0, 0, iconWidth, iconHeight, backgroundPaint);
-        int left = (iconWidth - logoSize) / 2;
-        int top = (iconHeight - logoSize) / 2;
-        backgroundCanvas.drawBitmap(logoWithRoundCorners, left, top, null);
+        Bitmap compositeBitmap =
+                addCenterAlignedBackground(
+                        logoWithRoundCorners, iconWidth, iconHeight, Color.WHITE);
 
-        Bitmap compositeIconWithRoundCorners =
-                roundCorners(backgroundBitmap, getPixelSize(R.dimen.large_card_icon_corner_radius));
+        // Round the corners of the composite bitmap.
+        Bitmap compositeIconWithRoundCorners = roundCorners(compositeBitmap, iconCornerRadius);
 
         // Add the grey border.
         // TODO(crbug.com/389947287): Verify the border color.
