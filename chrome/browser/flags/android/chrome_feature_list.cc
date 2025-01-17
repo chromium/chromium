@@ -181,7 +181,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
-    &kAndroidAppIntegrationModule,
     &kAndroidAppIntegrationV2,
     &kNewTabPageCustomization,
     &kAndroidAppIntegrationWithFavicon,
@@ -392,6 +391,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &safe_browsing::kHashPrefixRealTimeLookups,
     &safe_browsing::kPasswordLeakToggleMove,
     &safe_browsing::kShowWarningsForSuspiciousNotifications,
+    &segmentation_platform::features::kAndroidAppIntegrationModule,
     &segmentation_platform::features::kContextualPageActions,
     &segmentation_platform::features::kContextualPageActionShareModel,
     &segmentation_platform::features::kEducationalTipModule,
@@ -458,10 +458,6 @@ BASE_FEATURE(kForceListTabSwitcher,
 BASE_FEATURE(kAndroidAppIntegration,
              "AndroidAppIntegration",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidAppIntegrationModule,
-             "AndroidAppIntegrationModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidAppIntegrationV2,
              "AndroidAppIntegrationV2",

@@ -114,7 +114,19 @@ std::string AnnotatedNumericResult::ToDebugString() const {
   debug_string << "Status: " << StatusToString(status);
 
   for (int i = 0; i < result.result_size(); ++i) {
-    debug_string << " output " << i << ": " << result.result(i);
+    const std::string* label = nullptr;
+    if (result.output_config().predictor().has_multi_class_classifier()) {
+      label = &result.output_config()
+                   .predictor()
+                   .multi_class_classifier()
+                   .class_labels(i);
+    } else if (result.output_config().predictor().has_generic_predictor()) {
+      label =
+          &result.output_config().predictor().generic_predictor().output_labels(
+              i);
+    }
+    debug_string << " output " << (label ? *label : "") << ": "
+                 << result.result(i);
   }
 
   return debug_string.str();
