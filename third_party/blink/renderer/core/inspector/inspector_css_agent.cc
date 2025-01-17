@@ -3612,8 +3612,9 @@ InspectorCSSAgent::BuildArrayForCSSAnimationStyleList(Element* element) {
   HeapVector<Member<Animation>> animations;
   for (const auto& entry : element_animations->Animations()) {
     Animation& animation = *entry.key;
-    // We only include CSS animations & WAAPI animations here.
-    if (animation.IsCSSTransition()) {
+    AnimationEffect* effect = animation.effect();
+    // We only include active CSS animations & WAAPI animations here.
+    if (animation.IsCSSTransition() || !effect || !effect->IsInEffect()) {
       continue;
     }
 
