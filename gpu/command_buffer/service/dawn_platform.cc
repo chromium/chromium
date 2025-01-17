@@ -236,7 +236,8 @@ DawnPlatform::CreateWorkerTaskPool() {
 bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
   switch (feature) {
     case dawn::platform::Features::kWebGPUUseDXC:
-      return base::FeatureList::IsEnabled(features::kWebGPUUseDXC);
+      // (crbug.com/362247692): Feature is enabled by default.
+      return true;
     case dawn::platform::Features::kWebGPUUseTintIR:
       return base::FeatureList::IsEnabled(features::kWebGPUUseTintIR);
     default:
