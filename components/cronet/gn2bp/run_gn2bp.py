@@ -265,7 +265,7 @@ def main():
       # deal with this small differences.
       with _OptionalExit(tempfile.TemporaryDirectory(dir=_OUT_DIR),
                          exit=delete_temporary_files) as gn_out_dir:
-        cronet_utils.gn(gn_out_dir, cronet_utils.get_gn_args_for_aosp(arch))
+        cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
         if _write_desc_json(gn_out_dir, temp_file) != 0:
           # Exit if we failed to generate any of the desc.json files.
           print(f"Failed to generate desc file for arch: {arch}")

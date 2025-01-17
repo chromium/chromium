@@ -161,7 +161,7 @@ def get_transitive_deps_build_files(repo_path: str, out_dir: str,
 def get_gn_args_for_aosp(arch: str) -> List[str]:
   default_args = get_android_gn_args(True, arch)
   default_args.extend(AOSP_EXTRA_ARGS)
-  return ' '.join(filter_gn_args(default_args, ["use_remoteexec"]))
+  return filter_gn_args(default_args, ["use_remoteexec"])
 
 
 def android_gn_gen(is_release, target_cpu, out_dir):
