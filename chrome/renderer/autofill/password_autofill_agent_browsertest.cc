@@ -879,22 +879,28 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   void ExpectFormDataWithUsernameAndPasswordsAndEvent(
       const autofill::FormData& form_data,
       FormRendererId form_renderer_id,
-      const std::u16string& username_value,
-      const std::u16string& password_value,
-      const std::u16string& new_password_value,
+      base::optional_ref<const std::u16string> username_value,
+      base::optional_ref<const std::u16string> password_value,
+      base::optional_ref<const std::u16string> new_password_value,
       SubmissionIndicatorEvent event) {
     EXPECT_EQ(form_renderer_id, form_data.renderer_id());
-    EXPECT_TRUE(FormHasFieldWithValue(form_data, username_value));
-    EXPECT_TRUE(FormHasFieldWithValue(form_data, password_value));
-    EXPECT_TRUE(FormHasFieldWithValue(form_data, new_password_value));
+    if (username_value) {
+      EXPECT_TRUE(FormHasFieldWithValue(form_data, *username_value));
+    }
+    if (password_value) {
+      EXPECT_TRUE(FormHasFieldWithValue(form_data, *password_value));
+    }
+    if (new_password_value) {
+      EXPECT_TRUE(FormHasFieldWithValue(form_data, *new_password_value));
+    }
     EXPECT_EQ(form_data.submission_event(), event);
   }
 
   void ExpectFormSubmittedWithUsernameAndPasswords(
       FormRendererId form_renderer_id,
-      const std::u16string& username_value,
-      const std::u16string& password_value,
-      const std::u16string& new_password_value) {
+      std::optional<std::u16string> username_value,
+      std::optional<std::u16string> password_value,
+      std::optional<std::u16string> new_password_value = std::nullopt) {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(fake_driver_.called_password_form_submitted());
     ASSERT_TRUE(static_cast<bool>(fake_driver_.form_data_submitted()));
@@ -904,18 +910,17 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
   }
 
-  void ExpectSameDocumentNavigationWithUsernameAndPasswords(
+  void ExpectDynamicFormSubmissionWithUsernameAndPasswords(
       FormRendererId form_renderer_id,
       const std::u16string& username_value,
       const std::u16string& password_value,
-      const std::u16string& new_password_value,
       SubmissionIndicatorEvent event) {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(fake_driver_.called_dynamic_form_submission());
     ASSERT_TRUE(static_cast<bool>(fake_driver_.form_data_maybe_submitted()));
     ExpectFormDataWithUsernameAndPasswordsAndEvent(
         *(fake_driver_.form_data_maybe_submitted()), form_renderer_id,
-        username_value, password_value, new_password_value, event);
+        username_value, password_value, std::nullopt, event);
   }
 
   void CheckIfEventsAreCalled(const std::vector<std::u16string>& checkers,
@@ -2847,8 +2852,8 @@ TEST_F(PasswordAutofillAgentTest,
   // Observe that the PasswordAutofillAgent still remembered the last non-empty
   // username and password and sent that to the browser.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      form_util::GetFormRendererId(username_element.Form()), u"username", u"",
-      u"random");
+      form_util::GetFormRendererId(username_element.Form()), u"username",
+      /*password_value=*/std::nullopt, u"random");
   fake_driver_.form_data_submitted();
 }
 
@@ -2870,7 +2875,8 @@ TEST_F(PasswordAutofillAgentTest,
   // Observe that the PasswordAutofillAgent respects the user having cleared the
   // password.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), u"", u"", u"");
+      GetFormUniqueRendererId("LoginTestForm"), /*username_value=*/u"",
+      /*password_value=*/u"");
 }
 
 // Similar to RememberLastNonEmptyPasswordOnSubmit_ScriptCleared, but uses the
@@ -2899,8 +2905,8 @@ TEST_F(PasswordAutofillAgentTest,
   // Observe that the PasswordAutofillAgent still remembered the last non-empty
   // password and sent that to the browser.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      form_util::GetFormRendererId(username_element_.Form()), u"temp", u"",
-      u"random");
+      form_util::GetFormRendererId(username_element_.Form()), u"temp",
+      /*password_value=*/std::nullopt, u"random");
 }
 
 // Similar to RememberLastNonEmptyUsernameAndPasswordOnSubmit_New, but uses
@@ -2916,8 +2922,8 @@ TEST_F(PasswordAutofillAgentTest, RememberLastNonEmptySingleUsername) {
   // Observe that the PasswordAutofillAgent still remembered the last non-empty
   // password and sent that to the browser.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      form_util::GetFormRendererId(username_element_.Form()), u"temp", u"",
-      u"");
+      form_util::GetFormRendererId(username_element_.Form()), u"temp",
+      /*password_value=*/u"");
 }
 
 // The user first accepts a suggestion, but then overwrites the password. This
@@ -2986,7 +2992,7 @@ TEST_F(PasswordAutofillAgentTest,
   // Observe that the PasswordAutofillAgent still remembered the last typed
   // username and password and sent that to the browser.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random", u"");
+      GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random");
 }
 
 TEST_F(PasswordAutofillAgentTest, RememberFieldPropertiesOnSubmit) {
@@ -3131,7 +3137,7 @@ TEST_F(PasswordAutofillAgentTest,
   // username and password and sent that to the browser.
   ExpectFormSubmittedWithUsernameAndPasswords(
       GetFormUniqueRendererId("LoginTestForm"), kAliceUsername16,
-      kAlicePassword16, u"");
+      kAlicePassword16);
 }
 
 // The username/password is autofilled by password manager then user types in a
@@ -3156,7 +3162,7 @@ TEST_F(
   // Observe that the PasswordAutofillAgent still remembered the last typed
   // username and password and sent that to the browser.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random", u"");
+      GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random");
 }
 
 // The user starts typing username then it is autofilled.
@@ -3173,7 +3179,7 @@ TEST_F(PasswordAutofillAgentTest, RememberAutofilledUsername) {
   // Observe that the PasswordAutofillAgent still remembered the last typed
   // username and password and sent that to the browser.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random", u"");
+      GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random");
 }
 
 // The user starts typing username then javascript suggests to select another
@@ -3197,7 +3203,7 @@ TEST_F(PasswordAutofillAgentTest,
   // Observe that the PasswordAutofillAgent still remembered the last typed
   // username and password and sent that to the browser.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), u"foo.smith", u"random", u"");
+      GetFormUniqueRendererId("LoginTestForm"), u"foo.smith", u"random");
 }
 
 // If credentials contain username+password but the form contains only a
@@ -3479,7 +3485,7 @@ TEST_F(PasswordAutofillAgentTest, ReadonlyPasswordFieldOnSubmit) {
   // Observe that the PasswordAutofillAgent can correctly process submitted
   // form.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random", u"");
+      GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random");
 }
 
 // Verify that typed passwords are saved correctly when autofill and generation
@@ -3500,7 +3506,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationTriggered_TypedPassword) {
   SaveAndSubmitForm();
 
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), u"NewGuy", u"NewPassword", u"");
+      GetFormUniqueRendererId("LoginTestForm"), u"NewGuy", u"NewPassword");
 }
 
 // Verify that generated passwords are saved correctly when autofill and
@@ -3523,8 +3529,7 @@ TEST_F(PasswordAutofillAgentTest,
   SaveAndSubmitForm();
 
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), kAliceUsername16, u"NewPass22",
-      u"");
+      GetFormUniqueRendererId("LoginTestForm"), kAliceUsername16, u"NewPass22");
 }
 
 // TODO(crbug.com/40100455): Figure out whether this test is simulating a
@@ -3558,8 +3563,7 @@ TEST_F(PasswordAutofillAgentTest,
   SaveAndSubmitForm();
 
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), kAliceUsername16, u"NewPass22",
-      u"");
+      GetFormUniqueRendererId("LoginTestForm"), kAliceUsername16, u"NewPass22");
 
   // Then user selects another account on Fill On Account Select
   SimulateSuggestionChoiceOfUsernameAndPassword(username_element_,
@@ -3574,8 +3578,7 @@ TEST_F(PasswordAutofillAgentTest,
   SaveAndSubmitForm();
 
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), kBobUsername16, kBobPassword16,
-      u"");
+      GetFormUniqueRendererId("LoginTestForm"), kBobUsername16, kBobPassword16);
 }
 
 // If password generation is enabled for a field, password autofill should not
@@ -3760,8 +3763,8 @@ TEST_F(PasswordAutofillAgentTest, NoForm_PromptForAJAXSubmitWithoutNavigation) {
 
   FireAjaxSucceeded();
 
-  ExpectSameDocumentNavigationWithUsernameAndPasswords(
-      FormRendererId(), u"Bob", u"mypassword", u"",
+  ExpectDynamicFormSubmissionWithUsernameAndPasswords(
+      FormRendererId(), u"Bob", u"mypassword",
       SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
@@ -3785,8 +3788,8 @@ TEST_F(PasswordAutofillAgentTest,
 
   base::RunLoop().RunUntilIdle();
 
-  ExpectSameDocumentNavigationWithUsernameAndPasswords(
-      FormRendererId(), u"Bob", u"mypassword", u"",
+  ExpectDynamicFormSubmissionWithUsernameAndPasswords(
+      FormRendererId(), u"Bob", u"mypassword",
       SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
@@ -3810,8 +3813,8 @@ TEST_F(PasswordAutofillAgentTest, PromptForAJAXSubmitAfterHidingParentElement) {
 
   base::RunLoop().RunUntilIdle();
 
-  ExpectSameDocumentNavigationWithUsernameAndPasswords(
-      GetFormUniqueRendererId("form"), u"Bob", u"mypassword", u"",
+  ExpectDynamicFormSubmissionWithUsernameAndPasswords(
+      GetFormUniqueRendererId("form"), u"Bob", u"mypassword",
       SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
@@ -3837,8 +3840,8 @@ TEST_F(PasswordAutofillAgentTest,
 
   base::RunLoop().RunUntilIdle();
 
-  ExpectSameDocumentNavigationWithUsernameAndPasswords(
-      renderer_id, u"Bob", u"mypassword", u"",
+  ExpectDynamicFormSubmissionWithUsernameAndPasswords(
+      renderer_id, u"Bob", u"mypassword",
       SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
@@ -4228,8 +4231,7 @@ TEST_F(PasswordAutofillAgentTest, RememberChosenUsernamePassword) {
   // Observe that the PasswordAutofillAgent sends to the browser selected
   // credentials.
   ExpectFormSubmittedWithUsernameAndPasswords(
-      GetFormUniqueRendererId("LoginTestForm"), kBobUsername16, kBobPassword16,
-      u"");
+      GetFormUniqueRendererId("LoginTestForm"), kBobUsername16, kBobPassword16);
 }
 
 // Tests that we can correctly suggest to autofill two forms without username
@@ -4272,8 +4274,8 @@ TEST_F(PasswordAutofillAgentTest,
 
     FireAjaxSucceeded();
 
-    ExpectSameDocumentNavigationWithUsernameAndPasswords(
-        FormRendererId(), u"Alice", u"mypassword", u"",
+    ExpectDynamicFormSubmissionWithUsernameAndPasswords(
+        FormRendererId(), u"Alice", u"mypassword",
         SubmissionIndicatorEvent::XHR_SUCCEEDED);
   }
 }
@@ -4299,8 +4301,8 @@ TEST_F(PasswordAutofillAgentTest,
   ForceLayoutUpdate();
   base::RunLoop().RunUntilIdle();
 
-  ExpectSameDocumentNavigationWithUsernameAndPasswords(
-      FormRendererId(), u"Alice", u"mypassword", u"",
+  ExpectDynamicFormSubmissionWithUsernameAndPasswords(
+      FormRendererId(), u"Alice", u"mypassword",
       SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
@@ -4322,7 +4324,7 @@ TEST_F(PasswordAutofillAgentTest,
     SaveAndSubmitForm();
 
     ExpectFormSubmittedWithUsernameAndPasswords(
-        GetFormUniqueRendererId("LoginTestForm"), u"Alice", u"mypassword", u"");
+        GetFormUniqueRendererId("LoginTestForm"), u"Alice", u"mypassword");
   }
 }
 
@@ -4478,8 +4480,8 @@ TEST_F(PasswordAutofillAgentTest,
 
   FireDidFinishSameDocumentNavigation();
 
-  ExpectSameDocumentNavigationWithUsernameAndPasswords(
-      renderer_id, std::u16string(), u"random", std::u16string(),
+  ExpectDynamicFormSubmissionWithUsernameAndPasswords(
+      renderer_id, std::u16string(), u"random",
       SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
 }
 
@@ -5000,9 +5002,9 @@ TEST_F(PasswordAutofillAgentTest, XhrSubmissionAfterFillingSuggestion) {
   // Simulate that JavaScript removes the submitted form from DOM. That means
   // that a submission was successful.
   ExecuteJavaScriptForTests(kJavaScriptRemoveForm);
-  ExpectSameDocumentNavigationWithUsernameAndPasswords(
+  ExpectDynamicFormSubmissionWithUsernameAndPasswords(
       fill_data_.form_renderer_id, kBobUsername16, kBobPassword16,
-      std::u16string(), SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL);
+      SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL);
 }
 
 // Tests that a JavaScript submission (e.g. via removing the form from a DOM)
