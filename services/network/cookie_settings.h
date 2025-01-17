@@ -222,6 +222,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       base::optional_ref<const url::Origin> top_frame_origin,
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      net::CookieSettingOverrides overrides,
       net::CookieInclusionStatus& out_status) const;
 
   // Returns true if at least one content settings is session only.
