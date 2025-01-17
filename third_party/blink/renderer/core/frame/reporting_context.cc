@@ -59,7 +59,7 @@ ReportingContext::ReportingContext(ExecutionContext& context)
     : Supplement<ExecutionContext>(context),
       execution_context_(context),
       reporting_service_(&context),
-      receiver_(this, &context) {}
+      receivers_(this, &context) {}
 
 // static
 ReportingContext* ReportingContext::From(ExecutionContext* context) {
@@ -74,8 +74,7 @@ ReportingContext* ReportingContext::From(ExecutionContext* context) {
 
 void ReportingContext::Bind(
     mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver),
+  receivers_.Add(std::move(receiver),
                  execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
@@ -127,7 +126,7 @@ void ReportingContext::Trace(Visitor* visitor) const {
   visitor->Trace(report_buffer_);
   visitor->Trace(execution_context_);
   visitor->Trace(reporting_service_);
-  visitor->Trace(receiver_);
+  visitor->Trace(receivers_);
   Supplement<ExecutionContext>::Trace(visitor);
 }
 

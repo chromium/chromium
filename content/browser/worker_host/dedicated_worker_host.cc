@@ -542,11 +542,13 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
         coep_reporter.InitWithNewPipeAndPassReceiver());
   }
 
+  // TODO(crbug.com/333029815): Pass a DocumentIsolationPolicyReporter to this
+  // call instead of nullptr.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
           ancestor_render_frame_host, GetStorageKey().origin(), isolation_info_,
           worker_client_security_state_->Clone(), std::move(coep_reporter),
-          worker_process_host_,
+          /*dip_reporter=*/mojo::NullRemote(), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
               blink::mojom::PermissionsPolicyFeature::
                   kPrivateStateTokenIssuance)
