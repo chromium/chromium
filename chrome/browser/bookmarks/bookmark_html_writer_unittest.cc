@@ -75,17 +75,19 @@ class BookmarkHTMLWriterTest : public testing::Test {
   std::u16string BookmarkEntryToString(const ImportedBookmarkEntry& entry) {
     std::u16string result;
     result.append(u"on_toolbar=");
-    if (entry.in_toolbar)
+    if (entry.in_toolbar) {
       result.append(u"true");
-    else
+    } else {
       result.append(u"false");
+    }
 
     result.append(u" url=" + base::UTF8ToUTF16(entry.url.spec()));
 
     result.append(u" path=");
     for (size_t i = 0; i < entry.path.size(); ++i) {
-      if (i != 0)
+      if (i != 0) {
         result.append(u"/");
+      }
       result.append(entry.path[i]);
     }
 
@@ -112,8 +114,9 @@ class BookmarkHTMLWriterTest : public testing::Test {
       entry.path.push_back(f1);
       if (!f2.empty()) {
         entry.path.push_back(f2);
-        if (!f3.empty())
+        if (!f3.empty()) {
           entry.path.push_back(f3);
+        }
       }
     }
     entry.title = title;
@@ -129,8 +132,8 @@ class BookmarkHTMLWriterTest : public testing::Test {
                                  const std::u16string& f1,
                                  const std::u16string& f2,
                                  const std::u16string& f3) {
-    EXPECT_EQ(BookmarkValuesToString(on_toolbar, url, title, creation_time,
-                                     f1, f2, f3),
+    EXPECT_EQ(BookmarkValuesToString(on_toolbar, url, title, creation_time, f1,
+                                     f2, f3),
               BookmarkEntryToString(entry));
   }
 
@@ -218,8 +221,8 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   base::Time t2(t1 + base::Hours(1));
   base::Time t3(t1 + base::Hours(1));
   base::Time t4(t1 + base::Hours(1));
-  const BookmarkNode* f1 = model->AddFolder(
-      model->bookmark_bar_node(), 0, f1_title);
+  const BookmarkNode* f1 =
+      model->AddFolder(model->bookmark_bar_node(), 0, f1_title);
   model->AddURL(f1, 0, url1_title, url1, nullptr, t1);
   HistoryServiceFactory::GetForProfile(profile.get(),
                                        ServiceAccessType::EXPLICIT_ACCESS)
