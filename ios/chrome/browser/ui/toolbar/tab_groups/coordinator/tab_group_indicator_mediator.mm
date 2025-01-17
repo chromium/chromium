@@ -50,7 +50,6 @@
   if (self) {
     CHECK(consumer);
     CHECK(webStateList);
-    CHECK(IsTabGroupIndicatorEnabled());
     _URLLoader = URLLoader;
     _shareKitService = shareKitService;
     _tabGroupSyncService = tabGroupSyncService;
@@ -91,7 +90,7 @@
   web::WebState* webState = status.new_active_web_state;
   if ((status.active_web_state_change() || groupUpdate) && webState) {
     const TabGroup* tabGroup = [self currentTabGroup];
-    if (tabGroup) {
+    if (tabGroup && IsTabGroupIndicatorEnabled()) {
       [_consumer setTabGroupTitle:tabGroup->GetTitle()
                        groupColor:tabGroup->GetColor()];
       BOOL shared =

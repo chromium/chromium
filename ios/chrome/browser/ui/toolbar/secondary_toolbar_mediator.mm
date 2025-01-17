@@ -93,12 +93,13 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupInGridEnabled()) {
     // Update the Tab Grid button style, based on whether the active tab is
     // grouped or not.
     const int active_index = webStateList->active_index();
     if (active_index != WebStateList::kInvalidIndex &&
-        webStateList->GetGroupOfWebStateAt(active_index) != nullptr) {
+        webStateList->GetGroupOfWebStateAt(active_index) != nullptr &&
+        IsTabGroupIndicatorEnabled()) {
       [self.consumer updateTabGroupState:ToolbarTabGroupState::kTabGroup];
     } else {
       [self.consumer updateTabGroupState:ToolbarTabGroupState::kNormal];

@@ -47,7 +47,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  CHECK(IsTabGroupIndicatorEnabled());
+  CHECK(IsTabGroupInGridEnabled());
   BOOL incognito = self.browser->GetProfile()->IsOffTheRecord();
   _view = [[TabGroupIndicatorView alloc] init];
   _view.displayedOnNTP = _displayedOnNTP;

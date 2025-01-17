@@ -175,8 +175,7 @@
 }
 
 - (void)updateTabGroupIndicatorAvailability {
-  CHECK(IsTabGroupIndicatorEnabled());
-
+  CHECK(IsTabGroupInGridEnabled());
   BOOL isTopOmnibox = self.locationBarView != nil;
   if (isTopOmnibox) {
     [NSLayoutConstraint
@@ -210,7 +209,7 @@
 
 // Sets tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
-  CHECK(IsTabGroupIndicatorEnabled());
+  CHECK(IsTabGroupInGridEnabled());
   _tabGroupIndicatorView = view;
   _tabGroupIndicatorView.hidden = YES;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -254,7 +253,7 @@
   }
 
   // If the tab group indicator is visible, add its height to the total height.
-  if (IsTabGroupIndicatorEnabled() && !_tabGroupIndicatorView.hidden) {
+  if (IsTabGroupInGridEnabled() && !_tabGroupIndicatorView.hidden) {
     height += kTabGroupIndicatorHeight;
     // If the Omnibox is not at the top, remove the top vertical margin to avoid
     // extra space when the tab group indicator is present.
@@ -269,7 +268,8 @@
 }
 
 - (void)didMoveToSuperview {
-  if (IsTabGroupIndicatorEnabled()) {
+  [super didMoveToSuperview];
+  if (IsTabGroupInGridEnabled()) {
     // Ensure the tab group indicator's visibility aligns with the new
     // superview's layout context.
     [self updateTabGroupIndicatorAvailability];
@@ -499,7 +499,7 @@
   locationBarView.translatesAutoresizingMaskIntoConstraints = NO;
   [locationBarView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                      forAxis:UILayoutConstraintAxisHorizontal];
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupInGridEnabled()) {
     [self updateTabGroupIndicatorAvailability];
   }
 

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -310,24 +311,29 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   }
 
   void SetupCommandHandlerMocks() {
-    help_commands_handler_mock = OCMProtocolMock(@protocol(HelpCommands));
-    omnibox_commands_handler_mock = OCMProtocolMock(@protocol(OmniboxCommands));
-    snackbar_commands_handler_mock =
+    application_handler_mock_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    help_commands_handler_mock_ = OCMProtocolMock(@protocol(HelpCommands));
+    omnibox_commands_handler_mock_ =
+        OCMProtocolMock(@protocol(OmniboxCommands));
+    snackbar_commands_handler_mock_ =
         OCMProtocolMock(@protocol(SnackbarCommands));
-    fakebox_focuser_handler_mock = OCMProtocolMock(@protocol(FakeboxFocuser));
+    fakebox_focuser_handler_mock_ = OCMProtocolMock(@protocol(FakeboxFocuser));
     parcel_tracking_commands_handler_mock_ =
         OCMProtocolMock(@protocol(ParcelTrackingOptInCommands));
     [browser_.get()->GetCommandDispatcher()
-        startDispatchingToTarget:help_commands_handler_mock
+        startDispatchingToTarget:application_handler_mock_
+                     forProtocol:@protocol(ApplicationCommands)];
+    [browser_.get()->GetCommandDispatcher()
+        startDispatchingToTarget:help_commands_handler_mock_
                      forProtocol:@protocol(HelpCommands)];
     [browser_.get()->GetCommandDispatcher()
-        startDispatchingToTarget:omnibox_commands_handler_mock
+        startDispatchingToTarget:omnibox_commands_handler_mock_
                      forProtocol:@protocol(OmniboxCommands)];
     [browser_.get()->GetCommandDispatcher()
-        startDispatchingToTarget:snackbar_commands_handler_mock
+        startDispatchingToTarget:snackbar_commands_handler_mock_
                      forProtocol:@protocol(SnackbarCommands)];
     [browser_.get()->GetCommandDispatcher()
-        startDispatchingToTarget:fakebox_focuser_handler_mock
+        startDispatchingToTarget:fakebox_focuser_handler_mock_
                      forProtocol:@protocol(FakeboxFocuser)];
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:parcel_tracking_commands_handler_mock_
@@ -392,10 +398,11 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   NewTabPageMetricsRecorder* NTPMetricsRecorder_;
   id component_factory_mock_;
   UIViewController* base_view_controller_;
-  id help_commands_handler_mock;
-  id omnibox_commands_handler_mock;
-  id snackbar_commands_handler_mock;
-  id fakebox_focuser_handler_mock;
+  id application_handler_mock_;
+  id help_commands_handler_mock_;
+  id omnibox_commands_handler_mock_;
+  id snackbar_commands_handler_mock_;
+  id fakebox_focuser_handler_mock_;
   id parcel_tracking_commands_handler_mock_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
