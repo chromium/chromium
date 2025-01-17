@@ -25,12 +25,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 
 namespace blink {
 
 // https://www.w3.org/TR/css3-images/#default-sizing
-gfx::SizeF ConcreteObjectSize(const IntrinsicSizingInfo& sizing_info,
+gfx::SizeF ConcreteObjectSize(const NaturalSizingInfo& sizing_info,
                               const gfx::SizeF& default_object_size) {
   if (sizing_info.has_width && sizing_info.has_height) {
     return sizing_info.size;

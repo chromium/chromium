@@ -107,7 +107,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
   // true.
   static bool GetNaturalDimensions(SVGImage& image,
                                    const SVGImageViewInfo* info,
-                                   IntrinsicSizingInfo& sizing_info);
+                                   NaturalSizingInfo& sizing_info);
 
   // Determine the concrete object size of this SVGImage with the view info
   // applied using the specified default object size (in CSS pixels).

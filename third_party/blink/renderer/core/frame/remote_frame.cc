@@ -43,9 +43,9 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -741,7 +741,7 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
   // TODO(https://crbug.com/1044304): Should either remove the native
   // C++ Blink type and use the Mojo type everywhere or typemap the
   // Mojo type to the pre-existing native C++ Blink type.
-  IntrinsicSizingInfo sizing_info;
+  NaturalSizingInfo sizing_info;
   sizing_info.size = info->size;
   sizing_info.aspect_ratio = info->aspect_ratio;
   sizing_info.has_width = info->has_width;

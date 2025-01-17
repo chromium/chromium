@@ -170,17 +170,17 @@ gfx::SizeF StyleFetchedImage::ImageSize(
   return ApplyZoom(size, multiplier);
 }
 
-IntrinsicSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
+NaturalSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
   Image& image = *image_->GetImage();
-  IntrinsicSizingInfo intrinsic_sizing_info;
+  NaturalSizingInfo intrinsic_sizing_info;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
     if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
                                                     intrinsic_sizing_info)) {
-      intrinsic_sizing_info = IntrinsicSizingInfo::None();
+      intrinsic_sizing_info = NaturalSizingInfo::None();
     }
   } else {
     gfx::SizeF size(
@@ -198,7 +198,7 @@ IntrinsicSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
 bool StyleFetchedImage::HasIntrinsicSize() const {
   Image& image = *image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    IntrinsicSizingInfo intrinsic_sizing_info;
+    NaturalSizingInfo intrinsic_sizing_info;
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
     if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,

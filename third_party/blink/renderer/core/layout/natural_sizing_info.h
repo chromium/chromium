@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INTRINSIC_SIZING_INFO_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INTRINSIC_SIZING_INFO_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NATURAL_SIZING_INFO_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NATURAL_SIZING_INFO_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -11,13 +11,13 @@
 
 namespace blink {
 
-struct IntrinsicSizingInfo {
+struct NaturalSizingInfo {
   DISALLOW_NEW();
 
-  static IntrinsicSizingInfo None() {
+  static NaturalSizingInfo None() {
     return {gfx::SizeF(), gfx::SizeF(), false, false};
   }
-  static IntrinsicSizingInfo MakeFixed(const gfx::SizeF& natural_size) {
+  static NaturalSizingInfo MakeFixed(const gfx::SizeF& natural_size) {
     return {natural_size, natural_size, true, true};
   }
 
@@ -47,9 +47,9 @@ inline float ResolveHeightForRatio(float width,
 // https://www.w3.org/TR/css3-images/#default-sizing with a specified size with
 // no constraints and a contain constraint.
 CORE_EXPORT gfx::SizeF ConcreteObjectSize(
-    const IntrinsicSizingInfo& sizing_info,
+    const NaturalSizingInfo& sizing_info,
     const gfx::SizeF& default_object_size);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INTRINSIC_SIZING_INFO_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NATURAL_SIZING_INFO_H_

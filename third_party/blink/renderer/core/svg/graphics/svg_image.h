@@ -57,7 +57,7 @@ class SVGImageChromeClient;
 class SVGImageForContainer;
 class SVGSVGElement;
 class SVGViewSpec;
-struct IntrinsicSizingInfo;
+struct NaturalSizingInfo;
 
 // A collection of "viewport defining" parameters for an SVGImage.
 class SVGImageViewInfo final : public GarbageCollected<SVGImageViewInfo> {
@@ -156,7 +156,7 @@ class CORE_EXPORT SVGImage final : public Image {
 
   // Get the intrinsic dimensions (width, height and aspect ratio) from this
   // SVGImage. Returns true if successful.
-  bool GetIntrinsicSizingInfo(const SVGViewSpec*, IntrinsicSizingInfo&) const;
+  bool GetIntrinsicSizingInfo(const SVGViewSpec*, NaturalSizingInfo&) const;
 
   String FilenameExtension() const override;
 

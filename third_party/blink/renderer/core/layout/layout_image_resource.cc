@@ -31,8 +31,8 @@
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
@@ -131,20 +131,20 @@ RespectImageOrientationEnum LayoutImageResource::ImageOrientation() const {
       layout_object_->StyleRef().ImageOrientation());
 }
 
-IntrinsicSizingInfo LayoutImageResource::GetNaturalDimensions(
+NaturalSizingInfo LayoutImageResource::GetNaturalDimensions(
     float multiplier) const {
   if (!cached_image_ || !cached_image_->IsSizeAvailable() ||
       !cached_image_->HasImage()) {
-    return IntrinsicSizingInfo::None();
+    return NaturalSizingInfo::None();
   }
-  IntrinsicSizingInfo sizing_info;
+  NaturalSizingInfo sizing_info;
   Image& image = *cached_image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const SVGImageViewInfo* view_info = SVGImageForContainer::CreateViewInfo(
         *svg_image, layout_object_->GetNode());
     if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
                                                     sizing_info)) {
-      sizing_info = IntrinsicSizingInfo::None();
+      sizing_info = NaturalSizingInfo::None();
     }
   } else {
     sizing_info.size = gfx::SizeF(image.Size(ImageOrientation()));
@@ -176,7 +176,7 @@ gfx::SizeF LayoutImageResource::ImageSize(float multiplier) const {
 gfx::SizeF LayoutImageResource::ConcreteObjectSize(
     float multiplier,
     const gfx::SizeF& default_object_size) const {
-  IntrinsicSizingInfo sizing_info = GetNaturalDimensions(multiplier);
+  NaturalSizingInfo sizing_info = GetNaturalDimensions(multiplier);
   return blink::ConcreteObjectSize(sizing_info, default_object_size);
 }
 

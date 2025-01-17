@@ -28,9 +28,9 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_marker_image.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 
 namespace blink {
@@ -87,7 +87,7 @@ gfx::SizeF LayoutImageResourceStyleImage::ConcreteObjectSize(
                                  ImageOrientation());
 }
 
-IntrinsicSizingInfo LayoutImageResourceStyleImage::GetNaturalDimensions(
+NaturalSizingInfo LayoutImageResourceStyleImage::GetNaturalDimensions(
     float multiplier) const {
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.

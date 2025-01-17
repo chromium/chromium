@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_content.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -191,7 +191,7 @@ std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
 
 PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
     const PhysicalRect& base_content_rect,
-    const IntrinsicSizingInfo& sizing_info) const {
+    const NaturalSizingInfo& sizing_info) const {
   // |intrinsic_size| provides the size of the embedded content rendered in the
   // replaced element. This is the reference size that object-view-box applies
   // to.
@@ -231,7 +231,7 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
   DCHECK(!view_box->IsEmpty());
   const auto view_box_paint_rect = ComputeObjectFitAndPositionRect(
       base_content_rect,
-      IntrinsicSizingInfo::MakeFixed(gfx::SizeF(view_box->size)));
+      NaturalSizingInfo::MakeFixed(gfx::SizeF(view_box->size)));
   if (view_box_paint_rect.IsEmpty())
     return view_box_paint_rect;
 
@@ -257,7 +257,7 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
 
 PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
     const PhysicalRect& base_content_rect,
-    const IntrinsicSizingInfo& sizing_info) const {
+    const NaturalSizingInfo& sizing_info) const {
   NOT_DESTROYED();
   EObjectFit object_fit = StyleRef().GetObjectFit();
 
@@ -321,8 +321,7 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
   return {base_content_rect.offset + object_position, object_size};
 }
 
-void LayoutReplaced::ApplyObjectViewBox(
-    IntrinsicSizingInfo& sizing_info) const {
+void LayoutReplaced::ApplyObjectViewBox(NaturalSizingInfo& sizing_info) const {
   if (!sizing_info.has_width || !sizing_info.has_height) {
     return;
   }
@@ -344,7 +343,7 @@ PhysicalRect LayoutReplaced::ReplacedContentRect() const {
 PhysicalRect LayoutReplaced::ReplacedContentRectFrom(
     const PhysicalRect& base_content_rect) const {
   NOT_DESTROYED();
-  const IntrinsicSizingInfo sizing_info = GetNaturalDimensions();
+  const NaturalSizingInfo sizing_info = GetNaturalDimensions();
   return ComputeReplacedContentRect(base_content_rect, sizing_info);
 }
 
@@ -353,10 +352,10 @@ PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(
   return PhysicalRect(rect.offset, PhysicalSize(ToRoundedSize(rect.size)));
 }
 
-IntrinsicSizingInfo LayoutReplaced::ComputeIntrinsicSizingInfo() const {
+NaturalSizingInfo LayoutReplaced::ComputeIntrinsicSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
-  IntrinsicSizingInfo sizing_info = GetNaturalDimensions();
+  NaturalSizingInfo sizing_info = GetNaturalDimensions();
   ApplyObjectViewBox(sizing_info);
   return sizing_info;
 }

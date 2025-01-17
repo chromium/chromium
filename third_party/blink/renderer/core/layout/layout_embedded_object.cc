@@ -30,8 +30,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/embedded_object_painter.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -97,9 +97,9 @@ void LayoutEmbeddedObject::UpdateAfterLayout() {
     GetFrameView()->AddPartToUpdate(*this);
 }
 
-IntrinsicSizingInfo LayoutEmbeddedObject::GetNaturalDimensions() const {
+NaturalSizingInfo LayoutEmbeddedObject::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  IntrinsicSizingInfo sizing_info;
+  NaturalSizingInfo sizing_info;
   FrameView* frame_view = ChildFrameView();
   if (frame_view && frame_view->GetIntrinsicSizingInfo(sizing_info)) {
     // Scale based on our zoom as the embedded document doesn't have that info.
@@ -109,7 +109,7 @@ IntrinsicSizingInfo LayoutEmbeddedObject::GetNaturalDimensions() const {
   return LayoutEmbeddedContent::GetNaturalDimensions();
 }
 
-IntrinsicSizingInfo LayoutEmbeddedObject::ComputeIntrinsicSizingInfo() const {
+NaturalSizingInfo LayoutEmbeddedObject::ComputeIntrinsicSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
   return GetNaturalDimensions();

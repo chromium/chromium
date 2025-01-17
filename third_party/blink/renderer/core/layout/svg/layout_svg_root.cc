@@ -29,9 +29,9 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -68,7 +68,7 @@ void LayoutSVGRoot::Trace(Visitor* visitor) const {
 
 void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
     const SVGRect* override_viewbox,
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+    NaturalSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
   // https://www.w3.org/TR/SVG/coords.html#IntrinsicSizing
 
@@ -95,16 +95,16 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   }
 }
 
-IntrinsicSizingInfo LayoutSVGRoot::GetNaturalDimensions() const {
+NaturalSizingInfo LayoutSVGRoot::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  IntrinsicSizingInfo sizing_info;
+  NaturalSizingInfo sizing_info;
   UnscaledIntrinsicSizingInfo(sizing_info);
 
   sizing_info.size.Scale(StyleRef().EffectiveZoom());
   return sizing_info;
 }
 
-IntrinsicSizingInfo LayoutSVGRoot::ComputeIntrinsicSizingInfo() const {
+NaturalSizingInfo LayoutSVGRoot::ComputeIntrinsicSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
   return GetNaturalDimensions();

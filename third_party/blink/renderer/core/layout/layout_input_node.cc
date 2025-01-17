@@ -11,12 +11,12 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
@@ -157,7 +157,7 @@ void LayoutInputNode::IntrinsicSize(
   if (*computed_inline_size && *computed_block_size)
     return;
 
-  const IntrinsicSizingInfo legacy_sizing_info =
+  const NaturalSizingInfo legacy_sizing_info =
       To<LayoutReplaced>(*box_).ComputeIntrinsicSizingInfo();
 
   std::optional<LayoutUnit> intrinsic_inline_size =

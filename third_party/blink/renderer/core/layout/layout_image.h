@@ -124,7 +124,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
  protected:
   SVGImage* EmbeddedSVGImage() const;
   bool CanApplyObjectViewBox() const override;
-  IntrinsicSizingInfo GetNaturalDimensions() const override;
+  NaturalSizingInfo GetNaturalDimensions() const override;
 
   PhysicalSize NaturalSize() const {
     NOT_DESTROYED();

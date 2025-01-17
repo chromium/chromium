@@ -58,12 +58,12 @@ LayoutViewTransitionContent::ReplacedContentRectForCapturedContent() const {
   return PhysicalRect::EnclosingRect(clipped_paint_rect);
 }
 
-IntrinsicSizingInfo LayoutViewTransitionContent::GetNaturalDimensions() const {
+NaturalSizingInfo LayoutViewTransitionContent::GetNaturalDimensions() const {
   NOT_DESTROYED();
   const PhysicalSize natural_size(
       LayoutUnit(reference_rect_in_enclosing_layer_space_.width()),
       LayoutUnit(reference_rect_in_enclosing_layer_space_.height()));
-  return IntrinsicSizingInfo::MakeFixed(gfx::SizeF(natural_size));
+  return NaturalSizingInfo::MakeFixed(gfx::SizeF(natural_size));
 }
 
 void LayoutViewTransitionContent::PaintReplaced(

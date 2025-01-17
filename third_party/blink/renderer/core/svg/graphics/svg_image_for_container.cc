@@ -21,7 +21,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -61,7 +61,7 @@ const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(SVGImage& image,
 bool SVGImageForContainer::GetNaturalDimensions(
     SVGImage& image,
     const SVGImageViewInfo* info,
-    IntrinsicSizingInfo& sizing_info) {
+    NaturalSizingInfo& sizing_info) {
   const SVGViewSpec* override_viewspec = info ? info->ViewSpec() : nullptr;
   return image.GetIntrinsicSizingInfo(override_viewspec, sizing_info);
 }
@@ -70,7 +70,7 @@ gfx::SizeF SVGImageForContainer::ConcreteObjectSize(
     SVGImage& image,
     const SVGImageViewInfo* info,
     const gfx::SizeF& default_object_size) {
-  IntrinsicSizingInfo sizing_info;
+  NaturalSizingInfo sizing_info;
   if (!GetNaturalDimensions(image, info, sizing_info)) {
     return default_object_size;
   }

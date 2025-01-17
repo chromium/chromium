@@ -102,10 +102,10 @@ const std::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
   return std::nullopt;
 }
 
-IntrinsicSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
+NaturalSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
   NOT_DESTROYED();
   // 300x150, no aspect ratio. (Should probably be none.)
-  IntrinsicSizingInfo sizing_info;
+  NaturalSizingInfo sizing_info;
   sizing_info.size = gfx::ScaleSize(gfx::SizeF(kDefaultWidth, kDefaultHeight),
                                     StyleRef().EffectiveZoom());
   return sizing_info;
@@ -379,7 +379,7 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
     // different |ReplacedContentRect| from |PhysicalContentBoxRect|.
     content_rect = ComputeReplacedContentRect(
         base_content_rect,
-        IntrinsicSizingInfo::MakeFixed(gfx::SizeF(*frozen_size)));
+        NaturalSizingInfo::MakeFixed(gfx::SizeF(*frozen_size)));
   }
 
   // We don't propagate sub-pixel into sub-frame layout, in other words, the

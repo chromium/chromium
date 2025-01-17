@@ -59,11 +59,11 @@ bool StyleMaskSourceImage::IsAccessAllowed(String& failing_url) const {
   return !image_ || image_->IsAccessAllowed(failing_url);
 }
 
-IntrinsicSizingInfo StyleMaskSourceImage::GetNaturalSizingInfo(
+NaturalSizingInfo StyleMaskSourceImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
   if (!image_) {
-    return IntrinsicSizingInfo::None();
+    return NaturalSizingInfo::None();
   }
   return image_->GetNaturalSizingInfo(multiplier, respect_orientation);
 }

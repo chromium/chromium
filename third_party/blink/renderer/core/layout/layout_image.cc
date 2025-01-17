@@ -39,9 +39,9 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -339,14 +339,14 @@ bool LayoutImage::CanApplyObjectViewBox() const {
     return true;
   }
   // Only apply object-view-box if the image has both natural width/height.
-  const IntrinsicSizingInfo info =
+  const NaturalSizingInfo info =
       image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
   return info.has_width && info.has_height;
 }
 
-IntrinsicSizingInfo LayoutImage::GetNaturalDimensions() const {
+NaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  IntrinsicSizingInfo sizing_info;
+  NaturalSizingInfo sizing_info;
   if (EmbeddedSVGImage()) {
     sizing_info =
         image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
@@ -358,7 +358,7 @@ IntrinsicSizingInfo LayoutImage::GetNaturalDimensions() const {
       sizing_info.size.InvScale(ImageDevicePixelRatio());
     }
   } else {
-    sizing_info = IntrinsicSizingInfo::MakeFixed(gfx::SizeF(NaturalSize()));
+    sizing_info = NaturalSizingInfo::MakeFixed(gfx::SizeF(NaturalSize()));
 
     // Don't compute an intrinsic ratio to preserve historical WebKit behavior
     // if we're painting alt text and/or a broken image.

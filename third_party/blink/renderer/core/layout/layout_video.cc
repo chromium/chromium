@@ -52,7 +52,7 @@ void LayoutVideo::IntrinsicSizeChanged() {
 void LayoutVideo::UpdateNaturalSize() {
   NOT_DESTROYED();
 
-  const IntrinsicSizingInfo sizing_info = GetNaturalDimensions();
+  const NaturalSizingInfo sizing_info = GetNaturalDimensions();
   PhysicalSize size = PhysicalSize::FromSizeFRound(sizing_info.size);
 
   // Never set the element size to zero when in a media document.
@@ -70,7 +70,7 @@ void LayoutVideo::UpdateNaturalSize() {
       layout_invalidation_reason::kSizeChanged);
 }
 
-IntrinsicSizingInfo LayoutVideo::GetNaturalDimensions() const {
+NaturalSizingInfo LayoutVideo::GetNaturalDimensions() const {
   NOT_DESTROYED();
 
   auto display_mode = GetDisplayMode();
@@ -100,7 +100,7 @@ IntrinsicSizingInfo LayoutVideo::GetNaturalDimensions() const {
       if (const auto* player = video->GetWebMediaPlayer()) {
         gfx::Size video_size = player->NaturalSize();
         if (!video_size.IsEmpty()) {
-          return IntrinsicSizingInfo::MakeFixed(gfx::ScaleSize(
+          return NaturalSizingInfo::MakeFixed(gfx::ScaleSize(
               gfx::SizeF(video_size), StyleRef().EffectiveZoom()));
         }
       }
@@ -108,7 +108,7 @@ IntrinsicSizingInfo LayoutVideo::GetNaturalDimensions() const {
   }
 
   // Natural dimensions are missing.
-  return IntrinsicSizingInfo::MakeFixed(
+  return NaturalSizingInfo::MakeFixed(
       gfx::ScaleSize(gfx::SizeF(DefaultSize()), StyleRef().EffectiveZoom()));
 }
 

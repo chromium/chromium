@@ -27,9 +27,9 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -92,11 +92,10 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
 
   const gfx::SizeF kDefaultObjectSize(LayoutReplaced::kDefaultWidth,
                                       LayoutReplaced::kDefaultHeight);
-  IntrinsicSizingInfo sizing_info;
   if (!image_resource_->HasImage() || image_resource_->ErrorOccurred()) {
     return gfx::SizeF(style_size.x(), style_size.y());
   }
-  sizing_info = image_resource_->GetNaturalDimensions(1);
+  NaturalSizingInfo sizing_info = image_resource_->GetNaturalDimensions(1);
 
   const gfx::SizeF concrete_object_size =
       ConcreteObjectSize(sizing_info, kDefaultObjectSize);
