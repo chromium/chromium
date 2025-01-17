@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">ভুল পিন।</translation>
 <translation id="382043424867370667">সানসেট ওয়ালপেপার</translation>
 <translation id="3824259034819781947">ফাইল অ্যাটাচ করুন</translation>
-<translation id="383586991013681190">ট্রান্সক্রিপশনের ভাষা বেছে নিন ও সেটিংস থেকে ডাউনলোড করুন</translation>
 <translation id="3836587210832263413">আপনি ভরসা আছে শুধু সেই এক্সটেনশন চালু করুন</translation>
 <translation id="3838338534323494292">নতুন পাসওয়ার্ড</translation>
 <translation id="3845880861638660475">ডায়ালগ বন্ধ করার জন্য <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ‘কী’ প্রেস করুন।</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> বন্ধ আছে</translation>
 <translation id="4428840632568803690">স্পিকার <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos টিকিটের মেয়াদ শীঘ্রই শেষ হয়ে যাবে</translation>
+<translation id="4430019312045809116">ভলিউম</translation>
 <translation id="4431821876790500265">রিপোর্ট দেখুন</translation>
 <translation id="4443192710976771874">লাল</translation>
 <translation id="4447592701292766824">এই কন্টেন্টের জন্য সারসংক্ষেপ তৈরি করা যাচ্ছে না</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">উজ্জ্বলতা বাড়ান</translation>
 <translation id="4511264077854731334">পোর্টাল</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
-<translation id="4516323842122524821">ভলিউম</translation>
 <translation id="4521826082652183069">সাবজেক্টের বিকল্প নামের সাথে মিল আছে</translation>
 <translation id="4522570452068850558">বিবরণগুলি</translation>
 <translation id="4536864596629708641">IP কনফিগারেশন</translation>

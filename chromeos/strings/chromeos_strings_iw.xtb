@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="382043424867370667">טפט השקיעה</translation>
 <translation id="3824259034819781947">צירוף קבצים</translation>
-<translation id="383586991013681190">צריך לבחור את שפת התמליל ולהוריד בהגדרות</translation>
 <translation id="3836587210832263413">חשוב להפעיל רק תוספים מהימנים</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, מקישים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> מושבת</translation>
 <translation id="4428840632568803690">דובר <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
+<translation id="4430019312045809116">עוצמת קול</translation>
 <translation id="4431821876790500265">לעיון בדוח</translation>
 <translation id="4443192710976771874">אדום</translation>
 <translation id="4447592701292766824">לא ניתן ליצור סיכום לתוכן הזה</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">הגברת הבהירות</translation>
 <translation id="4511264077854731334">פורטל</translation>
 <translation id="4513946894732546136">משוב</translation>
-<translation id="4516323842122524821">עוצמת הקול</translation>
 <translation id="4521826082652183069">התאמה של שמות נושאים חלופיים</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4536864596629708641">‏תצורת IP</translation>

@@ -1284,6 +1284,7 @@
 <translation id="3273757719652748628">Упит за чување IBAN-а је отворен у пуној висини.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Смернице администратора не препоручују отварање овог фајла у: <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ваша организација, <ph name="ENROLLMENT_DOMAIN" />, послала је одређене податке следећим веб-сајтовима, попут подешавања или смерница.</translation>
+<translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3286372614333682499">усправно</translation>
 <translation id="3287510313208355388">Преузми када сам онлајн</translation>
 <translation id="3288238092761586174"><ph name="URL" /> треба да обави додатне кораке ради потврде плаћања</translation>
@@ -1966,6 +1967,7 @@
 <translation id="4434045419905280838">Искачући прозори и преусмеравања</translation>
 <translation id="443673843213245140">Коришћење проксија је онемогућено, али је наведена експлицитна конфигурација проксија.</translation>
 <translation id="4438821706955556403">Уобичајена цена</translation>
+<translation id="444116852243722675">Отвори све (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Игнорише се јер смернице могу да се подесе само као смернице за корисника у клауду.</translation>
 <translation id="4445133368066241428">Популарне теме</translation>
 <translation id="4445964943162061557">Ово је експериментална функција и неће увек радити како треба.</translation>
@@ -3658,6 +3660,7 @@
 <translation id="7511955381719512146">WiFi мрежа коју користите ће можда захтевати да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Ова смернице не могу да се подесе на „Тачно“ и буду обавезне, па су промењене на препоручено.</translation>
 <translation id="7514365320538308">Преузми</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Возила за вожњу ван путева</translation>
 <translation id="7517414872996418597">Коверта C10</translation>
 <translation id="7518003948725431193">Ниједна веб-страница није пронађена за веб адресу: <ph name="URL" /></translation>

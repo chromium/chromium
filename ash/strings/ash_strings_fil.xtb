@@ -2233,7 +2233,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="851458219935658693">Ipakita ang mga window mula sa kasalukuyang desk at piniling radio button</translation>
 <translation id="851660987304951246">Gamitin ang Tulungan akong magbasa para mabilis na magbuod ng content o magtanong</translation>
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Kinokontrol ng <ph name="APP_NAME" /> ang input ng mic}one{Kinokontrol ng # app ang input ng mic}other{Kinokontrol ng # na app ang input ng mic}}</translation>
 <translation id="8535393432370007982">I-undo ang ayos ng pagkakasunod-sunod ayon sa kulay</translation>
 <translation id="8541078764854166027">Camera framing</translation>
 <translation id="8542053257095774575">Walang naka-save na desk o template</translation>

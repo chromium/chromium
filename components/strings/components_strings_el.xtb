@@ -1284,6 +1284,7 @@
 <translation id="3273757719652748628">Η αποθήκευση IBAN άνοιξε σε πλήρες ύψος.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά το άνοιγμα αυτού του αρχείου στο <ph name="DESTINATION_NAME" />}other{Η πολιτική διαχειριστή δεν συνιστά το άνοιγμα αυτών των αρχείων στο <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ο οργανισμός σας, <ph name="ENROLLMENT_DOMAIN" />, έστειλε ορισμένες πληροφορίες στους παρακάτω ιστοτόπους, όπως ρυθμίσεις ή πολιτικές.</translation>
+<translation id="3282568296779691940">Σύνδεση στο Chrome</translation>
 <translation id="3286372614333682499">κατακόρυφος προσανατολισμός</translation>
 <translation id="3287510313208355388">Να γίνει λήψη όταν πραγματοποιηθεί σύνδεση</translation>
 <translation id="3288238092761586174">Ενδέχεται να χρειαστούν επιπλέον βήματα από το <ph name="URL" /> για την επαλήθευση της πληρωμής σας.</translation>
@@ -3661,6 +3662,7 @@
 <translation id="7511955381719512146">Το Wi-Fi που χρησιμοποιείτε ενδέχεται να σας ζητήσει να επισκεφτείτε τη διεύθυνση <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Αυτή η πολιτική δεν μπορεί να οριστεί ως Αληθής (True) και να είναι υποχρεωτική. Επομένως, αλλάχθηκε σε προτεινόμενη.</translation>
 <translation id="7514365320538308">Λήψη</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Οχήματα εκτός δρόμου</translation>
 <translation id="7517414872996418597">Φάκελος C10</translation>
 <translation id="7518003948725431193">Δεν βρέθηκε καμία ιστοσελίδα για τη διεύθυνση ιστού:<ph name="URL" /></translation>

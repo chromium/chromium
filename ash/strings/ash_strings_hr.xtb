@@ -1264,6 +1264,7 @@ Možete upotrijebiti i tipkovni prečac. Najprije istaknite tekst, a zatim priti
 <translation id="5245201184978705914">Generiranje prijepisa nije uspjelo</translation>
 <translation id="5251174953851719648">Osvježavanje sadržaja</translation>
 <translation id="5253783950165989294">Povezano s uređajem <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
+<translation id="5256939106029293271">Testirajte mikrofon</translation>
 <translation id="5258528442992323769">Nema nijedne spremljene radne površine</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
 <translation id="5265391159779542051">Rezultati su učitani</translation>
@@ -1421,6 +1422,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5745612484876805746">Noćno svjetlo automatski se uključuje u suton</translation>
 <translation id="5750765938512549687">Bluetooth je isključen</translation>
 <translation id="5758114525425072423">Pokrenite način rada za koncentraciju. Odbrojavanje je postavljeno na <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Poslušajte kako ćete zvučati drugima. Da biste zaustavili testiranje, kliknite ikonu testa ili zatvorite ploču videopoziva.</translation>
 <translation id="5760866832697883462">Povežite uređaj <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Prebacite marker. <ph name="STATE_TEXT" /> Koristite dodirnu površinu, dodirni zaslon ili pisaljku da biste crtali na zaslonu.</translation>
 <translation id="576341972084747908">Preuzimanje opasne datoteke <ph name="FILENAME" /></translation>
@@ -2234,7 +2236,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="851458219935658693">Prikaži prozore s trenutačne radne površine, odabran je izborni gumb</translation>
 <translation id="851660987304951246">Upotrijebite značajku Pomozi mi čitati da biste brzo saželi sadržaj ili postavili pitanja</translation>
 <translation id="8517041960877371778">Uređaj <ph name="DEVICE_TYPE" /> možda se neće puniti dok je uključen.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Ulazom mikrofona upravlja aplikacija <ph name="APP_NAME" />}one{Ulazom mikrofona upravlja # aplikacija}few{Ulazom mikrofona upravlja # aplikacije}other{Ulazom mikrofona upravlja # aplikacija}}</translation>
 <translation id="8535393432370007982">Poništavanje poretka po boji</translation>
 <translation id="8541078764854166027">Okvir kamere</translation>
 <translation id="8542053257095774575">Nema nijedne spremljene radne površine ili predloška</translation>

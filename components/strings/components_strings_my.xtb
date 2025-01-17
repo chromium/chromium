@@ -248,6 +248,7 @@
 <translation id="1413809658975081374">ကိုယ်ရေးအချက်အလက် လုံခြုံမှုဆိုင်ရာ အမှား</translation>
 <translation id="1414134146594747368">မူလတန်းကြိုကျောင်း</translation>
 <translation id="1419305130220238697">Chrome တွင် သင်ဒေါင်းလုဒ်လုပ်ထားသည့် ဖိုင်များစီမံရန်အတွက် ‘Chrome တွင် ဒေါင်းလုဒ်များစီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
+<translation id="1420345875188552368">သိမ်းထားသော အလိုအလျောက်ငွေပေးချေနည်းလမ်းကို ဤပေးချေမှုအတွက် သုံးနိုင်သည်။ Chrome တွင် eWallet များ ပိတ်ရန် <ph name="BEGIN_LINK1" />ငွေပေးချေမှု ဆက်တင်များ<ph name="END_LINK1" /> သို့သွားပါ</translation>
 <translation id="1420920093772172268">တွဲချိတ်ခြင်းအား ခွင့်ပြုရန် <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="14222610277930434">မကြာခဏ သင်ဝင်ကြည့်သည်များ</translation>
 <translation id="1422930527989633628">အနီးရှိ ဘလူးတုသ်သုံးစက်များ ရှာဖွေရန် ခွင့်တောင်းနိုင်သည်</translation>
@@ -1285,6 +1286,7 @@
 <translation id="3273757719652748628">သိမ်းသည့် IBAN ကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်။</translation>
 <translation id="3281350579597955952">{0,plural, =1{စီမံခန့်ခွဲသူမူဝါဒက <ph name="DESTINATION_NAME" /> ရှိ ဤဖိုင်ဖွင့်ရန် အကြံမပြုပါ}other{စီမံခန့်ခွဲသူမူဝါဒက <ph name="DESTINATION_NAME" /> ရှိ ဤဖိုင်များဖွင့်ရန် အကြံမပြုပါ}}</translation>
 <translation id="3282085321714087552">သင့်အဖွဲ့အစည်း <ph name="ENROLLMENT_DOMAIN" /> သည် ဆက်တင်များ (သို့) မူဝါဒများကဲ့သို့ အချက်အလက်အချို့ကို အောက်ပါဝဘ်ဆိုက်များသို့ ပို့လိုက်သည်။</translation>
+<translation id="3282568296779691940">Chrome သို့ လက်မှတ်ထိုး ဝင်</translation>
 <translation id="3286372614333682499">ဒေါင်လိုက်</translation>
 <translation id="3287510313208355388">အွန်လိုင်းတက်သည့်အချိန် ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="3288238092761586174">သင့်ပေးချေမှုကို အတည်ပြုရန်အတွက် <ph name="URL" /> က နောက်ထပ်အဆင့်များ လုပ်ဆောင်ရန် လိုအပ်နိုင်သည်</translation>
@@ -3658,6 +3660,7 @@
 <translation id="7511955381719512146">သင်အသုံးပြုနေသော Wi-Fi သည် <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />သို့ သင်သွားရောက်ကြည့်ရှုရန် လိုအပ်စေလိမ့်မည်။</translation>
 <translation id="7512685745044087310">ဤမူဝါဒကို "အမှန်" နှင့် မဖြစ်မနေလုပ်ရန်အဖြစ် သတ်မှတ်၍မရပါ၊ ထို့ကြောင့် အကြံပြုထားသည့်အရာအဖြစ် ၎င်းကို ပြောင်းထားသည်။</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">လမ်းကြမ်းသုံးယာဉ်</translation>
 <translation id="7517414872996418597">C10 စာအိတ်</translation>
 <translation id="7518003948725431193">ဝဘ် လိပ်စာ အတွက် ဝဘ် စာမျက်နှာများကို ရှာမတွေ့ခဲ့ပါ: <ph name="URL" /></translation>

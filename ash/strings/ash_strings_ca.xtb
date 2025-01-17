@@ -2234,7 +2234,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="851458219935658693">Mostra les finestres de l'escriptori actual amb el botó d'opció seleccionat</translation>
 <translation id="851660987304951246">Utilitza Ajuda'm a llegir per resumir contingut o fer preguntes ràpidament</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla l'entrada del micròfon}other{# aplicacions controlen l'entrada del micròfon}}</translation>
 <translation id="8535393432370007982">Desfés l'ordenació per color</translation>
 <translation id="8541078764854166027">Enquadr. càmera</translation>
 <translation id="8542053257095774575">No s'ha desat cap escriptori ni cap plantilla</translation>

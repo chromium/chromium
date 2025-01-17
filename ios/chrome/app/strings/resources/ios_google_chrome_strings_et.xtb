@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1066101356081285416">Chrome tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja Google'i ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Google'ile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome avab YouTube'i inkognito lingid automaatselt inkognito režiimis.</translation>
 <translation id="1086486568852410168">Otsing Google Lensiga</translation>
 <translation id="1143896152279775643">Teie parool salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="1146503048444965320">Ava Chrome'is uus vaheleht</translation>
@@ -126,6 +127,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="4636900170638246267">Logige sellele saidile ja Chrome'i sisse.</translation>
 <translation id="4646014602299206846">Chrome tuvastab teie külastatud saitidel saadetiste jälgimisnumbrid ja kuvab saadetiste värskendusi uuel vahelehel. Teie andmeid jagatakse Google'iga, et seda funktsiooni pakkuda ja ostlemine kõigi jaoks paremaks muuta.</translation>
 <translation id="4647910807533196601">Ava Chrome'is minu viimane vaheleht.</translation>
+<translation id="4693084815234024320">Olete Chrome'i inkognito režiimis</translation>
 <translation id="4724297637870447613">Chrome'i kasutamine kõikjal</translation>
 <translation id="4738647308035481133">Google Chrome'i leht</translation>
 <translation id="4742795653798179840">Chrome'i andmed on kustutatud</translation>

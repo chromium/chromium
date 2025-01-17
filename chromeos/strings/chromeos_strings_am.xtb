@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="382043424867370667">የፀሐይ መግባት ልጣፍ</translation>
 <translation id="3824259034819781947">ፋይሎችን ያያይዙ</translation>
-<translation id="383586991013681190">ወደ ጽሑፍ ግልባጭ ቋንቋ ይምረጡ እና ቅንብሮች ውስጥ ያውርዱ</translation>
 <translation id="3836587210832263413">የሚያምኗቸውን ቅጥያዎች ብቻ ያብሩ</translation>
 <translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
 <translation id="3845880861638660475">መገናኛውን ለመዝጋት <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> እና <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />ን ይጫኑ።</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ጠፍቷል</translation>
 <translation id="4428840632568803690">ተናጋሪ <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">የKerberos ቲኬት ጊዜው በቅርቡ ያበቃል</translation>
+<translation id="4430019312045809116">ድምፅ</translation>
 <translation id="4431821876790500265">ሪፖርትን ይመልከቱ</translation>
 <translation id="4443192710976771874">ቀይ</translation>
 <translation id="4447592701292766824">ለዚህ ይዘት ማጠቃለያ መፍጠር አልተቻለም</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">ብሩህነት ይጨምራል</translation>
 <translation id="4511264077854731334">መተላለፊያ</translation>
 <translation id="4513946894732546136">ግብረ መልስ</translation>
-<translation id="4516323842122524821">የድምፅ መጠን</translation>
 <translation id="4521826082652183069">ርዕስ ተለዋጭ ስም ዝምድና</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
 <translation id="4536864596629708641">የአይፒ ውቅረት</translation>

@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">NIP erroné.</translation>
 <translation id="382043424867370667">Fond d'écran Coucher de soleil</translation>
 <translation id="3824259034819781947">Joindre des fichiers</translation>
-<translation id="383586991013681190">Sélectionnez la langue de transcription et téléchargez-la dans les paramètres</translation>
 <translation id="3836587210832263413">Activez uniquement les extensions auxquelles vous faites confiance</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3845880861638660475">Appuyez sur <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> plus <ph name="ESC_SHORTCUT_START" />Échapp.<ph name="ESC_SHORTCUT_END" /> pour fermer la boîte de dialogue.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622">Le réseau <ph name="NETWORK_NAME" /> est désactivé</translation>
 <translation id="4428840632568803690">Locuteur <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Le ticket Kerberos expire bientôt</translation>
+<translation id="4430019312045809116">Volume</translation>
 <translation id="4431821876790500265">Afficher le rapport</translation>
 <translation id="4443192710976771874">rouge</translation>
 <translation id="4447592701292766824">Impossible de créer un résumé pour ce contenu</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">augmenter la luminosité</translation>
 <translation id="4511264077854731334">Portail</translation>
 <translation id="4513946894732546136">Commentaires</translation>
-<translation id="4516323842122524821">Volume</translation>
 <translation id="4521826082652183069">Correspondance du nom alternatif du sujet</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4536864596629708641">Configuration de l'adresse IP</translation>

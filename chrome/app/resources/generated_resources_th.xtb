@@ -1922,6 +1922,7 @@
 <translation id="2323018538045954000">เครือข่าย Wi-Fi ที่บันทึกไว้</translation>
 <translation id="2325444234681128157">จำรหัสผ่าน</translation>
 <translation id="2326188115274135041">ยืนยัน PIN เพื่อเปิดการปลดล็อกอัตโนมัติ</translation>
+<translation id="2326583548923775947">อีเมลนี้ไม่ใช่บัญชี Google รายการที่คุณบันทึกไว้ใน Chrome จะไม่พร้อมใช้งานบนอุปกรณ์เครื่องอื่นๆ</translation>
 <translation id="2326906096734221931">เปิดการตั้งค่าแอป</translation>
 <translation id="2326931316514688470">โ&amp;หลดแอปซ้ำ</translation>
 <translation id="2327492829706409234">เปิดใช้งานแอปพลิเคชัน</translation>
@@ -2370,6 +2371,7 @@
 <translation id="2638662041295312666">รูปภาพการลงชื่อเข้าใช้</translation>
 <translation id="2640299212685523844">ใช้ GTK</translation>
 <translation id="264083724974021997">เชื่อมต่อโทรศัพท์ของคุณ - กล่องโต้ตอบ</translation>
+<translation id="2641098199809442625">รหัสผ่านของคุณยังไม่ได้รับการอัปเดต แต่คุณยังคงเข้าถึงเว็บไซต์ด้วยรหัสผ่านเดิมได้</translation>
 <translation id="2642111877055905627">ลูกฟุตบอล</translation>
 <translation id="2642206811783203764">ตลอดเวลาใน <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">คุณลบข้อมูลการวัดผลโฆษณาได้ทุกเมื่อโดยการลบข้อมูลการท่องเว็บ</translation>

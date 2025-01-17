@@ -2234,7 +2234,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>
 <translation id="851660987304951246">Käytä "Apua lukemiseen" ‐toimintoa, niin voit luoda nopeasti yhteenvetoja sisällöstä tai esittää kysymyksiä</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ei välttämättä lataudu, kun se on käynnissä.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ohjaa mikrofonituloa}other{# sovellusta ohjaa mikrofonituloa}}</translation>
 <translation id="8535393432370007982">Kumoa värin mukaan lajittelu</translation>
 <translation id="8541078764854166027">Kamerakehystys</translation>
 <translation id="8542053257095774575">Ei tallennettuja virtuaalityöpöytiä tai malleja</translation>

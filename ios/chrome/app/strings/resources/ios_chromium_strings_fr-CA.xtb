@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Cela signifie que Chromium demandera toujours la version bureau du site.</translation>
 <translation id="2270466829363945454">Magasiner</translation>
 <translation id="2313870531055795960">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
+<translation id="2314220608288760290">Chromium ouvre automatiquement les liens de la Navigation privée YouTube en mode Navigation privée.</translation>
 <translation id="231828342043114302">Pour recevoir du contenu personnalisé en fonction de vos intérêts, connectez-vous à Chromium.</translation>
 <translation id="2326738825692478496">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google.
 
@@ -284,6 +285,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="8240981428553046115">Chromium n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
 <translation id="8254729934443216898">Découvrez de nouvelles fonctionnalités qui vous aident à tirer le meilleur parti de Chromium.</translation>
 <translation id="829047622686389424">Un flux personnalisé conçu pour vous.</translation>
+<translation id="8293572045658095405">Vous utilisez la Navigation privée de Chromium</translation>
 <translation id="830951810931292870">Ouvre les URL entrées dans Chromium en Navigation privée.</translation>
 <translation id="8409374867500149834">Vous disposez de la sécurité la plus robuste de Chromium contre les sites Web dangereux</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}}</translation>

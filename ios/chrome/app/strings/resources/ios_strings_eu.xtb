@@ -270,6 +270,7 @@
 <translation id="2104436223719117661">Pil-pilean dauden bilaketak</translation>
 <translation id="21133533946938348">Ainguratu fitxa</translation>
 <translation id="2119636449201577317">Ireki hemen…</translation>
+<translation id="2120553909046681540">Zure erakundeak arakatze pribatua desaktibatu du.</translation>
 <translation id="2122754583996902531">Arakatzailea kudeatuta dago. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Bilatu kopiatu duzun testua</translation>
 <translation id="2147127444698817042">iPhone-rako soilik erabilgarri</translation>
@@ -337,6 +338,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2384692388811649784">Ezkutatu ezkutuko moduko fitxak</translation>
 <translation id="2386793615875593361">Bat hautatu da</translation>
 <translation id="2390457533592708044">Ezkutatu "<ph name="MODULE_NAME" />"</translation>
+<translation id="2394659309569789395">Ireki webgunea halere</translation>
 <translation id="2403129868389095715">Paketea ezin da entregatu</translation>
 <translation id="2410754283952462441">Aukeratu kontu bat</translation>
 <translation id="2424805048070062787">Egin aurrera fitxa honekin</translation>
@@ -1892,6 +1894,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="939736085109172342">Karpeta berria</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Ikusi zer sinkroniza dezakezun<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
+<translation id="94870150074703282">Taldea ezabatu nahi duzu?</translation>
 <translation id="952704832371081537">Utzi</translation>
 <translation id="954667170699278022">Irakurketa-zerrenda</translation>
 <translation id="959066944189734975">Hasi zara <ph name="CHANNEL_NAME" /> webguneari jarraitzen</translation>

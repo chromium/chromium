@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">Virheellinen PIN-koodi</translation>
 <translation id="382043424867370667">Auringonlasku-taustakuva</translation>
 <translation id="3824259034819781947">Liitä tiedostoja</translation>
-<translation id="383586991013681190">Valitse transkriptiokieli ja lataa se asetuksista</translation>
 <translation id="3836587210832263413">Laita päälle vain luotettavia laajennuksia</translation>
 <translation id="3838338534323494292">Uusi salasana</translation>
 <translation id="3845880861638660475">Sulje valintaikkuna painamalla <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ei ole päällä</translation>
 <translation id="4428840632568803690">Puhuja <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
+<translation id="4430019312045809116">Äänenvoimakkuus</translation>
 <translation id="4431821876790500265">Katso raportti</translation>
 <translation id="4443192710976771874">punainen</translation>
 <translation id="4447592701292766824">Tästä sisällöstä ei voi luoda yhteenvetoa</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">lisää kirkkautta</translation>
 <translation id="4511264077854731334">Portaali</translation>
 <translation id="4513946894732546136">Palaute</translation>
-<translation id="4516323842122524821">Äänenvoimakkuus</translation>
 <translation id="4521826082652183069">Aiheen vaihtoehtoisen nimen vastaavuus</translation>
 <translation id="4522570452068850558">Tiedot</translation>
 <translation id="4536864596629708641">IP-määritykset</translation>

@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">Не удалось открыть <ph name="URL" /> в клиенте.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2366718077645204424">Не удалось связаться с хостом. Вероятная причина – используемые вами настройки сети.</translation>
+<translation id="242591256144136845">© Google LLC, 2025. Все права защищены.</translation>
 <translation id="2504109125669302160">Предоставьте расширению "<ph name="PRODUCT_NAME" />" доступ к специальным возможностям</translation>
 <translation id="2509394361235492552">Подключено к устройству "<ph name="HOSTNAME" />"</translation>
 <translation id="2540992418118313681">Предоставить доступ к этому компьютеру другому пользователю?</translation>
@@ -133,6 +134,7 @@
 <translation id="7067321367069083429">Пользоваться экраном как сенсорным</translation>
 <translation id="7116737094673640201">Настройте Удаленный рабочий стол Chrome</translation>
 <translation id="7144878232160441200">Повторить</translation>
+<translation id="7298392173540380852">© The Chromium Authors, 2025. Все права защищены.</translation>
 <translation id="7312846573060934304">Хост не подключен к сети</translation>
 <translation id="7319983568955948908">Закрыть доступ</translation>
 <translation id="7359298090707901886">Открывать URL на локальном компьютере с помощью выбранного браузера нельзя.</translation>

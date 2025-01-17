@@ -248,6 +248,7 @@
 <translation id="1413809658975081374">സ്വകാര്യ പിശക്</translation>
 <translation id="1414134146594747368">ബാലവാടി</translation>
 <translation id="1419305130220238697">'Chrome-ൽ ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome-ൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
+<translation id="1420345875188552368">നിങ്ങളുടെ സംരക്ഷിച്ച ഓട്ടോപേ രീതി ഈ പേയ്‌മെന്റിനായി ഉപയോഗിച്ചേക്കാം. Chrome-ൽ ഇ-വാലറ്റുകൾ ഓഫാക്കാൻ, നിങ്ങളുടെ <ph name="BEGIN_LINK1" />പേയ്‌മെന്റ് ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK1" /> പോകുക</translation>
 <translation id="1420920093772172268">ജോടിയാക്കുന്നതിന്, <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="14222610277930434">നിങ്ങൾ പതിവായി സന്ദർശിക്കുന്നത്</translation>
 <translation id="1422930527989633628">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ആവശ്യപ്പെടുക</translation>
@@ -1282,6 +1283,7 @@
 <translation id="3273757719652748628">'IBAN സംരക്ഷിക്കുക' മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയൽ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}other{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയലുകൾ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}}</translation>
 <translation id="3282085321714087552">നിങ്ങളുടെ സ്ഥാപനം, <ph name="ENROLLMENT_DOMAIN" />, ക്രമീകരണമോ നയങ്ങളോ പോലുള്ള ചില വിവരങ്ങൾ ഇനിപ്പറയുന്ന വെബ്‌സൈറ്റുകളിലേക്ക് അയച്ചു.</translation>
+<translation id="3282568296779691940">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3286372614333682499">പോർട്രെയ്‌റ്റ്</translation>
 <translation id="3287510313208355388">ഓൺലൈൻ ആയിരിക്കുന്ന സമയത്ത് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="3288238092761586174">നിങ്ങളുടെ പേയ്മെന്റ് പരിശോധിച്ചുറപ്പിക്കാൻ <ph name="URL" /> അധിക നടപടികൾ സ്വീകരിക്കേണ്ടതായി വന്നേക്കാം</translation>
@@ -3655,6 +3657,7 @@
 <translation id="7511955381719512146">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
 <translation id="7512685745044087310">ഈ നയം "ശരി" എന്നും നിർബന്ധമാണ് എന്നും സജ്ജീകരിക്കാനാകില്ല, അതിനാൽ നിർദ്ദേശിക്കുന്നത് എന്നാക്കി മാറ്റി.</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">ഓഫ്-റോഡ് വാഹനങ്ങൾ</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">വെബ് വിലാസത്തിനായി വെബ്‌പേജൊന്നും കണ്ടെത്തിയില്ല: <ph name="URL" /></translation>

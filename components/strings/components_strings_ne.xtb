@@ -1280,6 +1280,7 @@
 <translation id="3273757719652748628">IBAN सेभ गर्ने सुविधा पूरै स्क्रिन ओगट्ने गरी खोलिएको छ।</translation>
 <translation id="3281350579597955952">{0,plural, =1{एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा खोल्न सिफारिस गरिँदैन}other{एड्मिनले तोक्नुभएको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा खोल्न सिफारिस गरिँदैन}}</translation>
 <translation id="3282085321714087552">तपाईंको सङ्गठन <ph name="ENROLLMENT_DOMAIN" /> ले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाएको छ।</translation>
+<translation id="3282568296779691940">Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
 <translation id="3287510313208355388">अनलाइन हुँदा डाउनलोड गर्नुहोस्</translation>
 <translation id="3288238092761586174"><ph name="URL" /> ले तपाईंको भुक्तानी पुष्टि गर्नका निम्ति अतिरिक्त चरणहरू पूरा गर्नु पर्ने हुन सक्छ</translation>
@@ -2154,6 +2155,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
 <translation id="4827283332383516812">कार्ड मेटाउनुहोस्</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> वटा सामान चयन गरिए</translation>
 <translation id="4831993743164297314">इमेज सेट्टर पेपर</translation>
 <translation id="483241715238664915">चेतावनी देखाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4832961164064927107">बार्बिक्यू तथा पोलेका परिकार</translation>
@@ -3654,6 +3656,7 @@
 <translation id="7511955381719512146">तपाईँले प्रयोग गरिरहनुभएको Wi-Fi लाई तपाईँले <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> को भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
 <translation id="7512685745044087310">यो नीतिको मान "ठिक" सेट गरिएका बेला यसलाई अनिवार्य रूपमा लागू गर्न सकिँदैन। त्यसकारण यसलाई परिवर्तन गरी सिफारिस गरिएको नीति बनाइएको छ।</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">कच्ची सडकमा चलाइने सवारी साधनहरू</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">निम्न वेब ठेगानाको लागि कुनैपनि वेबपृष्ठ फेला परेन: <ph name="URL" /></translation>

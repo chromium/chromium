@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Dit beteken dat Chromium elke keer die rekenaarwerf sal versoek.</translation>
 <translation id="2270466829363945454">Winkel</translation>
 <translation id="2313870531055795960">Vergelyk URL'e met 'n lys onveilige werwe wat in Chromium geberg is. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
+<translation id="2314220608288760290">Chromium maak outomaties YouTube Incognito-skakels in Incognito oop.</translation>
 <translation id="231828342043114302">Meld by Chromium aan om gepersonaliseerde inhoud op grond van jou belangstellings te ontvang.</translation>
 <translation id="2326738825692478496">Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie.
 
@@ -284,6 +285,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8240981428553046115">Chromium kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
 <translation id="8254729934443216898">Verken nuwe kenmerke wat jou help om die meeste uit Chromium te kry.</translation>
 <translation id="829047622686389424">’n Gepasmaakte stroom wat vir jou gemaak is.</translation>
+<translation id="8293572045658095405">Jy is in Chromium Incognito</translation>
 <translation id="830951810931292870">Maak die URL’e wat by Chromium ingevoer word in Incognitomodus oop.</translation>
 <translation id="8409374867500149834">Jy het Chromium se sterkste sekuriteit teen skadelike webwerwe</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}}</translation>

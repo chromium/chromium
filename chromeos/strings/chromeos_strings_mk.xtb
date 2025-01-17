@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">Неважечки PIN.</translation>
 <translation id="382043424867370667">Тапет Sunset</translation>
 <translation id="3824259034819781947">Приложете датотеки</translation>
-<translation id="383586991013681190">Изберете јазик на транскрипција и преземете во „Поставки“</translation>
 <translation id="3836587210832263413">Вклучете ги само екстензиите во коишто имате доверба</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
 <translation id="3845880861638660475">Притиснете <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> за да го затворите дијалогот.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е исклучена</translation>
 <translation id="4428840632568803690">Говорник <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Билетот на Kerberos истекува наскоро</translation>
+<translation id="4430019312045809116">Гласност</translation>
 <translation id="4431821876790500265">Прикажи го извештајот</translation>
 <translation id="4443192710976771874">црвена</translation>
 <translation id="4447592701292766824">Не може да се создаде резиме за содржиниве</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">зголемување на осветленоста</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
-<translation id="4516323842122524821">Јачина на звук</translation>
 <translation id="4521826082652183069">Совпаѓање на алтернативното име на субјектот</translation>
 <translation id="4522570452068850558">Детали</translation>
 <translation id="4536864596629708641">Конфигурација на IP</translation>

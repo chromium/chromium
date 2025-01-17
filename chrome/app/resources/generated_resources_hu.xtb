@@ -335,6 +335,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1219219114431716687">Gyümölcstorta</translation>
 <translation id="122082903575839559">Tanúsítvány aláírási algoritmusa</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 RSA titkosítással</translation>
+<translation id="1221266967850882682">Üdvözlő összefoglaló</translation>
 <translation id="1221825588892235038">Csak a kijelölt</translation>
 <translation id="1222835797152767346">PIN-kód beállítása az eszközhöz a bejelentkezés megkönnyítése érdekében</translation>
 <translation id="1223484782328004593">A(z) <ph name="APP_NAME" /> használatához licenc szükséges</translation>
@@ -1933,6 +1934,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2323018538045954000">Mentett Wi-Fi-hálózatok</translation>
 <translation id="2325444234681128157">Jelszó megjegyzése</translation>
 <translation id="2326188115274135041">A PIN-kód megerősítése az automatikus feloldás bekapcsolásához</translation>
+<translation id="2326583548923775947">Ez nem Google-fiók. A Chrome-ba mentett elemek nem lesznek hozzáférhetők más eszközökön.</translation>
 <translation id="2326906096734221931">Alkalmazásbeállítások megnyitása</translation>
 <translation id="2326931316514688470">Alkalmazás új&amp;ratöltése</translation>
 <translation id="2327492829706409234">Alkalmazás engedélyezése</translation>

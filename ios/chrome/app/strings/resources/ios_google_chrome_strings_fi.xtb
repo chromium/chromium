@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1066101356081285416">Chrome tunnistaa seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Paketin seurantanumero ja verkkosivuston nimi lähetetään Googlelle tämän ominaisuuden tarjoamista ja Google Shopping ‑ominaisuuksien parantamista varten. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />lähetyksen seuranta-asetuksista<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome avaa YouTuben incognito-linkit automaattisesti incognito-tilassa.</translation>
 <translation id="1086486568852410168">Hae Google Lensilla</translation>
 <translation id="1143896152279775643">Salasana tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Avaa uusi välilehti Chromessa</translation>
@@ -126,6 +127,7 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="4636900170638246267">Kirjaudu tälle sivustolle ja Chromeen.</translation>
 <translation id="4646014602299206846">Chrome tunnistaa pakettien seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Datasi jaetaan Googlelle tämän ominaisuuden tarjoamiseen ja Shoppingin parantamiseen kaikille käyttäjille.</translation>
 <translation id="4647910807533196601">Avaa edellinen välilehti Chromessa.</translation>
+<translation id="4693084815234024320">Olet Chromen incognito-tilassa</translation>
 <translation id="4724297637870447613">Käytä Chromea missä tahansa</translation>
 <translation id="4738647308035481133">Google Chrome ‑sivu</translation>
 <translation id="4742795653798179840">Chrome-data poistettu</translation>

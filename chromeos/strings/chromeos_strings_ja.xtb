@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">無効な PIN です。</translation>
 <translation id="382043424867370667">「日の入り」の壁紙</translation>
 <translation id="3824259034819781947">ファイルを添付</translation>
-<translation id="383586991013681190">[設定] で音声文字変換の言語を選択してダウンロードしてください</translation>
 <translation id="3836587210832263413">信頼できる拡張機能のみ有効にしてください</translation>
 <translation id="3838338534323494292">新しいパスワード</translation>
 <translation id="3845880861638660475"><ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> キーを押してダイアログを閉じます。</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> はオフになっています</translation>
 <translation id="4428840632568803690">スピーカー <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos チケットはまもなく有効期限が切れます</translation>
+<translation id="4430019312045809116">音量</translation>
 <translation id="4431821876790500265">レポートを表示</translation>
 <translation id="4443192710976771874">赤色</translation>
 <translation id="4447592701292766824">このコンテンツの概要を作成できません</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">明るさを上げる</translation>
 <translation id="4511264077854731334">ポータル</translation>
 <translation id="4513946894732546136">フィードバック</translation>
-<translation id="4516323842122524821">音量</translation>
 <translation id="4521826082652183069">サブジェクト代替名マッチ</translation>
 <translation id="4522570452068850558">詳細</translation>
 <translation id="4536864596629708641">IP 設定</translation>

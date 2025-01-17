@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">Прегледајте листу мрежа. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Откључајте уређај да бисте добили обавештење</translation>
 <translation id="1420408895951708260">Укључите или искључите ноћно светло. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Предложена група</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Диктирање није успело. Микрофон је искључен.</translation>
 <translation id="1445031758921122223">Преузети су фајлови за контролу лицем</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">Прорачуни</translation>
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> је тренутно изабран.</translation>
 <translation id="178347895271755507">Подесите преглед недавних слика, медија и обавештења на телефону</translation>
+<translation id="1785317913592722944">Уклоните ставку из предложене групе</translation>
 <translation id="1786487376942610288">Пребацујте између максималне или актуелне величине прозора слике у слици</translation>
 <translation id="1787955149152357925">Искључено</translation>
 <translation id="1796561540704213354">Веб-сајтови, укључујући странице које сте посетили и отворили</translation>
 <translation id="179842970735685253">Google услови коришћења услуге</translation>
 <translation id="1805407494113167797">Пуштање Фокус звукова није успело</translation>
 <translation id="181103072419391116">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
+<translation id="1815039896005206046">Опција Не свиђа ми се шаље повратне информације да вам се ова предложена група не свиђа</translation>
 <translation id="1816896987747843206">Ово омогућава приступ камери за све апликације и веб-сајтове са дозволом за камеру</translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Укључи приступ локацији</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">„Здраво“ на кинеском</translation>
 <translation id="2370971919968699910">То може да доведе до трошкова за пренос података.
 Број повезаних уређаја је <ph name="DEVICECOUNT" />.</translation>
+<translation id="2383521554963939360">Групе апликација и картица</translation>
 <translation id="2386292613071805067">Изабери све на страници</translation>
 <translation id="2389423187722941333">Укључи/искључи Gemini</translation>
 <translation id="2392659840443812875">Нема доступног хотспота. Уверите се да је уређај у близини и да је Bluetooth укључен.</translation>
@@ -921,6 +925,7 @@
 <translation id="4151054805501931758">Дотеривање портрета</translation>
 <translation id="4156293514828496577">Преостало је још <ph name="PERCENTAGE" />% батерије (око <ph name="TIME_LEFT" />).
 Неке функције су ограничене да би се продужило трајање батерије.</translation>
+<translation id="4158003972857765638">Организујте на новој радној површини</translation>
 <translation id="4160919062868802509">Откривено је више извора звука</translation>
 <translation id="416245495747357243">Крај!</translation>
 <translation id="4165275524535002941">Кабл не подржава екране</translation>
@@ -985,6 +990,7 @@
 <translation id="4322742403972824594">Тастерска пречица Ctrl + Alt + стрелица нагоре је промењена. Да бисте користили тастер Home, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица налево.</translation>
 <translation id="4324840740119394760">Ово омогућава приступ камери за <ph name="APP_NAME" /> и све апликације и веб-сајтове са дозволом за камеру</translation>
 <translation id="4327147325944669226">Снимите игру</translation>
+<translation id="4329076911374908740">Достигнут је максималан број сачуваних група.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звук је искључен</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
@@ -1943,6 +1949,7 @@
 <translation id="7524043547948122239">Google задаци</translation>
 <translation id="7525067979554623046">Направи</translation>
 <translation id="7526573455193969409">Мрежа се можда надгледа</translation>
+<translation id="7534543072325030705">Опција Свиђа ми се шаље повратне информације да вам се свиђа ова предложена група</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Ажурирај леви прозор</translation>
 <translation id="7543399541175347147">Linux апликације и прозори без архивирања тренутно нису подржани. Друге апликације ће бити сачуване.</translation>
@@ -2107,6 +2114,7 @@
 <translation id="8004512796067398576">Повећање</translation>
 <translation id="8005527720597583355">Покрените фокусирану сесију</translation>
 <translation id="8015361438441228492">Измена задатка није успела.</translation>
+<translation id="8027187124910699148">Наставите предложену групу</translation>
 <translation id="802782383769312836">Претходна радна површина: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. радна површина од <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Повезивање са хотспотом није успело</translation>
 <translation id="8029629653277878342">Треба да унесете PIN или лозинку ради додатне безбедности</translation>
@@ -2215,6 +2223,7 @@
 <translation id="8426708595819210923">Добро вече, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> од <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Сачувај групу за касније</translation>
 <translation id="8433186206711564395">Мрежна подешавања</translation>
 <translation id="8433977262951327081">Промењена је пречица за приказивање облачића за мени Опције уноса на полици. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Отвори алатку за повратне информације</translation>
@@ -2223,6 +2232,7 @@
 <translation id="8446884382197647889">Сазнајте више</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Затворите Изаберите за говор</translation>
+<translation id="8466665972451889002">Прикажите ставке у: <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">рок: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Подешавања размере приказа</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
@@ -2238,7 +2248,6 @@
 <translation id="851458219935658693">Приказујте прозоре са актуелне радне површине, дугме за избор је изабрано</translation>
 <translation id="851660987304951246">Користите Помози ми да читам да бисте брзо резимирали садржај или постављали питања</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> се можда неће пунити док је укључен.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Унос преко микрофона контролише <ph name="APP_NAME" />}one{Унос преко микрофона контролише # апликација}few{Унос преко микрофона контролишу # апликације}other{Унос преко микрофона контролише # апликација}}</translation>
 <translation id="8535393432370007982">Опозовите редослед сортирања према боји</translation>
 <translation id="8541078764854166027">Уоквир. камере</translation>
 <translation id="8542053257095774575">Нема сачуваних радних површина нити шаблона</translation>
@@ -2246,6 +2255,7 @@
 <translation id="8551588720239073785">Подешавања датума и времена</translation>
 <translation id="8553395910833293175">Већ је додељено свим радним површинама.</translation>
 <translation id="8555757996376137129">Уклони актуелну радну површину</translation>
+<translation id="8558521694042102707">Генеративна вештачка интелигенција може да приказује нетачне информације, укључујући и информације о људима, па проверите одговоре.</translation>
 <translation id="8559845965695780508">Изменио/ла: <ph name="USER" /></translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Ево пар предлога које можете да испробате</translation>
@@ -2268,6 +2278,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="8638637208069328956">Укључи/искључи микрофон</translation>
 <translation id="8639760480004882931">Преостало је <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">Сакриј све предлоге група</translation>
 <translation id="8641510901370802679">Приказују се информације за: <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Тајмер за <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Да бисте додали особу, унесите приступни кôд родитеља за Family Link</translation>
@@ -2350,6 +2361,7 @@
 <translation id="8905919797434099235">(Без назива)</translation>
 <translation id="890616557918890486">Промени извор</translation>
 <translation id="8909138438987180327">Батерија је на <ph name="PERCENTAGE" />%.</translation>
+<translation id="8916866375277139011">Сакријте ставке у: <ph name="GROUP_NAME" /></translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google помоћник не говори овај језик.</translation>
 <translation id="8926951137623668982">Полица је увек сакривена</translation>

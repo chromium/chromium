@@ -2234,7 +2234,6 @@
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="851660987304951246">콘텐츠를 빠르게 요약하거나 질문하려면 읽기 지원을 사용하세요</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{마이크 입력은 <ph name="APP_NAME" />에 의해 제어됨}other{마이크 입력은 앱 #개에 의해 제어됨}}</translation>
 <translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>
 <translation id="8541078764854166027">카메라 프레이밍</translation>
 <translation id="8542053257095774575">저장된 데스크 또는 템플릿 없음</translation>

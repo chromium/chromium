@@ -2235,7 +2235,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="851458219935658693">Valitud on raadionupp Näita praeguse töölaua aknaid</translation>
 <translation id="851660987304951246">Sisust kiiresti kokkuvõtte tegemiseks või küsimuste esitamiseks kasutage funktsiooni Aita mul lugeda</translation>
 <translation id="8517041960877371778">Kui seade <ph name="DEVICE_TYPE" /> on sisse lülitatud, ei pruugita seda laadida.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofonisisendit juhib <ph name="APP_NAME" />}other{Mikrofonisisendit juhib # rakendust}}</translation>
 <translation id="8535393432370007982">Võta värvi järgi sortimine tagasi</translation>
 <translation id="8541078764854166027">Kadreerimine</translation>
 <translation id="8542053257095774575">Salvestatud töölaudu ega malle ei ole</translation>

@@ -2234,7 +2234,6 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="851458219935658693">Menampilkan jendela dari desktop saat ini, tombol pilihan dipilih</translation>
 <translation id="851660987304951246">Gunakan Bantu baca untuk mengajukan pertanyaan atau meringkas konten dengan cepat</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> Anda mungkin tidak diisi daya saat dinyalakan.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Input mikrofon dikontrol oleh <ph name="APP_NAME" />}other{Input mikrofon dikontrol oleh # aplikasi}}</translation>
 <translation id="8535393432370007982">Urungkan tata urutan menurut warna</translation>
 <translation id="8541078764854166027">Framing kamera</translation>
 <translation id="8542053257095774575">Tidak ada desktop atau template tersimpan</translation>

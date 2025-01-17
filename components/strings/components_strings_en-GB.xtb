@@ -248,6 +248,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1413809658975081374">Privacy error</translation>
 <translation id="1414134146594747368">Pre-school</translation>
 <translation id="1419305130220238697">Manage downloads in Chrome button, activate to manage files that you have downloaded in Chrome</translation>
+<translation id="1420345875188552368">Your saved auto-pay method may be used for this payment. To turn off eWallets in Chrome, go to your <ph name="BEGIN_LINK1" />payment settings<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> to allow pairing</translation>
 <translation id="14222610277930434">You visit often</translation>
 <translation id="1422930527989633628">Can ask to discover nearby Bluetooth devices</translation>
@@ -1283,6 +1284,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3273757719652748628">Save IBAN opened at full height.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Your organisation, <ph name="ENROLLMENT_DOMAIN" />, has sent some info to the following websites, like settings or policies.</translation>
+<translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3287510313208355388">Download when online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> may need to take additional steps to verify your payment</translation>
@@ -3658,6 +3660,7 @@ Additional details:
 <translation id="7511955381719512146">The Wi-Fi that you are using may require you to visit <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">This policy cannot be set to 'True' and be mandatory, therefore it was changed to recommended.</translation>
 <translation id="7514365320538308">Download</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Off-road vehicles</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">No web page was found for the web address: <ph name="URL" /></translation>

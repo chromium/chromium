@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">പിൻ നമ്പർ തെറ്റാണ്.</translation>
 <translation id="382043424867370667">സൂര്യാസ്തമയ വാൾപേപ്പർ</translation>
 <translation id="3824259034819781947">ഫയലുകൾ അറ്റാച്ച് ചെയ്യുക</translation>
-<translation id="383586991013681190">ട്രാൻസ്ക്രിപ്റ്റ് ഭാഷ തിരഞ്ഞെടുത്ത് ക്രമീകരണത്തിൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="3836587210832263413">നിങ്ങൾ വിശ്വസിക്കുന്ന വിപുലീകരണങ്ങൾ മാത്രം ഓണാക്കുക</translation>
 <translation id="3838338534323494292">പുതിയ പാസ്‌വേഡ്</translation>
 <translation id="3845880861638660475">ഡയലോഗ് അടയ്‌ക്കാൻ <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> അമർത്തുക.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ഓഫാണ്</translation>
 <translation id="4428840632568803690">സ്‌പീക്കർ <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos ടിക്കറ്റ് ഉടൻ കാലഹരണപ്പെടും</translation>
+<translation id="4430019312045809116">അളവ്</translation>
 <translation id="4431821876790500265">റിപ്പോർട്ട് കാണുക</translation>
 <translation id="4443192710976771874">ചുവപ്പ്</translation>
 <translation id="4447592701292766824">ഈ ഉള്ളടക്കത്തിന്റെ സംഗ്രഹം സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">തെളിച്ചം കൂട്ടുക</translation>
 <translation id="4511264077854731334">പോർട്ടൽ</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
-<translation id="4516323842122524821">വോളിയം</translation>
 <translation id="4521826082652183069">സബ്ജക്റ്റ് ഓൾട്ടർനേറ്റീവ് നെയിം പൊരുത്തം</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
 <translation id="4536864596629708641">IP കോൺഫിഗറേഷൻ</translation>

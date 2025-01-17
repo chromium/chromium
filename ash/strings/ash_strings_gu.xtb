@@ -1264,6 +1264,7 @@
 <translation id="5245201184978705914">ટ્રાન્સક્રિપ્ટ જનરેટ કરી શકાતી નથી</translation>
 <translation id="5251174953851719648">કન્ટેન્ટ રિફ્રેશ કરો</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> નામના <ph name="BATTERY_PERCENTAGE" />% બૅટરી ધરાવતા ડિવાઇસ સાથે કનેક્ટેડ</translation>
+<translation id="5256939106029293271">તમારા માઇકનું પરીક્ષણ કરો</translation>
 <translation id="5258528442992323769">કોઈ ડેસ્ક સાચવેલું નથી</translation>
 <translation id="5260676007519551770">ડેસ્ક 4</translation>
 <translation id="5265391159779542051">પરિમાણો લોડ કર્યા</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5745612484876805746">સૂર્યાસ્ત વખતે રાત્રિ પ્રકાશ ઑટોમૅટિક રીતે ચાલુ થાય છે</translation>
 <translation id="5750765938512549687">બ્લૂટૂથ બંધ છે</translation>
 <translation id="5758114525425072423">ફોકસ શરૂ કરો. ટાઇમરને <ph name="FOCUS_DURATION" /> પર સેટ કરો.</translation>
+<translation id="5759522586053040964">બીજા લોકોને તમારો અવાજ કેવો સંભળાશે તે સાંભળો. રોકવા માટે, પરીક્ષણના આઇકન પર ક્લિક કરો અથવા વીડિયો કૉલની પૅનલ બંધ કરો.</translation>
 <translation id="5760866832697883462">તમારું <ph name="NAME" /> કનેક્ટ કરો</translation>
 <translation id="5762420912707163638">માર્કરને ટૉગલ કરો. <ph name="STATE_TEXT" /> સ્ક્રીન પર દોરવા માટે ટ્રૅકપૅડ, ટચસ્ક્રીન કે સ્ટાઇલસનો ઉપયોગ કરો.</translation>
 <translation id="576341972084747908">જોખમી <ph name="FILENAME" /> ડાઉનલોડ કરો</translation>
@@ -2234,7 +2236,6 @@
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
 <translation id="851660987304951246">કન્ટેન્ટનો ઝડપથી સારાંશ આપવા માટે કે પ્રશ્નો પૂછવા માટે, 'વાંચવામાં મારી સહાય કરો' સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="8517041960877371778">તમારું <ph name="DEVICE_TYPE" /> ચાલુ હોય ત્યારે તે ચાર્જ ન થાય તેવું બની શકે.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{માઇક ઇનપુટ <ph name="APP_NAME" />ના દ્વારા નિયંત્રિત કરવામાં આવે છે}one{માઇક ઇનપુટ # ઍપ દ્વારા નિયંત્રિત કરવામાં આવે છે}other{માઇક ઇનપુટ # ઍપ દ્વારા નિયંત્રિત કરવામાં આવે છે}}</translation>
 <translation id="8535393432370007982">રંગ મુજબ સૉર્ટ કરવાના ક્રમનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="8541078764854166027">કૅમેરા ફ્રેમ</translation>
 <translation id="8542053257095774575">કોઈ ડેસ્ક કે નમૂનો સાચવેલો નથી</translation>

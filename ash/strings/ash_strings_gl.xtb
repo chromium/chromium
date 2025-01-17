@@ -2235,7 +2235,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="851458219935658693">Seleccionouse o botón de opción para mostrar as ventás do escritorio actual</translation>
 <translation id="851660987304951246">Usa Axúdame a ler para resumir con rapidez o contido ou facer preguntas</translation>
 <translation id="8517041960877371778">É posible que o teu <ph name="DEVICE_TYPE" /> non cargue mentres estea acendido.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla a entrada do micrófono}other{# aplicacións controlan a entrada do micrófono}}</translation>
 <translation id="8535393432370007982">Desfacer orde de clasificación por cor</translation>
 <translation id="8541078764854166027">Zoom automát.</translation>
 <translation id="8542053257095774575">Non hai modelos nin escritorios gardados</translation>

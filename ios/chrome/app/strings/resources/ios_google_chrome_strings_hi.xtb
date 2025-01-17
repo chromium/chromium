@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1066101356081285416">Chrome, उन साइटों पर ट्रैकिंग नंबरों का पता लगाएगा जिन पर आपने विज़िट किया है और आपको 'नया टैब' पेज पर पैकेज के अपडेट दिखाएगा. यह सुविधा उपलब्ध कराने के लिए, पैकेज ट्रैकिंग नंबर और वेबसाइट का नाम Google को भेजा जाएगा. इससे, Google Shopping से जुड़ी सुविधाओं को सभी के लिए बेहतर बनाया जा सकेगा. <ph name="BEGIN_LINK" />पैकेज ट्रैकिंग से जुड़ी सेटिंग<ph name="END_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
+<translation id="1076643793026027628">YouTube के गुप्त मोड वाले लिंक, Chrome के गुप्त मोड में अपने-आप खुल जाते हैं.</translation>
 <translation id="1086486568852410168">Google Lens की मदद से खोजें</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> के लिए आपके पासवर्ड को Google पासवर्ड मैनेजर में सेव किया जाएगा.</translation>
 <translation id="1146503048444965320">Chrome में नया टैब खोलें</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">इस साइट और Chrome में साइन इन करें.</translation>
 <translation id="4646014602299206846">Chrome, उन साइटों पर पैकेज ट्रैकिंग नंबरों का पता लगाएगा जिन पर आपने विज़िट किया है और आपको 'नया टैब' पेज पर पैकेज के अपडेट दिखाएगा. Google के साथ आपका डेटा शेयर किया जाएगा, ताकि आपको यह सुविधा दी जा सके और Shopping को सभी के लिए बेहतर बनाया जा सके.</translation>
 <translation id="4647910807533196601">Chrome में, पिछली बार खोला गया मेरा टैब खोलें.</translation>
+<translation id="4693084815234024320">Chrome का गुप्त मोड खुला है</translation>
 <translation id="4724297637870447613">Chrome का सभी जगह इस्तेमाल करें</translation>
 <translation id="4738647308035481133">Google Chrome पेज</translation>
 <translation id="4742795653798179840">Chrome का डेटा मिटाया गया</translation>

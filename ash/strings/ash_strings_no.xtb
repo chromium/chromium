@@ -2234,7 +2234,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="851458219935658693">Vis vinduer fra det gjeldende skrivebordet – alternativknappen er valgt</translation>
 <translation id="851660987304951246">Bruk Hjelp meg å lese for å lage sammendrag av innhold eller stille spørsmål raskt</translation>
 <translation id="8517041960877371778">Det kan hende at din <ph name="DEVICE_TYPE" /> ikke lader når den er slått på.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoninngangen styres av <ph name="APP_NAME" />}other{Mikrofoninngangen styres av # apper}}</translation>
 <translation id="8535393432370007982">Angre sortering etter farge</translation>
 <translation id="8541078764854166027">Kamerainnramming</translation>
 <translation id="8542053257095774575">Ingen lagrede skrivebord eller maler</translation>

@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
 <translation id="382043424867370667">Обои с закатом</translation>
 <translation id="3824259034819781947">Прикрепить файлы</translation>
-<translation id="383586991013681190">Перейдите в настройки, выберите язык расшифровки и скачайте модель.</translation>
 <translation id="3836587210832263413">Включайте только те расширения, которым вы доверяете</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3845880861638660475">Чтобы закрыть диалоговое окно, нажмите <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622">Сеть "<ph name="NETWORK_NAME" />" отключена.</translation>
 <translation id="4428840632568803690">Говорящий <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
+<translation id="4430019312045809116">Объем</translation>
 <translation id="4431821876790500265">Посмотреть отчет</translation>
 <translation id="4443192710976771874">красный</translation>
 <translation id="4447592701292766824">Не удалось создать описание этого контента.</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">увеличить яркость</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4513946894732546136">Отзыв</translation>
-<translation id="4516323842122524821">Регулятор громкости</translation>
 <translation id="4521826082652183069">Совпадение с альтернативным именем субъекта</translation>
 <translation id="4522570452068850558">Сведения</translation>
 <translation id="4536864596629708641">Конфигурация IP</translation>

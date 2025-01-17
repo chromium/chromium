@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1066101356081285416">Pārlūkā Chrome jūsu apmeklētajās vietnēs tiks noteikti izsekošanas numuri un jaunas cilnes lapā tiks parādīti jaunumi par sūtījumiem. Pakas izsekošanas numurs un vietnes nosaukums tiks nosūtīts uzņēmumam Google, lai nodrošinātu šo funkciju un uzlabotu Google iepirkšanās funkcijas visiem lietotājiem. Šo informāciju varat jebkurā laikā atjaunināt <ph name="BEGIN_LINK" />pakas izsekošanas iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Pārlūkā Chrome YouTube inkognito saites tiek automātiski atvērtas inkognito režīmā.</translation>
 <translation id="1086486568852410168">Meklēt, izmantojot Google Lens</translation>
 <translation id="1143896152279775643">Jūsu parole tiks saglabāta Google paroļu pārvaldniekā kontā <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Jaunas cilnes atvēršana pārlūkā Chrome</translation>
@@ -126,6 +127,7 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="4636900170638246267">Pierakstieties šajā vietnē un pārlūkā Chrome.</translation>
 <translation id="4646014602299206846">Pārlūkā Chrome jūsu apmeklētajās vietnēs tiks noteikti paku izsekošanas numuri un jaunās cilnes lapā tiks parādīti jaunumi par sūtījumiem. Jūsu dati tiks kopīgoti ar uzņēmumu Google, lai nodrošinātu šo funkciju un visiem lietotājiem uzlabotu pakalpojumu Pirkumi.</translation>
 <translation id="4647910807533196601">Atvērt manu pēdējo cilni pārlūkā Chrome</translation>
+<translation id="4693084815234024320">Jūs izmantojat Chrome inkognito režīmu</translation>
 <translation id="4724297637870447613">Chrome izmantošana visur</translation>
 <translation id="4738647308035481133">Pārlūka Google Chrome lapa</translation>
 <translation id="4742795653798179840">Chrome dati ir izdzēsti</translation>

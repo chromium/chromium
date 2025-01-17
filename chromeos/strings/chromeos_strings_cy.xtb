@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">PIN annilys.</translation>
 <translation id="382043424867370667">Papur wal machlud haul</translation>
 <translation id="3824259034819781947">Atodi ffeiliau</translation>
-<translation id="383586991013681190">Dewis iaith trawsgrifio a lawrlwytho yn y Gosodiadau</translation>
 <translation id="3836587210832263413">Troi ymlaen estyniadau rydych yn ymddiried ynddynt yn unig</translation>
 <translation id="3838338534323494292">Cyfrinair newydd</translation>
 <translation id="3845880861638660475">Pwyswch <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> i gau'r deialog.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622">Mae <ph name="NETWORK_NAME" /> wedi'i ddiffodd</translation>
 <translation id="4428840632568803690">Siaradwr <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Mae tocyn Kerberos yn darfod yn fuan</translation>
+<translation id="4430019312045809116">Lefel y sain</translation>
 <translation id="4431821876790500265">Gweld yr adroddiad</translation>
 <translation id="4443192710976771874">coch</translation>
 <translation id="4447592701292766824">Nid oes modd creu crynodeb ar gyfer y cynnwys hwn</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">disgleirdeb i fyny</translation>
 <translation id="4511264077854731334">Porth</translation>
 <translation id="4513946894732546136">Adborth</translation>
-<translation id="4516323842122524821">Lefel y sain</translation>
 <translation id="4521826082652183069">Cyfateb enw amgen pwnc</translation>
 <translation id="4522570452068850558">Manylion</translation>
 <translation id="4536864596629708641">Ffurfweddiad IP</translation>
