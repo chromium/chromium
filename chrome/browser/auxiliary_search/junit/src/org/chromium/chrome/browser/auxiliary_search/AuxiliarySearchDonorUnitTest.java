@@ -72,7 +72,7 @@ public class AuxiliarySearchDonorUnitTest {
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
 
         AuxiliarySearchDonor.setSkipInitializationForTesting(true);
-        mAuxiliarySearchDonor = AuxiliarySearchDonor.getInstance();
+        mAuxiliarySearchDonor = AuxiliarySearchDonor.createDonorForTesting();
         try {
             when(mAppSearchSession.get()).thenReturn(mSession);
             mAuxiliarySearchDonor.setAppSearchSessionForTesting(mAppSearchSession);
@@ -87,6 +87,17 @@ public class AuxiliarySearchDonorUnitTest {
         // #createSessionAndInit() has been called in AuxiliarySearchDonor's constructor.
         // Verifies that calling createSessionAndInit() again will early exit.
         assertFalse(mAuxiliarySearchDonor.createSessionAndInit());
+        assertTrue(mAuxiliarySearchDonor.getIsCreatedSessionAndInitForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateSessionAndInit_DefaultDisabled() {
+        when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(false);
+        assertFalse(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
+
+        mAuxiliarySearchDonor = AuxiliarySearchDonor.createDonorForTesting();
+        assertTrue(mAuxiliarySearchDonor.getIsCreatedSessionAndInitForTesting());
     }
 
     @Test
@@ -293,6 +304,21 @@ public class AuxiliarySearchDonorUnitTest {
         page.add(searchResult2);
         mAuxiliarySearchDonor.onGetNextPage(page, mCallback);
         verify(mCallback).onResult(eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsShareTabsWithOsEnabledKeyExist() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.SHARING_TABS_WITH_OS);
+
+        assertFalse(mAuxiliarySearchDonor.isShareTabsWithOsEnabledKeyExist());
+
+        prefsManager.writeBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true);
+        assertTrue(mAuxiliarySearchDonor.isShareTabsWithOsEnabledKeyExist());
+
+        prefsManager.writeBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, false);
+        assertTrue(mAuxiliarySearchDonor.isShareTabsWithOsEnabledKeyExist());
     }
 
     private SearchResult createSearchResult(int applicationType) {
