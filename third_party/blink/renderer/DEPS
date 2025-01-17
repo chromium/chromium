@@ -21,6 +21,7 @@ include_rules = [
     "+base/containers/span_or_size.h",
     "+base/containers/span_reader.h",
     "+base/containers/span_writer.h",
+    "+base/containers/to_vector.h",
     "+base/dcheck_is_on.h",
     "+base/debug",
     "+base/feature_list.h",

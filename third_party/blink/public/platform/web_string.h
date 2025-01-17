@@ -185,6 +185,13 @@ class BLINK_PLATFORM_EXPORT WebString {
   scoped_refptr<WTF::StringImpl> impl_;
 };
 
+#if INSIDE_BLINK
+// This can be used as a projection, e.g. when calling base::ToVector().
+inline WebString ToWebString(const WTF::String& s) {
+  return WebString(s);
+}
+#endif
+
 inline bool operator==(const WebString& a, const char* b) {
   return a.Equals(b);
 }

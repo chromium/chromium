@@ -154,6 +154,7 @@ _CONFIG = [
             'base::TimeTicks',
             'base::to_underlying',
             'base::Token',
+            'base::ToVector',
             'base::trace_event::.*',
             'base::unexpected',
             'base::UnguessableToken',
