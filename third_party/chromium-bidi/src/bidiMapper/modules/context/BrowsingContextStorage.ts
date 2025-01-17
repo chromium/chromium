@@ -79,6 +79,10 @@ export class BrowsingContextStorage {
   waitForContext(
     browsingContextId: BrowsingContext.BrowsingContext,
   ): Promise<BrowsingContextImpl> {
+    if (this.#contexts.has(browsingContextId)) {
+      return Promise.resolve(this.getContext(browsingContextId));
+    }
+
     return new Promise((resolve) => {
       const listener = (event: {browsingContext: BrowsingContextImpl}) => {
         if (event.browsingContext.id === browsingContextId) {
