@@ -95,29 +95,39 @@ export class SubscriptionManager {
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext,
   ): BidiPlusChannel[] {
-    const channels = new Set<BidiPlusChannel>();
+    // Maps JSON stringified channel to a channel.
+    // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
+    const channels = new Map<string, BidiPlusChannel>();
 
     for (const subscription of this.#subscriptions) {
       if (this.#isSubscribedTo(subscription, eventName, contextId)) {
-        channels.add(subscription.channel);
+        channels.set(
+          JSON.stringify(subscription.channel),
+          subscription.channel,
+        );
       }
     }
 
-    return Array.from(channels);
+    return Array.from(channels.values());
   }
 
   getChannelsSubscribedToEventGlobally(
     eventName: ChromiumBidi.EventNames,
   ): BidiPlusChannel[] {
-    const channels = new Set<BidiPlusChannel>();
+    // Maps JSON stringified channel to a channel.
+    // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
+    const channels = new Map<string, BidiPlusChannel>();
 
     for (const subscription of this.#subscriptions) {
       if (this.#isSubscribedTo(subscription, eventName)) {
-        channels.add(subscription.channel);
+        channels.set(
+          JSON.stringify(subscription.channel),
+          subscription.channel,
+        );
       }
     }
 
-    return Array.from(channels);
+    return Array.from(channels.values());
   }
 
   #isSubscribedTo(
@@ -249,7 +259,8 @@ export class SubscriptionManager {
     const eventsMatched = new Set<ChromiumBidi.EventNames>();
     const contextsMatched = new Set<BrowsingContext.BrowsingContext>();
     for (const subscription of this.#subscriptions) {
-      if (subscription.channel !== channel) {
+      // `channel` is undefined or an object with 1 field, so `JSON.stringify` is stable.
+      if (JSON.stringify(subscription.channel) !== JSON.stringify(channel)) {
         newSubscriptions.push(subscription);
         continue;
       }

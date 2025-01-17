@@ -23,10 +23,7 @@ export class OutgoingMessage {
   readonly #message: ChromiumBidi.Message;
   readonly #channel: BidiPlusChannel;
 
-  private constructor(
-    message: ChromiumBidi.Message,
-    channel: BidiPlusChannel = null,
-  ) {
+  private constructor(message: ChromiumBidi.Message, channel: BidiPlusChannel) {
     this.#message = message;
     this.#channel = channel;
   }
@@ -48,7 +45,7 @@ export class OutgoingMessage {
 
   static createResolved(
     message: ChromiumBidi.Message,
-    channel?: BidiPlusChannel,
+    channel: BidiPlusChannel,
   ): Promise<Result<OutgoingMessage>> {
     return Promise.resolve({
       kind: 'success',

@@ -308,13 +308,14 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("channel_name", ["channel", "goog:channel"])
 async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
-        websocket, context_id):
+        websocket, context_id, channel_name):
     # Subscribe and unsubscribe in `CHANNEL_1`.
     await execute_command(
         websocket, {
             "method": "session.subscribe",
-            "channel": "CHANNEL_1",
+            channel_name: "CHANNEL_1",
             "params": {
                 "events": ["log.entryAdded"]
             }
@@ -322,7 +323,7 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
     await execute_command(
         websocket, {
             "method": "session.unsubscribe",
-            "channel": "CHANNEL_1",
+            channel_name: "CHANNEL_1",
             "params": {
                 "events": ["log.entryAdded"]
             }
@@ -332,7 +333,7 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
     await execute_command(
         websocket, {
             "method": "session.subscribe",
-            "channel": "CHANNEL_2",
+            channel_name: "CHANNEL_2",
             "params": {
                 "events": ["log.entryAdded"]
             }
@@ -356,31 +357,38 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
         "type": "event",
         "method": "log.entryAdded",
         "params": ANY_DICT,
-        "channel": "CHANNEL_2"
+        channel_name: "CHANNEL_2"
     } == resp
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("channel_name", ["channel", "goog:channel"])
 async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
-        websocket, context_id):
+        websocket, context_id, channel_name):
     empty_channel = ""
     channel_2 = "999_SECOND_SUBSCRIBED_CHANNEL"
     channel_3 = "000_THIRD_SUBSCRIBED_CHANNEL"
     channel_4 = "555_FOURTH_SUBSCRIBED_CHANNEL"
 
-    await subscribe(websocket, ["log.entryAdded"], None, empty_channel)
-    await subscribe(websocket, ["log.entryAdded"], None, channel_2)
-    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_3)
-    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_4)
+    await subscribe(websocket, ["log.entryAdded"], None, empty_channel,
+                    channel_name)
+    await subscribe(websocket, ["log.entryAdded"], None, channel_2,
+                    channel_name)
+    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_3,
+                    channel_name)
+    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_4,
+                    channel_name)
     # Re-subscribe with specific BrowsingContext.
-    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_3)
+    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_3,
+                    channel_name)
     # Re-subscribe.
-    await subscribe(websocket, ["log.entryAdded"], None, channel_2)
+    await subscribe(websocket, ["log.entryAdded"], None, channel_2,
+                    channel_name)
 
     await execute_command(
         websocket, {
             "method": "session.subscribe",
-            "channel": channel_3,
+            channel_name: channel_3,
             "params": {
                 "events": ["log.entryAdded"]
             }
@@ -390,7 +398,7 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
     await execute_command(
         websocket, {
             "method": "session.subscribe",
-            "channel": channel_2,
+            channel_name: channel_2,
             "params": {
                 "events": ["log.entryAdded"],
                 "context": context_id
@@ -400,7 +408,7 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
-            "channel": "SOME_OTHER_CHANNEL",
+            channel_name: "SOME_OTHER_CHANNEL",
             "params": {
                 "expression": "console.log('SOME_MESSAGE')",
                 "target": {
@@ -422,7 +430,7 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
     assert {
         "type": "event",
         "method": "log.entryAdded",
-        "channel": channel_2,
+        channel_name: channel_2,
         "params": ANY_DICT
     } == resp
 
@@ -430,7 +438,7 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
     assert {
         "type": "event",
         "method": "log.entryAdded",
-        "channel": channel_3,
+        channel_name: channel_3,
         "params": ANY_DICT
     } == resp
 
@@ -438,18 +446,19 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
     assert {
         "type": "event",
         "method": "log.entryAdded",
-        "channel": channel_4,
+        channel_name: channel_4,
         "params": ANY_DICT
     } == resp
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("channel_name", ["channel", "goog:channel"])
 async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreReturned(
-        websocket, context_id, another_context_id):
+        websocket, context_id, another_context_id, channel_name):
     await execute_command(
         websocket, {
             "method": "script.evaluate",
-            "channel": "SOME_OTHER_CHANNEL",
+            channel_name: "SOME_OTHER_CHANNEL",
             "params": {
                 "expression": "console.log('SOME_MESSAGE')",
                 "target": {
@@ -462,7 +471,7 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
     await execute_command(
         websocket, {
             "method": "script.evaluate",
-            "channel": "SOME_OTHER_CHANNEL",
+            channel_name: "SOME_OTHER_CHANNEL",
             "params": {
                 "expression": "console.log('ANOTHER_MESSAGE')",
                 "target": {
@@ -517,7 +526,9 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 
 
 @pytest.mark.asyncio
-async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
+@pytest.mark.parametrize("channel_name", ["channel", "goog:channel"])
+async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id,
+                                   channel_name):
     await subscribe(websocket, ["log.entryAdded"], [iframe_id])
 
     with pytest.raises(Exception,

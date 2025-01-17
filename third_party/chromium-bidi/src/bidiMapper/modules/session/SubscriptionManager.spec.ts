@@ -41,8 +41,8 @@ const SOME_NESTED_CONTEXT = 'SOME_NESTED_CONTEXT';
 const ANOTHER_CONTEXT = 'ANOTHER_CONTEXT';
 const ANOTHER_NESTED_CONTEXT = 'ANOTHER_NESTED_CONTEXT';
 
-const SOME_CHANNEL = 'SOME_CHANNEL';
-const ANOTHER_CHANNEL = 'ANOTHER_CHANNEL';
+const SOME_CHANNEL = {'goog:channel': 'SOME_CHANNEL'};
+const ANOTHER_CHANNEL = {'goog:channel': 'ANOTHER_CHANNEL'};
 
 describe('SubscriptionManager', () => {
   let subscriptionManager: SubscriptionManager;

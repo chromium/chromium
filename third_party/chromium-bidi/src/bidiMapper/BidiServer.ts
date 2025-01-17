@@ -68,11 +68,8 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   };
 
   #processOutgoingMessage = async (messageEntry: OutgoingMessage) => {
-    const message = messageEntry.message;
-
-    if (messageEntry.channel !== null) {
-      message['channel'] = messageEntry.channel;
-    }
+    // Enrich message with channel data.
+    const message = {...messageEntry.message, ...messageEntry.channel};
 
     await this.#transport.sendMessage(message);
   };

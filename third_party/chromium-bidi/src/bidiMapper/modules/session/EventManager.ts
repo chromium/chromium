@@ -103,11 +103,11 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    */
   #eventBuffers = new Map<string, Buffer<EventWrapper>>();
   /**
-   * Maps `eventName` + `browsingContext` to  Map of channel to last id
+   * Maps `eventName` + `browsingContext` to  Map of json stringified channel to last id.
    * Used to avoid sending duplicated events when user
    * subscribes -> unsubscribes -> subscribes.
    */
-  #lastMessageSent = new Map<string, Map<string | null, number>>();
+  #lastMessageSent = new Map<string, Map<string, number>>();
   #subscriptionManager: SubscriptionManager;
   #browsingContextStorage: BrowsingContextStorage;
   /**
@@ -366,15 +366,19 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     );
 
     const lastId = Math.max(
-      this.#lastMessageSent.get(lastSentMapKey)?.get(channel) ?? 0,
+      this.#lastMessageSent.get(lastSentMapKey)?.get(JSON.stringify(channel)) ??
+        0,
       eventWrapper.id,
     );
 
     const channelMap = this.#lastMessageSent.get(lastSentMapKey);
     if (channelMap) {
-      channelMap.set(channel, lastId);
+      channelMap.set(JSON.stringify(channel), lastId);
     } else {
-      this.#lastMessageSent.set(lastSentMapKey, new Map([[channel, lastId]]));
+      this.#lastMessageSent.set(
+        lastSentMapKey,
+        new Map([[JSON.stringify(channel), lastId]]),
+      );
     }
   }
 
@@ -388,7 +392,8 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   ): EventWrapper[] {
     const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
     const lastSentMessageId =
-      this.#lastMessageSent.get(bufferMapKey)?.get(channel) ?? -Infinity;
+      this.#lastMessageSent.get(bufferMapKey)?.get(JSON.stringify(channel)) ??
+      -Infinity;
 
     const result: EventWrapper[] =
       this.#eventBuffers

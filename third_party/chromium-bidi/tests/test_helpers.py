@@ -45,7 +45,8 @@ def get_next_command_id() -> int:
 async def subscribe(websocket,
                     events: list[str] | str,
                     context_ids: list[str] | str | None = None,
-                    channel: str | None = None):
+                    channel: str | None = None,
+                    channel_name: str | None = None):
     if type(events) is str:
         events = [events]
 
@@ -62,7 +63,8 @@ async def subscribe(websocket,
     if context_ids is not None:
         command["params"]["contexts"] = context_ids
     if channel is not None:
-        command["channel"] = channel
+        command[channel_name
+                if channel_name is not None else "goog:channel"] = channel
 
     await execute_command(websocket, command)
 

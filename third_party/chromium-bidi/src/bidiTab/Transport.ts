@@ -41,7 +41,7 @@ export class WindowBidiTransport implements BidiTransport {
       } catch (e: unknown) {
         const error = e instanceof Error ? e : new Error(e as string);
         // Transport-level error does not provide channel.
-        this.#respondWithError(message, ErrorCode.InvalidArgument, error, null);
+        this.#respondWithError(message, ErrorCode.InvalidArgument, error, {});
       }
     };
   }
@@ -73,14 +73,10 @@ export class WindowBidiTransport implements BidiTransport {
       error,
     );
 
-    if (channel) {
-      this.sendMessage({
-        ...errorResponse,
-        channel,
-      });
-    } else {
-      this.sendMessage(errorResponse);
-    }
+    this.sendMessage({
+      ...errorResponse,
+      ...(channel ?? {}),
+    });
   }
 
   static #getJsonType(value: unknown) {
@@ -120,7 +116,13 @@ export class WindowBidiTransport implements BidiTransport {
   }
 
   static #parseBidiMessage(message: string): ChromiumBidi.Command {
-    let command: ChromiumBidi.Command;
+    let command: {
+      id?: unknown;
+      method?: unknown;
+      params?: unknown;
+      channel?: unknown;
+      'goog:channel'?: unknown;
+    };
     try {
       command = JSON.parse(message);
     } catch {
@@ -136,7 +138,7 @@ export class WindowBidiTransport implements BidiTransport {
     const {id, method, params} = command;
 
     const idType = WindowBidiTransport.#getJsonType(id);
-    if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
+    if (idType !== 'number' || !Number.isInteger(id) || (id as number) < 0) {
       // TODO: should uint64_t be the upper limit?
       // https://tools.ietf.org/html/rfc7049#section-2.1
       throw new Error(`Expected unsigned integer but got ${idType}`);
@@ -152,15 +154,26 @@ export class WindowBidiTransport implements BidiTransport {
       throw new Error(`Expected object params but got ${paramsType}`);
     }
 
-    let channel = command.channel;
-    if (channel !== undefined) {
-      const channelType = WindowBidiTransport.#getJsonType(channel);
+    let channel: BidiPlusChannel = {};
+    if (command['goog:channel'] !== undefined) {
+      const channelType = WindowBidiTransport.#getJsonType(
+        command['goog:channel'],
+      );
       if (channelType !== 'string') {
-        throw new Error(`Expected string channel but got ${channelType}`);
+        throw new Error(
+          `Expected string value of 'goog:channel' but got ${channelType}`,
+        );
       }
-      // Empty string channel is considered as no channel provided.
-      if (channel === '') {
-        channel = undefined;
+      if (command['goog:channel'] !== '') {
+        channel = {'goog:channel': command['goog:channel'] as string};
+      }
+    } else if (command.channel !== undefined) {
+      const channelType = WindowBidiTransport.#getJsonType(command.channel);
+      if (channelType !== 'string') {
+        throw new Error(`Expected string 'channel' but got ${channelType}`);
+      }
+      if (command.channel !== '') {
+        channel = {channel: command.channel as string};
       }
     }
 

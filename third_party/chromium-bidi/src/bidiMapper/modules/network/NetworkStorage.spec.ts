@@ -93,7 +93,7 @@ describe('NetworkStorage', () => {
       // Verify that the Request send the message
       // To the correct context
       [MockCdpNetworkEvents.defaultFrameId],
-      null,
+      {},
     );
     eventManager.on(EventManagerEvents.Event, ({message, event}) => {
       processingQueue.add(message, event);
