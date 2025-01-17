@@ -61,7 +61,7 @@ void XRGPUProjectionLayer::OnFrameEnd() {
   XRFrameProvider* frame_provider = session()->xr()->frameProvider();
 
   if (viewport_updated_) {
-    frame_provider->UpdateWebGPULayerViewports(this);
+    frame_provider->UpdateLayerViewports(this);
     viewport_updated_ = false;
   }
 

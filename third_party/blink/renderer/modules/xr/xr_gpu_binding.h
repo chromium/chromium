@@ -52,7 +52,8 @@ class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
 
   GPUDevice* device() const { return device_.Get(); }
 
-  gfx::Rect GetViewportForView(XRProjectionLayer* layer, XRViewData* view);
+  gfx::Rect GetViewportForView(XRProjectionLayer* layer,
+                               XRViewData* view) override;
 
   void Trace(Visitor*) const override;
 
