@@ -136,9 +136,7 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
     backdrop_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
     ui::Layer* layer = backdrop_view_->layer();
-
     layer->SetName("BackdropView");
-    layer->SetFillsBoundsOpaquely(false);
 
     const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
     layer->SetRoundedCornerRadius(

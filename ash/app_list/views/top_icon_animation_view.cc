@@ -47,7 +47,6 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
     icon_background_ = AddChildView(std::make_unique<views::View>());
     if (item_in_folder_icon_) {
       icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-      icon_background_->layer()->SetFillsBoundsOpaquely(false);
     } else {
       const int background_diameter =
           app_list_config->GetShortcutBackgroundContainerDimension();

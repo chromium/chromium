@@ -196,7 +196,6 @@ void MagnifierGlass::CreateMagnifierWindow(aura::Window* root_window,
   zoom_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   zoom_layer_->SetBounds(window_bounds);
   zoom_layer_->SetBackgroundZoom(params_.scale, kZoomInset);
-  zoom_layer_->SetFillsBoundsOpaquely(false);
   root_layer->Add(zoom_layer_.get());
 
   // Create a rounded rect clip, so that only we see a circle of the zoomed

@@ -29,6 +29,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -367,12 +368,10 @@ std::unique_ptr<ui::LayerTreeOwner> ScreenRotationAnimator::CopyLayerTree(
       GetScreenRotationContainer(root_window_)->layer()->size();
   std::unique_ptr<ui::Layer> copy_layer =
       CreateLayerFromCopyOutputResult(std::move(result), layer_size);
+  CHECK_EQ(copy_layer->type(), ui::LAYER_SOLID_COLOR);
   DCHECK_EQ(copy_layer->size(),
             GetScreenRotationContainer(root_window_)->layer()->size());
 
-  // TODO(crbug.com/40113966): This is a workaround and should be removed once
-  // the issue is fixed.
-  copy_layer->SetFillsBoundsOpaquely(false);
   return std::make_unique<ui::LayerTreeOwner>(std::move(copy_layer));
 }
 

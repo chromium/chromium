@@ -61,6 +61,7 @@
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/transform_recorder.h"
@@ -2561,7 +2562,9 @@ void View::AddLayerToRegionImpl(
 
   CreateOrDestroyLayer();
 
-  layer()->SetFillsBoundsOpaquely(false);
+  if (layer()->type() != ui::LAYER_SOLID_COLOR) {
+    layer()->SetFillsBoundsOpaquely(false);
+  }
 }
 
 void View::SetLayerParent(ui::Layer* parent_layer) {

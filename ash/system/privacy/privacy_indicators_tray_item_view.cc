@@ -165,7 +165,6 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   // Set up a solid color layer to paint the background color, then add a layer
   // to each child so that they are visible and can perform layer animation.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kPrivacyIndicatorsViewExpandedShorterSideSize / 2});
   layer()->SetIsFastRoundedCorner(true);
@@ -173,7 +172,6 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   auto add_icon_to_container = [&container_view]() {
     auto icon = std::make_unique<views::ImageView>();
     icon->SetPaintToLayer();
-    icon->layer()->SetFillsBoundsOpaquely(false);
     icon->SetVisible(false);
     return container_view->AddChildView(std::move(icon));
   };

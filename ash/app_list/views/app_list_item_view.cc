@@ -663,7 +663,6 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   icon_background_ = AddChildView(std::make_unique<views::View>());
   icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  icon_background_->layer()->SetFillsBoundsOpaquely(false);
   icon_background_->SetCanProcessEventsWithinSubtree(false);
   icon_background_->SetVisible(is_folder_);
 

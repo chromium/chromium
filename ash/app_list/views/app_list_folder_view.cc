@@ -692,7 +692,6 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
         ColorProvider::kBackgroundBlurSigma);
     animating_background_->layer()->SetBackdropFilterQuality(
         ColorProvider::kBackgroundBlurQuality);
-    animating_background_->layer()->SetFillsBoundsOpaquely(false);
   }
 
   animating_background_->SetVisible(false);

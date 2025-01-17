@@ -754,8 +754,6 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   CHECK(GetBackgroundColor());
 
   SkColor color = *GetBackgroundColor();
-  bool opaque = SkColorGetA(color) == SK_AlphaOPAQUE;
-  window_->layer()->SetFillsBoundsOpaquely(opaque);
   window_->layer()->SetColor(color);
 }
 
