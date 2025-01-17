@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
@@ -1714,6 +1715,14 @@ public class TabGridDialogMediatorUnitTest {
                 .dismiss(MessageType.COLLABORATION_ACTIVITY);
 
         verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+        verify(mMessagingBackendService)
+                .clearDirtyTabMessagesForGroup(
+                        argThat(
+                                eitherGroupId ->
+                                        eitherGroupId
+                                                .getLocalId()
+                                                .tabGroupId
+                                                .equals(TAB_GROUP_ID)));
     }
 
     @Test

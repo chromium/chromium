@@ -1315,7 +1315,15 @@ public class TabGridDialogMediator
                     new CollaborationActivityMessageCardViewModel(
                             mActivity,
                             this::showRecentActivityOrDismissActivityMessageCard,
-                            (unused) -> removeCollaborationActivityMessageCard());
+                            (unused) -> {
+                                @Nullable Token tabGroupId = getCurrentTabGroupId();
+                                if (mMessagingBackendService != null && tabGroupId != null) {
+                                    mMessagingBackendService.clearDirtyTabMessagesForGroup(
+                                            EitherGroupId.createLocalId(
+                                                    new LocalTabGroupId(tabGroupId)));
+                                }
+                                removeCollaborationActivityMessageCard();
+                            });
         }
         mCollaborationActivityPropertyModel.updateDescriptionText(
                 mActivity, tabsAdded, tabsChanged, tabsClosed);
