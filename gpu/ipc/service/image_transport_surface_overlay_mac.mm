@@ -270,8 +270,8 @@ bool ImageTransportSurfaceOverlayMacEGL::Resize(
 void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
     int max_pending_swaps) {
 #if BUILDFLAG(IS_MAC)
-  cap_max_pending_swaps_ =
-      std::min(max_pending_swaps, features::NumPendingFrameSupported());
+  cap_max_pending_swaps_ = max_pending_swaps;
+
   // MaxCALayerTrees is equal to the number of max_pending_swaps + one
   // that has been displayed.
   ca_layer_tree_coordinator_->SetMaxCALayerTrees(cap_max_pending_swaps_ + 1);

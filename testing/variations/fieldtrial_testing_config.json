@@ -24943,10 +24943,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_2_pending_frames",
-                    "params": {
-                        "PendingFrames": "2"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "VSyncAlignedPresent"
                     ]

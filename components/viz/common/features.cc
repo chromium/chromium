@@ -264,14 +264,6 @@ BASE_FEATURE(kCVDisplayLinkBeginFrameSource,
 BASE_FEATURE(kVSyncAlignedPresent,
              "VSyncAlignedPresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The paramters for the number of supported pending Frames.
-// 1: Support one pending frame. This is the old default.
-// 2: Support two pending frames. New. This is the number of max pending
-//    swap in the scheduler.
-// Others: Error! It will be overwritten to 2 pending frames.
-const base::FeatureParam<int> kNumPendingFrames{&kVSyncAlignedPresent,
-                                                "PendingFrames", 2};
 #endif
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
@@ -632,18 +624,6 @@ bool IsCVDisplayLinkBeginFrameSourceEnabled() {
 
 bool IsVSyncAlignedPresentEnabled() {
   return base::FeatureList::IsEnabled(features::kVSyncAlignedPresent);
-}
-
-int NumPendingFrameSupported() {
-  // Return the old default if this feature is not enabled.
-  if (!base::FeatureList::IsEnabled(kVSyncAlignedPresent)) {
-    return 1;
-  }
-
-  // Unless 1 pending frame is specified, overwrite all other params to the new
-  // default, 2 pending frames.
-  int num = kNumPendingFrames.Get() == 1 ? 1 : 2;
-  return num;
 }
 #endif
 
