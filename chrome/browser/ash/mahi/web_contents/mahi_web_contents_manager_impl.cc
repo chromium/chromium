@@ -111,7 +111,7 @@ content::RenderFrameHost* GetPDFRenderFrameHost(
   // Pick the plugin frame host if `contents` is a PDF viewer guest. If using
   // OOPIF PDF viewer, pick the PDF extension frame host.
   content::RenderFrameHost* full_page_pdf_embedder_host =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+      chrome_pdf::features::IsOopifPdfEnabled()
           ? pdf_frame_util::FindFullPagePdfExtensionHost(contents)
           : printing::GetFullPagePlugin(contents);
   content::RenderFrameHost* pdf_rfh = pdf_frame_util::FindPdfChildFrame(
@@ -418,7 +418,7 @@ void MahiWebContentsManagerImpl::RequestPDFContent(
   // If OOPIF PDF is enabled, we need to observe the focused web contents for
   // a11y changes. Otherwise, we need to observe the inner web contents.
   content::WebContents* web_contents_to_observe = focused_web_contents_;
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
     std::vector<content::WebContents*> inner_contents =
         focused_web_contents_ ? focused_web_contents_->GetInnerWebContents()
                               : std::vector<content::WebContents*>();
