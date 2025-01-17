@@ -1729,6 +1729,80 @@ TEST_P(WebAppRegistrarParameterizedTest, AppsOverlapIfSharesScope) {
   EXPECT_THAT(registrar().GetOverlappingAppsMatchingScope(app_id1),
               ElementsAre(app_id2));
 }
+TEST_P(WebAppRegistrarParameterizedTest, Filter_OpensInBrowserTab) {
+  StartWebAppProvider();
+
+  GURL app_url_1 = GURL("https://example.com/1/");
+  GURL app_url_2 = GURL("https://example.com/2/");
+  auto web_app_1 =
+      test::CreateWebApp(app_url_1, WebAppManagement::kUserInstalled);
+  auto web_app_2 =
+      test::CreateWebApp(app_url_2, WebAppManagement::kUserInstalled);
+  const webapps::AppId app_id_browser_tab = web_app_1->app_id();
+  const webapps::AppId app_id_standalone = web_app_2->app_id();
+
+  web_app_1->SetDisplayMode(DisplayMode::kBrowser);
+  web_app_1->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+  web_app_1->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
+  web_app_1->SetLinkCapturingUserPreference(
+      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
+
+  web_app_2->SetDisplayMode(DisplayMode::kStandalone);
+  web_app_2->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
+  web_app_2->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
+  web_app_2->SetLinkCapturingUserPreference(
+      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
+
+  RegisterAppUnsafe(std::move(web_app_1));
+  RegisterAppUnsafe(std::move(web_app_2));
+
+  EXPECT_TRUE(registrar().AppMatches(app_id_browser_tab,
+                                     WebAppFilter::OpensInBrowserTab()));
+  EXPECT_FALSE(registrar().AppMatches(app_id_browser_tab,
+                                      WebAppFilter::OpensInDedicatedWindow()));
+  EXPECT_EQ(app_id_browser_tab,
+            registrar().FindBestAppWithUrlInScope(
+                app_url_1, WebAppFilter::OpensInBrowserTab()));
+  EXPECT_EQ(std::nullopt,
+            registrar().FindBestAppWithUrlInScope(
+                app_url_1, WebAppFilter::OpensInDedicatedWindow()));
+
+  EXPECT_TRUE(registrar().AppMatches(app_id_standalone,
+                                     WebAppFilter::OpensInDedicatedWindow()));
+  EXPECT_FALSE(registrar().AppMatches(app_id_standalone,
+                                      WebAppFilter::OpensInBrowserTab()));
+  EXPECT_EQ(app_id_standalone,
+            registrar().FindBestAppWithUrlInScope(
+                app_url_2, WebAppFilter::OpensInDedicatedWindow()));
+  EXPECT_EQ(std::nullopt, registrar().FindBestAppWithUrlInScope(
+                              app_url_2, WebAppFilter::OpensInBrowserTab()));
+}
+
+TEST_P(WebAppRegistrarParameterizedTest, Filter_IsIsolatedApp) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
+  StartWebAppProvider();
+
+  constexpr char kIwaHostname[] =
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  GURL app_url(base::StrCat({chrome::kIsolatedAppScheme,
+                             url::kStandardSchemeSeparator, kIwaHostname}));
+  auto isolated_web_app = test::CreateWebApp(app_url);
+  const webapps::AppId app_id = isolated_web_app->app_id();
+
+  isolated_web_app->SetScope(isolated_web_app->start_url());
+  isolated_web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
+  isolated_web_app->SetDisplayMode(DisplayMode::kBrowser);
+  isolated_web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+  RegisterAppUnsafe(std::move(isolated_web_app));
+
+  EXPECT_TRUE(registrar().AppMatches(app_id, WebAppFilter::IsIsolatedApp()));
+  EXPECT_EQ(app_id, registrar().FindBestAppWithUrlInScope(
+                        app_url, WebAppFilter::IsIsolatedApp()));
+}
 
 INSTANTIATE_TEST_SUITE_P(
     ,
