@@ -19,13 +19,13 @@ namespace glic {
 
 GlicWindowResizeAnimation::GlicWindowResizeAnimation(
     views::Widget* widget,
-    const gfx::Rect& target_bounds,
+    gfx::Size new_size,
     base::TimeDelta duration,
     FinishedCallback finished_callback)
     : gfx::LinearAnimation(duration, kDefaultFrameRate, this),
       widget_(widget),
-      initial_bounds_(widget->GetWindowBoundsInScreen()),
-      new_bounds_(target_bounds),
+      initial_size_(widget->GetWindowBoundsInScreen().size()),
+      new_size_(new_size),
       finished_callback_(std::move(finished_callback)) {
   // TODO(crbug.com/389238233): CompositorAnimationRunner does not appear to
   // be fully functional.
@@ -41,9 +41,9 @@ GlicWindowResizeAnimation::GlicWindowResizeAnimation(
 GlicWindowResizeAnimation::~GlicWindowResizeAnimation() = default;
 
 void GlicWindowResizeAnimation::AnimateToState(double state) {
-  widget_->SetBounds(gfx::Tween::RectValueBetween(
+  widget_->SetSize(gfx::Tween::SizeValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::EASE_IN_OUT_EMPHASIZED, state),
-      initial_bounds_, new_bounds_));
+      initial_size_, new_size_));
 }
 
 void GlicWindowResizeAnimation::AnimationEnded(const Animation* animation) {
