@@ -743,17 +743,13 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
     // For standalone email fields, allow heuristics even when the minimum
     // number of fields is not met. See similar comments in
     // `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
-    // Note that `kAutofillEnableEmailHeuristicOnlyAddressForms` only supports
-    // email fields inside a form tag. Once
-    // `kAutofillEnableEmailHeuristicOnlyAddressForms` launches, dropping this
-    // requirement will be launched via
-    // `kAutofillEnableEmailHeuristicOutsideForms`.
+    // Note that if a form tag is present this behaviour is enabled by default.
+    // The alternative case it relies on
+    // `kAutofillEnableEmailHeuristicOutsideForms` being enabled.
     const bool parse_standalone_email_fields =
-        (is_form_element() ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableEmailHeuristicOutsideForms)) &&
+        is_form_element() ||
         base::FeatureList::IsEnabled(
-            features::kAutofillEnableEmailHeuristicOnlyAddressForms);
+            features::kAutofillEnableEmailHeuristicOutsideForms);
 
     if (parse_standalone_email_fields) {
       FormFieldParser::ParseStandaloneEmailFields(context, fields_,

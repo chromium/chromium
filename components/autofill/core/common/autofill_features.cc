@@ -132,26 +132,12 @@ BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,
              "AutofillEnableSupportForParsingWithSharedLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if heuristic field parsing should be performed on email-only forms.
-// TODO(crbug.com/40285735): Remove when/if launched.
-BASE_FEATURE(kAutofillEnableEmailHeuristicOnlyAddressForms,
-             "AutofillEnableEmailHeuristicOnlyAddressForms",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls if heuristic field parsing should be performed on email-only forms
-// without an enclosing form tag. This feature will only be launched once
-// `kAutofillEnableEmailHeuristicOnlyAddressForms` rolls out.
+// without an enclosing form tag.
 // TODO(crbug.com/40285735): Remove when/if launched.
 BASE_FEATURE(kAutofillEnableEmailHeuristicOutsideForms,
              "AutofillEnableEmailHeuristicOutsideForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When true, use autocomplete=email as required signal for email fields on
-// email-only forms, else accept a wider range of autocomplete values except for
-// `off` and `false`.
-const base::FeatureParam<bool> kAutofillEnableEmailHeuristicAutocompleteEmail{
-    &kAutofillEnableEmailHeuristicOnlyAddressForms, "autocomplete_email",
-    false};
 
 // Control if Autofill supports German transliteration.
 // TODO(crbug.com/328968064): Remove when/if launched.
