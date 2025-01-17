@@ -1679,37 +1679,37 @@ class AXPosition {
       return copy;
     }
 
-      DCHECK_GE(copy->child_index_, 0);
-      DCHECK_LT(copy->child_index_, copy->AnchorChildCount());
-      int new_offset = 0;
-      for (int i = 0; i <= child_index_; ++i) {
-        AXPositionInstance child = copy->CreateChildPositionAt(i);
-        DCHECK(!child->IsNullPosition());
-        // If the current text offset is valid, we don't touch it to
-        // potentially allow converting from a text position to a tree
-        // position and back without losing information. Otherwise, if the
-        // text_offset is invalid, equals to 0 or is smaller than
-        // |new_offset|, we reset it to the beginning of the current child.
-        if (i == child_index_ && copy->text_offset_ <= new_offset) {
-          copy->text_offset_ = new_offset;
-          break;
-        }
-
-        int child_length = child->MaxTextOffsetInParent();
-        // Same comment as above: we don't touch the text offset if it's
-        // already valid.
-        if (i == child_index_ &&
-            (copy->text_offset_ > (new_offset + child_length) ||
-             // When the text offset is equal to the text's length but this is
-             // not an "after text" position.
-             (!copy->AtEndOfAnchor() &&
-              copy->text_offset_ == (new_offset + child_length)))) {
-          copy->text_offset_ = new_offset;
-          break;
-        }
-
-        new_offset += child_length;
+    DCHECK_GE(copy->child_index_, 0);
+    DCHECK_LT(copy->child_index_, copy->AnchorChildCount());
+    int new_offset = 0;
+    for (int i = 0; i <= child_index_; ++i) {
+      AXPositionInstance child = copy->CreateChildPositionAt(i);
+      DCHECK(!child->IsNullPosition());
+      // If the current text offset is valid, we don't touch it to
+      // potentially allow converting from a text position to a tree
+      // position and back without losing information. Otherwise, if the
+      // text_offset is invalid, equals to 0 or is smaller than
+      // |new_offset|, we reset it to the beginning of the current child.
+      if (i == child_index_ && copy->text_offset_ <= new_offset) {
+        copy->text_offset_ = new_offset;
+        break;
       }
+
+      int child_length = child->MaxTextOffsetInParent();
+      // Same comment as above: we don't touch the text offset if it's
+      // already valid.
+      if (i == child_index_ &&
+          (copy->text_offset_ > (new_offset + child_length) ||
+           // When the text offset is equal to the text's length but this is
+           // not an "after text" position.
+           (!copy->AtEndOfAnchor() &&
+            copy->text_offset_ == (new_offset + child_length)))) {
+        copy->text_offset_ = new_offset;
+        break;
+      }
+
+      new_offset += child_length;
+    }
 
       // Affinity should always be left as downstream. The only case when the
       // resulting text position is at the end of the line is when we get an

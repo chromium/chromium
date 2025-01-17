@@ -943,7 +943,16 @@ ax::mojom::DescriptionFrom AXPlatformNodeDelegate::GetDescriptionFrom() const {
 
 const AXSelection AXPlatformNodeDelegate::GetUnignoredSelection() const {
   if (node_)
-    return node_->GetUnignoredSelection();
+    return node_->GetUnignoredSelection(/*non_text_endpoints*/ false);
+
+  NOTIMPLEMENTED();
+  return AXSelection();
+}
+
+const AXSelection AXPlatformNodeDelegate::GetHypertextSelection() const {
+  if (node_) {
+    return node_->GetUnignoredSelection(/*non_text_endpoints*/ true);
+  }
 
   NOTIMPLEMENTED();
   return AXSelection();
