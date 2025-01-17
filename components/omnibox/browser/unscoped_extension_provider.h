@@ -12,12 +12,13 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_suggestions_watcher.h"
-#include "components/omnibox/browser/unscoped_extension_provider_delegate.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 class AutocompleteInput;
 class AutocompleteProviderClient;
 class AutocompleteProviderListener;
 class TemplateURLService;
+class UnscopedExtensionProviderDelegate;
 
 // Provides suggestions from extension that are allowed to run in unscoped mode
 // (i.e. without requiring keyword mode).
@@ -29,28 +30,20 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
   UnscopedExtensionProvider& operator=(const UnscopedExtensionProvider&) =
       delete;
 
-  void AddToSuggestionGroupsMap(omnibox::GroupId groupId,
-                                const std::string& header_text);
-  void ClearSuggestionGroupsMap();
-
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
 
+  // Used by UnscopedExtensionProviderDelegateImpl.
+  TemplateURLService* GetTemplateURLService() const;
+  void AddToSuggestionGroupsMap(omnibox::GroupId group_id,
+                                omnibox::GroupConfig group_config);
   void set_done(bool done) { done_ = done; }
   bool done() const { return done_; }
   ACMatches* matches() { return &matches_; }
 
-  TemplateURLService* GetTemplateURLService() const;
-
  private:
   ~UnscopedExtensionProvider() override;
-
-  // Next section available to be given to an extension groupId. Possible
-  // sections are defined in `kReservedSectionMap`.
-  size_t next_available_section_index_ = 0;
-
-  std::set<std::string> GetUnscopedModeExtensionIds() const;
 
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;

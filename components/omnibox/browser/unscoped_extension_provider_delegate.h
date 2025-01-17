@@ -10,8 +10,6 @@
 
 #include "components/omnibox/browser/autocomplete_input.h"
 
-class AutocompleteInput;
-
 class UnscopedExtensionProviderDelegate {
  public:
   UnscopedExtensionProviderDelegate();
@@ -26,8 +24,11 @@ class UnscopedExtensionProviderDelegate {
                      bool minimal_changes,
                      std::set<std::string> unscoped_mode_extension_ids) = 0;
 
-  // Increments the id of the request sent to the extension.
-  virtual void IncrementRequestId() = 0;
+  // Stops the current request to the extension by incrementing the current
+  // request ID which effectively discards any suggestions that may be incoming
+  // later with a stale request ID. if `clear_cached_results` is true, it also
+  // clears the current list of cached matches and suggestion group information.
+  virtual void Stop(bool clear_cached_results) = 0;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_UNSCOPED_EXTENSION_PROVIDER_DELEGATE_H_

@@ -21,9 +21,13 @@
 
 namespace {
 constexpr auto kReservedGroupIdMap =
-    base::MakeFixedFlatMap<int, omnibox::GroupId>(
+    base::MakeFixedFlatMap<size_t, omnibox::GroupId>(
         {{0, omnibox::GROUP_UNSCOPED_EXTENSION_1},
          {1, omnibox::GROUP_UNSCOPED_EXTENSION_2}});
+constexpr auto kReservedSectionMap =
+    base::MakeFixedFlatMap<size_t, omnibox::GroupSection>(
+        {{0, omnibox::SECTION_UNSCOPED_EXTENSION_1},
+         {1, omnibox::SECTION_UNSCOPED_EXTENSION_2}});
 }  // namespace
 
 UnscopedExtensionProviderDelegateImpl::UnscopedExtensionProviderDelegateImpl(
@@ -47,8 +51,9 @@ void UnscopedExtensionProviderDelegateImpl::Start(
     const AutocompleteInput& input,
     bool minimal_changes,
     std::set<std::string> unscoped_mode_extension_ids) {
-  // Reset last suggest matches.
-  extension_suggest_matches_.clear();
+  CHECK(extension_suggest_matches_.empty());
+  CHECK(extension_id_to_group_id_map_.empty());
+
   provider_->set_done(false);
 
   for (const std::string& extension_id : unscoped_mode_extension_ids) {
@@ -58,10 +63,11 @@ void UnscopedExtensionProviderDelegateImpl::Start(
   }
 }
 
-void UnscopedExtensionProviderDelegateImpl::IncrementRequestId() {
+void UnscopedExtensionProviderDelegateImpl::Stop(bool clear_cached_results) {
   current_request_id_++;
-  // Reset suggestions grouping map any time a new request is made.
-  ResetSuggestionGroupsMap();
+  if (clear_cached_results) {
+    ClearSuggestions();
+  }
 }
 
 void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
@@ -69,8 +75,8 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
     const std::string& extension_id) {
   CHECK(suggestions);
 
+  // Discard suggestions with a stale request ID.
   if (suggestions->request_id != current_request_id_) {
-    // This is an old result, so just ignore.
     return;
   }
 
@@ -78,7 +84,7 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   const TemplateURL* template_url = turl_service->FindTemplateURLForExtension(
       extension_id, TemplateURL::OMNIBOX_API_EXTENSION);
 
-  if (!base::Contains(extension_id_group_map_, extension_id)) {
+  if (!base::Contains(extension_id_to_group_id_map_, extension_id)) {
     if (next_available_group_index_ == kReservedGroupIdMap.size()) {
       // Reached max number of groups that can be assigned to an extension.
       // Discard suggestions from this extension.
@@ -88,11 +94,19 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
     // next available groupId, and give the group the corresponding header for
     // the extension. If the max number of extensions have been assigned a
     // header, don't assign headers to further extensions.
-    omnibox::GroupId current_group =
+    const omnibox::GroupId current_group_id =
         kReservedGroupIdMap.at(next_available_group_index_++);
-    provider_->AddToSuggestionGroupsMap(
-        current_group, base::UTF16ToUTF8(template_url->keyword()));
-    extension_id_group_map_[extension_id] = current_group;
+    extension_id_to_group_id_map_[extension_id] = current_group_id;
+
+    CHECK_LT(next_available_section_index_, kReservedSectionMap.size());
+    const omnibox::GroupSection current_section =
+        kReservedSectionMap.at(next_available_section_index_++);
+
+    omnibox::GroupConfig group;
+    group.set_section(current_section);
+    group.set_render_type(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL);
+    group.set_header_text(base::UTF16ToUTF8(template_url->keyword()));
+    provider_->AddToSuggestionGroupsMap(current_group_id, std::move(group));
   }
 
   int first_relevance = 10000000;
@@ -112,13 +126,11 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   provider_->NotifyListeners(!extension_suggest_matches_.empty());
 }
 
-// Input has been accepted, so we're done with this input session. Ensure
-// we don't send the OnInputCancelled event, or handle any more stray
-// suggestions_ready events.
 void UnscopedExtensionProviderDelegateImpl::OnOmniboxInputEntered() {
-  // TODO(378538411): make sure this called when a match created by this class
-  // is selected.
-  IncrementRequestId();
+  // Input has been accepted, clear the current list of suggestions and ensure
+  // any suggestions that may be incoming later with a stale request ID are
+  // discarded.
+  Stop(/*clear_cached_results=*/true);
 }
 
 AutocompleteMatch
@@ -153,12 +165,13 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
 
   match.contents_class =
       extensions::StyleTypesToACMatchClassifications(suggestion);
-  match.suggestion_group_id = extension_id_group_map_[extension_id];
+  match.suggestion_group_id = extension_id_to_group_id_map_[extension_id];
   return match;
 }
 
-void UnscopedExtensionProviderDelegateImpl::ResetSuggestionGroupsMap() {
-  provider_->ClearSuggestionGroupsMap();
-  extension_id_group_map_.clear();
+void UnscopedExtensionProviderDelegateImpl::ClearSuggestions() {
+  extension_suggest_matches_.clear();
+  extension_id_to_group_id_map_.clear();
   next_available_group_index_ = 0;
+  next_available_section_index_ = 0;
 }
