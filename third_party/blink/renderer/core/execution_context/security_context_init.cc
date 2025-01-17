@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
+#include "url/gurl.h"
 namespace blink {
 namespace {
 
@@ -109,7 +109,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     const FramePolicy& frame_policy,
     const std::optional<ParsedPermissionsPolicy>& isolated_app_policy,
     const base::optional_ref<const FencedFrame::RedactedFencedFrameProperties>
-        fenced_frame_properties) {
+        fenced_frame_properties,
+    const KURL& document_url) {
   const url::Origin origin =
       execution_context_->GetSecurityOrigin()->ToUrlOrigin();
   // If we are a HTMLViewSourceDocument we use container, header or
@@ -261,10 +262,12 @@ void SecurityContextInit::ApplyPermissionsPolicy(
                                                   ->GetSecurityContext()
                                                   ->GetPermissionsPolicy()
                                             : nullptr;
+      // Ideally we would use the URL in `execution_context_` but at this point,
+      // it has no `document_` and so does not know its URL.
       permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
           parent_permissions_policy,
           /*header_policy=*/permissions_policy_header_, container_policy,
-          origin);
+          origin, PermissionsPolicy::IsHeaderlessUrl(GURL(document_url)));
     }
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
         std::move(permissions_policy));

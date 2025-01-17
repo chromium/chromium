@@ -15,6 +15,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -92,10 +93,11 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const PermissionsPolicy* parent_policy,
     const ParsedPermissionsPolicy& header_policy,
     const ParsedPermissionsPolicy& container_policy,
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    bool headerless) {
   return CreateFromParentPolicy(parent_policy, header_policy, container_policy,
-                                origin,
-                                GetPermissionsPolicyFeatureList(origin));
+                                origin, GetPermissionsPolicyFeatureList(origin),
+                                headerless);
 }
 
 // static
@@ -107,7 +109,8 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CopyStateFrom(
   std::unique_ptr<PermissionsPolicy> new_policy = base::WrapUnique(
       new PermissionsPolicy(source->origin_, {source->allowlists_, {}},
                             source->inherited_policies_,
-                            GetPermissionsPolicyFeatureList(source->origin_)));
+                            GetPermissionsPolicyFeatureList(source->origin_),
+                            source->headerless_));
 
   return new_policy;
 }
@@ -147,6 +150,12 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
                             inherited_policies, features));
 
   return new_policy;
+}
+
+// static
+bool PermissionsPolicy::IsHeaderlessUrl(const GURL& url) {
+  return url.IsAboutSrcdoc() || url.IsAboutBlank() ||
+         url.SchemeIs(url::kDataScheme) || url.SchemeIsBlob();
 }
 
 bool PermissionsPolicy::IsFeatureEnabledByInheritedPolicy(
@@ -221,8 +230,19 @@ bool PermissionsPolicy::GetFeatureValueForOrigin(
     return allowlist->second.Contains(origin);
   }
 
-  // 9.8.4 Return "Enabled".
-  return true;
+  const PermissionsPolicyFeatureDefault default_policy =
+      feature_list_->at(feature);
+  switch (default_policy) {
+    case PermissionsPolicyFeatureDefault::EnableForAll:
+    case PermissionsPolicyFeatureDefault::EnableForSelf:
+      // 9.8.4 Return "Enabled".
+      return true;
+    case PermissionsPolicyFeatureDefault::EnableForNone:
+      // Proposed algorithm change in
+      // https://github.com/w3c/webappsec-permissions-policy/pull/515:
+      // 9.8.5 Return "Disabled".
+      return false;
+  }
 }
 
 const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
@@ -420,8 +440,10 @@ PermissionsPolicy::PermissionsPolicy(
     url::Origin origin,
     AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints,
     PermissionsPolicyFeatureState inherited_policies,
-    const PermissionsPolicyFeatureList& feature_list)
+    const PermissionsPolicyFeatureList& feature_list,
+    bool headerless)
     : origin_(std::move(origin)),
+      headerless_(headerless),
       allowlists_(std::move(allow_lists_and_reporting_endpoints.allowlists_)),
       reporting_endpoints_(
           std::move(allow_lists_and_reporting_endpoints.reporting_endpoints_)),
@@ -502,7 +524,8 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const ParsedPermissionsPolicy& header_policy,
     const ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin,
-    const PermissionsPolicyFeatureList& features) {
+    const PermissionsPolicyFeatureList& features,
+    bool headerless) {
   PermissionsPolicyFeatureState inherited_policies;
   for (const auto& feature : features) {
     inherited_policies[feature.first] = InheritedValueForFeature(
@@ -510,7 +533,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
   }
   return base::WrapUnique(new PermissionsPolicy(
       origin, CreateAllowlistsAndReportingEndpoints(header_policy),
-      inherited_policies, features));
+      inherited_policies, features, headerless));
 }
 
 // Implements Permissions Policy 9.9: Is feature enabled in document for origin?
@@ -558,6 +581,12 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
       }
       break;
     case PermissionsPolicyFeatureDefault::EnableForNone:
+      if (headerless_) {
+        // Proposed algorithm change in
+        // https://github.com/w3c/webappsec-permissions-policy/pull/515:
+        // 9.9.6 Return "Disabled".
+        return true;
+      }
       break;
   }
   // 9.9.6: Return "Disabled".
