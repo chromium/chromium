@@ -76,6 +76,31 @@ TransferableResource TransferableResource::MakeGpu(
                  size, format, is_overlay_candidate, source);
 }
 
+TransferableResource TransferableResource::Make(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+    ResourceSource source,
+    const gpu::SyncToken& sync_token,
+    const MetadataOverride& override) {
+  CHECK(shared_image);
+  TransferableResource resource;
+  resource.is_software = shared_image->is_software();
+  resource.memory_buffer_id_ = shared_image->mailbox();
+  resource.sync_token_ = sync_token;
+  resource.resource_source = source;
+
+  resource.size = override.size.value_or(shared_image->size());
+  resource.format = override.format.value_or(shared_image->format());
+  resource.is_overlay_candidate = override.is_overlay_candidate.value_or(
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
+  resource.color_space =
+      override.color_space.value_or(shared_image->color_space());
+  resource.origin = override.origin.value_or(shared_image->surface_origin());
+  resource.set_texture_target(
+      override.texture_target.value_or(shared_image->GetTextureTarget()));
+
+  return resource;
+}
+
 TransferableResource::TransferableResource() = default;
 TransferableResource::~TransferableResource() = default;
 

@@ -35,6 +35,15 @@ using MemoryBufferId = absl::variant<gpu::Mailbox, SharedBitmapId>;
 struct ReturnedResource;
 
 struct VIZ_COMMON_EXPORT TransferableResource {
+  struct VIZ_COMMON_EXPORT MetadataOverride {
+    std::optional<SharedImageFormat> format;
+    std::optional<gfx::Size> size;
+    std::optional<uint32_t> texture_target;
+    std::optional<bool> is_overlay_candidate;
+    std::optional<gfx::ColorSpace> color_space;
+    std::optional<GrSurfaceOrigin> origin;
+  };
+
   enum class SynchronizationType : uint8_t {
     // Commands issued (SyncToken) - a resource can be reused as soon as display
     // compositor issues the latest command on it and SyncToken will be signaled
@@ -76,6 +85,16 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     kWebGPUSwapBuffer = 15,
   };
 
+  // Creates transferable resource from the ClientSharedImage. `override` allows
+  // to temporary override SharedImage metadata to facilitate current
+  // discrepancies until they are fixed. Do not pass it in the new code.
+  static TransferableResource Make(
+      const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+      ResourceSource source,
+      const gpu::SyncToken& sync_token,
+      const MetadataOverride& override = {});
+
+  // Following Make* functions are deprecated. Please use the one above.
   static TransferableResource MakeSoftwareSharedBitmap(
       const SharedBitmapId& id,
       const gpu::SyncToken& sync_token,
