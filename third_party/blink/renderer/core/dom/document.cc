@@ -2453,7 +2453,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   GetStyleResolver().ClearResizedForViewportUnits();
   InvalidatePendingSVGResources();
 
-  if (RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled()) {
+  if (GetFrame()->IsMainFrame() &&
+      RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled()) {
     GetViewportData().SetHasComplexSafaAreaConstraint(
         style_engine.HasComplexSafaAreaConstraints());
   }
