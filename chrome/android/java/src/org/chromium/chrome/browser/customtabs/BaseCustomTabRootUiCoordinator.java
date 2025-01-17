@@ -788,7 +788,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                         PrivacySandboxDialogController.setOnDialogDismissRunnable(
                                                 () ->
                                                         surveyController
-                                                                .maybeScheduleAdsCctTreatmentSurveyLaunch(
+                                                                .scheduleAdsCctTreatmentSurveyLaunch(
                                                                         appId));
                                     }
                                     didShowPrompt =
@@ -804,7 +804,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                             ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
                                     && shouldShowPrivacySandboxDialog
                                     && isCustomTab) {
-                                surveyController.maybeScheduleAdsCctControlSurveyLaunch(
+                                surveyController.scheduleAdsCctControlSurveyLaunch(
                                         appId,
                                         new PrivacySandboxBridge(currentModelProfile)
                                                 .getRequiredPromptType(SurfaceType.AGACCT));
