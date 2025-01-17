@@ -9,8 +9,7 @@
 
 namespace data_sharing::features {
 namespace {
-const char kDataSharingDefaultUrl[] =
-    "https://shared-tabs-v3-dot-googwebreview.appspot.com/chrome/tabshare/";
+const char kDataSharingDefaultUrl[] = "https://www.google.com/chrome/tabshare/";
 }
 
 BASE_FEATURE(kDataSharingFeature,

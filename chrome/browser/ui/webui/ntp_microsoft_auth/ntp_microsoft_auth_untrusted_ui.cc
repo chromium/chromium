@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -28,7 +29,8 @@ bool NtpMicrosoftAuthUntrustedUIConfig::IsWebUIEnabled(
 }
 
 NtpMicrosoftAuthUntrustedUI::NtpMicrosoftAuthUntrustedUI(content::WebUI* web_ui)
-    : ui::UntrustedWebUIController(web_ui) {
+    : ui::UntrustedWebUIController(web_ui),
+      profile_(Profile::FromWebUI(web_ui)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::CreateAndAdd(
@@ -88,7 +90,7 @@ void NtpMicrosoftAuthUntrustedUI::CreatePageHandler(
         new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler>
         pending_page_handler) {
   page_handler_ = std::make_unique<MicrosoftAuthUntrustedPageHandler>(
-      std::move(pending_page_handler));
+      std::move(pending_page_handler), profile_);
 }
 
 void NtpMicrosoftAuthUntrustedUI::ConnectToParentDocument(

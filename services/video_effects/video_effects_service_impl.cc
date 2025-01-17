@@ -88,6 +88,12 @@ void VideoEffectsServiceImpl::OnPermanentError(
   // and cleans up any related state.
 }
 
+void VideoEffectsServiceImpl::OnContextLost(
+    scoped_refptr<GpuChannelHostProvider>) {
+  // Nothing to do - the video effects processors also get notified about
+  // context losses - they will reinitialize their GPU state themselves.
+}
+
 void VideoEffectsServiceImpl::CreateWebGpuDeviceAndEffectsProcessors() {
   CHECK(!webgpu_device_);
   CHECK(gpu_channel_host_provider_);

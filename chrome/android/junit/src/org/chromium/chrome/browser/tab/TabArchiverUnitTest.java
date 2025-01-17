@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 
 /** Tests for {@link TabArchiveSettings}. */
@@ -46,7 +45,6 @@ public class TabArchiverUnitTest {
     private @Mock TabGroupModelFilter mArchivedTabGroupModelFilter;
     private @Mock TabModel mArchivedTabModel;
     private @Mock TabCreator mArchivedTabCreator;
-    private @Mock TabWindowManager mTabWindowManager;
     private @Mock TabArchiveSettings mTabArchiveSettings;
     private @Mock TabArchiverImpl.Clock mClock;
     private @Mock Profile mProfile;
@@ -79,7 +77,6 @@ public class TabArchiverUnitTest {
                 new TabArchiverImpl(
                         mArchivedTabGroupModelFilter,
                         mArchivedTabCreator,
-                        mTabWindowManager,
                         mTabArchiveSettings,
                         mClock);
     }
@@ -124,7 +121,7 @@ public class TabArchiverUnitTest {
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Tabs.ArchivedTabs.MaxLimitReachedAt", 20);
-        mTabArchiver.onTabModelSelectorAdded(mTabModelSelector);
+        mTabArchiver.doArchivePass(mTabModelSelector);
         verify(mArchivedTabCreator, times(20)).createFrozenTab(any(), anyInt(), anyInt());
         watcher.assertExpected();
     }

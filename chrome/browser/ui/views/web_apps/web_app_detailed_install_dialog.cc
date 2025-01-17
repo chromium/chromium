@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -235,7 +236,8 @@ class ImageCarouselView : public views::View {
         leading_button_container->AddChildView(std::make_unique<ScrollButton>(
             ButtonType::LEADING,
             base::BindRepeating(&ImageCarouselView::OnScrollButtonClicked,
-                                base::Unretained(this), ButtonType::LEADING)));
+                                weak_ptr_factory_.GetWeakPtr(),
+                                ButtonType::LEADING)));
     leading_button_container_ =
         AddChildView(std::move(leading_button_container));
     leading_button_->SetVisible(false);
@@ -248,7 +250,8 @@ class ImageCarouselView : public views::View {
         trailing_button_container->AddChildView(std::make_unique<ScrollButton>(
             ButtonType::TRAILING,
             base::BindRepeating(&ImageCarouselView::OnScrollButtonClicked,
-                                base::Unretained(this), ButtonType::TRAILING)));
+                                weak_ptr_factory_.GetWeakPtr(),
+                                ButtonType::TRAILING)));
     trailing_button_container_ =
         AddChildView(std::move(trailing_button_container));
   }
@@ -259,7 +262,7 @@ class ImageCarouselView : public views::View {
     for (size_t i = 0; i < fetcher_->GetScreenshotSizes().size(); i++) {
       fetcher_->GetScreenshot(
           i, base::BindOnce(&ImageCarouselView::OnScreenshotFetched,
-                            base::Unretained(this), i));
+                            weak_ptr_factory_.GetWeakPtr(), i));
     }
   }
 
@@ -381,6 +384,7 @@ class ImageCarouselView : public views::View {
   int image_carousel_full_width_ = 0;
   int image_padding_ = 0;
   bool trailing_button_visibility_set_up_ = false;
+  base::WeakPtrFactory<ImageCarouselView> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(ImageCarouselView)

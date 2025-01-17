@@ -131,7 +131,6 @@ void VideoEffectsProcessorImpl::OnMojoDisconnected() {
   processor_receiver_.reset();
   configuration_observer_.reset();
   manager_remote_.reset();
-  gpu_channel_host_provider_->Reset();
 
   MaybeCallOnUnrecoverableError();
 }

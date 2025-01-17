@@ -30,11 +30,11 @@ class GpuChannelHostProvider : public base::RefCounted<GpuChannelHostProvider> {
   class Observer : public base::CheckedObserver {
    public:
     // The GPU context was lost.
-    virtual void OnContextLost(scoped_refptr<GpuChannelHostProvider>) {}
+    virtual void OnContextLost(scoped_refptr<GpuChannelHostProvider>) = 0;
 
     // Abandon ship! The GPU context has been lost multiple times and no further
     // attempts will be made to re-establish a connection to the GPU.
-    virtual void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) {}
+    virtual void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) = 0;
   };
 
   // Returns the context provider for WebGPU.
@@ -48,10 +48,6 @@ class GpuChannelHostProvider : public base::RefCounted<GpuChannelHostProvider> {
   // Returns the SharedImageInterface.
   virtual scoped_refptr<gpu::ClientSharedImageInterface>
   GetSharedImageInterface() = 0;
-
-  // Drop references to internal context objects.  Subsequent calls to the Get*
-  // methods will return references to new context objects.
-  virtual void Reset() = 0;
 
   virtual void AddObserver(Observer& observer) = 0;
   virtual void RemoveObserver(Observer& observer) = 0;

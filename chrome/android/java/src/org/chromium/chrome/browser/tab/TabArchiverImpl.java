@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Responsible for moving tabs to/from the archived {@link TabModel}. */
-public class TabArchiverImpl implements TabArchiver, TabWindowManager.Observer {
+public class TabArchiverImpl implements TabArchiver {
     /** Provides the current timestamp. */
     // TODO(crbug.com/389152957): Collect Clock implementations in base for code reuse.
     @FunctionalInterface
@@ -46,29 +45,23 @@ public class TabArchiverImpl implements TabArchiver, TabWindowManager.Observer {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final TabGroupModelFilter mArchivedTabGroupModelFilter;
     private final TabCreator mArchivedTabCreator;
-    private final TabWindowManager mTabWindowManager;
     private final TabArchiveSettings mTabArchiveSettings;
 
     private Clock mClock;
-    private boolean mDeclutterInitCalled;
-    private int mSelectorsQueuedForDeclutter;
 
     /**
      * @param archivedTabGroupModelFilter The archived {@link TabGroupModelFilter}.
      * @param archivedTabCreator The {@link TabCreator} for the archived TabModel.
-     * @param tabWindowManager The {@link TabWindowManager} used for accessing TabModelSelectors.
      * @param tabArchiveSettings The settings for tab archiving/deletion.
      * @param clock A clock object to get the current time..
      */
     public TabArchiverImpl(
             TabGroupModelFilter archivedTabGroupModelFilter,
             TabCreator archivedTabCreator,
-            TabWindowManager tabWindowManager,
             TabArchiveSettings tabArchiveSettings,
             Clock clock) {
         mArchivedTabGroupModelFilter = archivedTabGroupModelFilter;
         mArchivedTabCreator = archivedTabCreator;
-        mTabWindowManager = tabWindowManager;
         mTabArchiveSettings = tabArchiveSettings;
         mClock = clock;
     }
@@ -76,7 +69,6 @@ public class TabArchiverImpl implements TabArchiver, TabWindowManager.Observer {
     @Override
     public void destroy() {
         mCallbackController.destroy();
-        mTabWindowManager.removeObserver(this);
     }
 
     @Override
@@ -90,19 +82,9 @@ public class TabArchiverImpl implements TabArchiver, TabWindowManager.Observer {
     }
 
     @Override
-    public void initialize() {
+    public void doArchivePass(TabModelSelector selectorToArchive) {
         ThreadUtils.assertOnUiThread();
-        // Observe new TabModelSelectors being added so inactive tabs are archived automatically
-        // as new selectors are activated.
-        mTabWindowManager.addObserver(this);
-
-        mDeclutterInitCalled = true;
-    }
-
-    @Override
-    public void doArchivePass() {
-        ThreadUtils.assertOnUiThread();
-        assert mDeclutterInitCalled;
+        if (!mTabArchiveSettings.getArchiveEnabled()) return;
 
         // Wait for the declutter pass to complete, then do follow-up tasks.
         addObserver(
@@ -116,13 +98,9 @@ public class TabArchiverImpl implements TabArchiver, TabWindowManager.Observer {
                     }
                 });
 
-        // Trigger archival of inactive tabs for the current selectors.
-        for (int i = 0; i < mTabWindowManager.getMaxSimultaneousSelectors(); i++) {
-            TabModelSelector selector = mTabWindowManager.getTabModelSelectorById(i);
-            if (selector == null) continue;
-            mSelectorsQueuedForDeclutter++;
-            onTabModelSelectorAdded(selector);
-        }
+        TabModelUtils.runOnTabStateInitialized(
+                selectorToArchive,
+                mCallbackController.makeCancelable(this::archiveEligibleTabsFromTabModelSelector));
     }
 
     @Override
@@ -229,17 +207,6 @@ public class TabArchiverImpl implements TabArchiver, TabWindowManager.Observer {
         RecordUserAction.record("Tabs.ArchivedTabRescued");
     }
 
-    // TabWindowManager.Observer implementation.
-
-    @Override
-    public void onTabModelSelectorAdded(TabModelSelector selector) {
-        ThreadUtils.assertOnUiThread();
-        if (!mTabArchiveSettings.getArchiveEnabled()) return;
-
-        TabModelUtils.runOnTabStateInitialized(
-                selector, this::archiveEligibleTabsFromTabModelSelector);
-    }
-
     // Private functions.
 
     @VisibleForTesting
@@ -330,15 +297,12 @@ public class TabArchiverImpl implements TabArchiver, TabWindowManager.Observer {
                             if (tabsToArchive.size() > 0) {
                                 archiveAndRemoveTabs(model, tabsToArchive);
                             }
-                            mSelectorsQueuedForDeclutter--;
                             RecordHistogram.recordCount1000Histogram(
                                     "Tabs.TabArchived.FoundDuplicateInRegularModel",
                                     tabsToClose.size());
 
-                            if (mSelectorsQueuedForDeclutter == 0) {
-                                for (Observer obs : mObservers) {
-                                    obs.onDeclutterPassCompleted();
-                                }
+                            for (Observer obs : mObservers) {
+                                obs.onDeclutterPassCompleted();
                             }
                         }));
     }
