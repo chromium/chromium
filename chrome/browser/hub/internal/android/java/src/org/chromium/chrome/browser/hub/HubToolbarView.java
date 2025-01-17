@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.getPaneColorBlendInterpolator;
 import static org.chromium.ui.util.ColorBlendAnimationFactory.createMultiColorBlendAnimation;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -179,16 +181,20 @@ public class HubToolbarView extends LinearLayout {
                     @ColorInt
                     int prevSelectedIconColor =
                             HubColors.getSelectedIconColor(context, prevColorScheme);
-                    return createMultiColorBlendAnimation(
-                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                            new int[] {prevIconColor, prevSelectedIconColor},
-                            new int[] {newIconColor, newSelectedIconColor},
-                            colorList -> {
-                                @ColorInt int interpolatedIconColor = colorList[0];
-                                @ColorInt int interpolatedSelectedIconColor = colorList[1];
-                                updateTabIconTintInternal(
-                                        interpolatedIconColor, interpolatedSelectedIconColor);
-                            });
+                    Animator animation =
+                            createMultiColorBlendAnimation(
+                                    PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                                    new int[] {prevIconColor, prevSelectedIconColor},
+                                    new int[] {newIconColor, newSelectedIconColor},
+                                    colorList -> {
+                                        @ColorInt int interpolatedIconColor = colorList[0];
+                                        @ColorInt int interpolatedSelectedIconColor = colorList[1];
+                                        updateTabIconTintInternal(
+                                                interpolatedIconColor,
+                                                interpolatedSelectedIconColor);
+                                    });
+                    animation.setInterpolator(getPaneColorBlendInterpolator());
+                    return animation;
                 };
         mAnimatorSetBuilder.registerBlend(multiColorBlend);
 
