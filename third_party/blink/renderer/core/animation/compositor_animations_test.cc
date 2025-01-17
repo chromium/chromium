@@ -3117,6 +3117,84 @@ TEST_P(AnimationCompositorAnimationsTest,
                       PropertyHandle(GetCSSPropertyOpacity())));
 }
 
+TEST_P(AnimationCompositorAnimationsTest,
+       CompositedPaintStatusWithTargetChangeToNull) {
+  std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
+      scoped_composite_clip_path_animation =
+          std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
+  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
+      scoped_composite_background_color_animation =
+          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
+  ScopedClipPathPaintImageGenerator clip_image_generator(
+      GetDocument().GetFrame());
+  ScopedBackgroundColorPaintImageGenerator background_image_generator(
+      GetDocument().GetFrame());
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        0% {
+          background-color: red;
+          clip-path: circle(50% at 50% 50%);
+        }
+        100% {
+          background-color: green;
+          clip-path: circle(30% at 30% 30%);
+        }
+      }
+      @keyframes clip {
+        0% { clip-path: circle(50% at 50% 50%); }
+        100% { clip-path: circle(30% at 30% 30%); }
+      }
+      #target {
+        width: 100px;
+        height: 100px;
+        animation: clip 1s linear, anim 1s linear;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  // The clip animation being lower in composite order can't be composited.
+  // The multi-property animation also can't be composited.
+  // This test is currently failing, possible that understanding is wrong.
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  EXPECT_EQ(2U, target->GetElementAnimations()->Animations().size());
+  HeapVector<Member<Animation>> animations = target->getAnimations();
+  EXPECT_EQ(CompositorAnimations::kTargetHasIncompatibleAnimations,
+            animations[0]->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_FALSE(animations[0]->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty |
+                CompositorAnimations::kTargetHasIncompatibleAnimations,
+            animations[1]->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_FALSE(animations[1]->HasActiveAnimationsOnCompositor());
+
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
+            target->GetElementAnimations()->CompositedClipPathStatus());
+
+  // Clear the effect of the multi-property animation. Now we only have a
+  // single compositable animation on the target.
+  Animation* animation =
+      GetAnimation(target, PropertyHandle(GetCSSPropertyBackgroundColor()));
+  ASSERT_TRUE(animation);
+  animation->setEffect(nullptr);
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1U, target->GetElementAnimations()->Animations().size());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  animation = GetAnimation(target, PropertyHandle(GetCSSPropertyClipPath()));
+  ASSERT_TRUE(animation);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
+            target->GetElementAnimations()->CompositedClipPathStatus());
+}
+
 TEST_P(AnimationCompositorAnimationsTest, StaticNonCompositableProperty) {
   ClearUseCounters();
   SetBodyInnerHTML(R"HTML(

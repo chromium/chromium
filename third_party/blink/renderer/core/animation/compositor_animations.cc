@@ -73,15 +73,13 @@ namespace blink {
 
 namespace {
 
-constexpr auto kCompositableProperties = std::to_array<CSSPropertyID>({
-    CSSPropertyID::kBackdropFilter,
-    CSSPropertyID::kFilter,
-    CSSPropertyID::kOpacity,
-    CSSPropertyID::kRotate,
-    CSSPropertyID::kScale,
-    CSSPropertyID::kTransform,
-    CSSPropertyID::kTranslate,
-});
+constexpr auto kCompositableProperties = std::to_array<CSSPropertyID>(
+    {CSSPropertyID::kBackdropFilter, CSSPropertyID::kFilter,
+     CSSPropertyID::kOpacity, CSSPropertyID::kRotate, CSSPropertyID::kScale,
+     CSSPropertyID::kTransform, CSSPropertyID::kTranslate,
+     // The following are native paint worklet properties and compositor support
+     // hinges on having a corresponding paint image generator.
+     CSSPropertyID::kBackgroundColor, CSSPropertyID::kClipPath});
 
 bool ConsiderAnimationAsIncompatible(const Animation& animation,
                                      const Animation& animation_to_add,
