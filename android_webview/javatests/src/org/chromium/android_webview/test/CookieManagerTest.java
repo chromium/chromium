@@ -1543,6 +1543,91 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    public void testAutoStorageAccessNetCookies() throws Throwable {
+        TestWebServer webServer = TestWebServer.start();
+        webServer.setResponse(
+                "/.well-known/assetlinks.json",
+                String.format(
+                        ASSET_STATEMENT_TEMPLATE,
+                        BuildInfo.getInstance().hostPackageName,
+                        BuildInfo.getInstance().getHostSigningCertSha256()),
+                null);
+
+        // This test suite relies on an image to force a network request that has cookies attached.
+        // The AwParameterizedTest will disable this setting so force enabling it again so that
+        // we can still test the rest of the parameterized test settings.
+        mAwContents.getSettings().setImagesEnabled(true);
+
+        try {
+            // We want to wait for the page to first have access
+            // to SAA and make a net request before we check for anything
+            // so we will add this API to let us know when the test
+            // has tried the net request.
+            var pageLoadFuture = SettableFuture.create();
+            AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                    mAwContents,
+                    new Object() {
+                        @JavascriptInterface
+                        public void done() {
+                            pageLoadFuture.set(null);
+                        }
+                    },
+                    "pageLoader");
+
+            // This iframe will request SAA, then try set a cookie, and then
+            // finally initiate a network request where we should see the 3PC
+            // attached.
+            // We listen for the onerror event on the image because we are making
+            // a request to a resource that doesn't actually exist, all we care about
+            // is the outgoing request.
+            String iframeWithNetRequest =
+                    """
+                    <html>
+                    <body>
+                    <img>
+                    <script>
+
+                    document.requestStorageAccess().then(() => {
+                        const image = document.querySelector("img");
+                        document.cookie = "foo=bar;";
+                        image.onerror = () => {
+                            pageLoader.done();
+                        };
+                        image.src = "/path_to_intercept";
+                    });
+                    </script>
+                    </body>
+                    </html>
+                    """;
+            String iframeUrl =
+                    toThirdPartyUrl(webServer.setResponse("/", iframeWithNetRequest, null));
+            // We don't need this to do anything fancy, we just need the path to exist
+            webServer.setResponse("/path_to_intercept", "hello", null);
+
+            String url = makeIframeUrl(webServer, "/parent.html", iframeUrl);
+
+            allowFirstPartyCookies();
+            blockThirdPartyCookies(mAwContents);
+
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+            AwActivityTestRule.waitForFuture(pageLoadFuture);
+
+            Assert.assertEquals(
+                    "Cookies should have been attached to the request after receiving storage"
+                            + " access.",
+                    "foo=bar",
+                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
     @CommandLineFlags.Add("disable-partitioned-cookies")
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
     public void testDisabledPartitionedJSCookies() throws Throwable {
