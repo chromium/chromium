@@ -199,6 +199,8 @@ blink_core_sources_layout = [
   "grid/grid_subtree.h",
   "grid/grid_track_collection.cc",
   "grid/grid_track_collection.h",
+  "grid/grid_track_sizing_algorithm.cc",
+  "grid/grid_track_sizing_algorithm.h",
   "grid/layout_grid.cc",
   "grid/layout_grid.h",
   "grid/subgrid_min_max_sizes_cache.h",
