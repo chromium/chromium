@@ -58,7 +58,11 @@ export function getHtml(this: ComparisonTableListElement) {
         <cr-action-menu>
           <button id="menuOpenAll" class="dropdown-item"
               @click="${this.onOpenAllClick_}">
-            ${this.getOpenAllString_(this.numSelected_)}
+          ${this.getOpenAllString_(this.numSelected_)}
+          </button>
+          <button id="menuOpenAllInNewWindow" class="dropdown-item"
+              @click="${this.onOpenAllInNewWindowClick_}">
+            ${this.getOpenAllInNewWindowString_(this.numSelected_)}
           </button>
           <hr>
           <button id="menuDelete" class="dropdown-item"

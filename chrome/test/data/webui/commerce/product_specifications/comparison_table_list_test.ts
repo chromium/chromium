@@ -10,7 +10,8 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {ComparisonTableListElement} from 'chrome://compare/comparison_table_list.js';
 import type {ComparisonTableListItemElement} from 'chrome://compare/comparison_table_list_item.js';
-import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {ShowSetDisposition} from 'chrome://compare/product_specifications.mojom-webui.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -157,19 +158,32 @@ suite('ComparisonTableListTest', () => {
         await openAllFinishedPromise;
 
         assertEquals(
-            2,
+            1,
             productSpecsProxy.getCallCount(
-                'showProductSpecificationsSetForUuid'));
-        const firstCallArgs =
-            productSpecsProxy.getArgs('showProductSpecificationsSetForUuid')[0];
-        const secondCallArgs =
-            productSpecsProxy.getArgs('showProductSpecificationsSetForUuid')[1];
-        assertEquals(TABLES[0]!.uuid, firstCallArgs[0]);
+                'showProductSpecificationsSetsForUuids'));
+        const args = productSpecsProxy.getArgs(
+            'showProductSpecificationsSetsForUuids')[0];
+        assertArrayEquals([TABLES[0]!.uuid, TABLES[1]!.uuid], args[0]);
+        assertEquals(ShowSetDisposition.kInNewTabs, args[1]);
+      });
+
+      test('can open multiple comparison tables in a new window', async () => {
+        const openAllInNewWindowFinishedPromise = eventToPromise(
+            'open-all-in-new-window-finished-for-testing', listElement);
+        const openAllInNewWindowButton =
+            menu.querySelector<HTMLButtonElement>('#menuOpenAllInNewWindow');
+        assertTrue(!!openAllInNewWindowButton);
+        openAllInNewWindowButton.click();
+        await openAllInNewWindowFinishedPromise;
+
         assertEquals(
-            /*inNewTab=*/ true, firstCallArgs[1]);
-        assertEquals(TABLES[1]!.uuid, secondCallArgs[0]);
-        assertEquals(
-            /*inNewTab=*/ true, secondCallArgs[1]);
+            1,
+            productSpecsProxy.getCallCount(
+                'showProductSpecificationsSetsForUuids'));
+        const args = productSpecsProxy.getArgs(
+            'showProductSpecificationsSetsForUuids')[0];
+        assertArrayEquals([TABLES[0]!.uuid, TABLES[1]!.uuid], args[0]);
+        assertEquals(ShowSetDisposition.kInNewWindow, args[1]);
       });
 
       test('can delete multiple comparison tables', async () => {

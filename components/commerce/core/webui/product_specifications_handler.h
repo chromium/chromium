@@ -41,6 +41,14 @@ class ProductSpecificationsHandler
     virtual void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                                      bool in_new_tab) = 0;
 
+    // Show the product specifications sets for the given UUIDs. The disposition
+    // indicates how the sets should be opened (i.e. in new tabs or in a new
+    // window).
+    virtual void ShowProductSpecificationsSetsForUuids(
+        const std::vector<base::Uuid>& uuids,
+        const product_specifications::mojom::ShowSetDisposition
+            disposition) = 0;
+
     // Show the sync setup flow for Compare.
     virtual void ShowSyncSetupFlow() = 0;
 
@@ -72,6 +80,10 @@ class ProductSpecificationsHandler
   void ShowSyncSetupFlow() override;
   void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                            bool in_new_tab) override;
+  void ShowProductSpecificationsSetsForUuids(
+      const std::vector<base::Uuid>& uuids,
+      const product_specifications::mojom::ShowSetDisposition disposition)
+      override;
   void ShowComparePage(bool in_new_tab) override;
   void GetPageTitleFromHistory(
       const GURL& url,

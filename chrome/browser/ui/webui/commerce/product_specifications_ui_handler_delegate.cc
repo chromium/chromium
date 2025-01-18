@@ -42,26 +42,67 @@ void ProductSpecificationsUIHandlerDelegate::ShowDisclosureDialog(
 void ProductSpecificationsUIHandlerDelegate::
     ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                         bool in_new_tab) {
-  const GURL product_spec_url = commerce::GetProductSpecsTabUrlForID(uuid);
   auto* browser =
       chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui_));
   if (!browser) {
     return;
   }
+
   if (in_new_tab) {
-    content::OpenURLParams params(product_spec_url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  ui::PAGE_TRANSITION_LINK, false);
-    browser->OpenURL(params, /*navigation_handle_callback=*/{});
-  } else {
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (!web_contents) {
-      return;
+    OpenProductSpecificationsSetForUuidInBrowser(
+        uuid, *browser, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    return;
+  }
+
+  const GURL product_spec_url = commerce::GetProductSpecsTabUrlForID(uuid);
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+  web_contents->GetController().LoadURL(product_spec_url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                        /*extra_headers=*/std::string());
+}
+
+void ProductSpecificationsUIHandlerDelegate::
+    ShowProductSpecificationsSetsForUuids(
+        const std::vector<base::Uuid>& uuids,
+        const product_specifications::mojom::ShowSetDisposition disposition) {
+  if (uuids.empty()) {
+    return;
+  }
+
+  auto* browser =
+      chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui_));
+  if (!browser) {
+    return;
+  }
+
+  if (disposition ==
+      product_specifications::mojom::ShowSetDisposition::kInNewTabs) {
+    for (const auto& uuid : uuids) {
+      OpenProductSpecificationsSetForUuidInBrowser(
+          uuid, *browser, WindowOpenDisposition::NEW_BACKGROUND_TAB);
     }
-    web_contents->GetController().LoadURL(product_spec_url, content::Referrer(),
-                                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                          /*extra_headers=*/std::string());
+  }
+
+  if (disposition ==
+      product_specifications::mojom::ShowSetDisposition::kInNewWindow) {
+    auto tab_disposition = WindowOpenDisposition::NEW_WINDOW;
+    for (const auto& uuid : uuids) {
+      const auto* web_contents = OpenProductSpecificationsSetForUuidInBrowser(
+          uuid, *browser, tab_disposition);
+
+      // Open the rest of the tabs in the same window.
+      browser = chrome::FindBrowserWithTab(web_contents);
+      if (!browser) {
+        LOG(ERROR) << "Failed to open product specifications sets in the same "
+                      "new window.";
+        return;
+      }
+      tab_disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    }
   }
 }
 
@@ -97,6 +138,17 @@ void ProductSpecificationsUIHandlerDelegate::ShowSyncSetupFlow() {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       Profile::FromWebUI(web_ui_), account_info,
       signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS);
+}
+
+content::WebContents* ProductSpecificationsUIHandlerDelegate::
+    OpenProductSpecificationsSetForUuidInBrowser(
+        const base::Uuid& uuid,
+        Browser& browser,
+        const WindowOpenDisposition& disposition) {
+  const GURL product_spec_url = commerce::GetProductSpecsTabUrlForID(uuid);
+  content::OpenURLParams params(product_spec_url, content::Referrer(),
+                                disposition, ui::PAGE_TRANSITION_LINK, false);
+  return browser.OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 }  // namespace commerce
