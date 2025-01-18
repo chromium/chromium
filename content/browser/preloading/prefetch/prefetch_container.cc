@@ -1199,9 +1199,7 @@ bool PrefetchContainer::IsStreamingURLLoaderDeletionScheduledForTesting()
 
 const PrefetchResponseReader* PrefetchContainer::GetNonRedirectResponseReader()
     const {
-  if (redirect_chain_.empty()) {
-    return nullptr;
-  }
+  CHECK(!redirect_chain_.empty());
   if (!redirect_chain_.back()->response_reader_->GetHead()) {
     // Either the last PrefetchResponseReader is for a redirect response, or for
     // a final response not yet receiving its header.
@@ -1486,11 +1484,11 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
   }
 
   DVLOG(1) << *this << "(GetServableState)"
-           << "(streaming_loader=" << streaming_loader_.get() << ")"
-           << "(redirect_chain.empty=" << redirect_chain_.empty() << ")";
+           << "(streaming_loader=" << streaming_loader_.get()
+           << ", LoadState=" << load_state_ << ")";
   // Can only block until head if the request has been started using a
   // streaming URL loader and head/failure/redirect hasn't been received yet.
-  if (streaming_loader_ && !redirect_chain_.empty() &&
+  if (streaming_loader_ &&
       redirect_chain_.back()->response_reader_->IsWaitingForResponse()) {
     return ServableState::kShouldBlockUntilHeadReceived;
   }
