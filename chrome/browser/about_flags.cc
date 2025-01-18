@@ -2627,12 +2627,10 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_Pixel[] = {
-        {segmentation_platform::features::kMaxAuxiliarySearchForceShow.name,
-         "true"}};
+        {"force_card_shown", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_NonPixel[] = {
-        {segmentation_platform::features::kMaxAuxiliarySearchForceShow.name,
-         "true"},
+        {"force_card_shown", "true"},
         {"show_third_party_card", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
@@ -6272,7 +6270,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationModuleName,
      flag_descriptions::kAndroidAppIntegrationModuleDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kAndroidAppIntegrationModule,
+         chrome::android::kAndroidAppIntegrationModule,
          kAndroidAppIntegrationModuleVariations,
          "AndroidAppIntegrationModule")},
 
