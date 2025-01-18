@@ -16,7 +16,7 @@ targets without `chromium_code = false`.
 [Chromium's NullAway configuration] is as follows:
 * [JSpecify mode] is enabled.
    * `@Nullable` is `TYPE_USE`.
-   * Non-annotated means non-null for fields, parameters, and return types.
+   * Non-annotated means non-null (no need for `@NonNull`).
    * Nullness of local variables is inferred.
 * Copies of [supported annotations] exist under
   `org.chromium.build.annotations`.
