@@ -384,6 +384,7 @@ src/webgpu/compat/api/validation/texture/cubeArray.spec.ts
 src/webgpu/idl/idl_test.ts
 src/webgpu/idl/constructable.spec.ts
 src/webgpu/idl/exposed.html.ts
+src/webgpu/idl/javascript.spec.ts
 src/webgpu/idl/constants/flags.spec.ts
 src/webgpu/shader/values.ts
 src/webgpu/shader/execution/float_parse.spec.ts
