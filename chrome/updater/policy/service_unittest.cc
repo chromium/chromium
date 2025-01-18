@@ -925,7 +925,7 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
 
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetMachineManaged(true)
-                  .SetGroupPolicies(dict_policies)
+                  .SetDictPolicies(dict_policies)
                   .Overwrite());
 
   base::Value::Dict policies;
@@ -1017,7 +1017,7 @@ TEST_F(PolicyManagersTest,
 
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetMachineManaged(true)
-                  .SetGroupPolicies(dict_policies)
+                  .SetDictPolicies(dict_policies)
                   .Overwrite());
 
   base::Value::Dict policies;

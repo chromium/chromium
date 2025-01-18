@@ -164,8 +164,8 @@ void EnterTestMode(const GURL& update_url,
 // JSON file.
 void ExitTestMode(UpdaterScope scope);
 
-// Sets the external constants for group policies.
-void SetGroupPolicies(const base::Value::Dict& values);
+// Sets the dict policies that are surfaced via external constants.
+void SetDictPolicies(const base::Value::Dict& values);
 
 // Sets platform policies. Platform policy is group policy on Windows, and
 // Managed Preferences on macOS.

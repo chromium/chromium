@@ -42,7 +42,7 @@ TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
 
   EXPECT_EQ(overrider->InitialDelay(), kInitialDelay);
   EXPECT_EQ(overrider->ServerKeepAliveTime(), kServerKeepAliveTime);
-  EXPECT_EQ(overrider->GroupPolicies().size(), 0U);
+  EXPECT_EQ(overrider->DictPolicies().size(), 0U);
   EXPECT_FALSE(overrider->EnableDiffUpdates());
   EXPECT_EQ(overrider->CecaConnectionTimeout(), kCecaConnectionTimeout);
 }
@@ -52,9 +52,9 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   base::Value::List url_list;
   url_list.Append("https://www.example.com");
   url_list.Append("https://www.google.com");
-  base::Value::Dict group_policies;
-  group_policies.Set("a", 1);
-  group_policies.Set("b", 2);
+  base::Value::Dict dict_policies;
+  dict_policies.Set("a", 1);
+  dict_policies.Set("b", 2);
 
   overrides.Set(kDevOverrideKeyUseCUP, false);
   overrides.Set(kDevOverrideKeyUrl, std::move(url_list));
@@ -63,7 +63,7 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   overrides.Set(kDevOverrideKeyAppLogoUrl, "https://applogo.google.com/");
   overrides.Set(kDevOverrideKeyInitialDelay, 137.1);
   overrides.Set(kDevOverrideKeyServerKeepAliveSeconds, 1);
-  overrides.Set(kDevOverrideKeyGroupPolicies, std::move(group_policies));
+  overrides.Set(kDevOverrideKeyDictPolicies, std::move(dict_policies));
   overrides.Set(kDevOverrideKeyOverinstallTimeout, 3);
   overrides.Set(kDevOverrideKeyIdleCheckPeriodSeconds, 4);
   overrides.Set(kDevOverrideKeyEnableDiffUpdates, true);
@@ -89,7 +89,7 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
 
   EXPECT_EQ(overrider->InitialDelay(), base::Seconds(137.1));
   EXPECT_EQ(overrider->ServerKeepAliveTime(), base::Seconds(1));
-  EXPECT_EQ(overrider->GroupPolicies().size(), 2U);
+  EXPECT_EQ(overrider->DictPolicies().size(), 2U);
   EXPECT_EQ(overrider->OverinstallTimeout(), base::Seconds(3));
   EXPECT_EQ(overrider->IdleCheckPeriod(), base::Seconds(4));
   EXPECT_TRUE(overrider->EnableDiffUpdates());
@@ -111,7 +111,7 @@ TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
   EXPECT_TRUE(overrider->UseCUP());
   EXPECT_EQ(overrider->InitialDelay(), kInitialDelay);
   EXPECT_EQ(overrider->ServerKeepAliveTime(), kServerKeepAliveTime);
-  EXPECT_EQ(overrider->GroupPolicies().size(), 0U);
+  EXPECT_EQ(overrider->DictPolicies().size(), 0U);
   EXPECT_EQ(overrider->CecaConnectionTimeout(), kCecaConnectionTimeout);
 }
 

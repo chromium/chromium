@@ -58,8 +58,8 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // CRX format verification requirements.
   virtual crx_file::VerifierFormat CrxVerifierFormat() const = 0;
 
-  // Overrides for the `GroupPolicyManager`.
-  virtual base::Value::Dict GroupPolicies() const = 0;
+  // Policies for the `PolicyManager` surfaced by external constants.
+  virtual base::Value::Dict DictPolicies() const = 0;
 
   // Overrides the overinstall timeout.
   virtual base::TimeDelta OverinstallTimeout() const = 0;

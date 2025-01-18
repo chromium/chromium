@@ -103,8 +103,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
-  void SetGroupPolicies(const base::Value::Dict& values) const override {
-    updater::test::SetGroupPolicies(values);
+  void SetDictPolicies(const base::Value::Dict& values) const override {
+    updater::test::SetDictPolicies(values);
   }
 
   void SetPlatformPolicies(const base::Value::Dict& values) const override {

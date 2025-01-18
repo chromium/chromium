@@ -350,8 +350,8 @@ class IntegrationTest : public ::testing::Test {
 
   void ExitTestMode() { test_commands_->ExitTestMode(); }
 
-  void SetGroupPolicies(const base::Value::Dict& values) {
-    test_commands_->SetGroupPolicies(values);
+  void SetDictPolicies(const base::Value::Dict& values) {
+    test_commands_->SetDictPolicies(values);
   }
 
   void SetPlatformPolicies(const base::Value::Dict& values) {
@@ -1476,11 +1476,11 @@ TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecently) {
 
 TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecentlyPolicy) {
   ScopedServer test_server(test_commands_);
-  base::Value::Dict group_policies;
-  group_policies.Set("autoupdatecheckperiodminutes", 60 * 18);
+  base::Value::Dict dict_policies;
+  dict_policies.Set("autoupdatecheckperiodminutes", 60 * 18);
   ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Hours(12)));
   ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
@@ -1491,12 +1491,12 @@ TEST_F(IntegrationTest, NoCheckWhenSuppressed) {
   ScopedServer test_server(test_commands_);
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
-  base::Value::Dict group_policies;
-  group_policies.Set("updatessuppressedstarthour", (now.hour - 1 + 24) % 24);
-  group_policies.Set("updatessuppressedstartmin", 0);
-  group_policies.Set("updatessuppresseddurationmin", 120);
+  base::Value::Dict dict_policies;
+  dict_policies.Set("updatessuppressedstarthour", (now.hour - 1 + 24) % 24);
+  dict_policies.Set("updatessuppressedstartmin", 0);
+  dict_policies.Set("updatessuppresseddurationmin", 120);
   ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
@@ -4188,12 +4188,11 @@ TEST_F(IntegrationTest, ForceInstallApp) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
 
-  base::Value::Dict group_policies;
-  group_policies.Set("installtest1",
-                     IsSystemInstall(GetUpdaterScopeForTesting())
-                         ? kPolicyForceInstallMachine
-                         : kPolicyForceInstallUser);
-  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  base::Value::Dict dict_policies;
+  dict_policies.Set("installtest1", IsSystemInstall(GetUpdaterScopeForTesting())
+                                        ? kPolicyForceInstallMachine
+                                        : kPolicyForceInstallUser);
+  ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
 
   ExpectUpdateCheckRequest(&test_server);
 
@@ -4729,9 +4728,9 @@ TEST_P(IntegrationLegacyUpdate3WebTest, NoUpdate) {
 
 TEST_P(IntegrationLegacyUpdate3WebTest, DisabledPolicyManual) {
   ASSERT_TRUE(WaitForUpdaterExit());
-  base::Value::Dict group_policies;
-  group_policies.Set("updatetest1", kPolicyAutomaticUpdatesOnly);
-  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  base::Value::Dict dict_policies;
+  dict_policies.Set("updatetest1", kPolicyAutomaticUpdatesOnly);
+  ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
       kAppId, AppBundleWebCreateMode::kCreateInstalledApp, STATE_ERROR,
       GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL));
@@ -4739,9 +4738,9 @@ TEST_P(IntegrationLegacyUpdate3WebTest, DisabledPolicyManual) {
 
 TEST_P(IntegrationLegacyUpdate3WebTest, DisabledPolicy) {
   ASSERT_TRUE(WaitForUpdaterExit());
-  base::Value::Dict group_policies;
-  group_policies.Set("updatetest1", kPolicyDisabled);
-  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  base::Value::Dict dict_policies;
+  dict_policies.Set("updatetest1", kPolicyDisabled);
+  ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
   ExpectLegacyUpdate3WebSucceeds(
       kAppId, AppBundleWebCreateMode::kCreateInstalledApp, STATE_ERROR,
       GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);

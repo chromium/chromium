@@ -301,7 +301,7 @@ void AppTestHelper::FirstTaskRun() {
                                    WithSwitch("update_url",
                                               Wrap(&EnterTestMode))))))))},
           {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
-          {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
+          {"set_dict_policies", WithSwitch("values", Wrap(&SetDictPolicies))},
           {"set_platform_policies",
            WithSwitch("values", Wrap(&SetPlatformPolicies))},
           {"set_machine_managed",
