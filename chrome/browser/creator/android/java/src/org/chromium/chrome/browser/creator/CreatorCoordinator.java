@@ -396,10 +396,7 @@ public class CreatorCoordinator
     private void initBottomSheet() {
         mScrim =
                 new ScrimCoordinator(
-                        mActivity,
-                        /* systemUiScrimDelegate= */ null,
-                        mCreatorViewGroup,
-                        mActivity.getColor(R.color.default_scrim_color));
+                        mActivity, /* systemUiScrimDelegate= */ null, mCreatorViewGroup);
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);

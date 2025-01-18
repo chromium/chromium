@@ -922,11 +922,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         controller.setNavigationBarScrimFraction(scrimFraction);
                     }
                 };
-        return new ScrimCoordinator(
-                mActivity,
-                delegate,
-                mCoordinator,
-                mCoordinator.getContext().getColor(R.color.default_scrim_color));
+        return new ScrimCoordinator(mActivity, delegate, mCoordinator);
     }
 
     // Package Private class methods

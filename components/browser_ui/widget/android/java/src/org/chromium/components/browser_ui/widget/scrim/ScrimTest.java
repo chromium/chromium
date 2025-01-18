@@ -128,8 +128,7 @@ public class ScrimTest {
                     mAnchorView = new View(sActivity);
                     sParent.addView(mAnchorView);
 
-                    mScrimCoordinator =
-                            new ScrimCoordinator(sActivity, mScrimDelegate, sParent, Color.RED);
+                    mScrimCoordinator = new ScrimCoordinator(sActivity, mScrimDelegate, sParent);
 
                     mDelegatedEventHelper = new CallbackHelper();
                     mCustomGestureDetector =

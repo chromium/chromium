@@ -10,9 +10,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -85,6 +87,8 @@ public class ScrimCoordinator {
     /** The component's mediator for handling animation and model management. */
     private final ScrimMediator mMediator;
 
+    private final @ColorInt int mDefaultScrimColor;
+
     /**
      * A handle to the view to bind models to. This should otherwise remain untouched. Each time
      * {@link #showScrim(PropertyModel)} is called, this view is recreated, so all old state is
@@ -99,13 +103,12 @@ public class ScrimCoordinator {
      * @param context An Android {@link Context} for creating the view.
      * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
      * @param parent The {@link ViewGroup} the scrim should exist in.
-     * @param defaultColor The default color of the scrim.
      */
     public ScrimCoordinator(
             Context context,
             @Nullable SystemUiScrimDelegate systemUiScrimDelegate,
-            ViewGroup parent,
-            @ColorInt int defaultColor) {
+            ViewGroup parent) {
+        mDefaultScrimColor = ContextCompat.getColor(context, R.color.default_scrim_color);
         mMediator =
                 new ScrimMediator(
                         () -> {
@@ -117,9 +120,14 @@ public class ScrimCoordinator {
                         systemUiScrimDelegate);
         mScrimViewBuilder =
                 () -> {
-                    ScrimView view = new ScrimView(context, parent, defaultColor);
+                    ScrimView view = new ScrimView(context, parent, mDefaultScrimColor);
                     return view;
                 };
+    }
+
+    /** Returns the default scrim color, not the currently shown color. */
+    public @ColorInt int getDefaultScrimColor() {
+        return mDefaultScrimColor;
     }
 
     /**

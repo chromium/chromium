@@ -27,7 +27,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.a
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -180,8 +179,7 @@ public class TabGridDialogViewBinderTest {
                         assertNull(mShareButton);
                         assertNull(mImageTilesContainer);
                     }
-                    mScrimCoordinator =
-                            new ScrimCoordinator(sActivity, null, parentView, Color.RED);
+                    mScrimCoordinator = new ScrimCoordinator(sActivity, null, parentView);
                     mTabGridDialogView.setupScrimCoordinator(mScrimCoordinator);
 
                     mModel =

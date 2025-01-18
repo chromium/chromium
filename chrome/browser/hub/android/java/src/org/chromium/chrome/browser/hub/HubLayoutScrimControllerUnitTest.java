@@ -13,7 +13,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -73,8 +72,7 @@ public class HubLayoutScrimControllerUnitTest {
         mAnchorView = new View(mActivity);
         rootView.addView(mAnchorView);
 
-        mScrimCoordinator =
-                spy(new ScrimCoordinator(mActivity, mScrimDelegate, rootView, Color.RED));
+        mScrimCoordinator = spy(new ScrimCoordinator(mActivity, mScrimDelegate, rootView));
 
         mIsIncognitoSupplier = new ObservableSupplierImpl<>(false);
 
