@@ -360,6 +360,11 @@ void OnDeviceExecution::OnRawOutputSafetyResult(
     return;
   }
   if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
+    if (opts_.safety_checker->safety_cfg()
+            .OnlyCancelUnsafeResponseOnComplete() &&
+        completeness != ResponseCompleteness::kComplete) {
+      return;
+    }
     if (histogram_logger_) {
       histogram_logger_->set_result(Result::kUsedOnDeviceOutputUnsafe);
     }
@@ -439,6 +444,11 @@ void OnDeviceExecution::OnResponseSafetyResult(
     AddModelExecutionLogs(std::move(safety_result.logs));
   }
   if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
+    if (opts_.safety_checker->safety_cfg()
+            .OnlyCancelUnsafeResponseOnComplete() &&
+        completeness != ResponseCompleteness::kComplete) {
+      return;
+    }
     if (histogram_logger_) {
       histogram_logger_->set_result(Result::kUsedOnDeviceOutputUnsafe);
     }

@@ -89,6 +89,10 @@ class SafetyConfig final {
       ResponseCompleteness completeness,
       const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
+  // Whether this config waits until a unsafe response is complete before
+  // canceling.
+  bool OnlyCancelUnsafeResponseOnComplete() const;
+
  private:
   // Whether the text is in a language not supported by the safety classifier,
   // or the language could not be detected despite the classifier requiring one
