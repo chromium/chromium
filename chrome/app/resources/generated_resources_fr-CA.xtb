@@ -524,6 +524,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="135389172849514421">Fonctionne hors ligne</translation>
 <translation id="1353980523955420967">Impossible de trouver le PPD. Vérifiez que votre Chromebook est en ligne, puis réessayez.</translation>
 <translation id="1354045473509304750">Continuer d'autoriser <ph name="HOST" /> à utiliser et à déplacer votre caméra</translation>
+<translation id="1354148503392558902">Modification du mot de passe en cours…</translation>
 <translation id="1355088139103479645">Supprimer toutes les données?</translation>
 <translation id="1356376170199999104">Autorisé – <ph name="PERMISSION_DETAILS" />. Activez le microphone à l'aide d'un interrupteur physique.</translation>
 <translation id="1356959069439783953">Les onglets inactifs ont une nouvelle apparence</translation>
@@ -1095,6 +1096,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1751335846119670066">Aide à la lecture</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="175196451752279553">&amp;Rouvrir l'onglet fermé</translation>
+<translation id="1752557850776261983">Vérification de la connexion en cours…</translation>
 <translation id="1753067873202720523">Votre Chromebook risque de ne pas se charger lorsqu'il est allumé.</translation>
 <translation id="1753557900380512635">Intérieurs</translation>
 <translation id="1753905327828125965">Les plus visités</translation>
@@ -1923,6 +1925,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2323018538045954000">Réseaux Wi-Fi enregistrés</translation>
 <translation id="2325444234681128157">Mémoriser le mot de passe</translation>
 <translation id="2326188115274135041">Entrez de nouveau votre NIP pour activer le déverrouillage automatique</translation>
+<translation id="2326583548923775947">Ceci n'est pas un compte Google. Les éléments que vous enregistrez sur Chrome ne seront pas accessibles sur d'autres appareils.</translation>
 <translation id="2326906096734221931">Ouvrir les paramètres de l'application</translation>
 <translation id="2326931316514688470">Actua&amp;liser l'application</translation>
 <translation id="2327492829706409234">Activer l'application</translation>
@@ -2372,6 +2375,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2638662041295312666">Image de connexion</translation>
 <translation id="2640299212685523844">Utiliser GTK</translation>
 <translation id="264083724974021997">Connexion à votre téléphone : boîte de dialogue</translation>
+<translation id="2641098199809442625">Votre mot de passe n'a pas été mis à jour, mais vous devriez toujours pouvoir accéder au site avec votre ancien mot de passe.</translation>
 <translation id="2642111877055905627">Ballon de soccer</translation>
 <translation id="2642206811783203764">Toujours sur <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Vous pouvez toujours supprimer les données de la mesure des annonces en supprimant vos données de navigation</translation>

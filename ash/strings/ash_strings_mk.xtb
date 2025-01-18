@@ -1265,6 +1265,7 @@
 <translation id="5245201184978705914">Не може да се генерира транскрипција</translation>
 <translation id="5251174953851719648">Освежи ги содржините</translation>
 <translation id="5253783950165989294">Поврзано со уред именуван „<ph name="DEVICE_NAME" />“, <ph name="BATTERY_PERCENTAGE" /> % батерија</translation>
+<translation id="5256939106029293271">Тестирајте го микрофонот</translation>
 <translation id="5258528442992323769">Нема зачувани работни површини</translation>
 <translation id="5260676007519551770">Биро 4</translation>
 <translation id="5265391159779542051">Резултатите се вчитани</translation>
@@ -1422,6 +1423,7 @@
 <translation id="5745612484876805746">„Ноќното светло“ се вклучува автоматски на зајдисонце</translation>
 <translation id="5750765938512549687">Bluetooth е исклучен</translation>
 <translation id="5758114525425072423">Стартувај го „Режимот за концентрација“ Тајмерот е поставен на <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Слушнете како ќе им звучите на другите. За да сопрете, кликнете ја иконата за тестирање или затворете ја таблата на видеоповикот.</translation>
 <translation id="5760866832697883462">Поврзете: <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Вклучете/исклучете го означувачот. <ph name="STATE_TEXT" /> Користете ги подлогата на допир, допирниот екран или пенкалото за да цртате на екранот.</translation>
 <translation id="576341972084747908">Преземате опасна датотека <ph name="FILENAME" /></translation>

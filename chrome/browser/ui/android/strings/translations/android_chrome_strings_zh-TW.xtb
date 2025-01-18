@@ -152,7 +152,6 @@
 <translation id="164269334534774161">您目前瀏覽的是這個網頁的離線複本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1645262572857218659">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶登入</translation>
-<translation id="1670399744444387456">基本</translation>
 <translation id="1671236975893690980">正在等候下載…</translation>
 <translation id="1672586136351118594">不要再顯示</translation>
 <translation id="1680919990519905526">選購 Google 智慧鏡頭拍攝的產品<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{已在 1 天前檢查}other{已在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2854916915045135148">按住即可切換到無痕模式</translation>
-<translation id="2855243985454069333">從所有已同步裝置上刪除歷史記錄</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
 <translation id="2861923151411510142">系統將不再提供部分 Chrome 功能</translation>
 <translation id="2869430948265924908">為保護車上的私密內容，請建立汽車設定檔鎖定方式。你可以設定 PIN 碼或密碼。</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3211426585530211793">已刪除「<ph name="ITEM_TITLE" />」</translation>
-<translation id="3214996641768123781">在你登入後，<ph name="BEGIN_LINK1" />搜尋記錄<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活動<ph name="END_LINK2" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="3220943972464248773">如要同步處理密碼，請驗證你的身分</translation>
 <translation id="3232293466644486101">刪除瀏覽資料…</translation>
 <translation id="3232754137068452469">網頁應用程式</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">移至…</translation>
 <translation id="4405636711880428279">要移除虛擬卡片嗎？</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> 和另外 <ph name="TAB_COUNT" /> 個分頁</translation>
-<translation id="4409271659088619928">你的搜尋引擎是 <ph name="DSE" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="4414179633735763985">已刪除 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">管理你的 Google 帳戶</translation>
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，你會收到通知。</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">連結的裝置</translation>
 <translation id="4822710610088666676">已關閉並儲存「<ph name="TAB_GROUP_TITLE" />」分頁群組</translation>
 <translation id="4826163340425232009">登入底部功能表。</translation>
-<translation id="4834007576107377210">同時建議你查看搜尋引擎的操作說明 (如果有的話)，瞭解如何刪除搜尋記錄</translation>
 <translation id="4834250788637067901">儲存在 Google Pay 的付款方式、優惠和地址資訊</translation>
 <translation id="4835385943915508971">Chrome 無法存取要求的資源。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{將含有 <ph name="TAB_COUNT_ONE" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}other{將含有 <ph name="TAB_COUNT_MANY" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁 - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> 個分頁 - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="504456571576643789">注意事項</translation>
-<translation id="5054455334322721892">在你登入後，<ph name="BEGIN_LINK1" />其他形式的活動<ph name="END_LINK1" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="506254248375231072">沒有任何分頁</translation>
 <translation id="5062960805900435602">已關閉密碼合併相關更新</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
@@ -1423,7 +1417,6 @@
 <translation id="7431991332293347422">控管 Google 如何使用瀏覽記錄，提供個人化的搜尋服務和其他內容</translation>
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
-<translation id="7453467225369441013">大多數網站都會將你登出，但系統並不會將你登出 Google 帳戶。</translation>
 <translation id="7453810262525006706">收合至側邊面板</translation>
 <translation id="7454641608352164238">空間不足</translation>
 <translation id="7454744349230173024">貴機構已關閉儲存密碼的功能</translation>
@@ -1442,7 +1435,6 @@
 <translation id="749294055653435199">這部裝置不支援 Google 智慧鏡頭</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (上次更新時間：<ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">請稍候…</translation>
-<translation id="7502234197872745058">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK1" />登出 Chrome<ph name="END_LINK1" />。</translation>
 <translation id="750228856503700085">無法取得更新</translation>
 <translation id="7507207699631365376">查看這個供應商的<ph name="BEGIN_LINK" />隱私權政策<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">如果保留，之後可以新增分頁；如果不會再使用，可以退出群組</translation>

@@ -5883,11 +5883,6 @@ dışı bırakılmalıdır.
 Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 <translation id="5297948043665200363">Hesabının kimlik doğrulaması geçersiz hale geldikten sonra kullanıcının oturumunun açık kalmasına izin ver</translation>
 <translation id="5298949392804966105">Yönetilen hesaplarda kısıtlama yok</translation>
-<translation id="5300770793658186741">Bu politika ayarlanırsa güvenli olmayan kaynaklarda güvenlik kısıtlamalarının geçerli olmayacağı kaynakların (URL'ler) veya ana makine adı kalıplarının (örneğin, *.example.com) bir listesi belirtilir. Kuruluşlar, TLS dağıtamayan eski uygulamalar için kaynak ayarlayabilir veya dahili web geliştirme için hazırlık sunucusu kurulumu yapabilir. Böylece geliştiriciler hazırlık sunucusunda TLS dağıtmak zorunda kalmadan güvenli içerik gerektiren özellikleri test edebilir. Bu politika, kaynağın adres çubuğunda "Güvenli Değil" olarak etiketlenmesini de önler.
-
-Bu politikada bir URL listesi ayarlamakla, aynı URL'lerin virgülle ayrılmış bir listesine --unsafely-treat-insecure-origin-as-secure komut satırı işaretini ayarlamak aynı sonucu verir. Bu politika ayarlanırsa komut satırı işaretini ve UnsafelyTreatInsecureOriginAsSecure politikasını geçersiz kılar.
-
-Güvenli içerikler hakkında daha fazla bilgi için Secure Contexts sayfasına (https://www.w3.org/TR/secure-contexts) bakabilirsiniz.</translation>
 <translation id="530111809849214840"><ph name="GOOGLE_DRIVE_NAME" /> seçeneği gizle.</translation>
 <translation id="530134925949808452">Kullanım kotasının yerel saatle günün hangi saatinde yenileneceği.</translation>
 <translation id="5303080953475303561">Politikanın ayarlanması, hızlı kilit açma için kilit ekranında ne sıklıkta şifre isteneceğini kontrol eder. Kilit ekranı her görüntülendiğinde, son şifre girişi, seçilen değer tarafından belirtilen zaman aralığından önce yapılmışsa hızlı kilit açma kullanılamaz. Kullanıcı bu süreden daha uzun bir zaman kilit ekranında kalırsa yanlış kod girdiğinde veya kilit ekranına tekrar girdiğinde (hangisi önce olursa) şifre sorulur.

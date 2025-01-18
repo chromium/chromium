@@ -152,7 +152,6 @@
 <translation id="164269334534774161">Դուք դիտում եք տվյալ էջի <ph name="CREATION_TIME" />-ի անցանց պատճենը</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1645262572857218659">Մուտք գործեք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
-<translation id="1670399744444387456">Հիմնական</translation>
 <translation id="1671236975893690980">Պատրաստվում է ներբեռնման…</translation>
 <translation id="1672586136351118594">Այլևս ցույց չտալ</translation>
 <translation id="1680919990519905526">Գնել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ստուգվել է 1 օր առաջ}one{Ստուգվել է # օր առաջ}other{Ստուգվել է # օր առաջ}}</translation>
 <translation id="2842985007712546952">Վերադաս պանակ</translation>
 <translation id="2854916915045135148">Հպեք և պահեք՝ ինկոգնիտո ռեժիմին անցնելու համար</translation>
-<translation id="2855243985454069333">Ջնջել պատմությունը բոլոր համաժամացված սարքերից</translation>
 <translation id="2860954141821109167">Համոզվեք, որ «Հեռախոս» հավելվածը միացված է այս սարքում</translation>
 <translation id="2861923151411510142">Chrome-ի որոշ գործառույթներ այլևս հասանելի չեն լինի</translation>
 <translation id="2869430948265924908">Մեքենայում ձեր զգայուն բովանդակությունը պաշտպանելու համար դուք պետք է ստեղծեք մեքենայի պրոֆիլի կողպում։  Դա կարող եք անել PIN կոդի, ծածկագրի կամ գաղտնաբառի միջոցով։</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="3211426585530211793">Տարրը (<ph name="ITEM_TITLE" />) ջնջվեց</translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Որոնումների պատմությունը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />այլ գործողություններ<ph name="END_LINK2" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։</translation>
 <translation id="3220943972464248773">Ձեր գաղտնաբառերը համաժամացնելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="3232293466644486101">Ջնջել այցելությունների պատմությունը…</translation>
 <translation id="3232754137068452469">Վեբ ծրագիր</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">Տեղափոխել…</translation>
 <translation id="4405636711880428279">Հեռացնե՞լ վիրտուալ քարտը</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ու ևս <ph name="TAB_COUNT" /> ներդիր</translation>
-<translation id="4409271659088619928">Դուք օգտագործում եք <ph name="DSE" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ջնջվեց</translation>
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
 <translation id="4425140285732600465">Դուք հետևում եք այս ապրանքի գնին։ Երբ որևէ կայքում այն իջնի, դուք կստանաք ծանուցում։</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">Կապված սարքեր</translation>
 <translation id="4822710610088666676">«<ph name="TAB_GROUP_TITLE" />» ներդիրների խումբը փակվեց և պահվեց</translation>
 <translation id="4826163340425232009">Հաշիվ մտնելու ներքևի էկրան։</translation>
-<translation id="4834007576107377210">Որոնման պատմությունը ջնջելու համար դիտեք համապատասխան որոնողական համակարգի հրահանգները։</translation>
 <translation id="4834250788637067901">Վճարման եղանակներ, առաջարկներ ու հասցեներ Google Pay-ից</translation>
 <translation id="4835385943915508971">Հարցված ռեսուրսը հասանելի չէ Chrome-ին:</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Վերականգնել <ph name="TAB_COUNT_ONE" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}one{Վերականգնել <ph name="TAB_COUNT_MANY" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}other{Վերականգնել <ph name="TAB_COUNT_MANY" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ներդիր – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ներդիր – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Գաղտնիություն</translation>
 <translation id="504456571576643789">Կարևոր տեղեկություններ</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Այլ գործողություններ<ph name="END_LINK1" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։</translation>
 <translation id="506254248375231072">Ներդիրներ չկան</translation>
 <translation id="5062960805900435602">Գաղտնաբառերի միավորման մասին զգուշացումը փակված է</translation>
 <translation id="5075939510584558547">Պահում առանց գաղտնագրման</translation>
@@ -1423,7 +1417,6 @@
 <translation id="7431991332293347422">Կառավարեք ձեր այցելությունների պատմության օգտագործումը՝ Որոնումը և այլ ծառայություններ անհատականացնելու համար</translation>
 <translation id="7435356471928173109">Անջատվել է ադմինիստրատորի կողմից</translation>
 <translation id="7437998757836447326">Դուրս գալ Chrome-ից</translation>
-<translation id="7453467225369441013">Դուք դուրս կգրվեք կայքերի մեծ մասից, բայց կմնաք Google հաշվում:</translation>
 <translation id="7453810262525006706">Ծալել կողային վահանակը</translation>
 <translation id="7454641608352164238">Բավարար տարածք չկա</translation>
 <translation id="7454744349230173024">Ձեր կազմակերպությունն անջատել է գաղտնաբառերի պահման գործառույթը</translation>
@@ -1442,7 +1435,6 @@
 <translation id="749294055653435199">Google Տեսապակին հասանելի չէ այս սարքում</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Թարմացվել է <ph name="TIME_SINCE_UPDATE" />-ին)</translation>
 <translation id="7498271377022651285">Սպասեք…</translation>
-<translation id="7502234197872745058">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK1" />դուրս եկեք Chrome-ից<ph name="END_LINK1" />։</translation>
 <translation id="750228856503700085">Թարմացումներն անհասանելի են</translation>
 <translation id="7507207699631365376">Տեսնել այս մատակարարի <ph name="BEGIN_LINK" />գաղտնիության քաղաքականությունը<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ լքեք այն, եթե այլևս չեք ուզում օգտվել դրանից</translation>

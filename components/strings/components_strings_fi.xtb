@@ -248,6 +248,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1413809658975081374">Tietosuojavirhe</translation>
 <translation id="1414134146594747368">Esikoulu</translation>
 <translation id="1419305130220238697">Ylläpidä latauksia Chromessa ‑painike, aktivoi ylläpitääksesi Chromessa lataamiasi tiedostoja</translation>
+<translation id="1420345875188552368">Tähän maksuun voidaan käyttää tallennettua automaattista maksutapaa. Voit laittaa sähköiset lompakot pois päältä Chromessa <ph name="BEGIN_LINK1" />maksuasetuksista<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, jotta laiteparin muodostus onnistuu</translation>
 <translation id="14222610277930434">Käyt sivustolla usein</translation>
 <translation id="1422930527989633628">Saa pyytää lupaa löytää lähellä olevat Bluetooth-laitteet</translation>
@@ -387,6 +388,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1652415888492971589">JIS B8 (64 mm x 91 mm)</translation>
 <translation id="1652862280638399816">Jos haluat käyttää Salasanoja macOS-avainnipun kanssa, käynnistä Chromium uudelleen ja salli pääsy avainnippuun. Välilehdet avataan uudelleen uudelleenkäynnistyksen jälkeen.</translation>
 <translation id="1652887625750064647">Paras tekoälyosuma</translation>
+<translation id="1653465303147789530">Valitse <ph name="PAYMENT_METHOD" /> maksutavaksi vaihtamatta sovellusta</translation>
 <translation id="1656024727720460136">Chrome teki sivusta yksinkertaisemman, jotta sen lukeminen olisi helpompaa. Chrome nouti alkuperäisen sivun suojatun yhteyden kautta.</translation>
 <translation id="1656489000284462475">Noutoaika</translation>
 <translation id="1658111267661135323">TV ja video</translation>
@@ -557,6 +559,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1959001866257244765">Auta parantamaan kaikkien verkkoturvallisuutta lähettämällä Googlelle <ph name="BEGIN_WHITEPAPER_LINK" />joidenkin avaamiesi sivujen URL-osoitteita, rajallisia järjestelmätietoja ja osia sivujen sisällöstä<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Tietosuojakäytäntö<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Tekstisi ja sivun sisältö lähetetään Googlelle, ja niitä voidaan käyttää tämän ominaisuuden kehittämiseen.
   <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Tee kertaluontoinen turvatarkistus, jotta voit maksaa nopeammin</translation>
 <translation id="1962204205936693436">Verkkotunnuksen <ph name="DOMAIN" /> kirjanmerkit</translation>
 <translation id="1973335181906896915">Sarjaesittämisen virhe</translation>
 <translation id="1973785048533660168">Toimistotyöpaikat ja hallinnolliset työpaikat</translation>
@@ -1590,6 +1593,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="378611282717571199">Parhaat osumat haulla "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Koko 16</translation>
 <translation id="3789841737615482174">Asenna</translation>
+<translation id="3791118028061680614">Maksa vaihtamatta sovellusta</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tuumaa)</translation>
 <translation id="3792826587784915501">Kultti‑ ja indie-elokuvat</translation>
 <translation id="3793574014653384240">Viime aikoina tapahtuneiden kaatumisten määrät ja syyt</translation>

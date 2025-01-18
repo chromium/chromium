@@ -1264,6 +1264,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5245201184978705914">Falha ao gerar transcrição</translation>
 <translation id="5251174953851719648">Atualizar conteúdo</translation>
 <translation id="5253783950165989294">Conectado a um dispositivo chamado <ph name="DEVICE_NAME" />. <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="5256939106029293271">Teste o microfone</translation>
 <translation id="5258528442992323769">Nenhum espaço de trabalho salvo</translation>
 <translation id="5260676007519551770">Espaço de trabalho 4</translation>
 <translation id="5265391159779542051">Resultados carregados</translation>
@@ -1421,6 +1422,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5745612484876805746">O Modo noturno será ativado automaticamente ao pôr do sol</translation>
 <translation id="5750765938512549687">Bluetooth desativado</translation>
 <translation id="5758114525425072423">Iniciar o Foco. Timer definido para <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Saiba como outras pessoas vão ouvir sua voz. Para interromper, clique no ícone de teste ou feche o painel de videochamada.</translation>
 <translation id="5760866832697883462">Conecte seu dispositivo <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Ativar ou desativar o marcador. <ph name="STATE_TEXT" /> Use o trackpad, a tela touchscreen ou a stylus para desenhar na tela.</translation>
 <translation id="576341972084747908">Fazendo o download do arquivo perigoso <ph name="FILENAME" /></translation>

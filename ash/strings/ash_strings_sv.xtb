@@ -140,6 +140,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1415846719612499304">Visa nätverkslista. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Lås upp enheten så att aviseringen kan göras</translation>
 <translation id="1420408895951708260">Aktivera och inaktivera nattljus. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Föreslagen grupp</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Det går inte att starta dikteringen. Mikrofonen är avstängd.</translation>
 <translation id="1445031758921122223">Filerna för ansiktsstyrning har laddats ned</translation>
@@ -243,12 +244,14 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="17722141032474077">Uträkningar</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, just nu är <ph name="DATE" /> markerat.</translation>
 <translation id="178347895271755507">Ställ in visning av de senaste bilderna, mediefilerna och aviseringarna på telefonen</translation>
+<translation id="1785317913592722944">Ta bort objekt från föreslagen grupp</translation>
 <translation id="1786487376942610288">Växla mellan största tillåtna och aktuell storlek på bild-i-bild-fönstret</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Webbplatser, inklusive sidor som du har besökt och öppna sidor</translation>
 <translation id="179842970735685253">Googles användarvillkor</translation>
 <translation id="1805407494113167797">Det gick inte att spela upp fokusljud</translation>
 <translation id="181103072419391116">Signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
+<translation id="1815039896005206046">Om du trycker på Gillar inte skickar du feedback om att du inte gillar den här föreslagna gruppen</translation>
 <translation id="1816896987747843206">Detta ger kameraåtkomst för alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Aktivera platsåtkomst</translation>
@@ -390,6 +393,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
 <translation id="2370971919968699910">Detta kan innebära datakostnader.
 <ph name="DEVICECOUNT" /> enheter är anslutna.</translation>
+<translation id="2383521554963939360">App- och flikgrupper</translation>
 <translation id="2386292613071805067">Markera allt på sidan</translation>
 <translation id="2389423187722941333">Aktivera/inaktivera Gemini</translation>
 <translation id="2392659840443812875">Ingen tillgänglig surfzon. Se till att enheten är i närheten och att Bluetooth har aktiverats.</translation>
@@ -920,6 +924,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4151054805501931758">Förbättra porträtt</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % av batteriet återstår (ungefär <ph name="TIME_LEFT" />).
 Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
+<translation id="4158003972857765638">Organisera på ett nytt skrivbord</translation>
 <translation id="4160919062868802509">Flera ljudkällor har upptäckts</translation>
 <translation id="416245495747357243">Klart!</translation>
 <translation id="4165275524535002941">Kabeln kanske inte har stöd för skärmar</translation>
@@ -984,6 +989,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4322742403972824594">Kortkommandot Ctrl + Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" /> tangenten + vänsterpil för att använda Home-tangenten.</translation>
 <translation id="4324840740119394760">Detta ger kameraåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="4327147325944669226">Spela in spel</translation>
+<translation id="4329076911374908740">Maximalt antal sparade grupper har uppnåtts.</translation>
 <translation id="4338109981321384717">Förstoringsglas</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />. Ljud av</translation>
 <translation id="4351244548802238354">Stäng dialogrutan</translation>
@@ -1939,6 +1945,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Skapa</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
+<translation id="7534543072325030705">Om du trycker på Gilla skickar du feedback om att du gillar den här föreslagna gruppen</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Uppdatera det vänstra fönstret</translation>
 <translation id="7543399541175347147">Linux-appar och inkognitofönster stöds inte för närvarande. Andra appar sparas.</translation>
@@ -2103,6 +2110,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8004512796067398576">Öka</translation>
 <translation id="8005527720597583355">Starta fokussession</translation>
 <translation id="8015361438441228492">Det gick inte att redigera uppgiften.</translation>
+<translation id="8027187124910699148">Återuppta den föreslagna gruppen</translation>
 <translation id="802782383769312836">Tidigare skrivbord: <ph name="DESK_NAME" />. Skrivbord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Anslutning via surfzon misslyckades</translation>
 <translation id="8029629653277878342">Pinkod eller lösenord krävs för större säkerhet</translation>
@@ -2211,6 +2219,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8426708595819210923">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> via <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Spara gruppen till senare</translation>
 <translation id="8433186206711564395">Nätverksinställningar</translation>
 <translation id="8433977262951327081">Kortkommandot för att visa menybubblan för inmatningsalternativ i hyllan har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Öppna feedbackverktyg</translation>
@@ -2219,6 +2228,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8446884382197647889">Läs mer</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Stäng av textuppläsningen</translation>
+<translation id="8466665972451889002">Visa objekt i <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">ska lämnas in <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Inställningar för skala på skärmen</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
@@ -2241,6 +2251,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8551588720239073785">Inställningar för datum och tid</translation>
 <translation id="8553395910833293175">Detta har redan tilldelats alla skrivbord.</translation>
 <translation id="8555757996376137129">Ta bort aktuellt skrivbord</translation>
+<translation id="8558521694042102707">Generativ AI kan göra misstag, inklusive om personer, så dubbelkolla svaren.</translation>
 <translation id="8559845965695780508">Redigerades av <ph name="USER" /></translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Här är några förslag du kan prova</translation>
@@ -2263,6 +2274,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="8638637208069328956">Slå på/av mikrofonen</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> återstår</translation>
+<translation id="8640470573049727749">Dölj alla gruppförslag</translation>
 <translation id="8641510901370802679">Visar information om <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Timer på <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Ange föräldraåtkomstkoden för Family Link om du vill lägga till en person</translation>
@@ -2345,6 +2357,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8905919797434099235">(Ingen titel)</translation>
 <translation id="890616557918890486">Ändra källa</translation>
 <translation id="8909138438987180327">Batterinivån är på <ph name="PERCENTAGE" /> procent.</translation>
+<translation id="8916866375277139011">Dölj objekt i <ph name="GROUP_NAME" /></translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistent talar inte det här språket.</translation>
 <translation id="8926951137623668982">Hyllan döljs alltid</translation>

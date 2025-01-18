@@ -152,7 +152,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="164269334534774161">Det som visas är en offlinekopia av den här sidan från <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1645262572857218659">Logga in med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Grundläggande</translation>
 <translation id="1671236975893690980">Nedladdning väntar …</translation>
 <translation id="1672586136351118594">Visa inte igen</translation>
 <translation id="1680919990519905526">Köp bild med Google Lens <ph name="BEGIN_NEW" />Nytt<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Genomsöktes för 1 dag sedan}other{Genomsöktes för # dagar sedan}}</translation>
 <translation id="2842985007712546952">Överordnad mapp</translation>
 <translation id="2854916915045135148">Tryck länge för att byta till inkognito</translation>
-<translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter.</translation>
 <translation id="2860954141821109167">Kontrollera att en telefonapp har aktiverats på enheten</translation>
 <translation id="2861923151411510142">Vissa funktioner i Chrome kommer inte längre att vara tillgängliga</translation>
 <translation id="2869430948265924908">Du måste skapa ett profillås för bilen för att skydda känsligt innehåll i bilen.  Det kan du göra med en pinkod, en kod eller ett lösenord.</translation>
@@ -483,7 +481,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> raderades</translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Sökhistorik<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />annan aktivitet<ph name="END_LINK2" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="3220943972464248773">Verifiera din identitet för att synkronisera lösenord</translation>
 <translation id="3232293466644486101">Radera webbinformation …</translation>
 <translation id="3232754137068452469">Webbapp</translation>
@@ -728,7 +725,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4405224443901389797">Flytta till …</translation>
 <translation id="4405636711880428279">Vill du ta bort det virtuella kortet?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> och <ph name="TAB_COUNT" /> flikar till</translation>
-<translation id="4409271659088619928">Du använder <ph name="DSE" /> som sökmotor. Läs den sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> har raderats</translation>
 <translation id="4415276339145661267">Hantera Google-kontot</translation>
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
@@ -828,7 +824,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="481574578487123132">Länkade enheter</translation>
 <translation id="4822710610088666676">Flikgruppen <ph name="TAB_GROUP_TITLE" /> har stängts och sparats</translation>
 <translation id="4826163340425232009">Ark för inloggning på nedre delen av skärmen.</translation>
-<translation id="4834007576107377210">Visa sökmotorns anvisningar för att radera sökhistoriken om tillämpligt</translation>
 <translation id="4834250788637067901">Betalningsmetoder, erbjudanden och adresser med Google Pay</translation>
 <translation id="4835385943915508971">Chrome har inte tillgång till den begärda resursen.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Återställ flikgruppen med <ph name="TAB_COUNT_ONE" /> flik med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.}other{Återställ flikgruppen med <ph name="TAB_COUNT_MANY" /> flikar med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.}}</translation>
@@ -886,7 +881,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flik: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> flikar: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Integritet</translation>
 <translation id="504456571576643789">Tänk på detta</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Annan aktivitet<ph name="END_LINK1" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="506254248375231072">Inga flikar</translation>
 <translation id="5062960805900435602">Uppdateringen om lösenordssammanslagning har stängts</translation>
 <translation id="5075939510584558547">Spara utan kryptering</translation>
@@ -1424,7 +1418,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7431991332293347422">Styr hur webbhistoriken får användas för att anpassa Sök med mera</translation>
 <translation id="7435356471928173109">Inaktiverat av administratören</translation>
 <translation id="7437998757836447326">Logga ut från Chrome</translation>
-<translation id="7453467225369441013">Du loggas ut från de flesta webbplatser. Du loggas inte ut från Google-kontot.</translation>
 <translation id="7453810262525006706">Komprimera till sidovy</translation>
 <translation id="7454641608352164238">Utrymmet räcker inte</translation>
 <translation id="7454744349230173024">Organisationen har inaktiverat möjligheten att spara lösenord</translation>
@@ -1443,7 +1436,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="749294055653435199">Google Lens är inte tillgängligt på den här enheten</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (uppdaterades <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Vänta …</translation>
-<translation id="7502234197872745058"><ph name="BEGIN_LINK1" />Logga ut från Chrome<ph name="END_LINK1" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="750228856503700085">Inga uppdateringar är tillgängliga</translation>
 <translation id="7507207699631365376">Läs leverantörens <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Behåll gruppen om du vill lägga till flikar senare eller lämna den om du inte längre vill ha åtkomst till den</translation>

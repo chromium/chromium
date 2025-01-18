@@ -335,6 +335,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1219219114431716687">Tortë me fruta</translation>
 <translation id="122082903575839559">Algoritmi i nënshkrimit të certifikatës</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 me enkriptimin RSA</translation>
+<translation id="1221266967850882682">Përmbledhja e mirëseardhjes</translation>
 <translation id="1221825588892235038">Vetëm zgjedhja</translation>
 <translation id="1222835797152767346">Cakto një kod PIN për ta bërë më të lehtë të identifikohesh</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> kërkon një licencë</translation>
@@ -2367,6 +2368,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2638662041295312666">Imazhi i identifikimit</translation>
 <translation id="2640299212685523844">Përdor GTK</translation>
 <translation id="264083724974021997">Lidh me telefonin - dialogu</translation>
+<translation id="2641098199809442625">Fjalëkalimi yt nuk është përditësuar, por mund të jesh ende në gjendje të qasesh te sajti me fjalëkalimin tënd të vjetër.</translation>
 <translation id="2642111877055905627">Top futbolli</translation>
 <translation id="2642206811783203764">Gjithmonë në <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Mund t'i fshish gjithmonë të dhënat për matjen e reklamave duke fshirë të dhënat e tua të shfletimit</translation>

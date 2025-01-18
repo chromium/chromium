@@ -281,6 +281,7 @@
 <translation id="2161446265348023004">Префрлете се на отворениот прозорец</translation>
 <translation id="2164946989711475905">Најавете се…</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
 <translation id="2196428379625389579">Пребарувајте на интернет</translation>
 <translation id="2199562093267256223">Ова ќе ја избрише групата картички од сите уреди најавени на <ph name="USER_EMAIL" />.</translation>
@@ -649,6 +650,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">Имате слаби лозинки.</translation>
 <translation id="3958312024468322930">Повлечете ја до докот најдолу на почетниот екран</translation>
+<translation id="3960218941754097036">Пребарајте што било на екранот со Google Lens</translation>
 <translation id="3962326069546168954">Зачувај</translation>
 <translation id="3967327056943561740">Обележувачи</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
@@ -691,6 +693,7 @@
 <translation id="4147897805161313378">Фотографии на Google</translation>
 <translation id="4148023517926189160">Веб-сајтов сака да преземе датотека и да ја додаде во вашиот календар.</translation>
 <translation id="4152011295694446843">Вашите обележувачи ќе ги најдете тука</translation>
+<translation id="4154753961803534698">Пребарувајте со камерата</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{Обележувачот е зачуван во „{title}“. Зачуван е само на овој уред.}one{{count} обележувач се зачувани во „{title}“. Зачувани се само на овој уред.}other{{count} обележувачи се зачувани во „{title}“. Зачувани се само на овој уред.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> што завршува на <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1157,6 +1160,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6168647875670665004">Предлози за статии</translation>
 <translation id="6169031022444660352">За да ги избришете сите зачувани акредитиви, прво мора да поставите код за најавување на уредот.</translation>
 <translation id="6173499589275053515">Лозинката е зачувана на вашата сметка на Google, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Пребарувајте го екранот</translation>
 <translation id="6187302354554850004">Последна синхронизација: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Создадено на <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочитани</translation>
@@ -1594,6 +1598,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8005666035647241369">До „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
+<translation id="8023170444051056234">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите ваши уреди</translation>
 <translation id="8023878949384262191">Го проширува делот.</translation>
 <translation id="8027581147000338959">Отвори во нов прозорец</translation>
 <translation id="8032569120109842252">Се следи</translation>

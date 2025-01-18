@@ -523,6 +523,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="135389172849514421">Funciona sense connexió</translation>
 <translation id="1353980523955420967">No hem trobat el fitxer PPD. Comprova que Chromebook estigui en línia i torna-ho a provar.</translation>
 <translation id="1354045473509304750">Continua permetent que <ph name="HOST" /> utilitzi i mogui la càmera</translation>
+<translation id="1354148503392558902">S'està canviant la contrasenya...</translation>
 <translation id="1355088139103479645">Vols suprimir totes les dades?</translation>
 <translation id="1356376170199999104">Concedit: <ph name="PERMISSION_DETAILS" />. Activa el micròfon amb l'interruptor físic.</translation>
 <translation id="1356959069439783953">Les pestanyes inactives tenen un aspecte nou</translation>
@@ -1094,6 +1095,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1751335846119670066">Ajuda'm a llegir</translation>
 <translation id="17513872634828108">Pestanyes obertes</translation>
 <translation id="175196451752279553">T&amp;orna a obrir la pestanya tancada</translation>
+<translation id="1752557850776261983">S'està comprovant l'inici de sessió...</translation>
 <translation id="1753067873202720523">Pot ser que el Chromebook no es carregui mentre estigui activat.</translation>
 <translation id="1753557900380512635">Interiors</translation>
 <translation id="1753905327828125965">Els més visitats</translation>

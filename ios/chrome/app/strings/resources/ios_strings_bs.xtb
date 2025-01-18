@@ -281,6 +281,7 @@
 <translation id="2161446265348023004">Prebaci se na otvoreni prozor</translation>
 <translation id="2164946989711475905">Prijava…</translation>
 <translation id="2175927920773552910">QR kôd</translation>
+<translation id="2186206192313702726">Google Objektiv</translation>
 <translation id="2194856509914051091">Stvari za razmatranje</translation>
 <translation id="2196428379625389579">Pretražite na webu</translation>
 <translation id="2199562093267256223">Ovo će izbrisati grupu sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" />.</translation>
@@ -492,6 +493,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3130863904455712965">Historija i još mnogo toga</translation>
 <translation id="313283613037595347">Kreiranje nove anonimne kartice.</translation>
 <translation id="3138611310073113613">Odbaci odabir</translation>
+<translation id="3140825265190223781">Spremljene zaporke i pristupni ključevi</translation>
 <translation id="3143515551205905069">Otkaži sinhronizaciju</translation>
 <translation id="314837624430314508">Ostanite u toku s najnovijim vijestima, novostima o praćenju cijena i drugim informacijama.</translation>
 <translation id="3157387275655328056">Dodaj na Listu za čitanje</translation>
@@ -649,7 +651,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3955740319737378355">Gotovo</translation>
 <translation id="3955822496205734389">Imate slabe lozinke.</translation>
 <translation id="3958312024468322930">Prevucite je u traku u donjem dijelu početnog ekrana</translation>
-<translation id="3960218941754097036">Pretražite bilo što na zaslonu pomoću Google objektiva</translation>
+<translation id="3960218941754097036">Pretražite sadržaj ekrana putem Google Objektiva</translation>
 <translation id="3962326069546168954">Sačuvaj</translation>
 <translation id="3967327056943561740">Oznake</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
@@ -692,7 +694,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4147897805161313378">Google Fotografije</translation>
 <translation id="4148023517926189160">Ova web lokacija želi preuzeti fajl i dodati ga u vaš kalendar.</translation>
 <translation id="4152011295694446843">Oznake ćete pronaći ovdje</translation>
-<translation id="4154753961803534698">Pretražite kamerom</translation>
+<translation id="4154753961803534698">Pretražite pomoću kamere</translation>
 <translation id="4158491215857439601">Upravitelj lozinki</translation>
 <translation id="4163699139741158298">{count,plural, =1{Oznaka je sačuvana na lokaciju "{title}". Sačuvana je samo na ovom uređaju.}one{{count} oznaka je sačuvana na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}few{{count} oznake su sačuvane na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}other{{count} oznaka je sačuvano na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> čiji se broj završava sa <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1159,7 +1161,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6168647875670665004">Prijedlozi članaka</translation>
 <translation id="6169031022444660352">Da izbrišete sve sačuvane akreditive, prvo morate postaviti šifru na uređaju.</translation>
 <translation id="6173499589275053515">Lozinka je sačuvana na Google računu, <ph name="EMAIL" /></translation>
-<translation id="6181969657494915430">Pretraži zaslon</translation>
+<translation id="6181969657494915430">Pretražite ekran</translation>
 <translation id="6187302354554850004">Posljednji put sinhronizirano: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Kreirano je <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepročitano</translation>
@@ -1597,7 +1599,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8005666035647241369">U Googleovom Upravitelju lozinki na ovom uređaju</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
-<translation id="8023170444051056234">Odmah ćete izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će se izbrisati sa svih vaših uređaja</translation>
+<translation id="8023170444051056234">Odmah ćete izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a ona će se izbrisati sa svih vaših uređaja</translation>
 <translation id="8023878949384262191">Proširuje odjeljak.</translation>
 <translation id="8027581147000338959">Otvori u novom prozoru</translation>
 <translation id="8032569120109842252">Pratite</translation>
@@ -1669,6 +1671,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8299613349954694191">Otvorite anonimnu karticu za privatno pregledanje weba.</translation>
 <translation id="8307481894409578819">Otpremanje fajla nije uspjelo</translation>
 <translation id="8319076807703933069">Novo pretraživanje</translation>
+<translation id="833647236762414178">Izradite i spremite zaporke i pristupne ključeve te upravljajte njima kako biste se lako prijavljivali na web-lokacije i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Napravite sigurnosnu kopiju svojih stvari i koristite ih na bilo kojem uređaju.</translation>
 <translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8364563001733875155">Da promijenite PIN, prvo postavite šifru na uređaju.</translation>

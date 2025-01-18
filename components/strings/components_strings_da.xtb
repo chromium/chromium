@@ -248,6 +248,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1413809658975081374">Fejl i forbindelse med privatlivbeskyttelse</translation>
 <translation id="1414134146594747368">Børnehave</translation>
 <translation id="1419305130220238697">Knappen Administrer downloads i Chrome, aktivér for at administrere de filer, du har downloadet i Chrome</translation>
+<translation id="1420345875188552368">Din gemte betalingsmetode til automatisk betaling kan blive anvendt til denne betaling. Hvis du vil deaktivere elektronisk punge i Chrome, skal du gå til dine <ph name="BEGIN_LINK1" />betalingsindstillinger<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> for at tillade parring</translation>
 <translation id="14222610277930434">Du besøger ofte</translation>
 <translation id="1422930527989633628">Websitet kan anmode om tilladelse til at søge efter Bluetooth-enheder i nærheden</translation>

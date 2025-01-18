@@ -152,7 +152,6 @@
 <translation id="164269334534774161">ನೀವು <ph name="CREATION_TIME" /> ದಿನಾಂಕದಿಂದ ಈ ಪುಟದ ಆಫ್‌ಲೈನ್‌ ನಕಲನ್ನು ವೀಕ್ಷಿಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಮೂಲಕ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
-<translation id="1670399744444387456">ಮೂಲ</translation>
 <translation id="1671236975893690980">ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಉಳಿದಿದೆ...</translation>
 <translation id="1672586136351118594">ಮತ್ತೊಮ್ಮೆ ತೋರಿಸಬೇಡಿ</translation>
 <translation id="1680919990519905526">Google Lens ಮೂಲಕ ಚಿತ್ರ ಖರೀದಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
@@ -286,6 +285,7 @@
 <translation id="233375395665273385">ಅಳಿಸಿ ಮತ್ತು ಸೈನ್ ಔಟ್ ಆಗಿ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="2349710944427398404">ಖಾತೆಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ Chrome ಬಳಸಿದ ಒಟ್ಟು ಡೇಟಾ</translation>
+<translation id="2349954856814571872">ಬುಕ್‌ಮಾರ್ಕ್ ಪಟ್ಟಿ ಬಟನ್ ಐಕಾನ್</translation>
 <translation id="235789365079050412">Google ಗೌಪ್ಯತೆ ನೀತಿ</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. <ph name="USER_EMAIL" />. ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
@@ -400,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 ದಿನದ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ದಿನಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ದಿನಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="2842985007712546952">ಮೂಲ ಫೋಲ್ಡರ್‌</translation>
 <translation id="2854916915045135148">ಅಜ್ಞಾತ ಮೋಡ್‌ಗೆ ಬದಲಾಯಿಸಲು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ</translation>
-<translation id="2855243985454069333">ಎಲ್ಲಾ ಸಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳಿಂದ ಇತಿಹಾಸವನ್ನು ಅಳಿಸುತ್ತದೆ</translation>
 <translation id="2860954141821109167">ಈ ಸಾಧನದಲ್ಲಿ ಫೋನ್ ಆ್ಯಪ್‌ ಒಂದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="2861923151411510142">ಕೆಲವು Chrome ವೈಶಿಷ್ಟ್ಯಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="2869430948265924908">ನಿಮ್ಮ ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಕಾರ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿಡಲು, ನೀವು ಕಾರ್ ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಅನ್ನು ರಚಿಸಬೇಕು.  ನೀವು ಪಿನ್, ಕೋಡ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ ಅದನ್ನು ರಚಿಸಬಹುದು.</translation>
@@ -483,7 +482,6 @@
 <translation id="3207960819495026254">ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3208584281581115441">ಈಗಲೇ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
-<translation id="3214996641768123781">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="BEGIN_LINK1" />ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಚಟುವಟಿಕೆಯ ಇತರ ವಿಧಾನಗಳನ್ನು<ph name="END_LINK2" /> ಉಳಿಸಬಹುದು. ನೀವು ಅವುಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಅಳಿಸಬಹುದು.</translation>
 <translation id="3220943972464248773">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲು, ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="3232293466644486101">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ…</translation>
 <translation id="3232754137068452469">ವೆಬ್ ಅಪ್ಲಿಕೇಶನ್</translation>
@@ -727,7 +725,6 @@
 <translation id="4405224443901389797">ಇದಕ್ಕೆ ಸರಿಸಿ…</translation>
 <translation id="4405636711880428279">ನಿಮ್ಮ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ಮತ್ತು <ph name="TAB_COUNT" /> ಇತರ ಟ್ಯಾಬ್‌ಗಳು</translation>
-<translation id="4409271659088619928">ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ <ph name="DSE" /> ಆಗಿದೆ. ಅನ್ವಯವಾದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇತಿಹಾಸವನ್ನು ಅಳಿಸುವುದಕ್ಕಾಗಿ ಅವರ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4415276339145661267">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4425140285732600465">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ.</translation>
@@ -826,7 +823,6 @@
 <translation id="481574578487123132">ಲಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳು</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಲಾಗಿದೆ ಮತ್ತು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4826163340425232009">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್.</translation>
-<translation id="4834007576107377210">ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್‌ನ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4834250788637067901">Google Pay ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಪಾವತಿ ವಿಧಾನಗಳು, ಆಫರ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳು</translation>
 <translation id="4835385943915508971">ವಿನಂತಿಸಿದ ಸಂಪನ್ಮೂಲದಲ್ಲಿ Chrome ಪ್ರವೇಶವನ್ನು ಹೊಂದಿಲ್ಲ.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}one{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}other{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}}</translation>
@@ -884,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">ಗೌಪ್ಯತೆ</translation>
 <translation id="504456571576643789">ಪರಿಗಣಿಸಬೇಕಾದ ಸಂಗತಿಗಳು</translation>
-<translation id="5054455334322721892">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="BEGIN_LINK1" />ಚಟುವಟಿಕೆಯ ಇತರ ವಿಧಾನಗಳನ್ನು<ph name="END_LINK1" /> ಉಳಿಸಬಹುದು. ನೀವು ಅವುಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಅಳಿಸಬಹುದು.</translation>
 <translation id="506254248375231072">ಯಾವುದೇ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5062960805900435602">ಪಾಸ್‌ವರ್ಡ್ ವಿಲೀನದ ಕುರಿತ ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="5075939510584558547">ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಇಲ್ಲದೆ ಸೇವ್ ಮಾಡಿ</translation>
@@ -1422,7 +1417,6 @@
 <translation id="7431991332293347422">ಹುಡುಕಾಟ ಮತ್ತು ಇನ್ನೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೇಗೆ ಬಳಸಲಾಗುತ್ತದೆ ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="7435356471928173109">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಆಫ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="7437998757836447326">Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
-<translation id="7453467225369441013">ನಿಮ್ಮನ್ನು ಬಹುತೇಕ ಸೈಟ್‌ಗಳಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ. ಆದರೆ ನಿಮ್ಮನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="7453810262525006706">ಪಾರ್ಶ್ವ ವೀಕ್ಷಣೆಗೆ ಕುಗ್ಗಿಸಿ</translation>
 <translation id="7454641608352164238">ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ</translation>
 <translation id="7454744349230173024">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡುವುದನ್ನು ಆಫ್ ಮಾಡಿದೆ</translation>
@@ -1441,7 +1435,6 @@
 <translation id="749294055653435199">ಈ ಸಾಧನದಲ್ಲಿ Google Lens ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="7498271377022651285">ದಯವಿಟ್ಟು ಕಾಯಿರಿ...</translation>
-<translation id="7502234197872745058">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK1" />Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7507207699631365376">ಈ ಪೂರೈಕೆದಾರರ <ph name="BEGIN_LINK" />ಗೌಪ್ಯತೆ ನೀತಿಯನ್ನು<ph name="END_LINK" /> ನೋಡಿ</translation>
 <translation id="750886945254958667">ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಂತರ ಸೇರಿಸಲು ಈ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಇದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಬೇಕಿಲ್ಲದಿದ್ದರೆ ಇದನ್ನು ತೊರೆಯಿರಿ</translation>

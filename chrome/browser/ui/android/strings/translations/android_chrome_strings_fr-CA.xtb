@@ -152,7 +152,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="164269334534774161">Vous consultez une copie hors ligne de cette page qui a été créée le <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1645262572857218659">Se connecter avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">De base</translation>
 <translation id="1671236975893690980">Téléchargement en attente…</translation>
 <translation id="1672586136351118594">Ne plus afficher</translation>
 <translation id="1680919990519905526">Magasiner cette image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
@@ -286,6 +285,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
 <translation id="2341410551640223969">Impossible d'installer <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Le total des données utilisées par Chrome, comprenant les comptes, les favoris et les paramètres enregistrés</translation>
+<translation id="2349954856814571872">Icône du bouton de la barre de favoris</translation>
 <translation id="235789365079050412">Politique de confidentialité de Google</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
@@ -400,7 +400,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Dernière vérification : il y a 1 jour}one{Dernière vérification : il y a # jour}other{Dernière vérification : il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
 <translation id="2854916915045135148">Touchez et maintenez le doigt sur l'icône pour passer en mode Navigation privée</translation>
-<translation id="2855243985454069333">Supprime l'historique de tous les appareils synchronisés</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application de téléphonie est activée sur cet appareil</translation>
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus offertes</translation>
 <translation id="2869430948265924908">Pour protéger votre contenu confidentiel dans le véhicule, vous devez créer un verrouillage de profil du véhicule.  Vous pouvez le faire au moyen d'un NIP, d'un code ou d'un mot de passe.</translation>
@@ -483,7 +482,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> a été supprimé</translation>
-<translation id="3214996641768123781">L'<ph name="BEGIN_LINK1" />historique de recherche<ph name="END_LINK1" /> et d'<ph name="BEGIN_LINK2" />autres formes d'activités<ph name="END_LINK2" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="3220943972464248773">Confirmez votre identité pour synchroniser vos mots de passe</translation>
 <translation id="3232293466644486101">Supprimer les données de navigation…</translation>
 <translation id="3232754137068452469">Application Web</translation>
@@ -727,7 +725,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4405224443901389797">Déplacer dans…</translation>
 <translation id="4405636711880428279">Retirer votre carte virtuelle?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> et <ph name="TAB_COUNT" /> autres onglets</translation>
-<translation id="4409271659088619928">Vous utilisez <ph name="DSE" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> supprimé</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4425140285732600465">Suivi des prix activé. Obtenez des alertes si le prix est réduit sur un site.</translation>
@@ -827,7 +824,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="481574578487123132">Appareils associés</translation>
 <translation id="4822710610088666676">Groupe d'onglets <ph name="TAB_GROUP_TITLE" /> fermé et enregistré</translation>
 <translation id="4826163340425232009">Zone de contenu dans le bas de l'écran de connexion.</translation>
-<translation id="4834007576107377210">Consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche, le cas échéant</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4835385943915508971">Chrome n'a pas accès à la ressource demandée.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_ONE" /> onglet, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}one{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglet, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}other{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglets, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}}</translation>
@@ -885,7 +881,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> onglet – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> onglets – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="504456571576643789">Points à prendre en compte</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />D'autres formes d'activités<ph name="END_LINK1" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="506254248375231072">Aucun onglet</translation>
 <translation id="5062960805900435602">La mise à jour sur la fusion des mots de passe est fermée</translation>
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
@@ -1423,7 +1418,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7431991332293347422">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser, entre autres, la recherche</translation>
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7437998757836447326">Se déconnecter de Chrome</translation>
-<translation id="7453467225369441013">Vous déconnecte de la plupart des sites. Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="7453810262525006706">Réduire la fenêtre en vue latérale</translation>
 <translation id="7454641608352164238">Espace insuffisant</translation>
 <translation id="7454744349230173024">Votre organisation a désactivé l'enregistrement des mots de passe</translation>
@@ -1442,7 +1436,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="749294055653435199">Cet appareil ne prend pas en charge Lentille Google</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (mise à jour : <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Veuillez patienter...</translation>
-<translation id="7502234197872745058">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK1" />déconnectez-vous de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Les mises à jour ne sont pas accessibles</translation>
 <translation id="7507207699631365376">Consulter la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de ce fournisseur</translation>
 <translation id="750886945254958667">Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder.</translation>

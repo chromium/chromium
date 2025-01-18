@@ -248,6 +248,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1413809658975081374">Integritetsfel</translation>
 <translation id="1414134146594747368">Förskola</translation>
 <translation id="1419305130220238697">Knappen Hantera nedladdningar i Chrome: aktivera om du vill hantera filer du har laddat ned i Chrome</translation>
+<translation id="1420345875188552368">Din sparade betalningsmetod för automatiska betalningar kan användas för denna betalning. Om du vill inaktivera digitala plånböcker i Chrome öppnar du <ph name="BEGIN_LINK1" />betalningsinställningarna<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> för koppling</translation>
 <translation id="14222610277930434">Du besöker ofta</translation>
 <translation id="1422930527989633628">Får begära tillstånd att söka efter Bluetooth-enheter i närheten</translation>
@@ -1966,6 +1967,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4434045419905280838">Popup-fönster och omdirigeringar</translation>
 <translation id="443673843213245140">Användning av proxy är inaktiverad men en explicit proxykonfiguration har angetts.</translation>
 <translation id="4438821706955556403">Normalt pris</translation>
+<translation id="444116852243722675">Öppna alla (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ignoreras eftersom principen bara kan ställas in som en princip för molnanvändare.</translation>
 <translation id="4445133368066241428">Populära ämnen</translation>
 <translation id="4445964943162061557">Det här är en experimentell funktion som inte alltid fungerar som den ska.</translation>

@@ -152,7 +152,6 @@
 <translation id="164269334534774161">أنت تعرض نسخة بلا اتصال لهذه الصفحة من <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1645262572857218659">تسجيل الدخول باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">الإعدادات الأساسية</translation>
 <translation id="1671236975893690980">التنزيل معلّق...</translation>
 <translation id="1672586136351118594">عدم العرض مرة أخرى</translation>
 <translation id="1680919990519905526">‏التسوّق باستخدام "عدسة Google" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
@@ -401,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{تمّ إجراء عملية التحقُّق قبل يوم واحد.}zero{تمّ إجراء عملية التحقُّق قبل # يوم.}two{تمّ إجراء عملية التحقُّق قبل يومَين.}few{تمّ إجراء عملية التحقُّق قبل # أيام.}many{تمّ إجراء عملية التحقُّق قبل # يومًا.}other{تمّ إجراء عملية التحقُّق قبل # يوم.}}</translation>
 <translation id="2842985007712546952">المجلد الرئيسي</translation>
 <translation id="2854916915045135148">انقر مع الاستمرار للتبديل إلى "وضع التصفّح المتخفي"</translation>
-<translation id="2855243985454069333">سيتم حذف السجلّ من جميع الأجهزة التي تمت مزامنتها</translation>
 <translation id="2860954141821109167">يُرجى التأكُّد من تفعيل تطبيق هاتف على هذا الجهاز.</translation>
 <translation id="2861923151411510142">‏لن تتوفّر بعض ميزات Chrome بعد الآن.</translation>
 <translation id="2869430948265924908">لحماية المحتوى الحسّاس في السيارة، عليك إنشاء قفل للملف الشخصي للسيارة.  ويمكنك تنفيذ هذا الإجراء باستخدام رقم تعريف شخصي أو رمز أو كلمة مرور.</translation>
@@ -485,7 +483,6 @@
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3208584281581115441">التحقّق الآن</translation>
 <translation id="3211426585530211793">تم حذف العنصر <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781">‏قد يتم حفظ <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بيانات الأنشطة الأخرى<ph name="END_LINK2" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
 <translation id="3220943972464248773">لاستئناف مزامنة كلمات المرور، يجب إثبات هويّتك.</translation>
 <translation id="3232293466644486101">حذف بيانات التصفّح…</translation>
 <translation id="3232754137068452469">تطبيق الويب</translation>
@@ -729,7 +726,6 @@
 <translation id="4405224443901389797">نقل إلى...</translation>
 <translation id="4405636711880428279">هل تريد إزالة بطاقتك الإفتراضية؟</translation>
 <translation id="4409014848144759297">‫<ph name="WEBSITE_TITLE" /> و<ph name="TAB_COUNT" /> علامة تبويب أخرى</translation>
-<translation id="4409271659088619928">محرّك البحث المستخدَم لديك هو <ph name="DSE" />. يمكنك الاطّلاع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث إذا كان يوفّر هذه الميزة.</translation>
 <translation id="4414179633735763985">تم حذف <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4425140285732600465">تم تفعيل ميزة تتبُّع السعر. يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني.</translation>
@@ -829,7 +825,6 @@
 <translation id="481574578487123132">الأجهزة المرتبطة</translation>
 <translation id="4822710610088666676">تم إغلاق مجموعة علامات التبويب "<ph name="TAB_GROUP_TITLE" />" وحفظها</translation>
 <translation id="4826163340425232009">البطاقة السفلية لتسجيل الدخول</translation>
-<translation id="4834007576107377210">اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="4834250788637067901">‏طرق الدفع والعروض الترويجية والعناوين التي تستخدم Google Pay</translation>
 <translation id="4835385943915508971">‏لا تتوفر لمتصفح Chrome إمكانية الوصول إلى المورد المطلوب.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />) كمجموعة علامات تبويب جديدة في الخلفية}zero{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم <ph name="TAB_COUNT_MANY" /> علامة تبويب كمجموعة علامات تبويب جديدة في الخلفية}two{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم علامتَي تبويب (<ph name="TAB_COUNT_MANY" />) كمجموعة علامات تبويب جديدة في الخلفية}few{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم <ph name="TAB_COUNT_MANY" /> علامات تبويب كمجموعة علامات تبويب جديدة في الخلفية}many{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم <ph name="TAB_COUNT_MANY" /> علامة تبويب كمجموعة علامات تبويب جديدة في الخلفية}other{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم <ph name="TAB_COUNT_MANY" /> علامة تبويب كمجموعة علامات تبويب جديدة في الخلفية}}</translation>
@@ -887,7 +882,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />): <ph name="URL_LIST" />}zero{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}two{علامتا تبويب (<ph name="TAB_COUNT_MANY" />): <ph name="URL_LIST" />}few{‫<ph name="TAB_COUNT_MANY" /> علامات تبويب: <ph name="URL_LIST" />}many{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}other{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">الخصوصية</translation>
 <translation id="504456571576643789">ملاحظات مهمّة</translation>
-<translation id="5054455334322721892">‏قد يتم حفظ <ph name="BEGIN_LINK1" />بيانات الأنشطة الأخرى<ph name="END_LINK1" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
 <translation id="506254248375231072">ما مِن علامات تبويب</translation>
 <translation id="5062960805900435602">تم إغلاق الإشعار المتعلّق بدمج كلمة المرور.</translation>
 <translation id="5075939510584558547">الحفظ بدون تشفير</translation>
@@ -1426,7 +1420,6 @@
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7437998757836447326">‏تسجيل الخروج من Chrome</translation>
-<translation id="7453467225369441013">‏سيتم تسجيل الخروج من معظم المواقع الإلكترونية، لكن لن يتم تسجيل الخروج من حسابك على Google.</translation>
 <translation id="7453810262525006706">التصغير إلى اللوحة الجانبية</translation>
 <translation id="7454641608352164238">مساحة التخزين غير كافية</translation>
 <translation id="7454744349230173024">أوقفت مؤسستك إمكانية حفظ كلمات المرور.</translation>
@@ -1445,7 +1438,6 @@
 <translation id="749294055653435199">‏لا تتوفّر ميزة "عدسة Google" على هذا الجهاز.</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (تم التحديث منذ <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">يُرجى الانتظار...</translation>
-<translation id="7502234197872745058">‏لتسجيل الخروج من حسابك على Google في جميع المواقع الإلكترونية، <ph name="BEGIN_LINK1" />سجِّل الخروج من متصفِّح Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">ميزة تلقّي آخر الأخبار غير متاحة.</translation>
 <translation id="7507207699631365376">الاطّلاع على <ph name="BEGIN_LINK" />سياسة خصوصية<ph name="END_LINK" /> مقدّم الخدمة</translation>
 <translation id="750886945254958667">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو مغادرتها إذا لم تعُد بحاجة إليها</translation>

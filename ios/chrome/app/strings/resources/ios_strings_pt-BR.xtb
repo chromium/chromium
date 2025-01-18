@@ -281,6 +281,7 @@
 <translation id="2161446265348023004">Mudar para janela aberta</translation>
 <translation id="2164946989711475905">Fazer login…</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="2196428379625389579">Pesquisar na Web</translation>
 <translation id="2199562093267256223">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" />.</translation>
@@ -649,6 +650,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3955740319737378355">Concluído</translation>
 <translation id="3955822496205734389">Você tem senhas fracas.</translation>
 <translation id="3958312024468322930">Arraste até o Dock na parte de baixo da tela de início</translation>
+<translation id="3960218941754097036">Pesquise o que quiser na tela com o Google Lens</translation>
 <translation id="3962326069546168954">Salvar</translation>
 <translation id="3967327056943561740">Favoritos</translation>
 <translation id="3967822245660637423">Download concluído</translation>
@@ -691,6 +693,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Esse site quer fazer download e adicionar um arquivo à sua agenda.</translation>
 <translation id="4152011295694446843">Seus favoritos aparecem aqui</translation>
+<translation id="4154753961803534698">Pesquisar com a câmera</translation>
 <translation id="4158491215857439601">Gerenciador de senhas</translation>
 <translation id="4163699139741158298">{count,plural, =1{Favorito salvo em "{title}". Ele fica salvo apenas neste dispositivo.}one{{count} favorito salvo em "{title}". Ele fica salvo apenas neste dispositivo.}other{{count} favoritos salvos em "{title}". Eles ficam salvos apenas neste dispositivo.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> com final <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1157,6 +1160,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6168647875670665004">Artigos sugeridos</translation>
 <translation id="6169031022444660352">Para excluir todas as credenciais salvas, defina uma senha no dispositivo.</translation>
 <translation id="6173499589275053515">Senha salva na sua Conta do Google <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Tela de pesquisa</translation>
 <translation id="6187302354554850004">Última sincronização: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Criado em <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Não lidas</translation>
@@ -1594,6 +1598,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8005666035647241369">No Gerenciador de senhas do Google deste dispositivo</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Falha no download</translation>
+<translation id="8023170444051056234">Você vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />", e ele será excluído de todos seus dispositivos</translation>
 <translation id="8023878949384262191">Expande a seção.</translation>
 <translation id="8027581147000338959">Abrir em uma nova janela</translation>
 <translation id="8032569120109842252">Seguindo</translation>

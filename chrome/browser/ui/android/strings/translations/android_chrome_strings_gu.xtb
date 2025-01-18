@@ -152,7 +152,6 @@
 <translation id="164269334534774161">તમે <ph name="CREATION_TIME" />માંથી આ પેજની ઑફલાઇન કૉપિ જોઈ રહ્યા છો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે સાઇન ઇન કરો</translation>
-<translation id="1670399744444387456">મૂળભૂત</translation>
 <translation id="1671236975893690980">ડાઉનલોડ બાકી…</translation>
 <translation id="1672586136351118594">ફરીથી બતાવશો નહીં</translation>
 <translation id="1680919990519905526">Google Lens વડે છબી ખરીદો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
@@ -401,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 દિવસ પહેલાં ચેક કર્યું}one{# દિવસ પહેલાં ચેક કર્યું}other{# દિવસ પહેલાં ચેક કર્યું}}</translation>
 <translation id="2842985007712546952">પેરન્ટ ફોલ્ડર</translation>
 <translation id="2854916915045135148">છૂપા મોડ પર સ્વિચ કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
-<translation id="2855243985454069333">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ ડિલીટ કરે છે</translation>
 <translation id="2860954141821109167">ખાતરી કરો કે આ ડિવાઇસ પર ફોન ઍપ ચાલુ કરેલી છે</translation>
 <translation id="2861923151411510142">Chromeની કેટલીક સુવિધાઓ હવે ઉપલબ્ધ રહેશે નહીં</translation>
 <translation id="2869430948265924908">કારમાંના તમારા સંવેદનશીલ કન્ટેન્ટને સુરક્ષિત રાખવા માટે, તમારે કાર પ્રોફાઇલ લૉક બનાવવું આવશ્યક છે.  તમે કોઈ પિન, કોડ કે પાસવર્ડ વડે આમ કરી શકો છો.</translation>
@@ -484,7 +482,6 @@
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3208584281581115441">હમણાં ચેક કરો</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> કાઢી નાખી</translation>
-<translation id="3214996641768123781">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK1" />શોધ ઇતિહાસ<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK2" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
 <translation id="3220943972464248773">તમારો પાસવર્ડ સિંક કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="3232293466644486101">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
 <translation id="3232754137068452469">વેબ ઍપ</translation>
@@ -728,7 +725,6 @@
 <translation id="4405224443901389797">આમાં ખસેડો…</translation>
 <translation id="4405636711880428279">શું તમારું વર્ચ્યુઅલ કાર્ડ કાઢી નાખીએ?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> અને અન્ય <ph name="TAB_COUNT" /> ટૅબ</translation>
-<translation id="4409271659088619928">તમારું શોધ એન્જિન <ph name="DSE" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ડિલીટ કર્યું</translation>
 <translation id="4415276339145661267">તમારું Google એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="4425140285732600465">કિંમત ટ્રૅક કરી રહ્યાં છીએ. જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો.</translation>
@@ -828,7 +824,6 @@
 <translation id="481574578487123132">લિંક કરેલા ડિવાઇસ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ટૅબનું ગ્રૂપ બંધ છે અને સાચવ્યું છે</translation>
 <translation id="4826163340425232009">સાઇન ઇન કરવા માટેની બોટમ શીટ.</translation>
-<translation id="4834007576107377210">તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તમારા શોધ એન્જિનની સૂચનાઓ જુઓ, જો લાગુ થતી હોય તો</translation>
 <translation id="4834250788637067901">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
 <translation id="4835385943915508971">Chrome ને વિનંતી કરેલ સંસાધનની ઍક્સેસ નથી.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબવાળા <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.}one{<ph name="TAB_COUNT_MANY" /> ટૅબવાળા <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.}other{<ph name="TAB_COUNT_MANY" /> ટૅબવાળા <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.}}</translation>
@@ -886,7 +881,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ટૅબ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ટૅબ - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
 <translation id="504456571576643789">ધ્યાનમાં લેવા જેવી બાબતો</translation>
-<translation id="5054455334322721892">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK1" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK1" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
 <translation id="506254248375231072">કોઈ ટૅબ નથી</translation>
 <translation id="5062960805900435602">પાસવર્ડ મર્જ કરવાની સુવિધા બંધ છે વિશેની અપડેટ</translation>
 <translation id="5075939510584558547">એન્ક્રિપ્શન વિના સાચવો</translation>
@@ -1424,7 +1418,6 @@
 <translation id="7431991332293347422">શોધ અને અન્ય બાબતોને તમને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરવાની રીત નિયંત્રિત કરો</translation>
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7437998757836447326">Chromeમાંથી સાઇન આઉટ કરો</translation>
-<translation id="7453467225369441013">તમને મોટાભાગની સાઇટમાંથી સાઇન આઉટ કરે છે. તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ નહીં થાઓ.</translation>
 <translation id="7453810262525006706">બાજુના વ્યૂને નાનું કરો</translation>
 <translation id="7454641608352164238">પર્યાપ્ત જગ્યા નથી</translation>
 <translation id="7454744349230173024">તમારી સંસ્થા દ્વારા પાસવર્ડ સાચવવાનું બંધ કરવામાં આવ્યું છે</translation>
@@ -1443,7 +1436,6 @@
 <translation id="749294055653435199">Google Lens આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (અપડેટ કર્યું <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">કૃપા કરીને રાહ જુઓ…</translation>
-<translation id="7502234197872745058">બધી વેબસાઇટ પર તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવા માટે, <ph name="BEGIN_LINK1" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">અપડેટ અનુપલબ્ધ છે</translation>
 <translation id="7507207699631365376">આ પ્રદાતાની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> જુઓ</translation>
 <translation id="750886945254958667">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેનો ઍક્સેસ ન જોઈતો હોય તો તેને છોડી દો</translation>

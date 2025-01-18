@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Erro de autenticação</translation>
 <translation id="1780152987505130652">Fechar grupo</translation>
 <translation id="178400879184240105">As suas palavras-passe são únicas</translation>
+<translation id="17906873777101817">Propor guardar palavras-passe e chaves de acesso</translation>
 <translation id="1807893857950749072">Permitir notificações de acompanhamento de preço…</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1815941218935345331">Código secreto</translation>
@@ -281,6 +282,7 @@
 <translation id="2161446265348023004">Mudar para a janela aberta</translation>
 <translation id="2164946989711475905">Iniciar sessão…</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2196428379625389579">Pesquise na Web</translation>
 <translation id="2199562093267256223">Esta ação elimina o grupo de todos os dispositivos com sessão iniciada com o endereço <ph name="USER_EMAIL" />.</translation>
@@ -492,6 +494,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3130863904455712965">Histórico e muito mais</translation>
 <translation id="313283613037595347">Crie um novo separador de navegação anónima.</translation>
 <translation id="3138611310073113613">Rejeitar seleção</translation>
+<translation id="3140825265190223781">Palavras-passe e chaves de acesso guardadas</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="314837624430314508">Mantenha-se a par das mais recentes notícias, atualizações de acompanhamento de preço e muito mais.</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
@@ -1321,6 +1324,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6732087373923685049">câmara</translation>
 <translation id="6746338529702829275">Reveja os dados da sua conta</translation>
 <translation id="6755200887046212842">Gerir contas</translation>
+<translation id="6755733078693946548">Aceder a palavras-passe e chaves de acesso a partir de qualquer app</translation>
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6779455296366983087">Os seus dados de navegação vão ser eliminados</translation>
 <translation id="6790502149545262384">Em breve, vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
@@ -1588,6 +1592,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="7977451675950311423">Envia-lhe um aviso se usar uma palavra-passe que tenha sido comprometida numa violação de dados.</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> novo(s) separador(es), <ph name="NUMBER_OF_TABS_REMOVED" /> fechado(s)</translation>
 <translation id="797824194429476746">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado permanentemente.</translation>
+<translation id="797874245254030665">Aceda às suas palavras-passe e chaves de acesso a partir de qualquer app</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7987685713885608670">Para maior segurança, encripte as palavras-passe no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>
 <translation id="798991908416757345">Os grupos de separadores estão indisponíveis</translation>
@@ -1669,6 +1674,8 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8299613349954694191">Abra um separador de navegação anónima para navegar na Web de forma privada.</translation>
 <translation id="8307481894409578819">Não foi possível carregar este ficheiro</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
+<translation id="8328607660158575887">Abra as definições de Preenchimento automático e palavras-passe</translation>
+<translation id="833647236762414178">Crie, guarde e faça a gestão das suas palavras-passe e chaves de acesso para iniciar sessão facilmente em sites e apps. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Faça uma cópia de segurança dos seus itens e use-os em qualquer dispositivo.</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8364563001733875155">Para alterar o PIN, configure primeiro um código secreto no dispositivo.</translation>
@@ -1820,6 +1827,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8909459547399237818">Selecione o Gestor de Palavras-passe e, de seguida, toque em Adicionar widget</translation>
 <translation id="891282356902782456">Esta palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">Fechar tudo</translation>
+<translation id="892185197271200809">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e este vai ser eliminado de todos os dispositivos</translation>
 <translation id="8921902386312975525">Opções para acompanhar encomendas</translation>
 <translation id="8923178205567790913">Palavras-passe</translation>
 <translation id="892776311701544612">Saiba mais…</translation>

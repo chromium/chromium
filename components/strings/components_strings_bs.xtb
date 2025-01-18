@@ -248,7 +248,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1413809658975081374">Greška u vezi s privatnošću</translation>
 <translation id="1414134146594747368">Predškolski uzrast</translation>
 <translation id="1419305130220238697">Dugme Upravljaj preuzimanjima u Chromeu, aktivirajte da upravljate fajlovima koje ste preuzeli u Chromeu</translation>
-<translation id="1420345875188552368">Spremljeni način automatskog plaćanja može se upotrebljavati za ovo plaćanje. E-movčanike u Chromeu možete isključiti u <ph name="BEGIN_LINK1" />postavkama plaćanja<ph name="END_LINK1" /></translation>
+<translation id="1420345875188552368">Sačuvani način automatskog plaćanja se može upotrijebiti za ovo plaćanje. Da isključite e-novčanike u Chromeu, idite u <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> da omogućite uparivanje</translation>
 <translation id="14222610277930434">Često posjećujete</translation>
 <translation id="1422930527989633628">Može tražiti da otkriva Bluetooth uređaje u blizini</translation>
@@ -1967,6 +1967,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4434045419905280838">Skočni proz. i preusmjeravanja</translation>
 <translation id="443673843213245140">Korištenje proksi servera je onemogućeno ali je određena eksplicitna konfiguracija proksi servera.</translation>
 <translation id="4438821706955556403">Uobičajena cijena</translation>
+<translation id="444116852243722675">Otvori sve (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Zanemareno jer se pravilo može postaviti samo kao korisničko pravilo oblaka.</translation>
 <translation id="4445133368066241428">Popularne teme</translation>
 <translation id="4445964943162061557">Ovo je eksperimentalna funkcija i neće uvijek pogoditi.</translation>

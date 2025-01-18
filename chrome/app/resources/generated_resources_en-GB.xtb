@@ -1935,6 +1935,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2323018538045954000">Saved Wi-Fi networks</translation>
 <translation id="2325444234681128157">Remember password</translation>
 <translation id="2326188115274135041">Confirm PIN to turn on automatic unlock</translation>
+<translation id="2326583548923775947">This isn't a Google Account. Items that you save to Chrome won't be available on other devices.</translation>
 <translation id="2326906096734221931">Open app settings</translation>
 <translation id="2326931316514688470">&amp;Reload app</translation>
 <translation id="2327492829706409234">Enable app</translation>
@@ -2383,6 +2384,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2638662041295312666">Sign-in image</translation>
 <translation id="2640299212685523844">Use GTK</translation>
 <translation id="264083724974021997">Connect to your phone – dialogue</translation>
+<translation id="2641098199809442625">Your password wasn't updated, but you should still be able to access the site with your old password.</translation>
 <translation id="2642111877055905627">Football</translation>
 <translation id="2642206811783203764">Always on <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">You can always delete ads measurement data by deleting your browsing data</translation>

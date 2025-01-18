@@ -152,7 +152,6 @@
 <translation id="164269334534774161"><ph name="CREATION_TIME" />ରୁ ଆପଣ ଏହି ପୃଷ୍ଠାର ଏକ ଅଫ୍‍ଲାଇନ୍‍ କପି ଦେଖୁଛନ୍ତି</translation>
 <translation id="1644574205037202324">ଇତିହାସ</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
-<translation id="1670399744444387456">ମୌଳିକ</translation>
 <translation id="1671236975893690980">ଡାଉନ୍‌ଲୋଡ୍ ବାକି ଅଛି…</translation>
 <translation id="1672586136351118594">ପୁଣି ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="1680919990519905526">Google Lens ସହ ଛବି କିଣନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 ଦିନ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}other{# ଦିନ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}}</translation>
 <translation id="2842985007712546952">ମୁଖ୍ୟ ଫୋଲ୍ଡର୍‌</translation>
 <translation id="2854916915045135148">ଇନକଗ୍ନିଟୋକୁ ସୁଇଚ କରିବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
-<translation id="2855243985454069333">ସିଙ୍କ କରାଯାଇଥିବା ସମସ୍ତ ଡିଭାଇସରୁ ଇତିହାସକୁ ଖାଲି କରେ</translation>
 <translation id="2860954141821109167">ଏହି ଡିଭାଇସ୍‍‍ରେ ଫୋନ୍ ଆପ୍ ସକ୍ଷମ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="2861923151411510142">କିଛି Chrome ଫିଚର ଆଉ ଉପଲବ୍ଧ ହେବ ନାହିଁ</translation>
 <translation id="2869430948265924908">କାରରେ ଆପଣଙ୍କ ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଆପଣ ଏକ କାର ପ୍ରୋଫାଇଲ ଲକ ତିଆରି କରିବା ଆବଶ୍ୟକ।  ଆପଣ ଏକ PIN, କୋଡ କିମ୍ବା ପାସୱାର୍ଡ ସହ ଏହା ତିଆରି କରିପାରିବେ।</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">ବୁକ୍‍ମାର୍କ କରାଯାଇଛି</translation>
 <translation id="3208584281581115441">ଏବେ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" />କୁ ଡିଲିଟ୍ କରାଗଲା।</translation>
-<translation id="3214996641768123781">ଆପଣ ସାଇନ୍ ଇନ୍ କରିଥିବା ବେଳେ <ph name="BEGIN_LINK1" />ସନ୍ଧାନ ଇତିହାସ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />ଅନ୍ୟ ପ୍ରକାରର କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK2" /> ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ ହୋଇପାରେ। ଆପଣ ସେଗୁଡ଼ିକୁ ଯେ କୌଣସି ସମୟରେ ଡିଲିଟ୍ କରିପାରିବେ।</translation>
 <translation id="3220943972464248773">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସିଙ୍କ୍ କରିବା ପାଇଁ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3232293466644486101">ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ…</translation>
 <translation id="3232754137068452469">ୱେବ୍ ଆପ୍</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">ଏଥିକୁ ଘୁଞ୍ଚାନ୍ତୁ…</translation>
 <translation id="4405636711880428279">ଆପଣଙ୍କ ଭର୍ଚୁଆଲ କାର୍ଡ କାଢ଼ି ଦେବେ?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ଏବଂ ଅନ୍ୟ <ph name="TAB_COUNT" /> ଟାବ</translation>
-<translation id="4409271659088619928">ଆପଣଙ୍କ ସନ୍ଧାନ ଇଞ୍ଜିନ୍ ହେଉଛି <ph name="DSE" />। ଯଦି ଲାଗୁ ହୁଏ, ତେବେ ଆପଣଙ୍କ ସନ୍ଧାନ ଇତିହାସକୁ ଡିଲିଟ୍ କରିବା ପାଇଁ ସେଗୁଡ଼ିକର ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" />କୁ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="4415276339145661267">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4425140285732600465">ମୂଲ୍ୟ ଟ୍ରାକ କରାଯାଉଛି। ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆଲର୍ଟ ପାଆନ୍ତୁ।</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">ଲିଙ୍କ କରାଯାଇଥିବା ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ଟାବ ଗ୍ରୁପକୁ ବନ୍ଦ କରି ସେଭ କରାଯାଇଛି</translation>
 <translation id="4826163340425232009">ସାଇନ ଇନ ବଟମ ସିଟ।</translation>
-<translation id="4834007576107377210">ଯଦି ଲାଗୁ ହୁଏ, ଆପଣଙ୍କ ସନ୍ଧାନ ଇତିହାସ ଡିଲିଟ୍ କରିବାକୁ ଆପଣଙ୍କ ସନ୍ଧାନ ଇଞ୍ଜିନର ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="4834250788637067901">Google Pay ବ୍ୟବହାର କରୁଥିବା ପେମେଣ୍ଟ ପଦ୍ଧତି, ଅଫର ଏବଂ ଠିକଣାଗୁଡ଼ିକ</translation>
 <translation id="4835385943915508971">Chrome ପାଖରେ ଅନୁରୋଧ କରାଯାଇଥିବା ସମ୍ବଳକୁ ଆକ୍ସେସ୍‌ ନାହିଁ।</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ଟାବର ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗକୁ ଏକ ନୂଆ ବେକଗ୍ରାଉଣ୍ଡ ଟାବ ଗ୍ରୁପ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।}other{<ph name="TAB_COUNT_MANY" /> ଟାବର ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗକୁ ଏକ ନୂଆ ବେକଗ୍ରାଉଣ୍ଡ ଟାବ ଗ୍ରୁପ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ଟାବ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ଟାବ - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">ଗୋପନୀୟତା</translation>
 <translation id="504456571576643789">ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ</translation>
-<translation id="5054455334322721892">ଆପଣ ସାଇନ୍ ଇନ୍ କରିଥିବା ବେଳେ <ph name="BEGIN_LINK1" />ଅନ୍ୟ ପ୍ରକାରର କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK1" /> ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ ହୋଇପାରେ। ଆପଣ ସେଗୁଡ଼ିକୁ ଯେ କୌଣସି ସମୟରେ ଡିଲିଟ୍ କରିପାରିବେ।</translation>
 <translation id="506254248375231072">କୌଣସି ଟାବ୍ ନାହିଁ</translation>
 <translation id="5062960805900435602">ପାସୱାର୍ଡ ମର୍ଜ ବିଷୟରେ ଅପଡେଟକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="5075939510584558547">ଏନକ୍ରିପସନ ବିନା ସେଭ କରନ୍ତୁ</translation>
@@ -1423,7 +1417,6 @@
 <translation id="7431991332293347422">Search ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିହାସ କିପରି ବ୍ୟବହାର ହେଉଛି ତାହା ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="7435356471928173109">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="7437998757836447326">Chromeରୁ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
-<translation id="7453467225369441013">ଆପଣଙ୍କୁ ଅଧିକତମ ସାଇଟ୍‍ରୁ ସାଇନ୍‌ ଆଉଟ୍‍ କରିଦିଏ। ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରୁ ଆପଣ ସାଇନ୍‌ ଆଉଟ୍‌ ହେବେନାହିଁ।</translation>
 <translation id="7453810262525006706">ସାଇଡ ଭ୍ୟୁ'କୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="7454641608352164238">ପର୍ଯ୍ୟାପ୍ତ ଜାଗା ନାହିଁ</translation>
 <translation id="7454744349230173024">ଆପଣଙ୍କ ସଂସ୍ଥା ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ କରିବା ବନ୍ଦ କରିଦେଇଛି</translation>
@@ -1442,7 +1435,6 @@
 <translation id="749294055653435199">ଏହି ଡିଭାଇସରେ Google Lens ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> ଅପ୍‌ଡେଟ୍ କରାଯାଇଛି)</translation>
 <translation id="7498271377022651285">ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ…</translation>
-<translation id="7502234197872745058">ସମସ୍ତ ୱେବସାଇଟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ସାଇନ ଆଉଟ କରିବା ପାଇଁ, <ph name="BEGIN_LINK1" />Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK1" />।</translation>
 <translation id="750228856503700085">ଅପଡେଟଗୁଡ଼ିକ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="7507207699631365376">ଏହି ପ୍ରଦାନକାରୀଙ୍କର <ph name="BEGIN_LINK" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK" /> ଦେଖନ୍ତୁ</translation>
 <translation id="750886945254958667">ପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରିବାକୁ ଏହି ଗ୍ରୁପକୁ ରଖନ୍ତୁ କିମ୍ୱା ଆପଣ ଯଦି ଆଉ ଏହାକୁ ଆକ୍ସେସ କରିବାକୁ ଚାହୁଁନାହାଁନ୍ତି, ତେବେ ଏଥିରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>

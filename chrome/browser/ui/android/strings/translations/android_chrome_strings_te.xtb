@@ -152,7 +152,6 @@
 <translation id="164269334534774161">మీరు <ph name="CREATION_TIME" /> నుండి ఈ పేజీ యొక్క ఆఫ్‌లైన్ కాపీని వీక్షిస్తున్నారు</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> వెబ్‌సైట్‌తో సైన్ ఇన్ చేయండి</translation>
-<translation id="1670399744444387456">ప్రాథమికం</translation>
 <translation id="1671236975893690980">డౌన్‌లోడ్ పెండింగ్‌లో ఉంది…</translation>
 <translation id="1672586136351118594">మళ్లీ చూపవద్దు</translation>
 <translation id="1680919990519905526">Google Lensతో కొనడానికి ఫోటో <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
@@ -286,6 +285,7 @@
 <translation id="233375395665273385">తొలగించి, సైన్ అవుట్ చేయండి</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" />ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="2349710944427398404">ఖాతాలు, బుక్‌మార్క్‌లు, సేవ్ చేసిన సెట్టింగ్‌లతో సహా Chrome ఉపయోగించిన మొత్తం డేటా</translation>
+<translation id="2349954856814571872">బుక్‌మార్క్ బార్ బటన్ చిహ్నం</translation>
 <translation id="235789365079050412">Google గోప్యతా పాలసీ</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
@@ -400,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 రోజు క్రితం చెక్ చేసింది}other{# రోజుల క్రితం చెక్ చేసింది}}</translation>
 <translation id="2842985007712546952">మూల ఫోల్డర్</translation>
 <translation id="2854916915045135148">అజ్ఞాత మోడ్‌లోకి మారడానికి నొక్కి, పట్టుకోండి</translation>
-<translation id="2855243985454069333">సింక్ అయి ఉన్న పరికరాలన్నిటి నుండి హిస్టరీని తొలగిస్తుంది</translation>
 <translation id="2860954141821109167">ఈ పరికరంలో ఫోన్ యాప్ ప్రారంభించబడిందని నిర్ధారించుకోండి</translation>
 <translation id="2861923151411510142">కొన్ని Chrome ఫీచర్‌లు ఇకపై అందుబాటులో ఉండవు</translation>
 <translation id="2869430948265924908">కారులో మీ గోప్యమైన కంటెంట్‌ను సురక్షితంగా ఉంచడం కోసం, మీరు తప్పనిసరిగా కారు ప్రొఫైల్ లాక్‌ను క్రియేట్ చేయాలి.  మీరు పిన్, కోడ్, లేదా పాస్‌వర్డ్‌ను ఉపయోగించి దీనిని క్రియేట్ చేయవచ్చు.</translation>
@@ -483,7 +482,6 @@
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> తొలగించబడింది</translation>
-<translation id="3214996641768123781">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK1" />సెర్చ్ హిస్టరీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK2" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.</translation>
 <translation id="3220943972464248773">మీ పాస్‌వర్డ్‌లను సింక్ చేయడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="3232293466644486101">బ్రౌజింగ్ డేటాను తొలగించండి…</translation>
 <translation id="3232754137068452469">వెబ్ యాప్‌</translation>
@@ -727,7 +725,6 @@
 <translation id="4405224443901389797">ఇక్కడికి తరలించండి…</translation>
 <translation id="4405636711880428279">మీ వర్చువల్ కార్డ్‌ను తీసివేయాలా?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" />, <ph name="TAB_COUNT" /> ఇతర ట్యాబ్‌లు</translation>
-<translation id="4409271659088619928">మీ సెర్చ్ ఇంజిన్ <ph name="DSE" />. వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి దాని సూచనలను చూడండి.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> తొలగించబడింది</translation>
 <translation id="4415276339145661267">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="4425140285732600465">ధరను ట్రాక్ చేయడం. ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి.</translation>
@@ -827,7 +824,6 @@
 <translation id="481574578487123132">లింక్ చేయబడిన పరికరాలు</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ట్యాబ్ గ్రూప్ మూసివేయబడింది, సేవ్ అయింది</translation>
 <translation id="4826163340425232009">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్.</translation>
-<translation id="4834007576107377210">వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి మీ సెర్చ్ ఇంజిన్ సూచనలను చూడండి</translation>
 <translation id="4834250788637067901">Google Payను ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు, ఆఫర్‌లు, అడ్రస్‌లు</translation>
 <translation id="4835385943915508971">Chrome రిక్వెస్ట్ చేసిన వనరుకు యాక్సెస్ కలిగి లేదు.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్‌కు సంబంధించిన ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లకు సంబంధించిన ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.}}</translation>
@@ -885,7 +881,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">గోప్యత</translation>
 <translation id="504456571576643789">పరిగణించాల్సిన విషయాలు</translation>
-<translation id="5054455334322721892">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK1" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK1" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.</translation>
 <translation id="506254248375231072">ట్యాబ్‌లు ఏవీ లేవు</translation>
 <translation id="5062960805900435602">పాస్‌వర్డ్ విలీనానికి సంబంధించిన అప్‌డేట్ మూసివేయబడింది</translation>
 <translation id="5075939510584558547">ఎన్‌క్రిప్షన్ చేయకుండా సేవ్ చేయండి</translation>
@@ -1421,7 +1416,6 @@
 <translation id="7431991332293347422">సెర్చ్‌లు మరియు మరిన్నింటిని వ్యక్తిగతీకరించడానికి మీ బ్రౌజింగ్ హిస్టరీ ఎలా ఉపయోగించబడుతుందో నియంత్రించండి</translation>
 <translation id="7435356471928173109">మీ అడ్మినిస్ట్రేటర్ ఆఫ్ చేశారు</translation>
 <translation id="7437998757836447326">Chrome నుండి సైన్ అవుట్ చేయండి</translation>
-<translation id="7453467225369441013">దాదాపు అన్ని సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది. మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు.</translation>
 <translation id="7453810262525006706">సైడ్ వ్యూకు కుదించండి</translation>
 <translation id="7454641608352164238">తగినంత స్థలం లేదు</translation>
 <translation id="7454744349230173024">మీ సంస్థ పాస్‌వర్డ్‌లను సేవ్ చేయడాన్ని ఆఫ్ చేసింది</translation>
@@ -1440,7 +1434,6 @@
 <translation id="749294055653435199">ఈ పరికరంలో Google Lens అందుబాటులో లేదు</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (నవీకరించినది <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">దయచేసి వేచి ఉండండి...</translation>
-<translation id="7502234197872745058">అన్ని వెబ్‌సైట్‌లలో మీ Google ఖాతా నుండి సైన్ అవుట్ చేయడానికి, <ph name="BEGIN_LINK1" />Chrome నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">అప్‌డేట్‌లు అందుబాటులో లేవు</translation>
 <translation id="7507207699631365376">ఈ ప్రొవైడర్ <ph name="BEGIN_LINK" />గోప్యతా పాలసీ<ph name="END_LINK" />ని చూడండి</translation>
 <translation id="750886945254958667">తర్వాత ట్యాబ్‌లను జోడించడానికి ఈ గ్రూప్‌ను అలాగే ఉంచుకోండి లేదా మీరు ఇకపై దీనికి యాక్సెస్ చేయకూడదనుకుంటే వదిలివేయండి</translation>

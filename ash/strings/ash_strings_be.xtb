@@ -1264,6 +1264,7 @@
 <translation id="5245201184978705914">Не ўдалося стварыць расшыфроўку</translation>
 <translation id="5251174953851719648">Абнавіць змесціва</translation>
 <translation id="5253783950165989294">Устаноўлена падключэнне да прылады "<ph name="DEVICE_NAME" />", <ph name="BATTERY_PERCENTAGE" />% зараду акумулятара</translation>
+<translation id="5256939106029293271">Праверце мікрафон</translation>
 <translation id="5258528442992323769">Няма захаваных працоўных сталоў</translation>
 <translation id="5260676007519551770">Стол 4</translation>
 <translation id="5265391159779542051">Вынікі загружаны</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5745612484876805746">Начная падсветка ўключаецца аўтаматычна пасля захаду сонца</translation>
 <translation id="5750765938512549687">Bluetooth выключаны</translation>
 <translation id="5758114525425072423">Уключыць Канцэнтрацыю ўвагі. Зададзены таймер: <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Паслухайце, як вас чуюць іншыя карыстальнікі. Каб спыніць праверку, націсніце на значок тэсціравання або закрыйце панэль відэавыкліку.</translation>
 <translation id="5760866832697883462">Падключэнне прылады "<ph name="NAME" />"</translation>
 <translation id="5762420912707163638">Уключыць або выключыць маркер. <ph name="STATE_TEXT" /> Каб ствараць рысункі на экране, выкарыстоўвайце сэнсарную панэль, сэнсарны экран або пяро.</translation>
 <translation id="576341972084747908">Спампоўванне небяспечнага файла "<ph name="FILENAME" />"</translation>

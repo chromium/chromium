@@ -1917,6 +1917,7 @@ Der Nutzer kann ein Google Fotos-Bild als Hintergrund auswählen, wenn diese Ric
 
       Hinweis: Wenn unter Android zu viele Websites isoliert werden, kann dies Leistungsprobleme verursachen, vor allem auf leistungsschwächeren Geräten. Diese Richtlinie kann nur für Chrome unter Android auf Geräten mit mehr als 1 GB RAM verwendet werden. Für andere Plattformen als Android musst du <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> verwenden.</translation>
 <translation id="2407758458436268630">Intelligentem Dimm-Modell erlauben, den Zeitraum bis zum Dimmen des Bildschirms zu verlängern</translation>
+<translation id="2410163749464044777">Einstellungen für lokale Speicher für Nutzerdaten</translation>
 <translation id="2411629345938804022">Wenn die Richtlinie auf "3" gesetzt ist, können Websites den Zugriff auf Bluetooth-Geräte in der Nähe anfragen. Wenn die Richtlinie auf "2" gesetzt ist, wird der Zugriff auf Bluetooth-Geräte in der Nähe verweigert.
 
       Wird sie nicht konfiguriert, können Websites den Zugriff anfragen, Nutzer können diese Einstellung jedoch ändern.</translation>
@@ -2432,6 +2433,9 @@ Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLI
 <translation id="2801378553855965587">Dadurch wird die <ph name="GOOGLE_CALENDAR_NAME" />-Integration deaktiviert.</translation>
 <translation id="2805707493867224476">Anzeige von Pop-ups für alle Websites zulassen</translation>
 <translation id="2806804577787377637">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />“.</translation>
+<translation id="2812417768214606683">Durch diese Richtlinie wird eine Liste von USB-Speichergeräten festgelegt, die von den Richtlinien „<ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" />“ und „<ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />“ ausgenommen sind.
+
+Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt‑ID des jeweiligen USB-Gerätemodells.</translation>
 <translation id="2815701930753942156">Durch diese Richtlinie wird eine Liste von wöchentlichen Intervallen festgelegt, in denen das <ph name="PRODUCT_OS_NAME" />‑Gerät nicht verwendet werden kann. Alle laufenden Sitzungen werden geschlossen und die Anmeldung wird vorübergehend blockiert.
 
 Intervalle, die sich überschneiden, werden nicht unterstützt.
@@ -5779,11 +5783,6 @@ Alles einschließende Platzhalter für den Host (z. B. „*“ oder „[*]“) 
 Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 <translation id="5297948043665200363">Nutzer kann angemeldet bleiben, wenn sein Konto nicht mehr authentifiziert ist</translation>
 <translation id="5298949392804966105">Keine Einschränkungen für verwaltete Konten</translation>
-<translation id="5300770793658186741">Mit dieser Richtlinie wird eine Liste von Ursprüngen (URLs) oder Hostnamenmustern wie „*.beispiel.de“ festgelegt, für die keine Sicherheitsbeschränkungen für unsichere Ursprünge gelten. Organisationen können Ursprünge für alte Anwendungen, die kein TLS bereitstellen können, angeben oder einen Testserver für die interne Webentwicklung einrichten, damit die Entwickler Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie verhindert, dass der Ursprung in der Adressleiste als „Nicht sicher“ gekennzeichnet wird.
-
-Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt wie das Festlegen des Befehlszeilen-Flags „--unsafely-treat-insecure-origin-as-secure“ für eine durch Kommas getrennte Liste mit denselben URLs. Die Richtlinie überschreibt das Befehlszeilen-Flag und „UnsafelyTreatInsecureOriginAsSecure“, sofern vorhanden.
-
-Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="530111809849214840"><ph name="GOOGLE_DRIVE_NAME" /> nicht als Option anzeigen.</translation>
 <translation id="530134925949808452">Zeitpunkt (in Ortszeit), an dem das Nutzungskontingent erneuert wird.</translation>
 <translation id="5303080953475303561">Mit dieser Richtlinie kannst du festlegen, wie oft auf dem Sperrbildschirm das Passwort zum schnellen Entsperren angefordert wird. Immer dann, wenn der Sperrbildschirm angezeigt wird und die letzte Passworteingabe vor dem über den ausgewählten Wert festgelegten Zeitfenster liegt, steht schnelles Entsperren nicht zur Verfügung. Wenn Nutzer auf dem Sperrbildschirm bleiben, bis diese Zeit abgelaufen ist, wird das nächste Mal, wenn sie einen falschen Code eingeben oder wieder auf den Sperrbildschirm gelangen, ein Passwort angefordert, je nachdem, welche Situation zuerst eintritt.
@@ -8395,6 +8394,7 @@ integrierte Passwortmanager verwendet.
 Diese Richtlinie wirkt sich nicht auf Passwortmanager von Drittanbietern aus, die APIs für Barrierefreiheit verwenden.</translation>
 <translation id="7114169791477667553">Standardsuchmaschine deaktivieren</translation>
 <translation id="7115684775550072082">Leerzeichen nur für die MIME-Typen „text“ und „xml“ beibehalten</translation>
+<translation id="7119538491527883595">Lokaler Speicher für Nutzerdaten</translation>
 <translation id="7121046543122812054">Diese Richtlinie ist veraltet. Du kannst stattdessen <ph name="BROWSER_SIGNIN_POLICY_NAME" /> verwenden.
 
       Die Richtlinie erlaubt dem Nutzer die Anmeldung in <ph name="PRODUCT_NAME" />.
@@ -8702,6 +8702,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 <translation id="7339315111520512972">Ausführung des Netzwerkcodes im Browserprozess erzwingen</translation>
 <translation id="7340034977315324840">Aktivitätszeit von Geräten melden</translation>
 <translation id="734095828044419464">Bereitstellung von Clientzertifikaten deaktivieren</translation>
+<translation id="7341773449551289679">Zulassungsliste für externe Speichergeräte</translation>
 <translation id="7343004974628511824">DNS-Abfangprüfungen ausführen</translation>
 <translation id="7343497214039883642">Unternehmensdrucker-Konfigurationsdatei für Geräte</translation>
 <translation id="7357148531287978404">Audioeingabe deaktivieren</translation>

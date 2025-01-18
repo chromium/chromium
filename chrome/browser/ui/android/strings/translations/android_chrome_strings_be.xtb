@@ -152,7 +152,6 @@
 <translation id="164269334534774161">Вы праглядаеце пазасеткавую копію гэтай старонкі ад <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1645262572857218659">Увайсці праз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Асноўныя налады</translation>
 <translation id="1671236975893690980">Чакаецца спампоўванне…</translation>
 <translation id="1672586136351118594">Больш не паказваць</translation>
 <translation id="1680919990519905526">Аб’ектыў: пошук тавару<ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
@@ -286,6 +285,7 @@
 <translation id="233375395665273385">Выдаліць і выйсці</translation>
 <translation id="2341410551640223969">Не ўдалося ўсталяваць праграму "<ph name="WEBAPK_NAME" />".</translation>
 <translation id="2349710944427398404">Агульны аб’ём даных Chrome, у тым ліку закладкі, уліковыя запісы і захаваныя налады</translation>
+<translation id="2349954856814571872">Значок кнопкі панэлі закладак</translation>
 <translation id="235789365079050412">Палітыка прыватнасці Google</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2362083820973145409">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Кнопка адкрывае налады.</translation>
@@ -400,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Праверка праводзілася дзень таму}one{Праверка праводзілася # дзень таму}few{Праверка праводзілася # дні таму}many{Праверка праводзілася # дзён таму}other{Праверка праводзілася # дня таму}}</translation>
 <translation id="2842985007712546952">Бацькоўская папка</translation>
 <translation id="2854916915045135148">Націсніце і ўтрымлівайце, каб пераключыцца ў рэжым інкогніта</translation>
-<translation id="2855243985454069333">Гісторыя будзе выдалена з усіх сінхранізаваных прылад</translation>
 <translation id="2860954141821109167">Праверце, ці ўключана на гэтай прыладзе праграма для тэлефона</translation>
 <translation id="2861923151411510142">Некаторыя функцыі Chrome перастануць быць даступнымі</translation>
 <translation id="2869430948265924908">Каб абараніць вашы канфідэнцыяльныя даныя ў аўтамабілі, неабходна наладзіць блакіроўку профілю.  Зрабіць гэта можна з дапамогай кода блакіроўкі, PIN-кода або пароля.</translation>
@@ -483,7 +482,6 @@
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3208584281581115441">Праверыць</translation>
 <translation id="3211426585530211793">Выдалена: <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Гісторыя пошуку<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />іншыя дзеянні<ph name="END_LINK2" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.</translation>
 <translation id="3220943972464248773">Каб сінхранізаваць паролі, пацвердзіце сваю асобу</translation>
 <translation id="3232293466644486101">Выдаліць даныя пра работу ў браўзеры…</translation>
 <translation id="3232754137068452469">Вэб-праграма</translation>
@@ -727,7 +725,6 @@
 <translation id="4405224443901389797">Перамясціць у…</translation>
 <translation id="4405636711880428279">Выдаліць віртуальную картку?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> і іншыя ўкладкі (<ph name="TAB_COUNT" />)</translation>
-<translation id="4409271659088619928">Ваша пошукавая сістэма – <ph name="DSE" />. Каб выдаліць гісторыю пошуку, выканайце інструкцыі гэтай сістэмы (калі яны даступныя).</translation>
 <translation id="4414179633735763985">Выдалена: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
 <translation id="4425140285732600465">Цана адсочваецца. Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі.</translation>
@@ -827,7 +824,6 @@
 <translation id="481574578487123132">Звязаныя прылады</translation>
 <translation id="4822710610088666676">Група ўкладак "<ph name="TAB_GROUP_TITLE" />" закрыта і захавана</translation>
 <translation id="4826163340425232009">Ніжні аркуш са спісам даступных для выбару ўліковых запісаў.</translation>
-<translation id="4834007576107377210">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя)</translation>
 <translation id="4834250788637067901">Спосабы аплаты, прапановы і адрасы, якія выкарыстоўваюць Google Pay</translation>
 <translation id="4835385943915508971">Chrome не мае доступу да запытанай крыніцы.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Аднавіць групу з <ph name="TAB_COUNT_ONE" /> укладкі, колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}one{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}few{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}many{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}other{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}}</translation>
@@ -885,7 +881,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> укладка - <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> укладкі - <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> укладак - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> укладкі - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="504456571576643789">Інфармацыя для разгляду</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Іншыя дзеянні<ph name="END_LINK1" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.</translation>
 <translation id="506254248375231072">Няма ўкладак</translation>
 <translation id="5062960805900435602">Паведамленне пра аб’яднанне пароляў закрыта</translation>
 <translation id="5075939510584558547">Захоўванне без шыфравання</translation>
@@ -1423,7 +1418,6 @@
 <translation id="7431991332293347422">Кіраванне тым, як ваша гісторыя прагляду сайтаў выкарыстоўваецца для персаналізацыі пошуку і ў іншых мэтах</translation>
 <translation id="7435356471928173109">Выключаны адміністратарам</translation>
 <translation id="7437998757836447326">Выйсці з Chrome</translation>
-<translation id="7453467225369441013">Будзе выкананы выхад з большасці сайтаў. З Уліковага запісу Google вы не выйдзеце.</translation>
 <translation id="7453810262525006706">Згарнуць да віду збоку</translation>
 <translation id="7454641608352164238">Не хапае месца</translation>
 <translation id="7454744349230173024">Ваша арганізацыя адключыла захаванне пароляў</translation>
@@ -1442,7 +1436,6 @@
 <translation id="749294055653435199">Google Аб’ектыў недаступны на гэтай прыладзе</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (абноўлена <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Пачакайце…</translation>
-<translation id="7502234197872745058">Каб выйсці з Уліковага запісу Google на ўсіх вэб-сайтах, <ph name="BEGIN_LINK1" />выйдзіце з Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Абнаўленні недаступныя</translation>
 <translation id="7507207699631365376">Азнаёміцца з <ph name="BEGIN_LINK" />палітыкай прыватнасці<ph name="END_LINK" /> гэтага пастаўшчыка</translation>
 <translation id="750886945254958667">Вы можаце захаваць гэту групу, каб дадаць укладкі пазней, ці выйсці з яе, калі доступ да гэтай групы вам больш не патрэбны</translation>

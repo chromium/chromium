@@ -281,6 +281,7 @@
 <translation id="2161446265348023004">తెరిచి ఉన్న విండోకు స్విచ్ అవ్వండి</translation>
 <translation id="2164946989711475905">సైన్ ఇన్ చేయండి…</translation>
 <translation id="2175927920773552910">QR కోడ్</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
 <translation id="2196428379625389579">వెబ్‌లో సెర్చ్ చేయండి</translation>
 <translation id="2199562093267256223">దీని వలన <ph name="USER_EMAIL" />‌కి సైన్ ఇన్ చేసిన అన్ని పరికరాల నుండి గ్రూప్ తొలగించబడుతుంది.</translation>
@@ -649,6 +650,7 @@
 <translation id="3955740319737378355">పూర్తయింది</translation>
 <translation id="3955822496205734389">మీ వద్ద బలహీనమైన పాస్‌వర్డ్‌లు ఉన్నాయి.</translation>
 <translation id="3958312024468322930">దీన్ని మీ మొదటి స్క్రీన్ దిగువున ఉన్న డాక్‌కు లాగండి</translation>
+<translation id="3960218941754097036">Google Lens సహాయంతో మీ స్క్రీన్‌పై ఉన్న దానిలో దేనికోసమైనా సెర్చ్ చేయండి</translation>
 <translation id="3962326069546168954">సేవ్ చేయండి</translation>
 <translation id="3967327056943561740">బుక్‌మార్క్‌లు</translation>
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
@@ -691,6 +693,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">ఈ వెబ్‌సైట్ ఒక ఫైల్‌ను డౌన్‌లోడ్ చేసి, దానిని మీ క్యాలెండర్‌కు జోడించాలనుకుంటోంది.</translation>
 <translation id="4152011295694446843">మీరు మీ బుక్‌మార్క్‌లను ఇక్కడ చూడవచ్చు</translation>
+<translation id="4154753961803534698">కెమెరాతో సెర్చ్ చేయండి</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{బుక్‌మార్క్ "{title}"కు సేవ్ చేయబడింది. ఇది ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది.}other{{count} బుక్‌మార్క్‌లు "{title}"లో సేవ్ అయ్యాయి. అవి ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />తో ముగిసే <ph name="NETWORK_NAME" /></translation>
@@ -1157,6 +1160,7 @@
 <translation id="6168647875670665004">కథనం సూచనలు</translation>
 <translation id="6169031022444660352">సేవ్ చేసిన అన్ని ఆధారాలను తొలగించడానికి, మీరు ముందుగా మీ పరికరంలో పాస్‌కోడ్‌ను సెటప్ చేయాలి.</translation>
 <translation id="6173499589275053515">పాస్‌వర్డ్ మీ Google ఖాతా, <ph name="EMAIL" />లో సేవ్ చేయబడింది</translation>
+<translation id="6181969657494915430">సెర్చ్ స్క్రీన్</translation>
 <translation id="6187302354554850004">చివరగా సింక్ చేసింది: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />‌ తేదీన క్రియేట్ చేయబడింది</translation>
 <translation id="6189413832092199491">చదవనివి</translation>
@@ -1594,6 +1598,7 @@
 <translation id="8005666035647241369">ఈ పరికరంలో Google Password Managerకు</translation>
 <translation id="8011489434346330032">వెబ్ ఇన్స్‌పెక్టర్</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
+<translation id="8023170444051056234">మీరు వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అది మీ అన్ని పరికరాల నుండి తొలగించబడుతుంది</translation>
 <translation id="8023878949384262191">విభాగాన్ని విస్తరింపజేస్తుంది.</translation>
 <translation id="8027581147000338959">కొత్త విండోలో తెరవండి</translation>
 <translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>

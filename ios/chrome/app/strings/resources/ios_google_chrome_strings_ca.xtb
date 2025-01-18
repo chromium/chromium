@@ -169,6 +169,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="5639704535586432836">Obre Configuració &gt; Privacitat &gt; Càmera &gt; Google Chrome i activa la càmera.</translation>
 <translation id="5642200033778930880">Google Chrome no pot utilitzar la càmera en mode de visualització dividida</translation>
 <translation id="5661521615548540542">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
+<translation id="5681291952421236520">Commuta Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{Es mostra 1 finestra de Chrome}other{Es mostren {count} finestres de Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Defineix Chrome com a navegador predeterminat</translation>
@@ -204,6 +205,7 @@ Espera uns quants minuts abans de canviar de compte. Si canvies de compte ara, a
 <translation id="6484712497741564393">Has iniciat la sessió com a <ph name="EMAIL" />.
 
 Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
+<translation id="6533470733797826516">Inicia la sessió més de pressa amb Emplenament automàtic de Chrome</translation>
 <translation id="6545449117344801102">Chrome detecta les adreces i utilitza Google Maps per oferir-te indicacions i informació local.</translation>
 <translation id="6634107063912726160">Quan tanquis la sessió, Chrome no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
 <translation id="6636941099779251629">La teva organització requereix que iniciïs la sessió per utilitzar Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>

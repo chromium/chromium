@@ -1264,6 +1264,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5245201184978705914">Kan ikke generere noen transkripsjon</translation>
 <translation id="5251174953851719648">Last inn innholdet på nytt</translation>
 <translation id="5253783950165989294">Koblet til enheten <ph name="DEVICE_NAME" /> – <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
+<translation id="5256939106029293271">Test mikrofonen</translation>
 <translation id="5258528442992323769">Ingen lagrede skrivebord</translation>
 <translation id="5260676007519551770">Skrivebord 4</translation>
 <translation id="5265391159779542051">Resultatene er lastet inn</translation>
@@ -1421,6 +1422,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5745612484876805746">Nattlys slås på automatisk ved solnedgang</translation>
 <translation id="5750765938512549687">Bluetooth er av</translation>
 <translation id="5758114525425072423">Start fokus. Nedtellingen er satt til <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Hør hvordan du høres ut for andre. For å stoppe, klikk på testikonet eller lukk videoanropspanelet.</translation>
 <translation id="5760866832697883462">Koble til <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Slå av/på markøren. <ph name="STATE_TEXT" /> Bruk styreflaten, berøringsskjermen eller pekepennen til å tegne på skjermen.</translation>
 <translation id="576341972084747908">Last ned den farlige filen <ph name="FILENAME" /></translation>
