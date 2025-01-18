@@ -245,6 +245,7 @@ class DateOrderedListMediator implements BackPressHandler {
     /** Tears down this mediator. */
     public void destroy() {
         mSource.destroy();
+        mFaviconProvider.destroy();
         mThumbnailProvider.destroy();
     }
 
