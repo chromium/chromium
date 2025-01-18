@@ -69,6 +69,7 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
       ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override;
   void ShowExtensionDisabledError(const Extension* extension,
                                   bool is_remote_install) override;
+  void FinishDelayedInstallationsIfAny() override;
   bool CanEnableExtension(const Extension* extension) override;
   bool CanDisableExtension(const Extension* extension) override;
   bool ShouldBlockExtension(const Extension* extension) override;

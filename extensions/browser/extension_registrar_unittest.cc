@@ -85,6 +85,7 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
                     const base::FilePath& path,
                     LoadErrorBehavior load_error_behavior));
   MOCK_METHOD2(ShowExtensionDisabledError, void(const Extension*, bool));
+  MOCK_METHOD0(FinishDelayedInstallationsIfAny, void());
   MOCK_METHOD1(CanEnableExtension, bool(const Extension* extension));
   MOCK_METHOD1(CanDisableExtension, bool(const Extension* extension));
   MOCK_METHOD1(ShouldBlockExtension, bool(const Extension* extension));

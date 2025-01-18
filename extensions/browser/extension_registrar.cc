@@ -31,6 +31,7 @@
 #include "extensions/browser/task_queue_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
@@ -347,6 +348,30 @@ void ExtensionRegistrar::DisableExtensionWithSource(
   DisableExtension(extension_id, disable_reasons);
 }
 
+void ExtensionRegistrar::EnabledReloadableExtensions() {
+  std::vector<std::string> extensions_to_enable;
+  for (const auto& e : registry_->disabled_extensions()) {
+    if (extension_prefs_->GetDisableReasons(e->id()) ==
+        disable_reason::DISABLE_RELOAD) {
+      extensions_to_enable.push_back(e->id());
+    }
+  }
+  for (const std::string& extension : extensions_to_enable) {
+    EnableExtension(extension);
+  }
+}
+
+void ExtensionRegistrar::RemoveComponentExtension(
+    const std::string& extension_id) {
+  scoped_refptr<const Extension> extension(
+      registry_->enabled_extensions().GetByID(extension_id));
+  RemoveExtension(extension_id, UnloadedExtensionReason::UNINSTALL);
+  if (extension.get()) {
+    registry_->TriggerOnUninstalled(extension.get(),
+                                    UNINSTALL_REASON_COMPONENT_REMOVED);
+  }
+}
+
 void ExtensionRegistrar::RemoveDisableReasonAndMaybeEnable(
     const std::string& extension_id,
     disable_reason::DisableReason reason_to_remove) {
@@ -541,6 +566,51 @@ bool ExtensionRegistrar::UninstallExtension(
       extension->id(), extension->location(), external_uninstall);
 
   return true;
+}
+
+void ExtensionRegistrar::UninstallMigratedExtensions(
+    base::span<const char* const> migrated_ids) {
+  const ExtensionSet installed_extensions =
+      registry_->GenerateInstalledExtensionsSet();
+  for (const auto* extension_id : migrated_ids) {
+    auto* extension = installed_extensions.GetByID(extension_id);
+    if (extension) {
+      UninstallExtension(extension_id, UNINSTALL_REASON_COMPONENT_REMOVED,
+                         nullptr);
+      extension_prefs_->MarkObsoleteComponentExtensionAsRemoved(
+          extension->id(), extension->location());
+    }
+  }
+}
+
+void ExtensionRegistrar::FinishInstallation(const Extension* extension) {
+  const Extension* existing_extension =
+      registry_->GetInstalledExtension(extension->id());
+  bool is_update = false;
+  std::string old_name;
+  if (existing_extension) {
+    is_update = true;
+    old_name = existing_extension->name();
+  }
+  registry_->TriggerOnWillBeInstalled(extension, is_update, old_name);
+
+  // Unpacked extensions default to allowing file access, but if that has been
+  // overridden, don't reset the value.
+  if (Manifest::ShouldAlwaysAllowFileAccess(extension->location()) &&
+      !extension_prefs_->HasAllowFileAccessSetting(extension->id())) {
+    extension_prefs_->SetAllowFileAccess(extension->id(), true);
+  }
+
+  AddExtension(extension);
+
+  // Notify observers that need to know when an installation is complete.
+  registry_->TriggerOnInstalled(extension, is_update);
+
+  // Check extensions that may have been delayed only because this shared module
+  // was not available.
+  if (SharedModuleInfo::IsSharedModule(extension)) {
+    delegate_->FinishDelayedInstallationsIfAny();
+  }
 }
 
 bool ExtensionRegistrar::CanBlockExtension(const Extension* extension) const {

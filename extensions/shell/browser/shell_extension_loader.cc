@@ -175,6 +175,8 @@ void ShellExtensionLoader::ShowExtensionDisabledError(
     const Extension* extension,
     bool is_remote_install) {}
 
+void ShellExtensionLoader::FinishDelayedInstallationsIfAny() {}
+
 bool ShellExtensionLoader::CanEnableExtension(const Extension* extension) {
   return true;
 }
