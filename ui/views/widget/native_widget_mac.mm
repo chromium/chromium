@@ -62,8 +62,12 @@ uint64_t StyleMaskForParams(const Widget::InitParams& params) {
   // If the Widget is modal, it will be displayed as a sheet. This works best if
   // it has NSWindowStyleMaskTitled. For example, with
   // NSWindowStyleMaskBorderless, the parent window still accepts input.
+  // A sheet will not have a titlebar despite being NSWindowStyleMaskTitled.
   // NSWindowStyleMaskFullSizeContentView ensures that calculating the modal's
   // content rect doesn't account for a nonexistent title bar.
+  // TODO(crbug.com/390441085): a window-modal should always have a parent.
+  // Otherwise, it will not be displayed as a sheet. Then it will show a native
+  // titlebar, which will cover the content.
   if (params.delegate &&
       params.delegate->GetModalType() == ui::mojom::ModalType::kWindow) {
     return NSWindowStyleMaskTitled | NSWindowStyleMaskFullSizeContentView;
