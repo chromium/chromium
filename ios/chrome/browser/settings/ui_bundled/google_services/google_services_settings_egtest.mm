@@ -122,7 +122,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     // the feature is not enabled.
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
   }
-  if ([self isRunningTest:@selector(DISABLED_testParcelTrackingSetting)]) {
+  if ([self isRunningTest:@selector(testParcelTrackingSetting)]) {
     config.features_disabled.push_back(kIOSDisableParcelTracking);
   }
   return config;
@@ -343,12 +343,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests the parcel tracking settings row is properly shown.
-// TODO(crbug.com/389954360): Restore this test.
-- (void)DISABLED_testParcelTrackingSetting {
+- (void)testParcelTrackingSetting {
   // Parcel tracking is only enabled in the US.
-  [ChromeEarlGrey setStringValue:"us"
-               forLocalStatePref:variations::prefs::
-                                     kVariationsPermanentOverriddenCountry];
+  [ChromeEarlGrey overrideVariationsServiceStoredPermanentCountry:@"us"];
 
   [self openGoogleServicesSettings];
 
@@ -365,9 +362,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests the parcel tracking settings row is not shown for non-US countries.
 - (void)testParcelTrackingSetting_notShownOutsideUS {
   // Set permanent country to somthing other than the US.
-  [ChromeEarlGrey setStringValue:"fr"
-               forLocalStatePref:variations::prefs::
-                                     kVariationsPermanentOverriddenCountry];
+  [ChromeEarlGrey overrideVariationsServiceStoredPermanentCountry:@"fr"];
 
   [self openGoogleServicesSettings];
 

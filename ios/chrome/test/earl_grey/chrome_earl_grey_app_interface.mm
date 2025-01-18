@@ -33,6 +33,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/fake_server_http_post_provider.h"
 #import "components/unified_consent/unified_consent_service.h"
+#import "components/variations/service/variations_service.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -1568,6 +1569,8 @@ int watchRunNumber = 0;
   return HasFirstRunSentinel();
 }
 
+#pragma mark - Notification Utilities
+
 + (void)requestTipsNotification:(TipsNotificationType)type {
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
@@ -1578,6 +1581,15 @@ int watchRunNumber = 0;
                     trigger:nil];
 
   [center addNotificationRequest:request withCompletionHandler:nil];
+}
+
+#pragma mark - Variations Utilities
+
++ (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country {
+  std::string UTF8Country = base::SysNSStringToUTF8(country);
+  variations::VariationsService* variationsService =
+      GetApplicationContext()->GetVariationsService();
+  variationsService->OverrideStoredPermanentCountry(UTF8Country);
 }
 
 @end

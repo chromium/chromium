@@ -101,6 +101,7 @@ source_set("eg_app_support+eg2") {
     "//components/translate/core/browser",
     "//components/unified_consent",
     "//components/variations",
+    "//components/variations/service",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/strings",
