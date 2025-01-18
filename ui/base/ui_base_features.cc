@@ -205,6 +205,12 @@ BASE_FEATURE(kUiCompositorScrollWithLayers,
 #endif
 );
 
+// TODO(crbug.com/389771428): Switch the ui::Compositor to use
+// cc::PropertyTrees and layer lists rather than layer trees.
+BASE_FEATURE(kUiCompositorUsesLayerLists,
+             "UiCompositorUsesLayerLists",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of a touch fling curve that is based on the behavior of
 // native apps on Windows.
 BASE_FEATURE(kExperimentalFlingAnimation,
