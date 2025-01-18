@@ -1710,7 +1710,7 @@ public class RootUiCoordinator
                 mActivity,
                 delegate,
                 coordinator,
-                coordinator.getContext().getColor(R.color.omnibox_focused_fading_background_color));
+                coordinator.getContext().getColor(R.color.default_scrim_color));
     }
 
     protected void setStatusBarScrimFraction(float scrimFraction) {

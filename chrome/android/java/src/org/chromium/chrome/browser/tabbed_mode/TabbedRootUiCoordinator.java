@@ -926,9 +926,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity,
                 delegate,
                 mCoordinator,
-                mCoordinator
-                        .getContext()
-                        .getColor(R.color.omnibox_focused_fading_background_color));
+                mCoordinator.getContext().getColor(R.color.default_scrim_color));
     }
 
     // Package Private class methods

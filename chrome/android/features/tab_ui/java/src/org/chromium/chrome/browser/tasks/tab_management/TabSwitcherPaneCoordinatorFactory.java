@@ -197,7 +197,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 activity,
                 /* systemUiScrimDelegate= */ null,
                 coordinator,
-                activity.getColor(R.color.omnibox_focused_fading_background_color));
+                activity.getColor(R.color.default_scrim_color));
     }
 
     @VisibleForTesting
