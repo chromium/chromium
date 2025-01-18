@@ -281,6 +281,7 @@
 <translation id="2161446265348023004">Kalo te dritarja e hapur</translation>
 <translation id="2164946989711475905">Identifikohu…</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
+<translation id="2186206192313702726">Lentja e Google</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
 <translation id="2196428379625389579">Kërko në ueb</translation>
 <translation id="2199562093267256223">Kjo do ta fshijë grupin nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" />.</translation>
@@ -492,6 +493,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3130863904455712965">Historiku etj.</translation>
 <translation id="313283613037595347">Krijo një skedë të re "të fshehtë".</translation>
 <translation id="3138611310073113613">Hiqe zgjedhjen</translation>
+<translation id="3140825265190223781">Çelësat e kalimit dhe fjalëkalimet e ruajtura</translation>
 <translation id="3143515551205905069">Anulo sinkronizimin</translation>
 <translation id="314837624430314508">Qëndro i informuar me lajmet më të fundit, përditësimet për monitorimin e çmimeve etj.</translation>
 <translation id="3157387275655328056">Shto te lista e leximit</translation>
@@ -1665,6 +1667,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8299613349954694191">Hap një skedë "të fshehtë" për të shfletuar në mënyrë private në ueb.</translation>
 <translation id="8307481894409578819">Ky skedar nuk mund të ngarkohej</translation>
 <translation id="8319076807703933069">Kërkim i ri</translation>
+<translation id="833647236762414178">Krijo, ruaj dhe menaxho fjalëkalimet dhe çelësat e kalimit për t'u identifikuar me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8364563001733875155">Për të ndryshuar kodin tënd PIN, në fillim konfiguro kodin e kalimit në pajisjen tënde.</translation>

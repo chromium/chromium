@@ -152,7 +152,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="164269334534774161">Anda melihat salinan offline halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1645262572857218659">Login dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Dasar</translation>
 <translation id="1671236975893690980">Proses download tertunda...</translation>
 <translation id="1672586136351118594">Jangan tampilkan lagi</translation>
 <translation id="1680919990519905526">Beli dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Diperiksa 1 hari yang lalu}other{Diperiksa # hari yang lalu}}</translation>
 <translation id="2842985007712546952">Folder induk</translation>
 <translation id="2854916915045135148">Sentuh lama untuk beralih ke mode Samaran</translation>
-<translation id="2855243985454069333">Menghapus histori dari semua perangkat yang disinkronkan</translation>
 <translation id="2860954141821109167">Pastikan aplikasi telepon diaktifkan di perangkat ini</translation>
 <translation id="2861923151411510142">Beberapa fitur Chrome tidak akan tersedia lagi</translation>
 <translation id="2869430948265924908">Untuk melindungi konten sensitif di mobil, Anda harus membuat kunci profil mobil.  Anda dapat melakukannya dengan PIN, kode, atau sandi.</translation>
@@ -483,7 +481,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3208584281581115441">Periksa sekarang</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> dihapus</translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Histori penelusuran<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />bentuk aktivitas lainnya<ph name="END_LINK2" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="3220943972464248773">Untuk menyinkronkan sandi, verifikasi diri Anda</translation>
 <translation id="3232293466644486101">Hapus data penjelajahan…</translation>
 <translation id="3232754137068452469">Aplikasi Web</translation>
@@ -727,7 +724,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4405224443901389797">Pindahkan ke…</translation>
 <translation id="4405636711880428279">Hapus kartu virtual Anda?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> dan <ph name="TAB_COUNT" /> tab lainnya</translation>
-<translation id="4409271659088619928">Mesin telusur Anda adalah <ph name="DSE" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> dihapus</translation>
 <translation id="4415276339145661267">Kelola Akun Google Anda</translation>
 <translation id="4425140285732600465">Memantau harga. Dapatkan notifikasi jika ada diskon di situs mana pun.</translation>
@@ -827,7 +823,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="481574578487123132">Perangkat tertaut</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> grup tab ditutup dan disimpan</translation>
 <translation id="4826163340425232009">Sheet bawah untuk tombol login.</translation>
-<translation id="4834007576107377210">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan</translation>
 <translation id="4834250788637067901">Metode pembayaran, penawaran, dan alamat yang menggunakan Google Pay</translation>
 <translation id="4835385943915508971">Chrome tidak memiliki akses ke sumber daya yang diminta.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Pulihkan grup tab sebanyak <ph name="TAB_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />, sebagai grup tab latar belakang baru.}other{Pulihkan grup tab sebanyak <ph name="TAB_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />, sebagai grup tab latar belakang baru.}}</translation>
@@ -885,7 +880,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> tab - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privasi</translation>
 <translation id="504456571576643789">Hal-hal yang perlu dipertimbangkan</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Bentuk aktivitas lainnya<ph name="END_LINK1" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="506254248375231072">Tidak ada tab</translation>
 <translation id="5062960805900435602">Pembaruan terkait penggabungan sandi ditutup</translation>
 <translation id="5075939510584558547">Simpan tanpa enkripsi</translation>
@@ -1423,7 +1417,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7431991332293347422">Kontrol cara histori penjelajahan digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="7437998757836447326">Logout dari Chrome</translation>
-<translation id="7453467225369441013">Membuat Anda logout dari sebagian besar situs. Anda tidak akan logout dari Akun Google.</translation>
 <translation id="7453810262525006706">Ciutkan ke panel samping</translation>
 <translation id="7454641608352164238">Tidak cukup ruang</translation>
 <translation id="7454744349230173024">Organisasi Anda menonaktifkan penyimpanan sandi</translation>
@@ -1442,7 +1435,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="749294055653435199">Google Lens tidak tersedia di perangkat ini</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Diperbarui <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Harap tunggu...</translation>
-<translation id="7502234197872745058">Untuk logout dari Akun Google Anda di semua situs, <ph name="BEGIN_LINK1" />logout dari Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Update Tidak Tersedia</translation>
 <translation id="7507207699631365376">Lihat <ph name="BEGIN_LINK" />kebijakan privasi<ph name="END_LINK" /> penyedia ini</translation>
 <translation id="750886945254958667">Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya</translation>

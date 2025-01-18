@@ -243,6 +243,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 
       Als dit beleid is ingesteld op False, wordt het selectievakje 'Altijd toestaan' niet getoond en krijgt de gebruiker elke keer als er een extern protocol wordt aangeroepen een prompt.</translation>
 <translation id="1181598794547737681">Ballon-UI voor downloaden aanzetten</translation>
+<translation id="1182701225491473405">Instellingen voor Controlled Frame</translation>
 <translation id="1184531093651606913">Voorkomen dat extensies worden geladen via de opdrachtregel</translation>
 <translation id="1184562656144537588">Manifest v2 staat alleen aan voor afgedwongen extensies</translation>
 <translation id="11903325225202653">Als het beleid is ingesteld op True, blijft de modus voor hoog contrast aan. Als het beleid is ingesteld op False, blijft de modus voor hoog contrast uit.
@@ -1010,6 +1011,7 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
       Als je het beleid niet instelt of instelt op een lege lijst, worden er geen foutopsporingsgegevens op laag niveau toegevoegd aan de gebruikersfeedback.
       Bekijk de beschrijving van elk apparaattype voor het specifieke type foutopsporingsgegevens op laag niveau.</translation>
 <translation id="1744340218280697033">Niet toestaan dat ouders accounts toevoegen die onder toezicht staan</translation>
+<translation id="1745981653910662565">Controlled Frame API toestaan op deze sites</translation>
 <translation id="1751429117283165017">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om hun schrijftoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.
@@ -1230,6 +1232,7 @@ Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nad
       Als je het beleid niet instelt, wordt <ph name="HTTP_NEGOTIATE" />-verificatie uitgezet op Android.</translation>
 <translation id="1923704782248889851">Dicteren aanzetten</translation>
 <translation id="1924085079572112898">F11-instellingen staan uit</translation>
+<translation id="1924393228810864764">Niet toestaan dat geïsoleerde web-app-oorsprongen het Controlled Frame gebruiken</translation>
 <translation id="1925529914257504750">Automatisch updaten van P2P aangezet</translation>
 <translation id="1928355425032308464">Video-invoer aanzetten</translation>
 <translation id="1930094135927166199">USB PowerShare uitzetten</translation>
@@ -1302,6 +1305,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 
       Als je het beleid niet toepast of niet instelt, wordt Fast Transition niet gebruikt.</translation>
 <translation id="1972134432340252414">Verouderde extensiepunten in het browserproces blokkeren</translation>
+<translation id="1973804850652157024">Gebruik van de Controlled Frame API beheren</translation>
 <translation id="1977581177449752640">Als je dit beleid instelt, gebruikt de host voor externe toegang een clientcertificaat met het CN van de opgegeven verstrekker voor verificatie voor <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Als je een willekeurig beschikbaar clientcertificaat wilt gebruiken, stel je dit in op <ph name="WILDCARD_VALUE" />. De functie wordt uitgezet als je deze leeg laat of niet instelt.</translation>
 <translation id="1984934843478301531">Automatisering om apps te starten</translation>
 <translation id="1985545260037812875">Instellingenscherm voor weergavegrootte tonen tijdens inloggen</translation>
@@ -1915,6 +1919,7 @@ Herkomsten die door dit beleid worden geïsoleerd, kunnen geen scripts uitvoeren
 
       Opmerking: Als je te veel sites isoleert in Android, kunnen er prestatieproblemen optreden, met name op apparaten met weinig geheugen. Dit beleid is alleen van toepassing op Chrome op Android-apparaten met meer dan 1 GB RAM-geheugen. Gebruik <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> om het beleid toe te passen op andere platforms dan Android.</translation>
 <translation id="2407758458436268630">Het slimme dimmodel toestaan de tijd te verlengen totdat het scherm wordt gedimd</translation>
+<translation id="2410163749464044777">Instellingen voor lokale opslag van gebruikersgegevens</translation>
 <translation id="2411629345938804022">Als je het beleid instelt op 3, kunnen websites vragen om toegang tot bluetooth-apparaten in de buurt. Als je het beleid instelt op 2, wordt de toegang tot bluetooth-apparaten in de buurt geblokkeerd.
 
       Als je het beleid niet instelt, kunnen sites om toegang vragen maar kunnen gebruikers deze instelling wijzigen.</translation>
@@ -2430,6 +2435,9 @@ Als je het beleid niet instelt, is <ph name="BLOCK_POPUPS_POLICY_NAME" /> van to
 <translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" />-integratie uitzetten.</translation>
 <translation id="2805707493867224476">Alle sites toestaan pop-ups te tonen</translation>
 <translation id="2806804577787377637">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
+<translation id="2812417768214606683">Met dit beleid wordt een lijst met USB-opslagapparaten aangegeven die zijn uitgesloten van de beleidsregels <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> en <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
+
+Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat het specifieke USB-apparaatmodel kan worden geïdentificeerd.</translation>
 <translation id="2815701930753942156">Met dit beleid stel je een lijst met wekelijkse intervallen in waarin het <ph name="PRODUCT_OS_NAME" />-apparaat niet kan worden gebruikt. Eventuele actieve sessies worden gesloten en inloggen wordt geblokkeerd.
 
 Overlappende intervallen worden niet ondersteund.
@@ -4191,6 +4199,17 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 <translation id="4146319954420095470">(Waarschuwing! Deze afhankelijkheid wordt binnenkort beëindigd. Gebruik in plaats daarvan <ph name="GLS_POLICY_NAME" />.) Als dit beleid is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, hebben systeemservices van <ph name="PRODUCT_OS_NAME" /> en Android-apps geen toegang tot locatiegegevens. Als je dit beleid instelt op een andere waarde of niet instelt, wordt de gebruiker gevraagd om toestemming te geven als een Android-app toegang wil tot locatiegegevens.</translation>
 <translation id="4147818922357566987">Varianten alleen aanzetten voor essentiële oplossingen</translation>
 <translation id="4150201353443180367">Weergave</translation>
+<translation id="4150646872548223241">Met de Controlled Frame API, die beschikbaar is voor bepaalde geïsoleerde contexten zoals geïsoleerde web-apps (GWA's), kan een app willekeurige content insluiten en manipuleren.
+Ga naar https://github.com/WICG/controlled-frame voor meer informatie.
+
+Als je het beleid instelt, kun je een lijst met URL-patronen maken om aan te geven welke sites de Controlled Frame API mogen gebruiken.
+Geldige patronen zijn beperkt tot geïsoleerde web-apps.
+
+Als je het beleid niet instelt, is <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites.
+
+URL-patronen mogen geen conflict vormen met <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="4154221011709068799">Externe opslagapparaten niet toestaan</translation>
 <translation id="415445772247959702">Web Store (ondersteund vanaf versie 89)</translation>
 <translation id="4157003184375321727">Besturingssysteem- en firmwareversie rapporteren</translation>
@@ -5746,11 +5765,6 @@ Algemene jokertekens (zoals '*' of '[*]') zijn niet toegestaan. In plaats daarva
 Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 <translation id="5297948043665200363">Toestaan dat de gebruiker ingelogd blijft nadat de verificatie van het account is ingetrokken</translation>
 <translation id="5298949392804966105">Geen beperkingen voor beheerde accounts</translation>
-<translation id="5300770793658186741">Als je dit beleid instelt, wordt een lijst met herkomsten (URL's) of hostnaampatronen (zoals '*.example.com') gedefinieerd waarop beveiligingsbeperkingen voor niet-beveiligde herkomsten niet van toepassing zijn. Organisaties kunnen herkomsten specificeren voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen instellen, zodat de ontwikkelaars functies die een beveiligde context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de herkomst wordt aangeduid als 'Niet beveiligd' in de adresbalk.
-
-Als je een lijst met URL's instelt in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering --unsafely-treat-insecure-origin-as-secure wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
-
-Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="530111809849214840">De optie <ph name="GOOGLE_DRIVE_NAME" /> verbergen.</translation>
 <translation id="530134925949808452">De tijd van de dag in lokale tijd wanneer het gebruiksquotum wordt vernieuwd.</translation>
 <translation id="5303080953475303561">Met dit beleid stel je in hoe vaak het vergrendelscherm om het wachtwoord voor snel ontgrendelen vraagt. Elke keer dat het vergrendelscherm wordt getoond en de laatste wachtwoordinvoer plaatsvond vóór de periode die is gespecificeerd door de gekozen waarde, is snel ontgrendelen niet beschikbaar. Als gebruikers na deze periode op het vergrendelscherm blijven, worden ze de volgende keer dat ze een verkeerde code opgeven of het vergrendelscherm opnieuw openen (afhankelijk van wat als eerste gebeurt) om het wachtwoord gevraagd.
@@ -6880,6 +6894,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Anders kan deze worden ingesteld op een van de volgende waarden: tls1.2 of tls1.3. Als je dit beleid instelt, gebruikt <ph name="PRODUCT_NAME" /> geen latere SSL/TLS-versies dan de opgegeven versie. Een onbekende waarde wordt genegeerd.</translation>
 <translation id="6120909112796019291">Fotobewerking met generatieve AI toestaan en AI-modellen verbeteren.</translation>
 <translation id="6123052603197028610">Geen query's naar Google-servers toestaan om tijdstempels op te halen</translation>
+<translation id="6128539430475678271">Controlled Frame API blokkeren op deze sites</translation>
 <translation id="6130360423841559818">Nieuw gedrag beheren voor het annuleringsdialoogvenster dat door de beforeunload-gebeurtenis wordt gegenereerd</translation>
 <translation id="6131803221304830537">Code-integriteit van weergaveprogramma uitzetten</translation>
 <translation id="6132506775968708399">Cookies van derden blokkeren</translation>
@@ -7326,6 +7341,7 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld), anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
 <translation id="6383774771168138899">Hiermee stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces in voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Weergave van resultatenpagina's van standaard zoekmachine in een zijvenster van de browser aanzetten.</translation>
+<translation id="6389240462871677239">Toestaan dat geïsoleerde web-app-oorsprongen het Controlled Frame gebruiken</translation>
 <translation id="6389858262577493180">Gebruik van <ph name="GLIC" /> aanzetten</translation>
 <translation id="6390338862225976270">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
 
@@ -8095,6 +8111,17 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 <translation id="692096803256767290">De doelversie van het OS herstellen</translation>
 <translation id="6921241119085515674">Het <ph name="CLOUD_UPLOAD_NAME" />-proces toestaan voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Apparaten toestaan virtuele machines uit te voeren op Chrome OS</translation>
+<translation id="692161853658983957">Met de Controlled Frame API, die beschikbaar is voor bepaalde geïsoleerde contexten zoals geïsoleerde web-apps (GWA's), kan een app willekeurige content insluiten en manipuleren.
+Ga naar https://github.com/WICG/controlled-frame voor meer informatie.
+
+Als je het beleid instelt, kun je een lijst met URL-patronen maken om aan te geven welke sites de Controlled Frame API niet mogen gebruiken.
+Geldige patronen zijn beperkt tot geïsoleerde web-apps.
+
+Als je het beleid niet instelt, is <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites.
+
+URL-patronen mogen geen conflict vormen met <ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="6922265559343919728">Kiezen of blob-URL's worden gepartitioneerd tijdens ophalen en navigeren</translation>
 <translation id="6922884955650325312">De <ph name="FLASH_PLUGIN_NAME" />-plug-in blokkeren</translation>
 <translation id="6924223708804692571">Spellingcontrole van talen wordt verplicht uitgezet. Niet-herkende talen in de lijst worden genegeerd.
@@ -8112,6 +8139,12 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 <translation id="6929639826067341257">Gebruikers een suggestie geven om hun bestaande gegevens in het beheerde profiel te gebruiken en gebruikers de keuze geven om dit niet te doen</translation>
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
+<translation id="6931967294677760242">Met de Controlled Frame API, die beschikbaar is voor bepaalde geïsoleerde contexten zoals geïsoleerde web-apps (GWA's), kan een app willekeurige content insluiten en manipuleren.
+Ga naar https://github.com/WICG/controlled-frame voor meer informatie.
+
+Als je het beleid instelt op 1 of niet instelt, kunnen geïsoleerde web-app-oorsprongen het Controlled Frame gebruiken.
+
+Als je het beleid instelt op 2, wordt voorkomen dat geïsoleerde web-app-oorsprongen het Controlled Frame gebruiken.</translation>
 <translation id="6932282102911647185">Paarse achtergrondverlichting van toetsenbord</translation>
 <translation id="6938424179790370595">Als je het beleid instelt op None (Geen), wordt het vergrootglas uitgezet.
 
@@ -8355,6 +8388,7 @@ Als je het beleid instelt op Onwaar, gebruikt <ph name="PRODUCT_NAME" /> altijd 
 Dit beleid is niet van invloed op wachtwoordmanagers van derden die API's voor toegankelijkheid gebruiken.</translation>
 <translation id="7114169791477667553">De standaard zoekprovider uitzetten</translation>
 <translation id="7115684775550072082">Alleen witruimte behouden voor MIME-typen voor tekst en XML</translation>
+<translation id="7119538491527883595">Lokale opslag van gebruikersgegevens</translation>
 <translation id="7121046543122812054">Dit beleid is beëindigd. Overweeg in plaats daarvan <ph name="BROWSER_SIGNIN_POLICY_NAME" /> te gebruiken.
 
       Hiermee kan de gebruiker inloggen bij <ph name="PRODUCT_NAME" />.
@@ -8665,6 +8699,7 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_
 <translation id="7339315111520512972">Afdwingen dat netwerkcode wordt uitgevoerd in het browserproces</translation>
 <translation id="7340034977315324840">Tijdsduur van apparaatgebruik melden</translation>
 <translation id="734095828044419464">Registratie van clientcertificaten uitzetten</translation>
+<translation id="7341773449551289679">Toelatingslijst voor externe opslag</translation>
 <translation id="7343004974628511824">Controles voor DNS-onderschepping uitvoeren</translation>
 <translation id="7343497214039883642">Configuratiebestand voor zakelijke printers voor apparaten</translation>
 <translation id="7357148531287978404">Audio-invoer uitzetten</translation>

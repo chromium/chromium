@@ -152,7 +152,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1645262572857218659">Đăng nhập bằng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Cơ bản</translation>
 <translation id="1671236975893690980">Đang chờ tải xuống...</translation>
 <translation id="1672586136351118594">Không hiện lại</translation>
 <translation id="1680919990519905526">Mua sắm với Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Đã kiểm tra 1 ngày trước}other{Đã kiểm tra # ngày trước}}</translation>
 <translation id="2842985007712546952">Thư mục mẹ</translation>
 <translation id="2854916915045135148">Chạm và giữ để chuyển sang chế độ Ẩn danh</translation>
-<translation id="2855243985454069333">Xoá nhật ký khỏi mọi thiết bị đã đồng bộ hoá</translation>
 <translation id="2860954141821109167">Hãy đảm bảo bạn đã bật ứng dụng điện thoại trên thiết bị này</translation>
 <translation id="2861923151411510142">Một số tính năng của Chrome sẽ không dùng được nữa</translation>
 <translation id="2869430948265924908">Để bảo vệ nội dung nhạy cảm của bạn trong ô tô, bạn phải tạo một khoá hồ sơ cho ô tô.  Bạn có thể tạo khoá bằng mã PIN, mã hoặc mật khẩu.</translation>
@@ -483,7 +481,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3208584281581115441">Kiểm tra ngay</translation>
 <translation id="3211426585530211793">Đã xóa <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Nhật ký tìm kiếm<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />các hình thức hoạt động khác<ph name="END_LINK2" /> có thể được lưu vào Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những dữ liệu này bất cứ lúc nào.</translation>
 <translation id="3220943972464248773">Để đồng bộ hóa các mật khẩu, hãy xác minh danh tính của bạn</translation>
 <translation id="3232293466644486101">Xoá dữ liệu duyệt web…</translation>
 <translation id="3232754137068452469">Ứng dụng web</translation>
@@ -727,7 +724,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4405224443901389797">Chuyển tới...</translation>
 <translation id="4405636711880428279">Xoá thẻ ảo?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> và <ph name="TAB_COUNT" /> thẻ khác</translation>
-<translation id="4409271659088619928">Bạn đang dùng công cụ tìm kiếm <ph name="DSE" />. Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm đó.</translation>
 <translation id="4414179633735763985">Đã xoá <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Quản lý Tài khoản Google của bạn</translation>
 <translation id="4425140285732600465">Đang theo dõi giá. Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
@@ -827,7 +823,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="481574578487123132">Thiết bị đã liên kết</translation>
 <translation id="4822710610088666676">Đã đóng và lưu nhóm thẻ <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="4826163340425232009">Bảng đăng nhập ở dưới cùng.</translation>
-<translation id="4834007576107377210">Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn của công cụ tìm kiếm của bạn (nếu có)</translation>
 <translation id="4834250788637067901">Phương thức thanh toán, ưu đãi và địa chỉ sử dụng Google Pay</translation>
 <translation id="4835385943915508971">Chrome không có quyền truy cập vào tài nguyên đã yêu cầu.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Khôi phục nhóm <ph name="TAB_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.}other{Khôi phục nhóm <ph name="TAB_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.}}</translation>
@@ -885,7 +880,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> thẻ – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Quyền riêng tư</translation>
 <translation id="504456571576643789">Những yếu tố cần xem xét</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Các hình thức hoạt động khác<ph name="END_LINK1" /> có thể được lưu vào Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những dữ liệu này bất cứ lúc nào.</translation>
 <translation id="506254248375231072">Không có thẻ nào</translation>
 <translation id="5062960805900435602">Thông tin cập nhật về việc hợp nhất mật khẩu đã đóng</translation>
 <translation id="5075939510584558547">Lưu mà không mã hoá</translation>
@@ -1423,7 +1417,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7431991332293347422">Kiểm soát cách Google sử dụng nhật ký duyệt web của bạn để cá nhân hóa dịch vụ Tìm kiếm và các dịch vụ khác</translation>
 <translation id="7435356471928173109">Quản trị viên đã tắt</translation>
 <translation id="7437998757836447326">Đăng xuất khỏi Chrome</translation>
-<translation id="7453467225369441013">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình.</translation>
 <translation id="7453810262525006706">Thu gọn thành chế độ xem từ một bên</translation>
 <translation id="7454641608352164238">Không đủ dung lượng</translation>
 <translation id="7454744349230173024">Tổ chức của bạn đã tắt tính năng lưu mật khẩu</translation>
@@ -1442,7 +1435,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="749294055653435199">Không dùng được tính năng Google Ống kính trên thiết bị này</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Đã cập nhật <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Vui lòng đợi…</translation>
-<translation id="7502234197872745058">Để đăng xuất khỏi Tài khoản Google trên tất cả các trang web, hãy <ph name="BEGIN_LINK1" />đăng xuất khỏi Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Không có thông tin cập nhật</translation>
 <translation id="7507207699631365376">Xem <ph name="BEGIN_LINK" />chính sách quyền riêng tư<ph name="END_LINK" /> của nhà cung cấp này</translation>
 <translation id="750886945254958667">Giữ lại nhóm này để thêm thẻ sau hoặc rời khỏi nhóm nếu bạn không còn muốn truy cập vào nhóm</translation>

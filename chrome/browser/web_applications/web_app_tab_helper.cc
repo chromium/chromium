@@ -162,13 +162,8 @@ void WebAppTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     const GURL& url = navigation_handle->GetURL();
-    // TODO(crbug.com/379827962): Evaluate call sites of
-    // FindBestAppWithUrlInScope for correctness.
     SetAppId(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
-        url, {
-                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-             }));
+        url, web_app::WebAppFilter::InstalledInChrome()));
   }
 
   // If navigating to a Web App (including navigation in sub frames), let
@@ -224,29 +219,20 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
       tab->GetBrowserWindowInterface()->GetProfile());
   CHECK(provider_);
   observation_.Observe(&provider_->install_manager());
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   SetState(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
                contents->GetLastCommittedURL(),
-               {
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               }),
+               web_app::WebAppFilter::InstalledInChrome()),
            /*window_app_id=*/std::nullopt);
 }
 
 void WebAppTabHelper::OnWebAppInstalled(
     const webapps::AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
+  // Which capability check (if any) would fit best here?
   std::optional<webapps::AppId> app_id =
       provider_->registrar_unsafe().FindBestAppWithUrlInScope(
           web_contents()->GetLastCommittedURL(),
-          {
-              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          });
+          web_app::WebAppFilter::InstalledInChrome());
   if (app_id == installed_app_id) {
     SetAppId(app_id);
   }

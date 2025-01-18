@@ -968,6 +968,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4285498937028063278">No fixis</translation>
 <translation id="428715201724021596">S'està connectant a un perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="4287250812980588583">Finestra de Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla el volum del micròfon}other{# aplicacions controlen el volum del micròfon}}</translation>
 <translation id="4294319844246081198">Bon dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Esborra les <ph name="COUNT" /> notificacions</translation>
 <translation id="4300272766492248925">Obre l'aplicació</translation>

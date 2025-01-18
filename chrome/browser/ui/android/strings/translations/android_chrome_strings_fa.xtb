@@ -152,7 +152,6 @@
 <translation id="164269334534774161">شما در حال تماشای کپی آفلاین این صفحه از <ph name="CREATION_TIME" /> هستید</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1645262572857218659">ورود به سیستم با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">پایه</translation>
 <translation id="1671236975893690980">بارگیری معلق است…</translation>
 <translation id="1672586136351118594">دیگر نشان داده نشود</translation>
 <translation id="1680919990519905526">‏خرید محتوای تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{آخرین بررسی: ۱ روز قبل}one{آخرین بررسی: # روز قبل}other{آخرین بررسی: # روز قبل}}</translation>
 <translation id="2842985007712546952">پوشه اصلی</translation>
 <translation id="2854916915045135148">برای رفتن به حالت «ناشناس»، لمس کنید و نگه دارید</translation>
-<translation id="2855243985454069333">سابقه از همه دستگاه‌های همگام‌سازی‌شده حذف می‌شود</translation>
 <translation id="2860954141821109167">مطمئن شوید برنامه تلفن در این دستگاه فعال باشد</translation>
 <translation id="2861923151411510142">‏برخی‌از ویژگی‌های Chrome دیگر دردسترس نخواهد بود</translation>
 <translation id="2869430948265924908">برای محافظت از محتوای حساستان در خودرو، باید قفل نمایه خودرو ایجاد کنید.  می‌توانید این کار را با پین، کد، یا گذرواژه انجام دهید.</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3208584281581115441">اکنون بررسی شود</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> حذف شد</translation>
-<translation id="3214996641768123781">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK1" />سابقه جستجو<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />انواع دیگر فعالیت<ph name="END_LINK2" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
 <translation id="3220943972464248773">برای همگام‌سازی گذرواژه‌ها، هویتتان را به‌تأیید برسانید</translation>
 <translation id="3232293466644486101">حذف کردن داده‌های مرور…</translation>
 <translation id="3232754137068452469">برنامه وب</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">انتقال به…</translation>
 <translation id="4405636711880428279">کارت مجازی حذف شود؟</translation>
 <translation id="4409014848144759297">‫<ph name="WEBSITE_TITLE" /> و <ph name="TAB_COUNT" /> برگه دیگر</translation>
-<translation id="4409271659088619928">موتور جستجوی شما <ph name="DSE" /> است. برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، دستورالعمل‌های آن موتور جستجو را ببینید.</translation>
 <translation id="4414179633735763985">‫<ph name="TAB_GROUPS_AND_TABS_PART" /> حذف شد</translation>
 <translation id="4415276339145661267">‏مدیریت «حساب Google»</translation>
 <translation id="4425140285732600465">درحال پیگیری قیمت هستید. اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید.</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">دستگاه‌های پیوندشده</translation>
 <translation id="4822710610088666676">گروه برگه <ph name="TAB_GROUP_TITLE" /> بسته و ذخیره شد</translation>
 <translation id="4826163340425232009">برگ زیرین ورود به سیستم.</translation>
-<translation id="4834007576107377210">برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید</translation>
 <translation id="4834250788637067901">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
 <translation id="4835385943915508971">‏Chrome به منبع درخواستی دسترسی ندارد.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{بازیابی کردن گروه برگه با <ph name="TAB_COUNT_ONE" /> برگه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه برگه جدید پس‌زمینه.}one{بازیابی کردن گروه برگه با <ph name="TAB_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه برگه جدید پس‌زمینه.}other{بازیابی کردن گروه برگه با <ph name="TAB_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه برگه جدید پس‌زمینه.}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT_ONE" /> برگه - <ph name="URL_LIST" />}one{‫<ph name="TAB_COUNT_MANY" /> برگه - <ph name="URL_LIST" />}other{‫<ph name="TAB_COUNT_MANY" /> برگه - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">حریم خصوصی</translation>
 <translation id="504456571576643789">مواردی که باید درنظر داشت</translation>
-<translation id="5054455334322721892">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK1" />انواع دیگر فعالیت<ph name="END_LINK1" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
 <translation id="506254248375231072">برگه‌ای باز نیست</translation>
 <translation id="5062960805900435602">به‌روزرسانی مربوط به ادغام گذرواژه بسته شد</translation>
 <translation id="5075939510584558547">ذخیره بدون رمزگذاری</translation>
@@ -1423,7 +1417,6 @@
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
 <translation id="7437998757836447326">‏خروج از سیستم Chrome</translation>
-<translation id="7453467225369441013">‏شما را از سیستم اکثر سایت‌ها خارج می‌‌کند. از سیستم حساب Google خارج نمی‌شوید.</translation>
 <translation id="7453810262525006706">جمع کردن در نمای جانبی</translation>
 <translation id="7454641608352164238">فضای کافی وجود ندارد</translation>
 <translation id="7454744349230173024">سازمانتان ذخیره‌سازی گذرواژه‌ها را خاموش کرده است</translation>
@@ -1442,7 +1435,6 @@
 <translation id="749294055653435199">‏«لنز Google» در این دستگاه دردسترس نیست</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (زمان به‌روزرسانی <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">لطفاً صبر کنید...</translation>
-<translation id="7502234197872745058">‏برای خارج شدن از سیستم «حساب Google» خود در همه وب‌سایت‌ها، <ph name="BEGIN_LINK1" />از سیستم Chrome خارج شوید<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">به‌روزرسانی دردسترس نیست</translation>
 <translation id="7507207699631365376">به <ph name="BEGIN_LINK" />خط‌مشی رازداری<ph name="END_LINK" /> این ارائه‌دهنده بروید</translation>
 <translation id="750886945254958667">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر نمی‌خواهید به آن دسترسی داشته باشید، آن را ترک کنید</translation>

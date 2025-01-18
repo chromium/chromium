@@ -152,7 +152,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="164269334534774161">Tinitingnan mo ang offline na kopya ng page na ito mula sa <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1645262572857218659">Mag-sign in sa pamamagitan ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Pangunahin</translation>
 <translation id="1671236975893690980">Nakabinbin ang pag-download...</translation>
 <translation id="1672586136351118594">Huwag ipakitang muli</translation>
 <translation id="1680919990519905526">Mamili ng larawan sa Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Nagsuri 1 araw ang nakalipas}one{Nagsuri # araw ang nakalipas}other{Nagsuri # na araw ang nakalipas}}</translation>
 <translation id="2842985007712546952">Pangunahing folder</translation>
 <translation id="2854916915045135148">Pindutin nang matagal para lumipat sa Incognito</translation>
-<translation id="2855243985454069333">Dine-delete ang history sa lahat ng naka-sync na device</translation>
 <translation id="2860954141821109167">Tiyaking may naka-enable na phone app sa device na ito</translation>
 <translation id="2861923151411510142">Hindi na magiging available ang ilang feature ng Chrome</translation>
 <translation id="2869430948265924908">Para maprotektahan ang iyong sensitibong content sa kotse, dapat kang gumawa ng lock ng profile ng kotse.  Magagawa mo ito gamit ang isang pin, code, o password.</translation>
@@ -483,7 +481,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3207960819495026254">Naka-bookmark</translation>
 <translation id="3208584281581115441">Suriin ngayon</translation>
 <translation id="3211426585530211793">Na-delete ang <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781">Posibleng ma-save sa iyong Google Account ang <ph name="BEGIN_LINK1" />history ng paghahanap<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />iba pang anyo ng aktibidad<ph name="END_LINK2" /> kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
 <translation id="3220943972464248773">Para ma-sync ang iyong mga password, i-verify na ikaw ito</translation>
 <translation id="3232293466644486101">I-delete ang data mula sa pag-browse…</translation>
 <translation id="3232754137068452469">Web App</translation>
@@ -727,7 +724,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4405224443901389797">Ilipat sa…</translation>
 <translation id="4405636711880428279">Alisin ang iyong virtual na card?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> at <ph name="TAB_COUNT" /> pang tab</translation>
-<translation id="4409271659088619928"><ph name="DSE" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="4414179633735763985">Na-delete ang <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Pamahalaan ang iyong Google Account</translation>
 <translation id="4425140285732600465">Sinusubaybayan ang presyo. Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site.</translation>
@@ -827,7 +823,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="481574578487123132">Mga naka-link na device</translation>
 <translation id="4822710610088666676">Isinara at na-save ang grupo ng tab na <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="4826163340425232009">Bottom sheet sa pag-sign in.</translation>
-<translation id="4834007576107377210">Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history ng paghahanap mo, kung naaangkop</translation>
 <translation id="4834250788637067901">Mga paraan ng pagbabayad, alok, at address na gumagamit ng Google Pay</translation>
 <translation id="4835385943915508971">Walang access ang Chrome sa hiniling na mapagkukunan.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{I-restore ang grupo ng tab na may <ph name="TAB_COUNT_ONE" /> tab, na kulay <ph name="COLOR_NAME" />, bilang bagong background na grupo ng tab.}one{I-restore ang grupo ng tab na may <ph name="TAB_COUNT_MANY" /> tab, na kulay <ph name="COLOR_NAME" />, bilang bagong background na grupo ng tab.}other{I-restore ang grupo ng tab na may <ph name="TAB_COUNT_MANY" /> na tab, na kulay <ph name="COLOR_NAME" />, bilang bagong background na grupo ng tab.}}</translation>
@@ -885,7 +880,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> tab - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> na tab - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Mga bagay na dapat isaalang-alang</translation>
-<translation id="5054455334322721892">Posibleng ma-save sa iyong Google Account ang <ph name="BEGIN_LINK1" />iba pang anyo ng aktibidad<ph name="END_LINK1" /> kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
 <translation id="506254248375231072">Walang tab</translation>
 <translation id="5062960805900435602">Nakasara ang update tungkol sa pag-merge ng password</translation>
 <translation id="5075939510584558547">I-save nang walang pag-encrypt</translation>
@@ -1423,7 +1417,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7431991332293347422">Kontrolin kung paano ginagamit ang iyong history ng pag-browse para i-personalize ang Paghahanap at higit pa</translation>
 <translation id="7435356471928173109">Na-off ng iyong administrator</translation>
 <translation id="7437998757836447326">Mag-sign out sa Chrome</translation>
-<translation id="7453467225369441013">Isa-sign out ka sa karamihan ng mga site. Hindi ka masa-sign out sa iyong Google Account.</translation>
 <translation id="7453810262525006706">I-collapse sa side view</translation>
 <translation id="7454641608352164238">Walang sapat na espasyo</translation>
 <translation id="7454744349230173024">In-off ng iyong organisasyon ang pag-save ng mga password</translation>
@@ -1442,7 +1435,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="749294055653435199">Hindi available ang Google Lens sa device na ito</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Na-update <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Mangyaring maghintay…</translation>
-<translation id="7502234197872745058">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK1" />mag-sign out sa Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Hindi Available ang Mga Update</translation>
 <translation id="7507207699631365376">Tingnan ang <ph name="BEGIN_LINK" />patakaran sa privacy<ph name="END_LINK" /> ng provider na ito</translation>
 <translation id="750886945254958667">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o umalis sa grupo kung ayaw mo na itong ma-access</translation>

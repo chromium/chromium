@@ -152,7 +152,6 @@
 <translation id="164269334534774161">آپ <ph name="CREATION_TIME" /> سے اس صفحہ کی ایک آف لائن کاپی دیکھ رہے ہیں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ سائن ان کریں</translation>
-<translation id="1670399744444387456">بنیادی</translation>
 <translation id="1671236975893690980">ڈاؤن لوڈ زير التوا ہے…</translation>
 <translation id="1672586136351118594">دوبارہ نہ دکھائیں</translation>
 <translation id="1680919990519905526">‏Google لینز کے ساتھ تصویر خریدیں <ph name="BEGIN_NEW" />نئی<ph name="END_NEW" /></translation>
@@ -286,6 +285,7 @@
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> انسٹال نہیں کی جا سکی۔</translation>
 <translation id="2349710944427398404">‏اکاؤنٹس، بُک مارکس اور محفوظ کردہ ترتیبات سمیت، Chrome کے ذریعے استعمال کردہ کُل ڈیٹا</translation>
+<translation id="2349954856814571872">بُک مارک بار کا بٹن آئیکن</translation>
 <translation id="235789365079050412">‏Google کی رازداری کی پالیسی</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> کے بطور سائن ان کردہ۔ <ph name="USER_EMAIL" />۔ ترتیبات کھولتا ہے۔</translation>
@@ -400,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 دن پہلے چیک کیا گیا}other{# دن پہلے چیک کیا گیا}}</translation>
 <translation id="2842985007712546952">پیرینٹ فولڈر</translation>
 <translation id="2854916915045135148">پوشیدگی پر سوئچ کرنے کے لیے ٹچ کریں اور دبائے رکھیں</translation>
-<translation id="2855243985454069333">مطابقت پذیر کردہ تمام آلات سے سرگزشت حذف ہو جاتی ہے</translation>
 <translation id="2860954141821109167">یہ یقینی بنائیں کہ اس آلے پر کوئی فون ایپ فعال ہے</translation>
 <translation id="2861923151411510142">‏Chrome کی کچھ خصوصیات اب دستیاب نہیں ہوں گی۔</translation>
 <translation id="2869430948265924908">کار میں اپنے حساس مواد کی حفاظت کے لیے، آپ کو کار پروفائل لاک بنانا ہوگا۔  آپ یہ پن، کوڈ، یا پاس ورڈ کے ساتھ کر سکتے ہیں۔</translation>
@@ -483,7 +482,6 @@
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208584281581115441">ابھی چیک کریں</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> کو حذف کر دیا گیا</translation>
-<translation id="3214996641768123781">‏سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK1" />تلاش کی سرگزشت<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />سرگرمی کی دیگر اقسام<ph name="END_LINK2" /> محفوظ ہو سکتی ہیں۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔</translation>
 <translation id="3220943972464248773">اپنے پاس ورڈز کی مطابقت پذیری کے لئے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="3232293466644486101">براؤزنگ ڈیٹا حذف کریں…</translation>
 <translation id="3232754137068452469">ویب ایپ</translation>
@@ -727,7 +725,6 @@
 <translation id="4405224443901389797">اس میں منتقل کریں…</translation>
 <translation id="4405636711880428279">اپنا ورچوئل کارڈ ہٹائیں؟</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> اور <ph name="TAB_COUNT" /> دیگر ٹیبز</translation>
-<translation id="4409271659088619928">آپ کا سرچ انجن <ph name="DSE" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت حذف کرنے کے لیے ان کی ہدایات دیکھیں۔</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> کو حذف کر دیا گیا</translation>
 <translation id="4415276339145661267">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
 <translation id="4425140285732600465">قیمت ٹریک کی جا رہی ہے۔ کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں۔</translation>
@@ -827,7 +824,6 @@
 <translation id="481574578487123132">لنک کردہ آلات</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ٹیب گروپ کو بند اور محفوظ کر دیا گیا</translation>
 <translation id="4826163340425232009">سائن ان کرنے کے لیے نیچے کی شیٹ۔</translation>
-<translation id="4834007576107377210">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کیلئے اپنے سرچ انجن کی ہدایات دیکھیں</translation>
 <translation id="4834250788637067901">‏Google Pay استعمال کرنے والے ادائیگی کے طریقے، پیشکشیں اور پتے</translation>
 <translation id="4835385943915508971">‏Chrome کو درخواست کردہ وسیلہ تک رسائی حاصل نہیں ہے۔</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> رنگ کے <ph name="TAB_COUNT_ONE" /> ٹیب کے ٹیب گروپ کو پس منظر کے ایک نئے ٹیب گروپ کے بطور بحال کریں۔}other{<ph name="COLOR_NAME" /> رنگ کے <ph name="TAB_COUNT_MANY" /> ٹیبز کے ٹیب گروپ کو پس منظر کے ایک نئے ٹیب گروپ کے بطور بحال کریں۔}}</translation>
@@ -885,7 +881,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ٹیب - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ٹیبز - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">رازداری</translation>
 <translation id="504456571576643789">قابل غور چیزیں</translation>
-<translation id="5054455334322721892">‏سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK1" />سرگرمی کی دیگر اقسام<ph name="END_LINK1" /> محفوظ ہو سکتی ہیں۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔</translation>
 <translation id="506254248375231072">کوئی ٹیب نہیں ہے</translation>
 <translation id="5062960805900435602">پاس ورڈ ضم کرنے کے بارے میں اپ ڈیٹ بند ہے</translation>
 <translation id="5075939510584558547">مرموز کاری کے بغیر محفوظ کریں</translation>
@@ -1423,7 +1418,6 @@
 <translation id="7431991332293347422">تلاش کو ذاتی نوعیت کا بنانے کیلئے آپ کی براؤزنگ کی سرگزشت جس طریقے سے استعمال کی جاتی ہے اسے کنٹرول کریں اور مزید بہت کچھ</translation>
 <translation id="7435356471928173109">آپ کے منتظم کے ذریعے آف کر دیا گیا</translation>
 <translation id="7437998757836447326">‏Chrome سے سائن آؤٹ کریں</translation>
-<translation id="7453467225369441013">‏اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔ آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔</translation>
 <translation id="7453810262525006706">سائیڈ ویو پر سکیڑیں</translation>
 <translation id="7454641608352164238">خاطر خواہ جگہ نہيں ہے</translation>
 <translation id="7454744349230173024">آپ کی تنظیم نے پاس ورڈ محفوظ کرنا بند کر دیا ہے</translation>
@@ -1442,7 +1436,6 @@
 <translation id="749294055653435199">‏اس آلے پر Google لینز دستیاب نہیں ہے</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (اپ ڈیٹ کا وقت <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">براہ کرم انتظار کریں…</translation>
-<translation id="7502234197872745058">‏سبھی ویب سائٹس پر اپنے Google اکاؤنٹ سے سائن آؤٹ کرنے کے لیے <ph name="BEGIN_LINK1" />Chrome سے سائن آؤٹ کریں<ph name="END_LINK1" /></translation>
 <translation id="750228856503700085">اپ ڈیٹس دستیاب نہیں ہیں</translation>
 <translation id="7507207699631365376">اس فراہم کنندہ کی <ph name="BEGIN_LINK" />راز داری کی پالیسی<ph name="END_LINK" /> دیکھیں</translation>
 <translation id="750886945254958667">اس گروپ کو بعد میں ٹیبز شامل کرنے کے لیے رکھیں، یا اگر آپ اس تک مزید رسائی نہیں چاہتے ہیں تو اسے چھوڑ دیں</translation>

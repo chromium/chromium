@@ -152,7 +152,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />로 로그인</translation>
-<translation id="1670399744444387456">기본</translation>
 <translation id="1671236975893690980">다운로드 대기 중...</translation>
 <translation id="1672586136351118594">다시 표시하지 않음</translation>
 <translation id="1680919990519905526">Google 렌즈로 이미지의 상품 구입 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
 <translation id="2854916915045135148">시크릿 모드로 전환하려면 길게 터치하세요.</translation>
-<translation id="2855243985454069333">동기화된 모든 기기에서 방문 기록 삭제</translation>
 <translation id="2860954141821109167">이 기기에서 전화 앱이 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="2861923151411510142">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다.</translation>
 <translation id="2869430948265924908">자동차에서 민감한 콘텐츠를 보호하려면 자동차 프로필 잠금을 만들어야 합니다.  PIN, 코드 또는 비밀번호를 사용하면 됩니다.</translation>
@@ -483,7 +481,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> 삭제됨</translation>
-<translation id="3214996641768123781">로그인할 경우 <ph name="BEGIN_LINK1" />검색 기록<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />다른 활동 형식<ph name="END_LINK2" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.</translation>
 <translation id="3220943972464248773">비밀번호를 동기화하려면 본인 여부를 인증하세요.</translation>
 <translation id="3232293466644486101">인터넷 사용 기록 삭제…</translation>
 <translation id="3232754137068452469">웹 앱</translation>
@@ -727,7 +724,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
 <translation id="4405636711880428279">가상 카드를 삭제하시겠습니까?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> 외 탭 <ph name="TAB_COUNT" />개</translation>
-<translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> 삭제됨</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4425140285732600465">가격 추적 중입니다. 사이트에서 가격이 인하되면 알림이 전송됩니다.</translation>
@@ -827,7 +823,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="481574578487123132">연결된 기기</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> 탭 그룹을 닫고 저장함</translation>
 <translation id="4826163340425232009">로그인 하단 시트입니다.</translation>
-<translation id="4834007576107377210">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4834250788637067901">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
 <translation id="4835385943915508971">Chrome에서 요청된 리소스에 액세스할 권한이 없습니다.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개, <ph name="COLOR_NAME" /> 색상의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.}other{탭 <ph name="TAB_COUNT_MANY" />개, <ph name="COLOR_NAME" /> 색상의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.}}</translation>
@@ -885,7 +880,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개 - <ph name="URL_LIST" />}other{탭 <ph name="TAB_COUNT_MANY" />개 - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="504456571576643789">고려사항</translation>
-<translation id="5054455334322721892">로그인할 경우 <ph name="BEGIN_LINK1" />다른 활동 형식<ph name="END_LINK1" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.</translation>
 <translation id="506254248375231072">탭 없음</translation>
 <translation id="5062960805900435602">비밀번호 병합 관련 업데이트 종료됨</translation>
 <translation id="5075939510584558547">암호화 없이 저장</translation>
@@ -1423,7 +1417,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7437998757836447326">Chrome에서 로그아웃</translation>
-<translation id="7453467225369441013">대부분의 사이트에서 로그아웃됩니다. Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="7453810262525006706">사이드뷰로 축소</translation>
 <translation id="7454641608352164238">저장공간 부족</translation>
 <translation id="7454744349230173024">조직에서 비밀번호 저장을 사용 중지했습니다</translation>
@@ -1442,7 +1435,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="749294055653435199">이 기기에서는 Google 렌즈를 사용할 수 없습니다.</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />(<ph name="TIME_SINCE_UPDATE" />에 업데이트됨)</translation>
 <translation id="7498271377022651285">잠시 기다려 주세요…</translation>
-<translation id="7502234197872745058">모든 웹사이트에서 Google 계정을 로그아웃하려면 <ph name="BEGIN_LINK1" />Chrome에서 로그아웃<ph name="END_LINK1" />하세요.</translation>
 <translation id="750228856503700085">업데이트 불가</translation>
 <translation id="7507207699631365376">제공업체의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" /> 보기</translation>
 <translation id="750886945254958667">나중에 탭을 추가하려면 이 그룹을 유지하고, 더 이상 액세스할 필요가 없으면 그룹에서 나가세요.</translation>

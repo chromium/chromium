@@ -152,7 +152,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="164269334534774161">Orri honen konexiorik gabeko kopia ikusten ari zara (kopiaren data: <ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1645262572857218659">Hasi saioa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> erabilita</translation>
-<translation id="1670399744444387456">Oinarrizkoa</translation>
 <translation id="1671236975893690980">Deskargatzeko zain…</translation>
 <translation id="1672586136351118594">Ez erakutsi berriro</translation>
 <translation id="1680919990519905526">Erosi irudiko produktuak Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Duela egun bat egiaztatu zuen}other{Duela # egun egiaztatu zuen}}</translation>
 <translation id="2842985007712546952">Karpeta nagusia</translation>
 <translation id="2854916915045135148">Ezkutuko modura aldatzeko, eduki sakatuta hau</translation>
-<translation id="2855243985454069333">Sinkronizatuta dauden gailu guztietako historia ezabatzen du</translation>
 <translation id="2860954141821109167">Ziurtatu telefonoetarako aplikazio bat gaituta dagoela gailu honetan</translation>
 <translation id="2861923151411510142">Chrome-ren eginbide batzuk eskaintzeari utziko diogu</translation>
 <translation id="2869430948265924908">Autoko kontuzko edukia babesteko, autorako profilaren blokeo bat sortu behar duzu.  Horretarako, PIN, kode edo pasahitz bat erabil dezakezu.</translation>
@@ -483,7 +481,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3207960819495026254">Laster-marka gisa gordea</translation>
 <translation id="3208584281581115441">Egiaztatu</translation>
 <translation id="3211426585530211793">Ezabatu da <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781">Litekeena da <ph name="BEGIN_LINK1" />bilaketa-historia<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />beste jarduera batzuk<ph name="END_LINK2" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.</translation>
 <translation id="3220943972464248773">Pasahitzak sinkronizatzeko, egiaztatu zeu zarela</translation>
 <translation id="3232293466644486101">Ezabatu arakatze-datuak…</translation>
 <translation id="3232754137068452469">Sareko aplikazioa</translation>
@@ -727,7 +724,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4405224443901389797">Eraman hona…</translation>
 <translation id="4405636711880428279">Txartel birtuala kendu nahi duzu?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> eta beste <ph name="TAB_COUNT" /> fitxa</translation>
-<translation id="4409271659088619928"><ph name="DSE" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ezabatu dira</translation>
 <translation id="4415276339145661267">Kudeatu Google-ko kontua</translation>
 <translation id="4425140285732600465">Prezioaren jarraipena egiten ari zara. Jaso alertak webguneren batean prezioa jaisten bada.</translation>
@@ -827,7 +823,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="481574578487123132">Lotutako gailuak</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> fitxa taldea itxi eta gorde da</translation>
 <translation id="4826163340425232009">Pantailaren behealdean ainguratutako orria, saioa hasteko balio duena.</translation>
-<translation id="4834007576107377210">Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko</translation>
 <translation id="4834250788637067901">Google Pay-rekin erabiltzen dituzun ordainketa-metodoak, eskaintzak eta helbideak</translation>
 <translation id="4835385943915508971">Chrome-k ez du eskatutako baliabiderako sarbiderik.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Leheneratu fitxa <ph name="TAB_COUNT_ONE" />eko taldea (kolorea: <ph name="COLOR_NAME" />, atzeko planoko fitxa talde berri gisa.}other{Leheneratu <ph name="TAB_COUNT_MANY" /> fitxako taldea (kolorea: <ph name="COLOR_NAME" />, atzeko planoko fitxa talde berri gisa.}}</translation>
@@ -885,7 +880,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fitxa: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> fitxa: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Pribatutasuna</translation>
 <translation id="504456571576643789">Kontuan hartu beharrekoak</translation>
-<translation id="5054455334322721892">Litekeena da <ph name="BEGIN_LINK1" />beste jarduera batzuk<ph name="END_LINK1" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.</translation>
 <translation id="506254248375231072">Fitxarik ez</translation>
 <translation id="5062960805900435602">Pasahitzen bateratzeari buruzko informazio eguneratua itxi da</translation>
 <translation id="5075939510584558547">Gorde enkriptatu gabe</translation>
@@ -1423,7 +1417,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7431991332293347422">Kontrolatu arakatze-historia nola erabiltzen den Bilaketa eta beste zerbitzu batzuk pertsonalizatzeko</translation>
 <translation id="7435356471928173109">Administratzaileak desaktibatu du</translation>
 <translation id="7437998757836447326">Amaitu Chrome-ko saioa</translation>
-<translation id="7453467225369441013">Webgune gehienetako saioak amaitzen ditu. Ez da amaituko Google-ko kontuko saioa.</translation>
 <translation id="7453810262525006706">Tolestu alde batean ikusteko</translation>
 <translation id="7454641608352164238">Ez dago behar adina tokirik</translation>
 <translation id="7454744349230173024">Erakundeak pasahitzak gordetzeko aukera desaktibatu du</translation>
@@ -1442,7 +1435,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="749294055653435199">Google Lens ez dago erabilgarri gailu honetan</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (azken eguneratzea: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Itxaron, mesedez…</translation>
-<translation id="7502234197872745058">Webgune guztietan Google-ko kontuko saioa amaitzeko, <ph name="BEGIN_LINK1" />amaitu Chrome-ko saioa<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Ez dago berritasunik</translation>
 <translation id="7507207699631365376">Ikusi hornitzailearen <ph name="BEGIN_LINK" />pribatutasun-gidalerroak<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Mantendu talde hau geroago fitxak gehitzeko. Aurrerantzean hura atzitu nahi ez baduzu, irten bertatik.</translation>

@@ -152,7 +152,6 @@
 <translation id="164269334534774161">तुम्ही <ph name="CREATION_TIME" /> पासून या पेजची ऑफलाइन प्रत पाहत आहात</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून साइन इन करा</translation>
-<translation id="1670399744444387456">मूलभूत</translation>
 <translation id="1671236975893690980">डाउनलोड प्रलंबित आहे</translation>
 <translation id="1672586136351118594">पुन्हा दाखवू नका</translation>
 <translation id="1680919990519905526">Google Lens ने इमेज खरेदी करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
@@ -401,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{एका दिवसापूर्वी तपासले}other{# दिवसांपूर्वी तपासले}}</translation>
 <translation id="2842985007712546952">मुख्य फोल्डर</translation>
 <translation id="2854916915045135148">गुप्त मोडवर स्विच करण्यासाठी स्पर्श करून धरून ठेवा</translation>
-<translation id="2855243985454069333">सर्व सिंक केलेल्या डिव्हाइसवरून इतिहास हटवते</translation>
 <translation id="2860954141821109167">या डिव्हाइसवर फोन अ‍ॅप सुरू केले असल्याची खात्री करा</translation>
 <translation id="2861923151411510142">काही Chrome वैशिष्ट्ये यापुढे उपलब्ध होणार नाहीत</translation>
 <translation id="2869430948265924908">तुमचा संवेदनशील आशय कारमध्ये संरक्षित ठेवण्यासाठी, तुम्ही कार प्रोफाइल लॉक तयार करणे आवश्यक आहे.  पिन, कोड किंवा पासवर्ड वापरून तुम्ही हे करू शकता.</translation>
@@ -484,7 +482,6 @@
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3208584281581115441">आता तपासा</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> हटवले</translation>
-<translation id="3214996641768123781">तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK1" />शोध इतिहास<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK2" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.</translation>
 <translation id="3220943972464248773">तुमचे पासवर्ड सिंक करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="3232293466644486101">ब्राउझिंग डेटा हटवा…</translation>
 <translation id="3232754137068452469">वेब अ‍ॅप</translation>
@@ -728,7 +725,6 @@
 <translation id="4405224443901389797">यामध्ये हलवा…</translation>
 <translation id="4405636711880428279">तुमचे व्हर्च्युअल कार्ड काढून टाकायचे का?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> आणि आणखी <ph name="TAB_COUNT" /> टॅब</translation>
-<translation id="4409271659088619928"><ph name="DSE" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> हटवले आहेत</translation>
 <translation id="4415276339145661267">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="4425140285732600465">किमतीचा माग ठेवत आहे. कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा.</translation>
@@ -828,7 +824,6 @@
 <translation id="481574578487123132">लिंक केलेली डिव्हाइस</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> टॅब गट बंद आणि सेव्ह केला आहे</translation>
 <translation id="4826163340425232009">तळाशी असलेल्या शीटमध्ये साइन इन करा.</translation>
-<translation id="4834007576107377210">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा</translation>
 <translation id="4834250788637067901">Google Pay वापरून पेमेंट पद्धती, ऑफर आणि अ‍ॅड्रेस</translation>
 <translation id="4835385943915508971">Chrome ला विनंती केलेल्या संसाधनांचा ॲक्सेस नाही.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT_ONE" /> टॅबचा टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.}other{नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT_MANY" /> टॅबचा टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.}}</translation>
@@ -886,7 +881,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> टॅब - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="504456571576643789">विचारात घेण्याच्या गोष्टी</translation>
-<translation id="5054455334322721892">तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK1" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK1" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.</translation>
 <translation id="506254248375231072">कोणतेही टॅब नाहीत</translation>
 <translation id="5062960805900435602">पासवर्ड मर्ज करण्यासंबंधित अपडेट बंद आहे</translation>
 <translation id="5075939510584558547">एन्क्रिप्शनशिवाय सेव्ह करा</translation>
@@ -1424,7 +1418,6 @@
 <translation id="7431991332293347422">शोध पर्सनलाइझ करण्यासाठी तुमचा ब्राउझिंग इतिहास कसा वापरला जातो ते आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7435356471928173109">तुमच्या अ‍ॅडमिनिस्ट्रेटरने बंद केले</translation>
 <translation id="7437998757836447326">Chrome मधून साइन आउट करा</translation>
-<translation id="7453467225369441013">तुम्हाला बहुतांश साइटमधून साइन आउट करते. तुम्हाला तुमच्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
 <translation id="7453810262525006706">साइड व्ह्यूवर कोलॅप्स करा</translation>
 <translation id="7454641608352164238">पुरेशी जागा उरलेली नाही</translation>
 <translation id="7454744349230173024">तुमच्या संस्थेने पासवर्ड सेव्ह करणे बंद केले आहे</translation>
@@ -1443,7 +1436,6 @@
 <translation id="749294055653435199">या डिव्हाइसवर Google Lens उपलब्ध नाही</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> वाजता अपडेट केले)</translation>
 <translation id="7498271377022651285">कृपया प्रतीक्षा करा...</translation>
-<translation id="7502234197872745058">सर्व वेबसाइटवरील तुमच्या Google खाते मधून साइन आउट करण्यासाठी, <ph name="BEGIN_LINK1" />Chrome मधून साइन आउट करणे<ph name="END_LINK1" /> हे करा.</translation>
 <translation id="750228856503700085">अपडेट उपलब्ध नाहीत</translation>
 <translation id="7507207699631365376">या पुरवठादाराचे <ph name="BEGIN_LINK" />गोपनीयता धोरण<ph name="END_LINK" /> पहा</translation>
 <translation id="750886945254958667">नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याचा अ‍ॅक्सेस नको असल्यास, त्यामधून बाहेर पडा</translation>

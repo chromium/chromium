@@ -152,7 +152,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="164269334534774161">Estás viendo una copia sin conexión de esta página del <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1645262572857218659">Iniciar sesión con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Básico</translation>
 <translation id="1671236975893690980">Descarga pendiente…</translation>
 <translation id="1672586136351118594">No volver a mostrar</translation>
 <translation id="1680919990519905526">Comprar imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Comprobado hace 1 día}other{Comprobado hace # días}}</translation>
 <translation id="2842985007712546952">Carpeta principal</translation>
 <translation id="2854916915045135148">Mantén pulsado para cambiar a Incógnito</translation>
-<translation id="2855243985454069333">Elimina el historial de todos los dispositivos sincronizados</translation>
 <translation id="2860954141821109167">Comprueba que se haya habilitado una aplicación de teléfono en este dispositivo</translation>
 <translation id="2861923151411510142">Algunas funciones de Chrome dejarán de estar disponibles</translation>
 <translation id="2869430948265924908">Para proteger tu contenido sensible en el coche, debes crear un bloqueo de perfil del coche.  Puedes hacerlo con un PIN, un código o una contraseña.</translation>
@@ -483,7 +481,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3208584281581115441">Comprobar ahora</translation>
 <translation id="3211426585530211793">Se ha eliminado <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781">Es posible que el <ph name="BEGIN_LINK1" />historial de búsqueda<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />otras formas de actividad<ph name="END_LINK2" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlos cuando quieras.</translation>
 <translation id="3220943972464248773">Para sincronizar tus contraseñas, verifica tu identidad</translation>
 <translation id="3232293466644486101">Eliminar datos de navegación...</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
@@ -727,7 +724,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4405224443901389797">Mover a…</translation>
 <translation id="4405636711880428279">¿Quitar tu tarjeta visual?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> y <ph name="TAB_COUNT" /> pestañas más</translation>
-<translation id="4409271659088619928">Usas el buscador <ph name="DSE" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="4414179633735763985">Eliminado: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
 <translation id="4425140285732600465">Siguiendo precio. Recibe alertas si el precio baja en algún sitio.</translation>
@@ -827,7 +823,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4822710610088666676">Grupo de pestañas <ph name="TAB_GROUP_TITLE" /> cerrado y guardado</translation>
 <translation id="4826163340425232009">Hoja inferior de inicio de sesión.</translation>
-<translation id="4834007576107377210">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda si hace falta</translation>
 <translation id="4834250788637067901">Métodos de pago, ofertas y direcciones con Google Pay</translation>
 <translation id="4835385943915508971">Chrome no tiene acceso al recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurar grupo de <ph name="TAB_COUNT_ONE" /> pestaña, con el color <ph name="COLOR_NAME" />, como nuevo grupo de pestañas en segundo plano.}other{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> pestañas, con el color <ph name="COLOR_NAME" />, como nuevo grupo de pestañas en segundo plano.}}</translation>
@@ -885,7 +880,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> pestañas - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privacidad</translation>
 <translation id="504456571576643789">Notas importantes</translation>
-<translation id="5054455334322721892">Es posible que <ph name="BEGIN_LINK1" />otras formas de actividad<ph name="END_LINK1" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlas cuando quieras.</translation>
 <translation id="506254248375231072">No hay pestañas</translation>
 <translation id="5062960805900435602">La actualización sobre la fusión de contraseñas está cerrada</translation>
 <translation id="5075939510584558547">Guardar sin cifrado</translation>
@@ -1423,7 +1417,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7431991332293347422">Controla cómo se usa el historial de navegación para personalizar la Búsqueda y más</translation>
 <translation id="7435356471928173109">Desactivada por tu administrador</translation>
 <translation id="7437998757836447326">Cerrar sesión en Chrome</translation>
-<translation id="7453467225369441013">Cierra tu sesión en la mayoría de los sitios. No se cerrará la sesión en tu cuenta de Google.</translation>
 <translation id="7453810262525006706">Contraer en la vista lateral</translation>
 <translation id="7454641608352164238">No hay espacio suficiente</translation>
 <translation id="7454744349230173024">Tu organización ha desactivado la opción de guardar contraseñas</translation>
@@ -1442,7 +1435,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="749294055653435199">Google Lens no está disponible en este dispositivo</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualizada el <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Espera…</translation>
-<translation id="7502234197872745058">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK1" />cierra la sesión de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Actualizaciones no disponibles</translation>
 <translation id="7507207699631365376">Consulta la <ph name="BEGIN_LINK" />política de privacidad<ph name="END_LINK" /> de este proveedor</translation>
 <translation id="750886945254958667">Mantén este grupo para añadir pestañas más tarde o abandónalo si ya no quieres tener acceso</translation>

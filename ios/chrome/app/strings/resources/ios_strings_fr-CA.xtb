@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Erreur d'authentification</translation>
 <translation id="1780152987505130652">Fermer le groupe</translation>
 <translation id="178400879184240105">Vos mots de passe sont uniques</translation>
+<translation id="17906873777101817">Proposer d'enregistrer les mots de passe et les clés d'accès</translation>
 <translation id="1807893857950749072">Autoriser les notifications de Suivi des prix…</translation>
 <translation id="1810976980198522421">Annuler</translation>
 <translation id="1815941218935345331">Mot de passe</translation>
@@ -281,6 +282,7 @@
 <translation id="2161446265348023004">Retourner à la fenêtre ouverte</translation>
 <translation id="2164946989711475905">Se connecter…</translation>
 <translation id="2175927920773552910">Code QR</translation>
+<translation id="2186206192313702726">Lentille Google</translation>
 <translation id="2194856509914051091">Points à prendre en compte</translation>
 <translation id="2196428379625389579">Rechercher sur le Web</translation>
 <translation id="2199562093267256223">Cette action supprimera le groupe de tous les appareils connectés à <ph name="USER_EMAIL" />.</translation>
@@ -492,6 +494,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3130863904455712965">Historique et plus</translation>
 <translation id="313283613037595347">Ouvrir un nouvel onglet de navigation privée.</translation>
 <translation id="3138611310073113613">Supprimer la sélection</translation>
+<translation id="3140825265190223781">Mots de passe et clés d'accès enregistrés</translation>
 <translation id="3143515551205905069">Annuler la synchronisation</translation>
 <translation id="314837624430314508">Restez au fait des dernières nouvelles, des mises à jour du suivi des prix et bien plus encore.</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
@@ -649,6 +652,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3955740319737378355">Terminé</translation>
 <translation id="3955822496205734389">Vous avez des mots de passe faibles.</translation>
 <translation id="3958312024468322930">Faites-la glisser jusqu'au Dock situé dans la partie inférieure de votre écran d'accueil</translation>
+<translation id="3960218941754097036">Rechercher ce qui se trouve sur votre écran avec Lentille Google</translation>
 <translation id="3962326069546168954">Enregistrer</translation>
 <translation id="3967327056943561740">Favoris</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -691,6 +695,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">Ce site Web souhaite télécharger un fichier et l'ajouter à votre agenda.</translation>
 <translation id="4152011295694446843">Vous trouverez vos favoris ici</translation>
+<translation id="4154753961803534698">Rechercher avec l'appareil photo</translation>
 <translation id="4158491215857439601">Gestionnaire de mots de passe</translation>
 <translation id="4163699139741158298">{count,plural, =1{Favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}one{{count} favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}other{{count} favoris enregistrés dans « {title} ». Ils sont enregistrés uniquement sur cet appareil.}}</translation>
 <translation id="4168651806173792090">Réseau <ph name="NETWORK_NAME" /> se terminant par <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1157,6 +1162,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6168647875670665004">Articles suggérés</translation>
 <translation id="6169031022444660352">Pour supprimer tous les authentifiants enregistrés, vous devez d'abord configurer un mot de passe sur votre appareil.</translation>
 <translation id="6173499589275053515">Mot de passe enregistré dans votre compte Google, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Rechercher sur l'écran</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Non lu</translation>
@@ -1318,6 +1324,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6732087373923685049">Appareil photo</translation>
 <translation id="6746338529702829275">Vérifiez les données de votre compte</translation>
 <translation id="6755200887046212842">Gérer les comptes</translation>
+<translation id="6755733078693946548">Accéder aux mots de passe et aux clés d'accès à partir de n'importe quelle appli</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6790502149545262384">Vous verrez bientôt des histoires de <ph name="CHANNEL_NAME" /> lorsque vous ouvrirez un nouvel onglet.</translation>
@@ -1585,6 +1592,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe qui a été compromis à la suite d'une violation de données.</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> nouveaux onglets, <ph name="NUMBER_OF_TABS_REMOVED" /> fermé</translation>
 <translation id="797824194429476746">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé.</translation>
+<translation id="797874245254030665">Accéder à vos mots de passe et clés d'accès à partir de n'importe quelle appli</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google.</translation>
 <translation id="798991908416757345">Les groupes d'onglets ne sont pas accessibles</translation>
@@ -1594,6 +1602,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8005666035647241369">Dans le gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="8011489434346330032">Inspecteur Web</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
+<translation id="8023170444051056234">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils.</translation>
 <translation id="8023878949384262191">Développe la section.</translation>
 <translation id="8027581147000338959">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="8032569120109842252">Suivi</translation>
@@ -1665,6 +1674,8 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web de manière incognito.</translation>
 <translation id="8307481894409578819">Impossible de téléverser ce fichier</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
+<translation id="8328607660158575887">Ouvrez les paramètres du remplissage automatique et des mots de passe</translation>
+<translation id="833647236762414178">Créez, enregistrez et gérez vos mots de passe et vos clés d'accès pour vous connecter facilement aux sites et aux applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8364563001733875155">Pour modifier votre NIP, configurez d'abord un mot de passe sur votre appareil.</translation>
@@ -1816,6 +1827,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8909459547399237818">Sélectionnez Gestionnaire de mots de passe, puis touchez Ajouter un widget</translation>
 <translation id="891282356902782456">Ce mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">Tout fermer</translation>
+<translation id="892185197271200809">Tous les utilisateurs perdront immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et celui-ci sera supprimé de tous les appareils</translation>
 <translation id="8921902386312975525">Options pour suivre les colis</translation>
 <translation id="8923178205567790913">Mots de passe</translation>
 <translation id="892776311701544612">En savoir plus…</translation>

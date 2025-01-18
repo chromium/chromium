@@ -152,7 +152,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="164269334534774161">Du siehst dir momentan eine Offlinekopie dieser Seite vom <ph name="CREATION_TIME" /> an</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1645262572857218659">Mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> anmelden</translation>
-<translation id="1670399744444387456">Grundlegend</translation>
 <translation id="1671236975893690980">Download ausstehend...</translation>
 <translation id="1672586136351118594">Nicht mehr anzeigen</translation>
 <translation id="1680919990519905526">Über Google Lens kaufen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Zuletzt geprüft: vor 1 Tag}other{Zuletzt geprüft: vor # Tagen}}</translation>
 <translation id="2842985007712546952">Übergeordneter Ordner</translation>
 <translation id="2854916915045135148">Gedrückt halten, um in den Inkognitomodus zu wechseln</translation>
-<translation id="2855243985454069333">Löscht den Verlauf auf allen synchronisierten Geräten</translation>
 <translation id="2860954141821109167">Prüfe, ob auf diesem Gerät eine Telefon-App aktiviert ist</translation>
 <translation id="2861923151411510142">Einige Chrome-Funktionen sind dann nicht mehr verfügbar</translation>
 <translation id="2869430948265924908">Wenn du deine vertraulichen Inhalte bzw. Daten in deinem Auto schützen möchtest, musst du eine Autoprofilsperre erstellen.  Dazu kannst du eine PIN, einen Code oder ein Passwort verwenden.</translation>
@@ -483,7 +481,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3208584281581115441">Jetzt prüfen</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> gelöscht</translation>
-<translation id="3214996641768123781">Der <ph name="BEGIN_LINK1" />Suchverlauf<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />andere Arten von Aktivitäten<ph name="END_LINK2" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="3220943972464248773">Bestätige deine Identität, um deine Passwörter zu synchronisieren</translation>
 <translation id="3232293466644486101">Browserdaten löschen…</translation>
 <translation id="3232754137068452469">Web-App</translation>
@@ -727,7 +724,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4405224443901389797">Verschieben nach…</translation>
 <translation id="4405636711880428279">Virtuelle Karte entfernen?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> und <ph name="TAB_COUNT" /> weitere Tabs</translation>
-<translation id="4409271659088619928">Du hast <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> gelöscht</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
 <translation id="4425140285732600465">Preis wird beobachtet. Du wirst bei einem Preisnachlass benachrichtigt.</translation>
@@ -827,7 +823,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="481574578487123132">Verknüpfte Geräte</translation>
 <translation id="4822710610088666676">„<ph name="TAB_GROUP_TITLE" />“-Tabgruppe geschlossen und gespeichert</translation>
 <translation id="4826163340425232009">Ansicht zum Anmelden am unteren Rand.</translation>
-<translation id="4834007576107377210">Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deiner Suchmaschine</translation>
 <translation id="4834250788637067901">Zahlungsmethoden, Angebote und Adressen aus Google Pay</translation>
 <translation id="4835385943915508971">Chrome hat keinen Zugriff auf die angeforderte Ressource.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Tabgruppe mit <ph name="TAB_COUNT_ONE" /> Tab und der Farbe <ph name="COLOR_NAME" /> als neue Tabgruppe im Hintergrund wiederherstellen.}other{Tabgruppe mit <ph name="TAB_COUNT_MANY" /> Tabs und der Farbe <ph name="COLOR_NAME" /> als neue Tabgruppe im Hintergrund wiederherstellen.}}</translation>
@@ -885,7 +880,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Tab – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> Tabs – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Datenschutz</translation>
 <translation id="504456571576643789">Wichtige Hinweise</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Andere Arten von Aktivitäten<ph name="END_LINK1" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="506254248375231072">Keine Tabs</translation>
 <translation id="5062960805900435602">Hinweis zur Passwortzusammenführung geschlossen</translation>
 <translation id="5075939510584558547">Ohne Verschlüsselung speichern</translation>
@@ -1423,7 +1417,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7431991332293347422">Lege fest, wie dein Browserverlauf zur Personalisierung der Google Suche verwendet wird</translation>
 <translation id="7435356471928173109">Von deinem Administrator deaktiviert</translation>
 <translation id="7437998757836447326">Von Chrome abmelden</translation>
-<translation id="7453467225369441013">Du wirst von den meisten Websites, aber nicht aus deinem Google-Konto abgemeldet.</translation>
 <translation id="7453810262525006706">Zu Seitenansicht minimieren</translation>
 <translation id="7454641608352164238">Zu wenig Speicherplatz</translation>
 <translation id="7454744349230173024">Deine Organisation hat das Speichern von Passwörtern deaktiviert</translation>
@@ -1442,7 +1435,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="749294055653435199">Google Lens ist auf diesem Gerät nicht verfügbar</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (aktualisiert <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Bitte warten...</translation>
-<translation id="7502234197872745058">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK1" />von Chrome abmeldest<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Keine Updates verfügbar</translation>
 <translation id="7507207699631365376"><ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> dieses Dienstanbieters ansehen</translation>
 <translation id="750886945254958667">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest</translation>

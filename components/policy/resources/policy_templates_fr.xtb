@@ -5779,11 +5779,6 @@ Les caractères génériques d'hôte globaux (par exemple, "*" ou "[*]") ne sont
 Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translation>
 <translation id="5297948043665200363">Autoriser l'utilisateur à rester connecté une fois que son compte n'est plus authentifié</translation>
 <translation id="5298949392804966105">Aucune restriction pour les comptes gérés</translation>
-<translation id="5300770793658186741">Permet d'établir la liste des origines (URL) ou modèles de nom d'hôte non sécurisés (comme *.example.com) pour lesquels des restrictions de sécurité ne s'appliquent pas. Par exemple, les organisations peuvent indiquer des origines pour les anciennes applis qui ne peuvent pas déployer TLS, ou configurer un serveur de préproduction pour les développements Web internes. Les développeurs peuvent ainsi tester des fonctionnalités nécessitant des contextes sécurisés, sans avoir à déployer TLS sur le serveur de préproduction. Cette règle évite également qu'une origine soit accompagnée de la mention "Non sécurisé" dans la barre d'adresse.
-
-La création d'une liste d'URL dans cette règle revient à définir le flag de ligne de commande "--unsafely-treat-insecure-origin-as-secure" avec une liste des URL en question séparées par une virgule. Cette règle remplace le flag de ligne de commande et la règle UnsafelyTreatInsecureOriginAsSecure (s'ils sont disponibles).
-
-Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="530111809849214840">Masquer l'option <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">Heure locale à laquelle le quota d'utilisation est renouvelé.</translation>
 <translation id="5303080953475303561">Cette règle permet de contrôler la fréquence à laquelle l'écran de verrouillage exige un mot de passe pour le déverrouillage rapide. Si la dernière saisie du mot de passe est antérieure à la période définie, le déverrouillage rapide n'est pas disponible. Si l'utilisateur reste sur l'écran de verrouillage au-delà de cette période, il devra saisir son mot de passe la prochaine fois qu'il saisira un code erroné ou accédera de nouveau à l'écran de verrouillage, selon la situation qui se présente en premier.

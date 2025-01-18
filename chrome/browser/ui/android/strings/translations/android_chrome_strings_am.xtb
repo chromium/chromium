@@ -152,7 +152,6 @@
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> ላይ የነበረ የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ ነዎት</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
 <translation id="1645262572857218659">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> በመለያ ይግቡ</translation>
-<translation id="1670399744444387456">መሠረታዊ</translation>
 <translation id="1671236975893690980">ውርድ በመጠባበቅ ላይ...</translation>
 <translation id="1672586136351118594">ዳግም አታሳይ</translation>
 <translation id="1680919990519905526">በGoogle ሌንስ አማካኝነት ምስልን ይግዙ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ከ1 ቀን በፊት ተፈትሿል}one{ከ# ቀኖች በፊት ተፈትሿል}other{ከ# ቀኖች በፊት ተፈትሿል}}</translation>
 <translation id="2842985007712546952">ወላጅ አቃፊ</translation>
 <translation id="2854916915045135148">ወደ ማንነት የማያሳውቅ ለመቀየር ይንኩ እና ይያዙ</translation>
-<translation id="2855243985454069333">ታሪክን ከሁሉም ከተመሳሰሉ መሣሪያዎች ይሰርዛል</translation>
 <translation id="2860954141821109167">በዚህ መሣሪያ ላይ የስልክ መተግበሪያ እንደነቃ ያረጋግጡ</translation>
 <translation id="2861923151411510142">የተወሰኑ የChrome ባህሪዎች ከአሁን በኋላ \u2019 አይገኙም</translation>
 <translation id="2869430948265924908">በመኪናው ውስጥ ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ለመጠበቅ የመኪና የመገለጫ መቆለፊያ መፍጠር አለብዎት።  ይህን በፒን፣ ኮድ ወይም የይለፍ ቃል ማከናወን ይችላሉ።</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">ዕልባት ተደርጎበታል</translation>
 <translation id="3208584281581115441">አሁን ፈትሽ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ተሰርዟል</translation>
-<translation id="3214996641768123781">በመለያ ሲገቡ <ph name="BEGIN_LINK1" />የፍለጋ ታሪክ<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK2" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።</translation>
 <translation id="3220943972464248773">የይለፍ ቃላትዎን ለማስምር፣ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="3232293466644486101">የአሰሳ ውሂብን ሰርዝ…</translation>
 <translation id="3232754137068452469">የድር መተግበሪያ</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">ውሰድ ወደ…</translation>
 <translation id="4405636711880428279">ምናባዊ ካርድዎ ይወገድ?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> እና <ph name="TAB_COUNT" /> ሌሎች ትሮች</translation>
-<translation id="4409271659088619928">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ተሰርዟል</translation>
 <translation id="4415276339145661267">የGoogle መለያዎን ያቀናብሩ</translation>
 <translation id="4425140285732600465">ዋጋዎችን በመከታተል ላይ። በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ።</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">የተገናኙ መሣሪያዎች</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> የትር ቡድን ተዘግቷል እና ተቀምጧል</translation>
 <translation id="4826163340425232009">የመግቢያ የግርጌ ሉህ።</translation>
-<translation id="4834007576107377210">ካለ የፍለጋ ታሪክዎን ለመሰረዝ የፍለጋ ፕሮግራምዎን መመሪያዎች ይመልከቱ</translation>
 <translation id="4834250788637067901">Google Payን የሚጠቀሙ የመክፈያ ዘዴዎች፣ ቅናሾች እና አድራሻዎች</translation>
 <translation id="4835385943915508971">Chrome የተጠየቀው ግብዓት መዳረሻ የለውም።</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{የ<ph name="TAB_COUNT_ONE" /> ትር የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}one{የ<ph name="TAB_COUNT_MANY" /> ትር የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}other{የ<ph name="TAB_COUNT_MANY" /> ትሮች የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ትር - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ትር - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ትሮች - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">ግላዊነት</translation>
 <translation id="504456571576643789">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
-<translation id="5054455334322721892">በመለያ ሲገቡ <ph name="BEGIN_LINK1" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK1" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።</translation>
 <translation id="506254248375231072">ምንም ትሮች የሉም</translation>
 <translation id="5062960805900435602">ስለ የይለፍ ቃል ማዋሃድ ዝማኔ ተዘግቷል</translation>
 <translation id="5075939510584558547">ያለምስጠራ ያስቀምጡ</translation>
@@ -1423,7 +1417,6 @@
 <translation id="7431991332293347422">ፍለጋን እና ተጨማሪ ነገሮችን ግላዊነት ለማላበስ የእርስዎ የአሰሳ ታሪክ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ</translation>
 <translation id="7435356471928173109">በአስተዳዳሪዎ ጠፍቷል</translation>
 <translation id="7437998757836447326">ዘግተው ከChrome ይውጡ</translation>
-<translation id="7453467225369441013">ከአብዛኛዎቹ ጣቢያዎች ዘግተው ያስወጣዎታል። ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም።</translation>
 <translation id="7453810262525006706">ወደ የጎን ዕይታ ሰብስብ</translation>
 <translation id="7454641608352164238">በቂ ቦታ የለም</translation>
 <translation id="7454744349230173024">የእርስዎ ድርጅት የይለፍ ቃላት ማስቀመጥን አጥፍቷል</translation>
@@ -1442,7 +1435,6 @@
 <translation id="749294055653435199">Google ሌንስ በዚህ መሣሪያ ላይ አይገኝም</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (የተዘመነው በ<ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">እባክዎ ይጠብቁ…</translation>
-<translation id="7502234197872745058">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK1" />ከChrome ዘግተው ይውጡ<ph name="END_LINK1" />።</translation>
 <translation id="750228856503700085">ዝማኔዎች አይገኙም</translation>
 <translation id="7507207699631365376">የዚህን አቅራቢ <ph name="BEGIN_LINK" />የግላዊነት መመሪያ<ph name="END_LINK" /> ይመልከቱ</translation>
 <translation id="750886945254958667">በኋላ ላይ ትሮችን ለማከል ይህን ቡድን ያቆዩት ወይም ከእንግዲህ ሊደርሱት ካልፈለጉ ለቅቀው ይውጡ</translation>

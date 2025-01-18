@@ -6032,11 +6032,6 @@ políticas específicas.
 Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5297948043665200363">Permitir que el usuario permanezca conectado después de que se anule la autenticación de su cuenta</translation>
 <translation id="5298949392804966105">No hay restricciones en las cuentas administradas</translation>
-<translation id="5300770793658186741">Si estableces la política, se especificará una lista de orígenes (URLs) o patrones de nombres de host (como *.example.com) para los que no se aplicarán restricciones de seguridad en orígenes inseguros. Las organizaciones pueden especificar orígenes para las apps heredadas que no pueden implementar TLS o configurar un servidor de etapa de pruebas para desarrollos web internos. Así, los desarrolladores pueden probar las funciones que requieren contextos seguros sin tener que implementar TLS en el servidor de pruebas. Esta política también previene que el origen se considere "No seguro" en la barra de direcciones.
-
-Establecer una lista de URLs en esta política equivale a establecer la función experimental de línea de comandos --unsafely-treat-insecure-origin-as-secure en una lista separada por comas de las mismas URLs. La política anulará esta función experimental y también UnsafelyTreatInsecureOriginAsSecure, si se aplica.
-
-Para obtener más información sobre contextos seguros, consulta Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="530111809849214840">Ocultar la opción <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">La hora del día en que se renueva la cuota de uso (en hora local).</translation>
 <translation id="5303080953475303561">Si estableces la política, se controlará la frecuencia con la que la pantalla de bloqueo solicita la contraseña para un desbloqueo rápido. Cada vez que aparezca la pantalla de bloqueo, si se ingresó la contraseña por última vez antes del período que especifica el valor elegido, el desbloqueo rápido no estará disponible. Si el usuario permanece en la pantalla de bloqueo por más tiempo que el especificado, la próxima vez que ingrese el código incorrecto o reingrese la pantalla de bloqueo (lo que ocurra primero), se le solicitará una contraseña.

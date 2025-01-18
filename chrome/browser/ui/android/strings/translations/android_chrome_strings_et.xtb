@@ -152,7 +152,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="164269334534774161">Vaatate selle lehe võrguühenduseta koopiat kuupäevast <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1645262572857218659">Logige sisse pakkujaga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Põhiseaded</translation>
 <translation id="1671236975893690980">Allalaadimine on ootel …</translation>
 <translation id="1672586136351118594">Ära kuva uuesti</translation>
 <translation id="1680919990519905526">Ostke pilt Google Lensi abil <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kontrolliti 1 päev tagasi}other{Kontrolliti # päeva tagasi}}</translation>
 <translation id="2842985007712546952">Emakaust</translation>
 <translation id="2854916915045135148">Inkognito režiimile lülitumiseks puudutage pikalt</translation>
-<translation id="2855243985454069333">Kustutab ajaloo kõigist sünkroonitud seadmetest</translation>
 <translation id="2860954141821109167">Veenduge, et telefonirakendus oleks selles seadmes lubatud</translation>
 <translation id="2861923151411510142">Mõned Chrome'i funktsioonid pole enam saadaval</translation>
 <translation id="2869430948265924908">Oma tundliku sisu kaitsmiseks autos tuleb luua auto profiililukk.  Seda saate teha PIN-koodi, koodi või parooliga.</translation>
@@ -483,7 +481,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3207960819495026254">Järjehoidjatesse lisatud</translation>
 <translation id="3208584281581115441">Kontrolli kohe</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> kustutati</translation>
-<translation id="3214996641768123781">Kui olete sisse logitud, võidakse teie <ph name="BEGIN_LINK1" />otsinguajalugu<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />muud tegevused<ph name="END_LINK2" /> teie Google'i kontole salvestada. Saate need alati kustutada.</translation>
 <translation id="3220943972464248773">Paroolide sünkroonimiseks kinnitage oma isik</translation>
 <translation id="3232293466644486101">Sirvimisandmete kustutamine …</translation>
 <translation id="3232754137068452469">Veebirakendus</translation>
@@ -727,7 +724,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4405224443901389797">Teisalda asukohta …</translation>
 <translation id="4405636711880428279">Kas eemaldada virtuaalkaart?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ja veel <ph name="TAB_COUNT" /> vahelehte</translation>
-<translation id="4409271659088619928">Teie otsingumootor on <ph name="DSE" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> on kustutatud</translation>
 <translation id="4415276339145661267">Google'i konto haldamine</translation>
 <translation id="4425140285732600465">Jälgite hinda. Teile saadetakse märguanne, kui hind mõnel saidil langeb.</translation>
@@ -827,7 +823,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="481574578487123132">Lingitud seadmed</translation>
 <translation id="4822710610088666676">Vahelehegrupp „<ph name="TAB_GROUP_TITLE" />“ on salvestatud ja suletud</translation>
 <translation id="4826163340425232009">Sisselogimise alumine leht.</translation>
-<translation id="4834007576107377210">Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane</translation>
 <translation id="4834250788637067901">Makseviisid, pakkumised ja aadressid, mis kasutavad Google Payd</translation>
 <translation id="4835385943915508971">Chrome'il pole soovitud allikale juurdepääsu.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vahelehega vahelehegrupi (värv: <ph name="COLOR_NAME" />) taastamine uue taustal oleva vahelehegrupina.}other{<ph name="TAB_COUNT_MANY" /> vahelehega vahelehegrupi (värv: <ph name="COLOR_NAME" />) taastamine uue taustal oleva vahelehegrupina.}}</translation>
@@ -885,7 +880,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vaheleht – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> vahelehte – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privaatsus</translation>
 <translation id="504456571576643789">Olulised aspektid</translation>
-<translation id="5054455334322721892">Kui olete sisse logitud, võidakse teie <ph name="BEGIN_LINK1" />muud tegevused<ph name="END_LINK1" /> teie Google'i kontole salvestada. Saate need alati kustutada.</translation>
 <translation id="506254248375231072">Vahelehti pole</translation>
 <translation id="5062960805900435602">Teade paroolide liitmise kohta on suletud</translation>
 <translation id="5075939510584558547">Ilma krüpteerimata salvestamine</translation>
@@ -1423,7 +1417,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7431991332293347422">Juhtige, kuidas kasutatakse teie sirvimisajalugu otsingu ja muu isikupärastamiseks</translation>
 <translation id="7435356471928173109">Administraator on välja lülitanud</translation>
 <translation id="7437998757836447326">Chrome'ist väljalogimine</translation>
-<translation id="7453467225369441013">Logib teid enamikult saitidelt välja. Google'i kontolt teid välja ei logita.</translation>
 <translation id="7453810262525006706">Ahenda külgvaatele</translation>
 <translation id="7454641608352164238">Pole piisavalt ruumi</translation>
 <translation id="7454744349230173024">Teie organisatsioon on paroolide salvestamise välja lülitanud</translation>
@@ -1442,7 +1435,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="749294055653435199">Google Lens pole selles seadmes saadaval</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (värskendati <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Oodake ...</translation>
-<translation id="7502234197872745058">Selleks et oma Google'i kontolt kõikidel veebisaitidel välja logida, <ph name="BEGIN_LINK1" />logige välja Chrome'ist<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Värskendusi pole saadaval</translation>
 <translation id="7507207699631365376">Vaadake selle teenusepakkuja <ph name="BEGIN_LINK" />privaatsuseeskirju<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Saate säilitada selle grupi, et lisada vahelehed hiljem, või lahkuda sellest, kui te ei soovi sellele enam juurde pääseda</translation>

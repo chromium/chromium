@@ -281,6 +281,7 @@
 <translation id="2161446265348023004">খোলা থকা ৱিণ্ড’লৈ যাওক</translation>
 <translation id="2164946989711475905">ছাইন ইন কৰক…</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2194856509914051091">বিবেচনা কৰিব লগা বিষয়</translation>
 <translation id="2196428379625389579">ৱেবত সন্ধান কৰক</translation>
 <translation id="2199562093267256223">ই <ph name="USER_EMAIL" />ত ছাইন ইন কৰা আটাইবোৰ ডিভাইচৰ পৰা গোটটো মচি পেলাব</translation>
@@ -649,6 +650,7 @@
 <translation id="3955740319737378355">হ’ল</translation>
 <translation id="3955822496205734389">আপোনাৰ অবিশ্বস্ত পাছৱৰ্ড আছে।</translation>
 <translation id="3958312024468322930">ইয়াক টানি আনি আপোনাৰ গৃহ স্ক্ৰীন একেবাৰে তলত থকা ড’কত ৰাখক</translation>
+<translation id="3960218941754097036">Google Lensৰ জৰিয়তে আপোনাৰ স্ক্ৰীনত যিকোনো বস্তু সন্ধান কৰক</translation>
 <translation id="3962326069546168954">ছেভ কৰক</translation>
 <translation id="3967327056943561740">বুকমাৰ্ক</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
@@ -691,6 +693,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">এই ৱেবছাইটটোৱে এটা ফাইল ডাউনল’ড কৰি সেইটো আপোনাৰ কেলেণ্ডাৰত যোগ দিবলৈ বিচাৰিছে।</translation>
 <translation id="4152011295694446843">ইয়াত আপুনি নিজৰ বুকমাৰ্কসমূহ বিচাৰি পাব</translation>
+<translation id="4154753961803534698">কেমেৰাৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{"{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে। সেয়া কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}one{"{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে। সেইসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}other{"{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে। সেইসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />এৰে শেষ হোৱা <ph name="NETWORK_NAME" /></translation>
@@ -1157,6 +1160,7 @@
 <translation id="6168647875670665004">প্ৰবন্ধৰ পৰামৰ্শ</translation>
 <translation id="6169031022444660352">ছেভ কৰি থোৱা আটাইবোৰ ক্ৰিডেনশ্বিয়েল মচিবলৈ, আপুনি প্ৰথমে আপোনাৰ ডিভাইচত এটা পাছক’ড ছেট আপ কৰিব লাগিব।</translation>
 <translation id="6173499589275053515">পাছৱৰ্ড আপোনাৰ Google Account, <ph name="EMAIL" />ত ছেভ কৰা হৈছে</translation>
+<translation id="6181969657494915430">স্ক্ৰীন সন্ধান কৰক</translation>
 <translation id="6187302354554850004">অন্তিমবাৰ ছিংক কৰাৰ সময় <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />ত সৃষ্টি কৰা হৈছে</translation>
 <translation id="6189413832092199491">নপঢ়া</translation>
@@ -1594,6 +1598,7 @@
 <translation id="8005666035647241369">এই ডিভাইচটোত Google পাছৱৰ্ড পৰিচালকলৈ</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
+<translation id="8023170444051056234">আপুনি লগে লগে "<ph name="GROUP_NAME" />" টেবৰ গোটটোৰ এক্সেছ হেৰুৱাব আৰু এইটো আপোনাৰ আটাইবোৰ ডিভাইচৰ পৰা মচা হ’ব</translation>
 <translation id="8023878949384262191">শাখাটো বিস্তাৰ কৰে।</translation>
 <translation id="8027581147000338959">নতুন ৱিণ্ড’ত খোলক</translation>
 <translation id="8032569120109842252">ফ’ল’ কৰি থকা হৈছে</translation>

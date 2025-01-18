@@ -152,7 +152,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="164269334534774161">तपाईं यस पृष्ठको <ph name="CREATION_TIME" /> को अफलाइन प्रतिलिपि हेर्दै हुनुहुन्छ</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मार्फत साइन इन गर्नुहोस्</translation>
-<translation id="1670399744444387456">आधारभूत</translation>
 <translation id="1671236975893690980">डाउनलोड हुन बाँकी छ…</translation>
 <translation id="1672586136351118594">फेरि नदेखाउनुहोस्</translation>
 <translation id="1680919990519905526">Google लेन्समार्फत फोटो किन्नुहोस्<ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{१ दिनअघि जाँच गरिएको}other{# दिनअघि जाँच गरिएको}}</translation>
 <translation id="2842985007712546952">अभिभावक फोल्डर</translation>
 <translation id="2854916915045135148">इन्कोग्निटो मोड प्रयोग गर्न टच एण्ड होल्ड गर्नुहोस्</translation>
-<translation id="2855243985454069333">तपाईंले यो विकल्पमा चिन्ह लगाउनुभयो भने सिंक गरिएका सबै डिभाइसबाट ब्राउजिङ हिस्ट्री मेटिन्छ</translation>
 <translation id="2860954141821109167">यस यन्त्रमा कुनै फोन एप सक्षम गरिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2861923151411510142">Chrome का केही सुविधाहरू अबदेखि उपलब्ध हुने छैनन्</translation>
 <translation id="2869430948265924908">कारमा भएको आफ्नो संवेदनशील सामग्री सुरक्षित राख्न तपाईंले अनिवार्य रूपमा कार प्रोफाइल लक बनाउनु पर्छ।  तपाईं पिन, कोड वा पासवर्ड राखेर कार प्रोफाइल लक बनाउन सक्नुहुन्छ।</translation>
@@ -483,7 +481,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3208584281581115441">अहिले नै जाँच्नुहोस्</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> मेटाइयो</translation>
-<translation id="3214996641768123781">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK1" />खोजको इतिहास<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK2" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।</translation>
 <translation id="3220943972464248773">आफ्ना पासवर्ड सिंक गर्न यो काम गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="3232293466644486101">ब्राउजिङ डेटा मेटाउनुहोस्…</translation>
 <translation id="3232754137068452469">वेब एप</translation>
@@ -727,7 +724,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4405224443901389797">यहाँ सार्नुहोस्…</translation>
 <translation id="4405636711880428279">आफ्नो भर्चुअल कार्ड हटाउन चाहनुहुन्छ?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> र अन्य <ph name="TAB_COUNT" /> वटा ट्याब</translation>
-<translation id="4409271659088619928">तपाईंको डिफल्ट सर्च इन्जिन <ph name="DSE" /> हो। तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> मेटाइयो</translation>
 <translation id="4415276339145661267">आफ्नो Google खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4425140285732600465">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ। कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्।</translation>
@@ -826,7 +822,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="481574578487123132">लिंक गरिएका डिभाइसहरू</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> वटा ट्याब समूह बन्द र सेभ गरियो</translation>
 <translation id="4826163340425232009">साइन इन गर्ने पुछारको पाना।</translation>
-<translation id="4834007576107377210">लागू हुन्छ भने आफ्नो खोजको इतिहास मेटाउन सर्च इन्जिनमा दिइएका निर्देशनहरू हेर्नुहोस्</translation>
 <translation id="4834250788637067901">Google Pay प्रयोग गर्दा इम्पोर्ट गरिने भुक्तानी विधि, अफर र ठेगानाहरू</translation>
 <translation id="4835385943915508971">Chrome सँग अनुरोध गरिएको स्रोत माथिको पहुँच छैन।</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह रिस्टोर गरी नयाँ ब्याकग्राउन्ड ट्याब समूह बनाउनुहोस्।}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह रिस्टोर गरी नयाँ ब्याकग्राउन्ड ट्याब समूह बनाउनुहोस्।}}</translation>
@@ -884,7 +879,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> वटा ट्याब - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="504456571576643789">विचार गर्नु पर्ने कुराहरू</translation>
-<translation id="5054455334322721892">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK1" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK1" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।</translation>
 <translation id="506254248375231072">कुनै पनि ट्याब छैन</translation>
 <translation id="5062960805900435602">पासवर्ड मर्ज गर्ने सुविधा बन्द भएका बारेमा अद्यावधिक जानकारी</translation>
 <translation id="5075939510584558547">इन्क्रिप्ट नगरिकनै सेभ गर्नुहोस्</translation>
@@ -1422,7 +1416,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7431991332293347422">खोज र थप कुराहरू वैयक्तीकृत गर्ने प्रयोजनका लागि तपाईंको ब्राउजिङ इतिहासको प्रयोग गरिने तरिका नियन्त्रण गर्नुहोस्</translation>
 <translation id="7435356471928173109">तपाईंका एड्मिनले अफ गर्नुभएको</translation>
 <translation id="7437998757836447326">Chrome बाट साइन आउट गर्नुहोस्</translation>
-<translation id="7453467225369441013">तपाईंलाई धेरैजसो साइटहरूबाट साइन आउट गर्छ। तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="7453810262525006706">कोल्याप्स गरी साइड भ्यूमा हेर्नुहोस्</translation>
 <translation id="7454641608352164238">पर्याप्त खाली ठाउँ छैन</translation>
 <translation id="7454744349230173024">तपाईंको सङ्गठनले पासवर्डहरू सेभ गर्ने सुविधा अफ गरेको छ</translation>
@@ -1441,7 +1434,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="749294055653435199">यो डिभाइसमा Google लेन्स उपलब्ध छैन</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (अद्यावधिक गरियो <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">प्रतीक्षा गर्नुहोस्...</translation>
-<translation id="7502234197872745058">सबै वेबसाइटहरूमा आफ्नो Google खाताबाट साइन आउट गर्न <ph name="BEGIN_LINK1" />Chrome बाट साइन आउट गर्नुहोस्<ph name="END_LINK1" />।</translation>
 <translation id="750228856503700085">अपडेट उपलब्ध छैनन्</translation>
 <translation id="7507207699631365376">यो प्रदायकको <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" /> हेर्नुहोस्</translation>
 <translation id="750886945254958667">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो एक्सेस गर्न चाहनुहुन्न भने यसबाट बाहिरिनुहोस्</translation>

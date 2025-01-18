@@ -169,6 +169,7 @@ Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sess�
 <translation id="5639704535586432836">Abra Definições &gt; Privacidade &gt; Câmara &gt; Google Chrome e ative a câmara.</translation>
 <translation id="5642200033778930880">O Google Chrome não pode utilizar a câmara no modo Vista dividida</translation>
 <translation id="5661521615548540542">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
+<translation id="5681291952421236520">Ative/desative o Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{A mostrar 1 janela do Chrome agora}other{A mostrar {count} janelas do Chrome agora}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Definir o Chrome como o navegador predefinido</translation>
@@ -204,6 +205,7 @@ Experimente aguardar alguns minutos antes de mudar de conta. Se mudar de conta a
 <translation id="6484712497741564393">Com sessão iniciada como <ph name="EMAIL" />.
 
 Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
+<translation id="6533470733797826516">Inicie sessão mais rapidamente com o preenchimento automático do Chrome</translation>
 <translation id="6545449117344801102">O Chrome deteta moradas e usa o Google Maps para lhe dar direções e informações locais.</translation>
 <translation id="6634107063912726160">Quando terminar sessão, o Chrome não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>
 <translation id="6636941099779251629">A sua organização requer que inicie sessão para usar o Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

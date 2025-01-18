@@ -152,7 +152,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="164269334534774161">Du ser en offlinekopi af denne side fra <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1645262572857218659">Log ind via <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Grundlæggende</translation>
 <translation id="1671236975893690980">Download afventer…</translation>
 <translation id="1672586136351118594">Vis ikke igen</translation>
 <translation id="1680919990519905526">Shop med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tjekket for 1 dag siden}one{Tjekket for # dag siden}other{Tjekket for # dage siden}}</translation>
 <translation id="2842985007712546952">Overordnet mappe</translation>
 <translation id="2854916915045135148">Hold fingeren nede for at skifte til Inkognito</translation>
-<translation id="2855243985454069333">Sletter historikken fra alle synkroniserede enheder</translation>
 <translation id="2860954141821109167">Sørg for, at opkaldsappen er aktiveret på denne enhed</translation>
 <translation id="2861923151411510142">Visse Chrome-funktioner vil ikke længere være tilgængelige</translation>
 <translation id="2869430948265924908">Du skal oprette en lås for din bilprofil for at beskytte dit følsomme indhold i bilen.  Du kan gøre dette med en pinkode, en kode eller en adgangskode.</translation>
@@ -483,7 +481,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> blev slettet</translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Søgehistorik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />andre former for aktivitet<ph name="END_LINK2" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="3220943972464248773">Verificer din identitet for at synkronisere dine adgangskoder</translation>
 <translation id="3232293466644486101">Slet browserdata…</translation>
 <translation id="3232754137068452469">Webapp</translation>
@@ -727,7 +724,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4405224443901389797">Flyt til…</translation>
 <translation id="4405636711880428279">Vil du fjerne dit virtuelle kort?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> og <ph name="TAB_COUNT" /> andre faner</translation>
-<translation id="4409271659088619928">Dine standardsøgemaskine er <ph name="DSE" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> er slettet</translation>
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
 <translation id="4425140285732600465">Der holdes øje med prisen. Få besked, hvis prisen falder på et website.</translation>
@@ -827,7 +823,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="481574578487123132">Tilknyttede enheder</translation>
 <translation id="4822710610088666676">Fanegruppen <ph name="TAB_GROUP_TITLE" /> er lukket og gemt</translation>
 <translation id="4826163340425232009">Loginfeltet i bunden.</translation>
-<translation id="4834007576107377210">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant</translation>
 <translation id="4834250788637067901">Betalingsmetoder, tilbud og adresser, der bruger Google Pay</translation>
 <translation id="4835385943915508971">Chrome har ikke adgang til den ressource, du anmoder om.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Gendan fanegruppen med <ph name="TAB_COUNT_ONE" /> fane og farven <ph name="COLOR_NAME" /> som en ny fanegruppe i baggrunden.}one{Gendan fanegruppen med <ph name="TAB_COUNT_MANY" /> fane og farven <ph name="COLOR_NAME" /> som en ny fanegruppe i baggrunden.}other{Gendan fanegruppen med <ph name="TAB_COUNT_MANY" /> faner og farven <ph name="COLOR_NAME" /> som en ny fanegruppe i baggrunden.}}</translation>
@@ -885,7 +880,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> fane – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> faner – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privatliv</translation>
 <translation id="504456571576643789">Vigtige oplysninger</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Andre former for aktivitet<ph name="END_LINK1" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="506254248375231072">Der er ingen faner</translation>
 <translation id="5062960805900435602">Opdatering om fletning af adgangskoder er lukket</translation>
 <translation id="5075939510584558547">Gem uden kryptering</translation>
@@ -1423,7 +1417,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7431991332293347422">Bestem selv, hvordan din browserhistorik skal bruges til at personligt tilpasse søgeresultater m.m.</translation>
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7437998757836447326">Log ud af Chrome</translation>
-<translation id="7453467225369441013">Logger dig ud af de fleste websites. Du bliver ikke logget ud af din Google-konto.</translation>
 <translation id="7453810262525006706">Minimer til visning fra siden</translation>
 <translation id="7454641608352164238">Der er ikke nok plads</translation>
 <translation id="7454744349230173024">Din organisation har deaktiveret lagring af adgangskoder</translation>
@@ -1442,7 +1435,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="749294055653435199">Google Lens er ikke tilgængelig på denne enhed</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Opdateret <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Vent…</translation>
-<translation id="7502234197872745058">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK1" />logge ud af Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Opdateringer er ikke tilgængelige</translation>
 <translation id="7507207699631365376">Se denne udbyders <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Behold denne gruppe for at tilføje faner senere, eller forlad den, hvis du ikke længere vil have adgang til den</translation>

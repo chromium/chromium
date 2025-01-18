@@ -337,7 +337,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1219219114431716687">Voćna pita</translation>
 <translation id="122082903575839559">Algoritam potpisa potvrde</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 s RSA šifriranjem</translation>
-<translation id="1221266967850882682">Recap dobrodošlice</translation>
+<translation id="1221266967850882682">Sažetak dobrodošlice</translation>
 <translation id="1221825588892235038">Samo odabir</translation>
 <translation id="1222835797152767346">Postavite PIN da olakšate prijavu</translation>
 <translation id="1223484782328004593">Za aplikaciju <ph name="APP_NAME" /> je potrebna licenca</translation>
@@ -1934,7 +1934,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2323018538045954000">Sačuvane WiFi mreže</translation>
 <translation id="2325444234681128157">Zapamti lozinku</translation>
 <translation id="2326188115274135041">Potvrdite PIN da uključite automatsko otključavanje</translation>
-<translation id="2326583548923775947">Ovo nije Google račun. Stavke koje spremite u Chrome neće biti dostupne na drugim uređajima.</translation>
+<translation id="2326583548923775947">Ovo nije Google račun. Stavke koje sačuvate u Chrome neće biti dostupne na drugim uređajima.</translation>
 <translation id="2326906096734221931">Otvori postavke aplikacije</translation>
 <translation id="2326931316514688470">&amp;Ponovo učitaj aplikaciju</translation>
 <translation id="2327492829706409234">Omogući aplikaciju</translation>
@@ -2383,6 +2383,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2638662041295312666">Slika prilikom prijave</translation>
 <translation id="2640299212685523844">Koristi GTK</translation>
 <translation id="264083724974021997">Povežite s telefonom – dijaloški okvir</translation>
+<translation id="2641098199809442625">Vaša zaporka nije ažurirana, no i dalje biste trebali moći pristupiti web-lokaciji pomoću stare zaporke.</translation>
 <translation id="2642111877055905627">Nogometna lopta</translation>
 <translation id="2642206811783203764">Uvijek na <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Uvijek možete izbrisati podatke o mjerenju oglasa brisanjem podataka o pregledanju</translation>

@@ -152,7 +152,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="164269334534774161">Jy bekyk tans 'n vanlyn kopie van hierdie program vanaf <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1645262572857218659">Meld aan met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Basies</translation>
 <translation id="1671236975893690980">Aflaai hangende …</translation>
 <translation id="1672586136351118594">Moenie weer wys nie</translation>
 <translation id="1680919990519905526">Soek-en-koop met Google Lens <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 dag gelede nagegaan}other{# dae gelede nagegaan}}</translation>
 <translation id="2842985007712546952">Moedervouer</translation>
 <translation id="2854916915045135148">Raak en hou om na Incognito oor te skakel</translation>
-<translation id="2855243985454069333">Vee geskiedenis op alle gesinkroniseerde toestelle uit</translation>
 <translation id="2860954141821109167">Maak seker dat 'n foonprogram op hierdie toestel geaktiveer is</translation>
 <translation id="2861923151411510142">Sommige Chrome-kenmerke sal nie meer beskikbaar wees nie</translation>
 <translation id="2869430948265924908">Jy moet ’n motorprofielslot skep om jou sensitiewe inhoud in die motor te beskerm.  Jy kan dit met ’n PIN, kode of wagwoord doen.</translation>
@@ -483,7 +481,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3207960819495026254">Geboekmerk</translation>
 <translation id="3208584281581115441">Kontroleer nou</translation>
 <translation id="3211426585530211793">Het <ph name="ITEM_TITLE" /> uitgevee</translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Soekgeskiedenis<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />ander soorte aktiwiteit<ph name="END_LINK2" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan hulle enige tyd uitvee.</translation>
 <translation id="3220943972464248773">Verifieer dis jy om wagwoorde te kan sinkroniseer</translation>
 <translation id="3232293466644486101">Vee blaaierdata uit …</translation>
 <translation id="3232754137068452469">Webprogram</translation>
@@ -727,7 +724,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4405224443901389797">Skuif na …</translation>
 <translation id="4405636711880428279">Verwyder jou virtuele kaart?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> en <ph name="TAB_COUNT" /> ander oortjies</translation>
-<translation id="4409271659088619928">Jou soekenjin is <ph name="DSE" />. Sien hul instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> is uitgevee</translation>
 <translation id="4415276339145661267">Bestuur jou Google-rekening</translation>
 <translation id="4425140285732600465">Spoor tans prys na. Kry kennisgewings as die prys op enige werf daal.</translation>
@@ -827,7 +823,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="481574578487123132">Gekoppelde toestelle</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" />-oortjiegroep is toegemaak en gestoor</translation>
 <translation id="4826163340425232009">Aanmelding se onderste blad.</translation>
-<translation id="4834007576107377210">Sien soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig</translation>
 <translation id="4834250788637067901">Betaalmetodes, aanbiedings en adresse wat Google Pay gebruik</translation>
 <translation id="4835385943915508971">Chrome het nie toegang tot die hulpbron wat versoek is nie.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Stel oortjiegroep van <ph name="TAB_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" />, terug as ’n nuwe agtergrondoortjiegroep.}other{Stel oortjiegroep van <ph name="TAB_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" />, terug as ’n nuwe agtergrondoortjiegroep.}}</translation>
@@ -885,7 +880,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> oortjie – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> oortjies – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privaatheid</translation>
 <translation id="504456571576643789">Dinge om in ag te neem</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Ander soorte aktiwiteit<ph name="END_LINK1" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan hulle enige tyd uitvee.</translation>
 <translation id="506254248375231072">Geen oortjies nie</translation>
 <translation id="5062960805900435602">Opdatering oor wagwoordsamevoeging is toe</translation>
 <translation id="5075939510584558547">Stoor sonder enkripsie</translation>
@@ -1423,7 +1417,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7431991332293347422">Beheer hoe jou blaaigeskiedenis gebruik word om Search en meer te personaliseer</translation>
 <translation id="7435356471928173109">Afgeskakel deur jou administrateur</translation>
 <translation id="7437998757836447326">Meld af uit Chrome</translation>
-<translation id="7453467225369441013">Meld jou by die meeste werwe af. Jy sal nie by jou Google-rekening afgemeld word nie.</translation>
 <translation id="7453810262525006706">Vou in na kantaansig</translation>
 <translation id="7454641608352164238">Nie genoeg spasie nie</translation>
 <translation id="7454744349230173024">Jou organisasie het die stoor van wagwoorde afgeskakel</translation>
@@ -1442,7 +1435,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="749294055653435199">Google Lens is nie op hierdie toestel beskikbaar nie</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (opgedateer <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Wag asseblief …</translation>
-<translation id="7502234197872745058">Om by jou Google-rekening op al jou webwerwe af te meld, moet jy <ph name="BEGIN_LINK1" />by Chrome afmeld<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Opdaterings is nie beskikbaar nie</translation>
 <translation id="7507207699631365376">Lees hierdie verskaffer se <ph name="BEGIN_LINK" />privaatheidsbeleid<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Hou hierdie groep om later oortjies by te voeg, of verlaat dit as jy nie meer toegang daartoe wil hê nie</translation>

@@ -152,7 +152,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="164269334534774161">Prikazuje se oflajn kopija ove stranice od <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1645262572857218659">Prijavite se na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Osnovna</translation>
 <translation id="1671236975893690980">Preuzimanje je na čekanju…</translation>
 <translation id="1672586136351118594">Ne prikazuj ponovo</translation>
 <translation id="1680919990519905526">Kupite uz Google objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -401,7 +400,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provereno pre 1 dan}one{Provereno pre # dan}few{Provereno pre # dana}other{Provereno pre # dana}}</translation>
 <translation id="2842985007712546952">Nadređeni folder</translation>
 <translation id="2854916915045135148">Dodirnite i zadržite da biste prešli u režim bez arhiviranja</translation>
-<translation id="2855243985454069333">Briše istoriju sa svih sinhronizovanih uređaja</translation>
 <translation id="2860954141821109167">Uverite se da je neka aplikacija za telefon omogućena na ovom uređaju</translation>
 <translation id="2861923151411510142">Neke Chrome funkcije više neće biti dostupne</translation>
 <translation id="2869430948265924908">Da biste zaštitili osetljiv sadržaj u automobilu, morate da primenite zaključavanje profila automobila.  To možete da uradite pomoću PIN-a, koda ili lozinke.</translation>
@@ -484,7 +482,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3208584281581115441">Proveri</translation>
 <translation id="3211426585530211793">Stavka <ph name="ITEM_TITLE" /> je izbrisana</translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Istorija pretrage<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu da budu sačuvani na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.</translation>
 <translation id="3220943972464248773">Da biste sinhronizovali lozinke, potvrdite svoj identitet</translation>
 <translation id="3232293466644486101">Izbriši podatke pregledanja…</translation>
 <translation id="3232754137068452469">Veb-aplikacija</translation>
@@ -728,7 +725,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4405224443901389797">Premesti u...</translation>
 <translation id="4405636711880428279">Želite da uklonite virtuelnu karticu?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> i još kartica (<ph name="TAB_COUNT" />)</translation>
-<translation id="4409271659088619928">Vaš pretraživač je <ph name="DSE" />. Pogledajte uputstva tog pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="4414179633735763985">Izbrisano: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Upravljajte Google nalogom</translation>
 <translation id="4425140285732600465">Cena se prati. Dobijajte obaveštenja kada se cena snizi na bilo kom sajtu.</translation>
@@ -828,7 +824,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="481574578487123132">Povezani uređaji</translation>
 <translation id="4822710610088666676">Grupa kartica <ph name="TAB_GROUP_TITLE" /> je zatvorena i sačuvana</translation>
 <translation id="4826163340425232009">Donja tabela za prijavljivanje.</translation>
-<translation id="4834007576107377210">Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo</translation>
 <translation id="4834250788637067901">Načini plaćanja, ponude i adrese koji koriste Google Pay</translation>
 <translation id="4835385943915508971">Chrome nema pristup zahtevanom resursu.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Vratite grupu kartica sa <ph name="TAB_COUNT_ONE" /> karticom, u boji <ph name="COLOR_NAME" />, kao novu grupu kartica u pozadini.}one{Vratite grupu kartica sa <ph name="TAB_COUNT_MANY" /> karticom, u boji <ph name="COLOR_NAME" />, kao novu grupu kartica u pozadini.}few{Vratite grupu kartica sa <ph name="TAB_COUNT_MANY" /> kartice, u boji <ph name="COLOR_NAME" />, kao novu grupu kartica u pozadini.}other{Vratite grupu kartica sa <ph name="TAB_COUNT_MANY" /> kartica, u boji <ph name="COLOR_NAME" />, kao novu grupu kartica u pozadini.}}</translation>
@@ -886,7 +881,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> kartica – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> kartice – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> kartica – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="504456571576643789">Šta treba imati u vidu</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Drugi oblici aktivnosti<ph name="END_LINK1" /> mogu da se sačuvaju na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.</translation>
 <translation id="506254248375231072">Nema kartica</translation>
 <translation id="5062960805900435602">Obaveštenje o objedinjavanju lozinki je zatvoreno</translation>
 <translation id="5075939510584558547">Sačuvajte bez šifrovanja</translation>
@@ -1424,7 +1418,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7431991332293347422">Kontrolišite kako se istorija pregledanja koristi za personalizovanje Pretrage i drugih usluga</translation>
 <translation id="7435356471928173109">Isključio je administrator</translation>
 <translation id="7437998757836447326">Odjavljivanje iz Chrome-a</translation>
-<translation id="7453467225369441013">Odjaviće vas sa većine sajtova. Neće vas odjaviti sa Google naloga.</translation>
 <translation id="7453810262525006706">Skupite u bočni prikaz</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
 <translation id="7454744349230173024">Organizacija je isključila čuvanje lozinki</translation>
@@ -1443,7 +1436,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="749294055653435199">Google objektiv nije dostupan na ovom uređaju</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (ažurirano je <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Sačekajte...</translation>
-<translation id="7502234197872745058">Da biste se odjavili sa Google naloga na svim veb-sajtovima, <ph name="BEGIN_LINK1" />odjavite se iz Chrome-a<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Ažuriranja nisu dostupna</translation>
 <translation id="7507207699631365376">Pogledajte <ph name="BEGIN_LINK" />politiku privatnosti<ph name="END_LINK" /> ovog dobavljača</translation>
 <translation id="750886945254958667">Zadržite ovu grupu da biste dodali kartice kasnije ili je napustite ako više ne želite da joj pristupate</translation>

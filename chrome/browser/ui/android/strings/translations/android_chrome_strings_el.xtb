@@ -152,7 +152,6 @@
 <translation id="164269334534774161">Βλέπετε ένα αντίγραφο εκτός σύνδεσης αυτής της σελίδας από <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1645262572857218659">Σύνδεση με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Βασικά</translation>
 <translation id="1671236975893690980">Λήψη σε εκκρεμότητα…</translation>
 <translation id="1672586136351118594">Να μην εμφανιστεί ξανά</translation>
 <translation id="1680919990519905526">Αγορά εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ελέγχθηκε πριν από μία ημέρα}other{Ελέγχθηκε πριν από # ημέρες}}</translation>
 <translation id="2842985007712546952">Γονικός φάκελος</translation>
 <translation id="2854916915045135148">Αγγίξτε παρατεταμένα για εναλλαγή στην ανώνυμη περιήγηση</translation>
-<translation id="2855243985454069333">Διαγράφει το ιστορικό από όλες τις συγχρονισμένες συσκευές</translation>
 <translation id="2860954141821109167">Βεβαιωθείτε ότι είναι ενεργοποιημένη μια εφαρμογή τηλεφώνου σε αυτήν τη συσκευή.</translation>
 <translation id="2861923151411510142">Ορισμένες λειτουργίες του Chrome δεν θα είναι πλέον διαθέσιμες</translation>
 <translation id="2869430948265924908">Για να προστατεύσετε το ευαίσθητο περιεχόμενό σας στο αυτοκίνητο, θα πρέπει να δημιουργήσετε ένα κλείδωμα προφίλ αυτοκινήτου.  Για να το κάνετε αυτό, χρησιμοποιήστε PIN, κωδικό ή κωδικό πρόσβασης.</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3208584281581115441">Έλεγχος τώρα</translation>
 <translation id="3211426585530211793">Το <ph name="ITEM_TITLE" /> διαγράφηκε</translation>
-<translation id="3214996641768123781">Το <ph name="BEGIN_LINK1" />ιστορικό αναζήτησης<ph name="END_LINK1" /> και <ph name="BEGIN_LINK2" />άλλες μορφές δραστηριότητας<ph name="END_LINK2" /> ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google όταν είστε συνδεδεμένοι. Μπορείτε να τα διαγράψετε ανά πάσα στιγμή.</translation>
 <translation id="3220943972464248773">Για να συγχρονίσετε τους κωδικούς πρόσβασής σας, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="3232293466644486101">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="3232754137068452469">Εφαρμογή ιστού</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">Μετακίνηση σε…</translation>
 <translation id="4405636711880428279">Κατάργηση της εικονικής κάρτας;</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> και <ph name="TAB_COUNT" /> άλλες καρτέλες</translation>
-<translation id="4409271659088619928">Χρησιμοποιείτε τη μηχανή αναζήτησης <ph name="DSE" />. Ανατρέξτε στις οδηγίες για διαγραφή του ιστορικού αναζήτησής σας, εφόσον υπάρχουν.</translation>
 <translation id="4414179633735763985">Η ομάδα καρτελών <ph name="TAB_GROUPS_AND_TABS_PART" /> διαγράφηκε</translation>
 <translation id="4415276339145661267">Διαχείριση Λογαριασμού Google</translation>
 <translation id="4425140285732600465">Παρακολούθηση τιμής. Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο.</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">Συνδεδεμένες συσκευές</translation>
 <translation id="4822710610088666676">Η ομάδα καρτελών <ph name="TAB_GROUP_TITLE" /> έκλεισε και αποθηκεύτηκε</translation>
 <translation id="4826163340425232009">Φύλλο κάτω μέρους για σύνδεση.</translation>
-<translation id="4834007576107377210">Ανατρέξτε στις οδηγίες της μηχανής αναζήτησης για τη διαγραφή του ιστορικού αναζήτησης, εάν υπάρχουν.</translation>
 <translation id="4834250788637067901">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
 <translation id="4835385943915508971">Το Chrome δεν έχει πρόσβαση στον πόρο που ζητήθηκε</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Επαναφέρετε την ομάδα καρτελών που αποτελείται από <ph name="TAB_COUNT_ONE" /> καρτέλα και έχει <ph name="COLOR_NAME" /> χρώμα, ως νέα ομάδα καρτελών στο παρασκήνιο.}other{Επαναφέρετε την ομάδα καρτελών που αποτελείται από <ph name="TAB_COUNT_MANY" /> καρτέλες και έχει <ph name="COLOR_NAME" /> χρώμα, ως νέα ομάδα καρτελών στο παρασκήνιο.}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> καρτέλες - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Απόρρητο</translation>
 <translation id="504456571576643789">Λάβετε υπόψη τα εξής</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Άλλες μορφές δραστηριότητας<ph name="END_LINK1" /> ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google όταν είστε συνδεδεμένοι. Μπορείτε να τις διαγράψετε ανά πάσα στιγμή.</translation>
 <translation id="506254248375231072">Δεν υπάρχουν καρτέλες</translation>
 <translation id="5062960805900435602">Η ενημέρωση σχετικά με τη συγχώνευση κωδικών πρόσβασης έχει κλείσει</translation>
 <translation id="5075939510584558547">Αποθήκευση χωρίς κρυπτογράφηση</translation>
@@ -1423,7 +1417,6 @@
 <translation id="7431991332293347422">Ελέγξτε τον τρόπο με τον οποίο χρησιμοποιείται το ιστορικό περιήγησής σας για την εξατομίκευση της Αναζήτησης και άλλων λειτουργιών</translation>
 <translation id="7435356471928173109">Απενεργοποιήθηκε από τον διαχειριστή σας.</translation>
 <translation id="7437998757836447326">Αποσύνδεση από το Chrome</translation>
-<translation id="7453467225369441013">Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους. Δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google.</translation>
 <translation id="7453810262525006706">Σύμπτυξη στην πλευρική προβολή</translation>
 <translation id="7454641608352164238">Ανεπαρκής χώρος</translation>
 <translation id="7454744349230173024">Ο οργανισμός σας απενεργοποίησε την αποθήκευση κωδικών πρόσβασης</translation>
@@ -1442,7 +1435,6 @@
 <translation id="749294055653435199">Το Google Lens δεν είναι διαθέσιμο σε αυτήν τη συσκευή</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ενημέρωση στις <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Περιμένετε…</translation>
-<translation id="7502234197872745058">Για να αποσυνδεθείτε από τον Λογαριασμό σας Google σε όλους τους ιστοτόπους, <ph name="BEGIN_LINK1" />αποσυνδεθείτε από το Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Οι ενημερώσεις δεν είναι διαθέσιμες</translation>
 <translation id="7507207699631365376">Δείτε την <ph name="BEGIN_LINK" />πολιτική απορρήτου<ph name="END_LINK" /> του παρόχου</translation>
 <translation id="750886945254958667">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή αποχωρήστε, αν δεν θέλετε πλέον να έχετε πρόσβαση σε αυτή</translation>

@@ -281,6 +281,7 @@
 <translation id="2161446265348023004">Prijeđi na otvoreni prozor</translation>
 <translation id="2164946989711475905">Prijava…</translation>
 <translation id="2175927920773552910">QR kôd</translation>
+<translation id="2186206192313702726">Google objektiv</translation>
 <translation id="2194856509914051091">Važne napomene</translation>
 <translation id="2196428379625389579">Pretražite na webu</translation>
 <translation id="2199562093267256223">Time će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" />.</translation>
@@ -492,6 +493,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3130863904455712965">Povijest i drugo</translation>
 <translation id="313283613037595347">Izradite novu anonimnu karticu.</translation>
 <translation id="3138611310073113613">Odbacivanje odabira</translation>
+<translation id="3140825265190223781">Spremljene zaporke i pristupni ključevi</translation>
 <translation id="3143515551205905069">Otkaži sinkronizaciju</translation>
 <translation id="314837624430314508">Pratite najnovije vijesti, ažuriranja praćenja cijena i još mnogo toga.</translation>
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
@@ -1669,6 +1671,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8299613349954694191">Otvorite anonimnu karticu da biste pregledavali web privatno.</translation>
 <translation id="8307481894409578819">Prijenos datoteke nije uspio</translation>
 <translation id="8319076807703933069">Novo pretraživanje</translation>
+<translation id="833647236762414178">Izradite i spremite zaporke i pristupne ključeve te upravljajte njima kako biste se lako prijavljivali na web-lokacije i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sigurnosno kopirajte svoje sadržaje i upotrebljavajte ih na bilo kojem uređaju.</translation>
 <translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8364563001733875155">Da biste promijenili PIN, najprije postavite šifru na uređaju.</translation>

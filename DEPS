@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'a9e8d004f0ea4088f8a333cc36e7c019542fcf7e',
+  'skia_revision': 'ffd7fec8b6c5df912dbd7e382f7a0d7c1f51937d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '7f464bf1fd1490e89ee670f67d2c835d372a411d',
+  'dawn_revision': '0c8f10626e6cb2bc260a61365976d52f5967dfd4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1439,7 +1439,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'd1114cf83704d32178e2c5b1e73440a3b8f0a4c8',
+    '48de42fe3b63c7739e3d1fb15f8c6276b77cd3ce',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2946,7 +2946,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'KJNjd5A4IUXeIHn-ur1hHdryL_rRrO6Pm5G3OC3bJ1MC',
+        'version': 'BEgsMF48qQZ4D5S5i5wA-usVOZnBfsd1jo454wou_ygC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2957,7 +2957,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'r3XXx_HKMw-S2DL0iZxM2kfhbX1AGfC63plVgmnxV6cC',
+        'version': 'R86nCLtnx23yNHB-78b6PnoH9fdnl63Pol42oZXRv08C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2990,7 +2990,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'g6WuSTDQDR1ExWfOhkfih-OhtbG5dCFla30BSrmlCr8C',
+        'version': 'CIGnQNBH2QDBmNqa9W8HAvGCNzi7-9VcuRvoVcFeYgIC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

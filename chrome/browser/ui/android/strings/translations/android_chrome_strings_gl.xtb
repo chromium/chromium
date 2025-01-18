@@ -152,7 +152,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1645262572857218659">Inicia sesión con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Opcións básicas</translation>
 <translation id="1671236975893690980">Descarga pendente…</translation>
 <translation id="1672586136351118594">Non mostrar outra vez</translation>
 <translation id="1680919990519905526">Comprar imaxe con Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{A comprobación realizouse hai 1 día}other{A comprobación realizouse hai # días}}</translation>
 <translation id="2842985007712546952">Cartafol principal</translation>
 <translation id="2854916915045135148">Mantén premido o botón para cambiar ao modo de incógnito</translation>
-<translation id="2855243985454069333">Elimina o historial de todos os dispositivos sincronizados</translation>
 <translation id="2860954141821109167">Asegúrate de que haxa unha aplicación de teléfono activada neste dispositivo</translation>
 <translation id="2861923151411510142">Algunhas funcións de Chrome non estarán dispoñibles</translation>
 <translation id="2869430948265924908">Para protexer o teu contido confidencial no coche, debes crear un bloqueo do perfil do coche.  Podes facelo cun PIN, cun código ou cun contrasinal.</translation>
@@ -483,7 +481,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="3211426585530211793">Eliminouse <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google o <ph name="BEGIN_LINK1" />historial de busca<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outros datos da túa actividade<ph name="END_LINK2" />. Podes eliminalos en calquera momento.</translation>
 <translation id="3220943972464248773">Para sincronizar os contrasinais, verifica a túa identidade</translation>
 <translation id="3232293466644486101">Eliminar datos de navegación…</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
@@ -727,7 +724,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4405224443901389797">Mover a…</translation>
 <translation id="4405636711880428279">Queres quitar a tarxeta virtual?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> e <ph name="TAB_COUNT" /> pestanas máis</translation>
-<translation id="4409271659088619928">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="4414179633735763985">Elementos eliminados: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
 <translation id="4425140285732600465">Estase facendo un seguimento do prezo. Recibe alertas se baixa o prezo en calquera sitio.</translation>
@@ -827,7 +823,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> grupo de pestanas pechado e gardado</translation>
 <translation id="4826163340425232009">Panel inferior de inicio de sesión.</translation>
-<translation id="4834007576107377210">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca</translation>
 <translation id="4834250788637067901">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
 <translation id="4835385943915508971">Chrome non ten acceso ao recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurar grupo de <ph name="TAB_COUNT_ONE" /> pestana, coa cor <ph name="COLOR_NAME" />, como un novo grupo de pestanas en segundo plano.}other{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> pestanas, coa cor <ph name="COLOR_NAME" />, como un novo grupo de pestanas en segundo plano.}}</translation>
@@ -885,7 +880,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestana: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> pestanas: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="504456571576643789">Cuestións que se deben ter en conta</translation>
-<translation id="5054455334322721892">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google <ph name="BEGIN_LINK1" />outros datos da túa actividade<ph name="END_LINK1" />. Podes eliminalos en calquera momento.</translation>
 <translation id="506254248375231072">Ningunha pestana</translation>
 <translation id="5062960805900435602">A actualización sobre a combinación de contrasinais está pechada</translation>
 <translation id="5075939510584558547">Gardar sen encriptación</translation>
@@ -1423,7 +1417,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7431991332293347422">Controla como se utiliza o historial de navegación para personalizar a Busca e moito máis</translation>
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
 <translation id="7437998757836447326">Pechar sesión en Chrome</translation>
-<translation id="7453467225369441013">Pecha a túa sesión na maioría dos sitios. Non se pechará a sesión na túa conta de Google.</translation>
 <translation id="7453810262525006706">Contraer no panel lateral</translation>
 <translation id="7454641608352164238">Non hai espazo suficiente</translation>
 <translation id="7454744349230173024">A túa organización desactivou a opción de gardar contrasinais</translation>
@@ -1442,7 +1435,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="749294055653435199">Google Lens non está dispoñible neste dispositivo</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualizouse <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Agarda…</translation>
-<translation id="7502234197872745058">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK1" />pecha sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Non hai actualizacións dispoñibles</translation>
 <translation id="7507207699631365376">Consulta a <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> deste fornecedor</translation>
 <translation id="750886945254958667">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non vas acceder a el</translation>

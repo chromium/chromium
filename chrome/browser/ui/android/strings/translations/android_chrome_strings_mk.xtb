@@ -152,7 +152,6 @@
 <translation id="164269334534774161">Гледате офлајн копија на страницата од <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1645262572857218659">Најавете се со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Основно</translation>
 <translation id="1671236975893690980">Преземањето чека на ред…</translation>
 <translation id="1672586136351118594">Не прикажувај повторно</translation>
 <translation id="1680919990519905526">Купете со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -286,6 +285,7 @@
 <translation id="233375395665273385">Избриши и одјави се</translation>
 <translation id="2341410551640223969">Не можеше да се инсталира <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Вкупен сообраќај искористен од Chrome, вклучувајќи сметки, обележувачи и зачувани поставки</translation>
+<translation id="2349954856814571872">Икона за копче за лента со обележувачи</translation>
 <translation id="235789365079050412">Политика за приватност на Google</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2362083820973145409">Најавени сте како: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ги отвора поставките.</translation>
@@ -400,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено пред 1 ден}one{Проверено пред # ден}other{Проверено пред # дена}}</translation>
 <translation id="2842985007712546952">Надредена папка</translation>
 <translation id="2854916915045135148">Допрете и задржете за да префрлите на „Инкогнито“</translation>
-<translation id="2855243985454069333">Ќе се избрише историјата од сите синхронизирани уреди</translation>
 <translation id="2860954141821109167">Проверете дали е овозможена апликација за телефон на уредов</translation>
 <translation id="2861923151411510142">Некои функции на Chrome веќе нема да бидат достапни</translation>
 <translation id="2869430948265924908">За да ги заштитите чувствителните содржини во автомобилот, мора да создадете „Заклучување на профилот“ во автомобилот.  Тоа може да го направите со PIN, код или лозинка.</translation>
@@ -483,7 +482,6 @@
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3208584281581115441">Провери сега</translation>
 <translation id="3211426585530211793">Избришана е ставката <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Историјата на пребарување<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други форми на активност<ph name="END_LINK2" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="3220943972464248773">За да ги синхронизирате лозинките, потврдете дека сте вие</translation>
 <translation id="3232293466644486101">Избришете ги податоците од прелистување…</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
@@ -727,7 +725,6 @@
 <translation id="4405224443901389797">Премести во…</translation>
 <translation id="4405636711880428279">Дали да се отстрани виртуелната картичка?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> и уште <ph name="TAB_COUNT" /> картички</translation>
-<translation id="4409271659088619928">Вашиот пребарувач е <ph name="DSE" />. Погледнете го неговото упатство за бришење на историјата на пребарување ако е применливо.</translation>
 <translation id="4414179633735763985">Избришани: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Управувајте со сметката на Google</translation>
 <translation id="4425140285732600465">Цената се следи. Добивајте предупредувања ако цената се намали на кој било сајт.</translation>
@@ -827,7 +824,6 @@
 <translation id="481574578487123132">Поврзани уреди</translation>
 <translation id="4822710610088666676">Групата картички <ph name="TAB_GROUP_TITLE" /> е затворена и зачувана</translation>
 <translation id="4826163340425232009">Долен лист за најавување.</translation>
-<translation id="4834007576107377210">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо</translation>
 <translation id="4834250788637067901">Начини на плаќање, понуди и адреси преку Google Pay</translation>
 <translation id="4835385943915508971">Chrome нема пристап до бараниот ресурс.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Вратете ја групата картички што опфаќа <ph name="TAB_COUNT_ONE" /> картичка, боја: <ph name="COLOR_NAME" /> како нова група картички во заднина.}one{Вратете ја групата картички што опфаќа <ph name="TAB_COUNT_MANY" /> картичка, боја: <ph name="COLOR_NAME" /> како нова група картички во заднина.}other{Вратете ја групата картички што опфаќа <ph name="TAB_COUNT_MANY" /> картички, боја: <ph name="COLOR_NAME" /> како нова група картички во заднина.}}</translation>
@@ -885,7 +881,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> картичка – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> картички – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Приватност</translation>
 <translation id="504456571576643789">Нешта што треба да се земат предвид</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Други форми на активност<ph name="END_LINK1" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="506254248375231072">Нема картички</translation>
 <translation id="5062960805900435602">Известувањето за спојување лозинки е затворено</translation>
 <translation id="5075939510584558547">Зачувувајте без шифрирање</translation>
@@ -1423,7 +1418,6 @@
 <translation id="7431991332293347422">Контролирајте како вашата историја на прелистување се користи за персонализирање на „Пребарувањето“ и друго</translation>
 <translation id="7435356471928173109">Исклучено од администраторот</translation>
 <translation id="7437998757836447326">Одјавете се од Chrome</translation>
-<translation id="7453467225369441013">Ќе ве одјави од повеќето сајтови. Нема да се одјавите од вашата сметка на Google.</translation>
 <translation id="7453810262525006706">Затвори го страничниот приказ</translation>
 <translation id="7454641608352164238">Нема доволно простор</translation>
 <translation id="7454744349230173024">Вашата организација го исклучи зачувувањето лозинки</translation>
@@ -1442,7 +1436,6 @@
 <translation id="749294055653435199">Google Lens не е достапна на уредов</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ажурирано <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Почекајте…</translation>
-<translation id="7502234197872745058">За да се одјавите од вашата сметка на Google на сите веб-сајтови, <ph name="BEGIN_LINK1" />одјавете се од Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Ажурирања не се достапни</translation>
 <translation id="7507207699631365376">Погледнете ја <ph name="BEGIN_LINK" />Политиката за приватност<ph name="END_LINK" /> на операторов</translation>
 <translation id="750886945254958667">Задржете ја групава за да додавате картички подоцна или напуштете ја ако веќе не сакате да пристапувате до неа</translation>

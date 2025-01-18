@@ -152,7 +152,6 @@
 <translation id="164269334534774161">ਤੁਸੀਂ <ph name="CREATION_TIME" /> ਤੋਂ ਇਸ ਪੰਨੇ ਦੀ ਇੱਕ ਆਫ਼ਲਾਈਨ ਕਾਪੀ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="1644574205037202324">ਇਤਿਹਾਸ</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
-<translation id="1670399744444387456">ਮੁਢਲਾ</translation>
 <translation id="1671236975893690980">ਡਾਊਨਲੋਡ ਵਿਚਾਰ-ਅਧੀਨ ਹੈ…</translation>
 <translation id="1672586136351118594">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="1680919990519905526">Google Lens ਨਾਲ ਚਿੱਤਰ ਖਰੀਦੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{# ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{# ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="2842985007712546952">ਪੇਰੈਂਟ ਫੋਲਡਰ</translation>
 <translation id="2854916915045135148">ਇਨਕੋਗਨਿਟੋ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਲਈ ਸਪਰਸ਼ ਕਰ ਕੇ ਦਬਾਈ ਰੱਖੋ</translation>
-<translation id="2855243985454069333">ਸਿੰਕ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਇਤਿਹਾਸ ਮਿਟਾਉਂਦਾ ਹੈ</translation>
 <translation id="2860954141821109167">ਪੱਕਾ ਕਰੋ ਕਿ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਫ਼ੋਨ ਐਪ ਚਾਲੂ ਹੋਵੇ</translation>
 <translation id="2861923151411510142">ਕੁਝ Chrome ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਰਹਿਣਗੀਆਂ</translation>
 <translation id="2869430948265924908">ਕਾਰ ਵਿੱਚ ਆਪਣੀ ਸੰਵੇਦਨਸ਼ੀਲ ਸਮੱਗਰੀ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਲਈ, ਤੁਹਾਡੇ ਲਈ ਕਾਰ ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਬਣਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ।  ਤੁਸੀਂ ਅਜਿਹਾ ਪਿੰਨ, ਕੋਡ ਜਾਂ ਪਾਸਵਰਡ ਨਾਲ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
 <translation id="3208584281581115441">ਹੁਣ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
-<translation id="3214996641768123781">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK1" />ਖੋਜ ਇਤਿਹਾਸ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK2" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3220943972464248773">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦਾ ਸਿੰਕ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="3232293466644486101">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ…</translation>
 <translation id="3232754137068452469">ਵੈੱਬ ਐਪ</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">ਇਸ ਵਿੱਚ ਲਿਜਾਓ…</translation>
 <translation id="4405636711880428279">ਆਪਣਾ ਆਭਾਸੀ ਕਾਰਡ ਹਟਾਓ?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ਅਤੇ <ph name="TAB_COUNT" /> ਹੋਰ ਟੈਬ</translation>
-<translation id="4409271659088619928">ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ <ph name="DSE" /> ਹੈ। ਲਾਗੂ ਹੋਣ 'ਤੇ, ਆਪਣਾ ਖੋਜ ਇਤਿਹਾਸ ਮਿਟਾਉਣ ਲਈ ਉਹਨਾਂ ਦੀਆਂ ਹਿਦਾਇਤਾਂ ਦੇਖੋ।</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="4415276339145661267">ਆਪਣੇ Google ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4425140285732600465">ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">ਲਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਅਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4826163340425232009">ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਹੇਠਲੀ ਸ਼ੀਟ।</translation>
-<translation id="4834007576107377210">ਲਾਗੂ ਹੋਣ 'ਤੇ, ਆਪਣਾ ਖੋਜ ਇਤਿਹਾਸ ਮਿਟਾਉਣ ਲਈ ਆਪਣੇ ਖੋਜ ਇੰਜਣ ਦੀਆਂ ਹਿਦਾਇਤਾਂ ਦੇਖੋ</translation>
 <translation id="4834250788637067901">Google Pay ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ, ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ ਪਤੇ</translation>
 <translation id="4835385943915508971">Chrome ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਸਰੋਤ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਹੈ।</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ਟੈਬ, ਰੰਗ <ph name="COLOR_NAME" /> ਦੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।}one{<ph name="TAB_COUNT_MANY" /> ਟੈਬ, ਰੰਗ <ph name="COLOR_NAME" /> ਦੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।}other{<ph name="TAB_COUNT_MANY" /> ਟੈਬਾਂ, ਰੰਗ <ph name="COLOR_NAME" /> ਦੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ਟੈਬ - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ਟੈਬ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ਟੈਬਾਂ - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">ਪਰਦੇਦਾਰੀ</translation>
 <translation id="504456571576643789">ਵਿਚਾਰਨ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
-<translation id="5054455334322721892">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK1" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK1" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="506254248375231072">ਕੋਈ ਟੈਬ ਨਹੀਂ</translation>
 <translation id="5062960805900435602">ਪਾਸਵਰਡ ਮਿਲਾਨ ਬਾਰੇ ਅੱਪਡੇਟ ਬੰਦ ਹੈ</translation>
 <translation id="5075939510584558547">ਇਨਕ੍ਰਿਪਸ਼ਨ ਤੋਂ ਬਿਨਾਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -1423,7 +1417,6 @@
 <translation id="7431991332293347422">'ਖੋਜ' ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਵਰਤੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="7435356471928173109">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7437998757836447326">Chrome ਤੋਂ ਸਾਈਨ-ਆਉਟ ਕਰੋ</translation>
-<translation id="7453467225369441013">ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਨੂੰ ਸਾਈਨ ਆਊਟ ਕਰਦਾ ਹੈ। ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਸਾਈਨ ਆਊਟ ਨਹੀਂ ਹੋਵੋਗੇ।</translation>
 <translation id="7453810262525006706">ਪਾਸੇ ਦੇ ਦ੍ਰਿਸ਼ 'ਤੇ ਸਮੇਟੋ</translation>
 <translation id="7454641608352164238">ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ</translation>
 <translation id="7454744349230173024">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
@@ -1442,7 +1435,6 @@
 <translation id="749294055653435199">Google Lens ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (ਅੱਪਡੇਟ ਕੀਤਾ <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">ਕਿਰਪਾ ਕਰਕੇ ਠਹਿਰੋ…</translation>
-<translation id="7502234197872745058">ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK1" />Chrome ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK1" />।</translation>
 <translation id="750228856503700085">ਅੱਪਡੇਟਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="7507207699631365376">ਇਸ ਪ੍ਰਦਾਨਕ ਦੀ <ph name="BEGIN_LINK" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK" /> ਦੇਖੋ</translation>
 <translation id="750886945254958667">ਬਾਅਦ ਵਿੱਚ ਟੈਬਾਂ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਇਸ ਗਰੁੱਪ ਨੂੰ ਬਣਾਈ ਰੱਖੋ ਜਾਂ ਜੇ ਤੁਸੀਂ ਹੁਣ ਇਸ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਕਰਨਾ ਚਾਹੁੰਦੇ, ਤਾਂ ਇਸ ਨੂੰ ਛੱਡੋ</translation>

@@ -152,7 +152,6 @@
 <translation id="164269334534774161">Преглеждате офлайн копие на тази страница, създадено на <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1645262572857218659">Влизане чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Основни</translation>
 <translation id="1671236975893690980">Предстои изтегляне…</translation>
 <translation id="1672586136351118594">Да не се показва отново</translation>
 <translation id="1680919990519905526">Пазар. с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено преди 1 ден}other{Проверено преди # дни}}</translation>
 <translation id="2842985007712546952">Основна папка</translation>
 <translation id="2854916915045135148">Докоснете и задръжте, за да превключите към режим „инкогнито“</translation>
-<translation id="2855243985454069333">Изтриване на историята от всички синхронизирани устройства</translation>
 <translation id="2860954141821109167">Трябва да има активирано приложение за телефон на устройството</translation>
 <translation id="2861923151411510142">Някои функции на Chrome вече няма да са налице</translation>
 <translation id="2869430948265924908">За да защитите деликатното си съдържание в автомобила, трябва да зададете опция за заключване на потребителския профил в него.  Можете да използвате ПИН, код или парола.</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3208584281581115441">Проверка сега</translation>
 <translation id="3211426585530211793">Изтрихте „<ph name="ITEM_TITLE" />“</translation>
-<translation id="3214996641768123781">Възможно е <ph name="BEGIN_LINK1" />историята на търсенията<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други видове активност<ph name="END_LINK2" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="3220943972464248773">За да се синхронизират паролите ви, потвърдете, че сте вие</translation>
 <translation id="3232293466644486101">Изтриване на данните за сърфирането…</translation>
 <translation id="3232754137068452469">Уеб приложение</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">Преместване във…</translation>
 <translation id="4405636711880428279">Да се премахне ли виртуалната ви карта?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> и още <ph name="TAB_COUNT" /> раздела</translation>
-<translation id="4409271659088619928">Търсещата ви машина е <ph name="DSE" />. Вижте инструкциите ѝ относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="4414179633735763985">Изтрихте <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Управление на профила ви в Google</translation>
 <translation id="4425140285732600465">Цената се проследява. Ще получавате сигнали, когато има понижение в който и да е сайт.</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">Свързани устройства</translation>
 <translation id="4822710610088666676">Затворихте и запазихте групата раздели „<ph name="TAB_GROUP_TITLE" />“</translation>
 <translation id="4826163340425232009">Долен лист за вход в профила.</translation>
-<translation id="4834007576107377210">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо)</translation>
 <translation id="4834250788637067901">Начини на плащане, оферти и адреси посредством Google Pay</translation>
 <translation id="4835385943915508971">Chrome няма достъп до заявения ресурс.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Възстановяване на група раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TAB_COUNT_ONE" /> раздел, като нова група на заден план.}other{Възстановяване на група раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TAB_COUNT_MANY" /> раздела, като нова група на заден план.}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> раздела – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Поверителност</translation>
 <translation id="504456571576643789">Имайте предвид следното</translation>
-<translation id="5054455334322721892">Възможно е <ph name="BEGIN_LINK1" />други видове активност<ph name="END_LINK1" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="506254248375231072">Няма раздели</translation>
 <translation id="5062960805900435602">Предупреждението за обединяването на пароли е затворено</translation>
 <translation id="5075939510584558547">Запазване без шифроване</translation>
@@ -1423,7 +1417,6 @@
 <translation id="7431991332293347422">Контролирайте начина, по който историята ви на сърфиране се използва за персонализиране на търсенето и др.</translation>
 <translation id="7435356471928173109">Изключено от администратора ви</translation>
 <translation id="7437998757836447326">Изход от Chrome</translation>
-<translation id="7453467225369441013">Ще излезете от повечето сайтове, но не и от профила си в Google.</translation>
 <translation id="7453810262525006706">Свиване до страничен изглед</translation>
 <translation id="7454641608352164238">Няма достатъчно място</translation>
 <translation id="7454744349230173024">Организацията ви е изключила запазването на пароли</translation>
@@ -1442,7 +1435,6 @@
 <translation id="749294055653435199">Google Обектив не е налице на устройството</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Актуализирано: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Моля, изчакайте...</translation>
-<translation id="7502234197872745058">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK1" />излезте от профила си в Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Не са налице актуализации</translation>
 <translation id="7507207699631365376">Вижте <ph name="BEGIN_LINK" />декларацията за поверителност<ph name="END_LINK" /> на този доставчик</translation>
 <translation id="750886945254958667">Запазете тази група, за да добавяте раздели по-късно, или я напуснете, ако вече не искате достъп до нея</translation>

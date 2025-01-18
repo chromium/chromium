@@ -152,7 +152,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="164269334534774161">Jelenleg az oldal <ph name="CREATION_TIME" />-i dátummal mentett offline példányát tekinti meg</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1645262572857218659">Bejelentkezés a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Alapok</translation>
 <translation id="1671236975893690980">Letöltés függőben…</translation>
 <translation id="1672586136351118594">Ne jelenjen meg többé</translation>
 <translation id="1680919990519905526">Képalapú Google Lens-vásárlás <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
@@ -401,7 +400,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 napja ellenőrizve}other{# napja ellenőrizve}}</translation>
 <translation id="2842985007712546952">Szülőmappa</translation>
 <translation id="2854916915045135148">Tartsa lenyomva az ujját az inkognitó módba való váltáshoz</translation>
-<translation id="2855243985454069333">Az összes bejelentkezett eszközről törli az előzményeket</translation>
 <translation id="2860954141821109167">Győződjön meg arról, hogy van engedélyezett telefonalkalmazás ezen az eszközön</translation>
 <translation id="2861923151411510142">A Chrome egyes funkcióihoz nem tud majd hozzáférni</translation>
 <translation id="2869430948265924908">Profilzárolást kell létrehoznia, hogy meg tudja védeni az autóban a bizalmas tartalmait.  Ezt PIN-kód, kód vagy jelszó segítségével teheti meg.</translation>
@@ -484,7 +482,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3208584281581115441">Ellenőrzés most</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> törölve</translation>
-<translation id="3214996641768123781">Amikor be van jelentkezve, a <ph name="BEGIN_LINK1" />keresési előzményeket<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />más tevékenységtípusokat<ph name="END_LINK2" /> a rendszer elmentheti az Ön Google-fiókjába. Bármikor törölheti őket.</translation>
 <translation id="3220943972464248773">Jelszavai szinkronizálásához igazolja személyazonosságát</translation>
 <translation id="3232293466644486101">Böngészési adatok törlése…</translation>
 <translation id="3232754137068452469">Internetes alkalmazás</translation>
@@ -728,7 +725,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4405224443901389797">Áthelyezés…</translation>
 <translation id="4405636711880428279">Biztosan eltávolítja a virtuális kártyát?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> és további <ph name="TAB_COUNT" /> lap</translation>
-<translation id="4409271659088619928">Az Ön keresőmotorja a következő: <ph name="DSE" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> törölve</translation>
 <translation id="4415276339145661267">Google-fiók kezelése</translation>
 <translation id="4425140285732600465">Ár nyomon követve. Értesítést kaphat, ha valamelyik webhelyen csökken az ár.</translation>
@@ -828,7 +824,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="481574578487123132">Összekapcsolt eszközök</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> lapcsoport bezárva és mentve</translation>
 <translation id="4826163340425232009">Bejelentkezési alsó lap.</translation>
-<translation id="4834007576107377210">A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="4834250788637067901">A Google Pay szolgáltatásban használt fizetési módok, ajánlatok és címek</translation>
 <translation id="4835385943915508971">A Chrome nem fér hozzá a kért forráshoz.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása új háttérbeli lapcsoportként.}other{<ph name="TAB_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása új háttérbeli lapcsoportként.}}</translation>
@@ -886,7 +881,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> lap – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> lap – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Adatvédelem</translation>
 <translation id="504456571576643789">Megfontolandó szempontok</translation>
-<translation id="5054455334322721892">Amikor be van jelentkezve, a <ph name="BEGIN_LINK1" />további tevékenységtípusokat<ph name="END_LINK1" /> a rendszer elmentheti a Google-fiókjába. Bármikor törölheti őket.</translation>
 <translation id="506254248375231072">Nincs lap</translation>
 <translation id="5062960805900435602">A jelszóegyesítési frissítés le van zárva.</translation>
 <translation id="5075939510584558547">Mentés titkosítás nélkül</translation>
@@ -1424,7 +1418,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7431991332293347422">Beállíthatja, hogy a rendszer hogyan szabja személyre a Keresést és egyebeket a böngészési előzmények alapján</translation>
 <translation id="7435356471928173109">A rendszergazda kikapcsolta</translation>
 <translation id="7437998757836447326">Kijelentkezés a Chrome-ból</translation>
-<translation id="7453467225369441013">A rendszer a legtöbb webhelyről kijelentkezteti Önt, de Google-fiókjából nem.</translation>
 <translation id="7453810262525006706">Összecsukás oldalsó nézetbe</translation>
 <translation id="7454641608352164238">Nincs elég tárhely</translation>
 <translation id="7454744349230173024">A szervezete kikapcsolta a jelszavak mentését</translation>
@@ -1443,7 +1436,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="749294055653435199">A Google Lens nem áll rendelkezésre ezen az eszközön</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Frissítve: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Kérjük, várjon…</translation>
-<translation id="7502234197872745058">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK1" />jelentkezzen ki a Chrome-ból<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Nincsenek rendelkezésre álló frissítések</translation>
 <translation id="7507207699631365376">Olvassa el a szolgáltató <ph name="BEGIN_LINK" />adatvédelmi irányelveit<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Megtarthatja a csoportot, ha később szeretne lapokat hozzáadni, de ki is léphet belőle, ha a továbbiakban nem kíván hozzáférni.</translation>

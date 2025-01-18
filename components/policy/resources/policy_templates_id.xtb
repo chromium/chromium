@@ -6046,11 +6046,6 @@ kebijakan khususnya.
 Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="5297948043665200363">Izinkan pengguna tetap login setelah akunnya menjadi tidak terautentikasi</translation>
 <translation id="5298949392804966105">Tidak ada batasan di akun terkelola</translation>
-<translation id="5300770793658186741">Menyetel kebijakan akan menentukan daftar origin (URL) dan pola nama host (seperti *.example.com) yang tidak dikenai pembatasan keamanan untuk origin yang tidak aman. Organisasi dapat menentukan origin untuk aplikasi lama yang tidak dapat men-deploy TLS atau menyiapkan server staging untuk pengembangan web internal, sehingga developer dapat menguji fitur yang memerlukan konteks aman tanpa harus men-deploy TLS di server staging. Dengan kebijakan ini, origin tidak akan dilabeli "Not Secure" (Tidak Aman) di kolom URL.
-
-Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line --unsafely-treat-insecure-origin-as-secure ke daftar yang dipisahkan koma, yang berisi URL yang sama. Jika disetel, kebijakan ini akan mengganti tanda command line dan UnsafelyTreatInsecureOriginAsSecure.
-
-Untuk mendapatkan informasi selengkapnya tentang konteks aman, lihat Konteks Aman (https://www.w3.org/TR/secure-contexts ).</translation>
 <translation id="530111809849214840">Sembunyikan opsi <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">Waktu dalam hari dalam waktu lokal saat kuota penggunaan diperpanjang.</translation>
 <translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Setiap kali layar kunci ditampilkan, jika entri sandi terakhir terjadi sebelum jangka waktu yang ditentukan oleh nilai yang dipilih, mode buka kunci cepat tidak akan tersedia. Jika pengguna tetap berada di layar kunci setelah jangka waktu ini, sandi akan diminta saat pengguna salah memasukkan kode lagi atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.

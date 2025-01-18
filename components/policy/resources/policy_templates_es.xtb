@@ -5804,11 +5804,6 @@ No se admiten comodines de host generales (por ejemplo, "*" ni "[*]"). En su lug
 Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5297948043665200363">Permitir que el usuario mantenga la sesión iniciada después de que su cuenta deje de estar autenticada</translation>
 <translation id="5298949392804966105">Sin restricciones en las cuentas gestionadas</translation>
-<translation id="5300770793658186741">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes no seguros. Las organizaciones pueden especificar orígenes para aplicaciones antiguas que no pueden implementar TLS o configurar un servidor staging para el desarrollo web interno, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
-
-Definir la lista de URLs de esta política tiene el mismo resultado que asignar la marca de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto la marca de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
-
-Para obtener más información sobre contextos seguros, consulta la página Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="530111809849214840">Ocultar la opción de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">La hora del día (en la zona horaria local) en la que se renovará la cuota de uso.</translation>
 <translation id="5303080953475303561">Esta política controla la frecuencia con la que la pantalla de bloqueo solicita la contraseña para el desbloqueo rápido. Cuando aparece la pantalla de bloqueo, si el tiempo transcurrido desde la última vez que se introdujo la contraseña es mayor al del valor elegido, el desbloqueo rápido no estará disponible. Si los usuarios permanecen en la pantalla de bloqueo pasado ese tiempo, la próxima vez que introduzcan un código incorrecto o vuelvan a acceder a la pantalla de bloqueo (lo que suceda primero), se les pedirá la contraseña.

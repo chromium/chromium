@@ -28,7 +28,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="2329392777730037872">Otvaranje URL-a <ph name="URL" /> na uređaju klijenta nije uspjelo.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2366718077645204424">Nije moguće povezati se s host računarom. Uzrok je vjerovatno konfiguracija mreže koju koristite.</translation>
-<translation id="242591256144136845">Autorska prava 2025. Google LLC. Sva prava pridržana.</translation>
+<translation id="242591256144136845">Autorska prava 2025. Google LLC. Sva prava su zadržana.</translation>
 <translation id="2504109125669302160">Dajte odobrenje za "Pristupačnost" za <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Povezano s host računarom <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Želite li dijeliti ovaj računar da ga drugi korisnik može vidjeti ili kontrolirati?</translation>
@@ -134,7 +134,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="7067321367069083429">Ekran se ponaša kao ekran na dodir</translation>
 <translation id="7116737094673640201">Dobro došli u Chrome udaljeni računar</translation>
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
-<translation id="7298392173540380852">Autorska prava 2025. Autori Chromiuma. Sva prava pridržana.</translation>
+<translation id="7298392173540380852">Autorska prava 2025. Autori Chromiuma. Sva prava su zadržana.</translation>
 <translation id="7312846573060934304">Host računar je van mreže.</translation>
 <translation id="7319983568955948908">Prestani dijeliti</translation>
 <translation id="7359298090707901886">Nije moguće koristiti odabrani preglednik za otvaranje URL-ova na lokalnom uređaju.</translation>

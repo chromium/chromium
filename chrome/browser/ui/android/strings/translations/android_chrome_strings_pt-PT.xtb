@@ -152,7 +152,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="164269334534774161">Está a visualizar uma cópia offline desta página de <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1645262572857218659">Inicie sessão com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Básico</translation>
 <translation id="1671236975893690980">Transferência pendente…</translation>
 <translation id="1672586136351118594">Não mostrar de novo</translation>
 <translation id="1680919990519905526">Comprar imagem com o Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -401,7 +400,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Última verificação há 1 dia}other{Última verificação há # dias}}</translation>
 <translation id="2842985007712546952">Pasta superior</translation>
 <translation id="2854916915045135148">Toque sem soltar para mudar para a Navegação anónima</translation>
-<translation id="2855243985454069333">Elimina o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2860954141821109167">Certifique-se de que uma aplicação de telefone está ativada neste dispositivo.</translation>
 <translation id="2861923151411510142">Algumas funcionalidades do Chrome vão deixar de estar disponíveis</translation>
 <translation id="2869430948265924908">Para proteger o seu conteúdo sensível no carro, tem de criar um bloqueio do perfil do carro.  Pode fazê-lo com um PIN, um código ou uma palavra-passe.</translation>
@@ -484,7 +482,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
 <translation id="3208584281581115441">Rever agora</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> eliminado</translation>
-<translation id="3214996641768123781">O <ph name="BEGIN_LINK1" />histórico de pesquisas<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outras formas de atividade<ph name="END_LINK2" /> podem ser guardados na sua Conta Google quando tem sessão iniciada. Pode eliminá-los em qualquer altura.</translation>
 <translation id="3220943972464248773">Para sincronizar as palavras-passe, valide a sua identidade</translation>
 <translation id="3232293466644486101">Eliminar dados de navegação…</translation>
 <translation id="3232754137068452469">App Web</translation>
@@ -728,7 +725,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4405224443901389797">Mover para…</translation>
 <translation id="4405636711880428279">Remover o seu cartão virtual?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> e mais <ph name="TAB_COUNT" /> separadores</translation>
-<translation id="4409271659088619928">O seu motor de pesquisa é o <ph name="DSE" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> eliminado</translation>
 <translation id="4415276339145661267">Gerir a sua Conta Google</translation>
 <translation id="4425140285732600465">A monitorizar o preço. Obtenha alertas se o preço descer em qualquer site.</translation>
@@ -828,7 +824,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="481574578487123132">Dispositivos associados</translation>
 <translation id="4822710610088666676">Grupo de separadores <ph name="TAB_GROUP_TITLE" /> fechado e guardado</translation>
 <translation id="4826163340425232009">Secção inferior de início de sessão.</translation>
-<translation id="4834007576107377210">Se aplicável, consulte as instruções do motor de pesquisa para eliminar o histórico de pesquisas</translation>
 <translation id="4834250788637067901">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
 <translation id="4835385943915508971">O Chrome não tem acesso ao recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaure o grupo de <ph name="TAB_COUNT_ONE" /> separador, com a cor <ph name="COLOR_NAME" />, como um novo grupo de separadores em segundo plano.}other{Restaure o grupo de <ph name="TAB_COUNT_MANY" /> separadores, com a cor <ph name="COLOR_NAME" />, como um novo grupo de separadores em segundo plano.}}</translation>
@@ -886,7 +881,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> separadores – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="504456571576643789">Aspetos a considerar</translation>
-<translation id="5054455334322721892">Podem ser guardadas <ph name="BEGIN_LINK1" />outras formas de atividade<ph name="END_LINK1" /> na sua Conta Google quando tem sessão iniciada. Pode eliminá-las em qualquer altura.</translation>
 <translation id="506254248375231072">Nenhum separador</translation>
 <translation id="5062960805900435602">A atualização acerca da união de palavras-passe está fechada</translation>
 <translation id="5075939510584558547">Guarde sem encriptação</translation>
@@ -1424,7 +1418,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7431991332293347422">Controle a forma como o histórico de navegação é utilizado para personalizar a Pesquisa e muito mais.</translation>
 <translation id="7435356471928173109">Desativada pelo seu administrador.</translation>
 <translation id="7437998757836447326">Terminar sessão no Chrome</translation>
-<translation id="7453467225369441013">A sua sessão é terminada na maioria dos sites. A sessão na sua Conta Google não é terminada.</translation>
 <translation id="7453810262525006706">Reduzir para vista lateral</translation>
 <translation id="7454641608352164238">Espaço insuficiente</translation>
 <translation id="7454744349230173024">A sua organização desativou a gravação de palavras-passe</translation>
@@ -1443,7 +1436,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="749294055653435199">O Google Lens não está disponível neste dispositivo</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (atualizado há <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Aguarde…</translation>
-<translation id="7502234197872745058">Para terminar sessão na sua Conta Google em todos os Websites, <ph name="BEGIN_LINK1" />termine sessão no Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Atualizações indisponíveis</translation>
 <translation id="7507207699631365376">Veja a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste fornecedor.</translation>
 <translation id="750886945254958667">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este</translation>

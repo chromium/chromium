@@ -152,7 +152,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="164269334534774161">Vous regardez une copie hors connexion de cette page depuis le <ph name="CREATION_TIME" />.</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1645262572857218659">Se connecter avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Général</translation>
 <translation id="1671236975893690980">Téléchargement en attente…</translation>
 <translation id="1672586136351118594">Ne plus afficher</translation>
 <translation id="1680919990519905526">Acheter avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Vérification effectuée il y a 1 jour}one{Vérification effectuée il y a # jour}other{Vérification effectuée il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
 <translation id="2854916915045135148">Appuyer de manière prolongée pour passer en navigation privée</translation>
-<translation id="2855243985454069333">Supprime l'historique de tous les appareils synchronisés</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application Téléphone est activée sur cet appareil</translation>
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus disponibles</translation>
 <translation id="2869430948265924908">Pour protéger vos contenus sensibles dans la voiture, vous devez créer un verrouillage du profil de voiture.  Pour cela, vous pouvez utiliser un code PIN, un code ou un mot de passe.</translation>
@@ -483,7 +481,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> a été supprimé</translation>
-<translation id="3214996641768123781">L'<ph name="BEGIN_LINK1" />historique des recherches<ph name="END_LINK1" /> et d'<ph name="BEGIN_LINK2" />autres formes d'activité<ph name="END_LINK2" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="3220943972464248773">Confirmez votre identité pour synchroniser vos mots de passe</translation>
 <translation id="3232293466644486101">Supprimer les données de navigation…</translation>
 <translation id="3232754137068452469">Application Web</translation>
@@ -727,7 +724,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4405224443901389797">Déplacer vers…</translation>
 <translation id="4405636711880428279">Supprimer votre carte virtuelle ?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> et <ph name="TAB_COUNT" /> autres onglets</translation>
-<translation id="4409271659088619928">Votre moteur de recherche est <ph name="DSE" />. Lisez ses instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> supprimés</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4425140285732600465">Suivi du prix activé. Recevez des alertes si le prix baisse sur un site.</translation>
@@ -827,7 +823,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="481574578487123132">Appareils associés</translation>
 <translation id="4822710610088666676">Groupe d'onglets <ph name="TAB_GROUP_TITLE" /> fermé et enregistré</translation>
 <translation id="4826163340425232009">Bottom sheet de connexion.</translation>
-<translation id="4834007576107377210">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, si besoin</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4835385943915508971">Chrome n'a pas accès à la ressource demandée.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_ONE" /> onglet (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}one{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglet (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}other{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglets (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}}</translation>
@@ -885,7 +880,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> onglet - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> onglets - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="504456571576643789">Éléments à prendre en compte</translation>
-<translation id="5054455334322721892">D'<ph name="BEGIN_LINK1" />autres formes d'activité<ph name="END_LINK1" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="506254248375231072">Aucun onglet</translation>
 <translation id="5062960805900435602">L'avertissement sur la fusion de mots de passe est fermé</translation>
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
@@ -1423,7 +1417,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7431991332293347422">Contrôlez la manière dont votre historique de navigation est utilisé pour personnaliser la recherche et plus</translation>
 <translation id="7435356471928173109">Mode désactivé par votre administrateur</translation>
 <translation id="7437998757836447326">Se déconnecter de Chrome</translation>
-<translation id="7453467225369441013">Vous déconnecte de la plupart des sites. Vous ne serez cependant pas déconnecté de votre compte Google.</translation>
 <translation id="7453810262525006706">Réduire en vue latérale</translation>
 <translation id="7454641608352164238">Espace insuffisant</translation>
 <translation id="7454744349230173024">Votre organisation a désactivé l'enregistrement des mots de passe</translation>
@@ -1442,7 +1435,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="749294055653435199">Google Lens n'est pas disponible sur cet appareil</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Dernière mise à jour <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Veuillez patienter…</translation>
-<translation id="7502234197872745058">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK1" />déconnectez-vous de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Aucune nouvelle information</translation>
 <translation id="7507207699631365376">Afficher les <ph name="BEGIN_LINK" />Règles de confidentialité<ph name="END_LINK" /> de ce fournisseur</translation>
 <translation id="750886945254958667">Conservez ce groupe pour y ajouter des onglets plus tard, ou quittez-le si ne souhaitez plus y avoir accès</translation>

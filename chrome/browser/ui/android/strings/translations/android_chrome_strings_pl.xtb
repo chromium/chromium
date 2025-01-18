@@ -152,7 +152,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="164269334534774161">Oglądasz kopię offline tej strony z <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1645262572857218659">Zaloguj się przez <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1670399744444387456">Podstawowe</translation>
 <translation id="1671236975893690980">Oczekuję na pobranie…</translation>
 <translation id="1672586136351118594">Nie pokazuj ponownie</translation>
 <translation id="1680919990519905526">Kup zdjęcie za pomocą Obiektywu Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
@@ -401,7 +400,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Sprawdzano 1 dzień temu}few{Sprawdzano # dni temu}many{Sprawdzano # dni temu}other{Sprawdzano # dnia temu}}</translation>
 <translation id="2842985007712546952">Folder nadrzędny</translation>
 <translation id="2854916915045135148">Naciśnij i przytrzymaj, aby przełączyć się na tryb incognito</translation>
-<translation id="2855243985454069333">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
 <translation id="2860954141821109167">Sprawdź, czy na urządzeniu jest włączona aplikacja telefonu</translation>
 <translation id="2861923151411510142">Niektóre funkcje Chrome nie będą już dostępne</translation>
 <translation id="2869430948265924908">Aby chronić poufne treści w samochodzie, musisz utworzyć blokadę profilu samochodu.  Możesz to zrobić za pomocą kodu, w tym kodu PIN, lub hasła.</translation>
@@ -484,7 +482,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208584281581115441">Sprawdź teraz</translation>
 <translation id="3211426585530211793">Usunięto: <ph name="ITEM_TITLE" /></translation>
-<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Historia wyszukiwania<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />inne formy aktywności<ph name="END_LINK2" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
 <translation id="3220943972464248773">Aby zsynchronizować hasła, potwierdź swoją tożsamość</translation>
 <translation id="3232293466644486101">Usuń dane przeglądania…</translation>
 <translation id="3232754137068452469">Aplikacja internetowa</translation>
@@ -728,7 +725,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4405224443901389797">Przenieś do…</translation>
 <translation id="4405636711880428279">Usunąć Twoją kartę wirtualną?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> i inne karty (<ph name="TAB_COUNT" />)</translation>
-<translation id="4409271659088619928">Twoja wyszukiwarka to <ph name="DSE" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="4414179633735763985">Usunięto <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
 <translation id="4425140285732600465">Monitoruję cenę. Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert.</translation>
@@ -828,7 +824,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="481574578487123132">Połączone urządzenia</translation>
 <translation id="4822710610088666676">Zamknięto i zapisano grupę kart <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="4826163340425232009">Plansza dolna logowania.</translation>
-<translation id="4834007576107377210">W razie potrzeby zapoznaj się z instrukcjami usuwania historii wyszukiwania w danej przeglądarce</translation>
 <translation id="4834250788637067901">Formy płatności, oferty i adresy korzystające z Google Pay</translation>
 <translation id="4835385943915508971">Chrome nie ma dostępu do żądanego zasobu.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Przywróć grupę kart z <ph name="TAB_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.}few{Przywróć grupę <ph name="TAB_COUNT_MANY" /> kart, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.}many{Przywróć grupę <ph name="TAB_COUNT_MANY" /> kart, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.}other{Przywróć grupę <ph name="TAB_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.}}</translation>
@@ -886,7 +881,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> karty – <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> kart – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> karty – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="504456571576643789">Istotne kwestie</translation>
-<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Inne formy aktywności<ph name="END_LINK1" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
 <translation id="506254248375231072">Brak kart</translation>
 <translation id="5062960805900435602">Powiadomienie o scalaniu haseł zostało zamknięte</translation>
 <translation id="5075939510584558547">Zapisz bez szyfrowania</translation>
@@ -1424,7 +1418,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7431991332293347422">Zarządzaj personalizacją wyszukiwarki i innych funkcji na podstawie historii przeglądania</translation>
 <translation id="7435356471928173109">Wyłączył administrator</translation>
 <translation id="7437998757836447326">Wyloguj się z Chrome</translation>
-<translation id="7453467225369441013">Wylogowuje z większości stron internetowych. Nie wyloguje Cię z konta Google.</translation>
 <translation id="7453810262525006706">Zwiń do widoku bocznego</translation>
 <translation id="7454641608352164238">Za mało miejsca</translation>
 <translation id="7454744349230173024">Twoja organizacja wyłączyła zapisywanie haseł</translation>
@@ -1443,7 +1436,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="749294055653435199">Na tym urządzeniu Obiektyw Google jest niedostępny</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (zaktualizowana <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Czekaj…</translation>
-<translation id="7502234197872745058">Aby wylogować się z konta Google na wszystkich stronach, <ph name="BEGIN_LINK1" />wyloguj się z Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Aktualizacje są niedostępne</translation>
 <translation id="7507207699631365376">Zapoznaj się z <ph name="BEGIN_LINK" />polityką prywatności<ph name="END_LINK" /> tego dostawcy</translation>
 <translation id="750886945254958667">Zachowaj tę grupę, aby później dodać karty, lub opuść ją, jeśli nie chcesz już mieć do niej dostępu</translation>

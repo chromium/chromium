@@ -152,7 +152,6 @@
 <translation id="164269334534774161">আপুনি <ph name="CREATION_TIME" />ৰ পৰা এই পৃষ্ঠাটোৰ এটা অফলাইন প্ৰতিলিপি চাই আছে</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে ছাইন ইন কৰক</translation>
-<translation id="1670399744444387456">প্ৰাথমিক</translation>
 <translation id="1671236975893690980">ডাউনল’ড বাকী আছে…</translation>
 <translation id="1672586136351118594">পুনৰাই নেদেখুৱাব</translation>
 <translation id="1680919990519905526">Google Lensৰ জৰিয়তে প্ৰতিচ্ছবি কিনক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
@@ -286,6 +285,7 @@
 <translation id="233375395665273385">মচক আৰু ছাইন আউট কৰক</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ইনষ্টল কৰিব পৰা নগ’ল।</translation>
 <translation id="2349710944427398404">একাউণ্ট, বুকমার্ক আৰু ছেভ কৰি ৰখা ছেটিংসমূহকে লৈ Chromeএ ব্যৱহাৰ কৰা মুঠ ডেটা</translation>
+<translation id="2349954856814571872">বুকমাৰ্কৰ বাৰৰ বুটামৰ চিহ্ন</translation>
 <translation id="235789365079050412">Googleৰ গোপনীয়তা নীতি</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰিছে। <ph name="USER_EMAIL" />। ছেটিং খোলে।</translation>
@@ -400,7 +400,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{১ দিনৰ আগত পৰীক্ষা কৰা হৈছিল}one{# দিনৰ আগত পৰীক্ষা কৰা হৈছিল}other{# দিনৰ আগত পৰীক্ষা কৰা হৈছিল}}</translation>
 <translation id="2842985007712546952">মূল ফ’ল্ডাৰ</translation>
 <translation id="2854916915045135148">ইনক’গনিট’লৈ সলনি কৰিবলৈ স্পৰ্শ কৰি ধৰি ৰাখক</translation>
-<translation id="2855243985454069333">আটাইবোৰ ছিংক কৰা ডিভাইচৰ পৰা ইতিহাস মচে</translation>
 <translation id="2860954141821109167">নিশ্চিত হৈ লওক যে এই ডিভাইচটোত এটা ফ’ন এপ্‌ সক্ৰিয় কৰা আছে</translation>
 <translation id="2861923151411510142">Chromeৰ কিছুমান সুবিধা আৰু উপলব্ধ হৈ নাথাকিব</translation>
 <translation id="2869430948265924908">গাড়ীত আপোনাৰ সংবেদনশীল সমল সুৰক্ষিত কৰি ৰাখিবলৈ, আপুনি এটা গাড়ীৰ প্ৰ’ফাইল লক সৃষ্টি কৰিবই লাগিব।  আপুনি এইটো এটা পিন, ক’ড অথবা পাছৱৰ্ডৰ জৰিয়তে কৰিব পাৰে।</translation>
@@ -483,7 +482,6 @@
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
 <translation id="3208584281581115441">এতিয়াই পৰীক্ষা কৰক</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> মচা হ’ল</translation>
-<translation id="3214996641768123781">আপুনি ছাইন ইন হৈ থকাৰ সময়ত আপোনাৰ Google একাউণ্টত <ph name="BEGIN_LINK1" />সন্ধানৰ ইতিহাস<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />অন্য প্ৰকাৰৰ কাৰ্যকলাপ<ph name="END_LINK2" /> ছেভ কৰা হ’ব পাৰে। আপুনি যিকোনো সময়তে সেইবোৰ মচিব পাৰে।</translation>
 <translation id="3220943972464248773">আপোনাৰ পাছৱৰ্ড ছিংক কৰিবলৈ এয়া আপুনি বুলি সত্যাপন কৰক</translation>
 <translation id="3232293466644486101">ব্ৰাউজিঙৰ ডেটা মচক…</translation>
 <translation id="3232754137068452469">ৱেব এপ্‌</translation>
@@ -727,7 +725,6 @@
 <translation id="4405224443901389797">ইয়ালৈ স্থানান্তৰ কৰক…</translation>
 <translation id="4405636711880428279">আপোনাৰৰ ভাৰ্চুৱেল কাৰ্ডখন আঁতৰাবনে?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> আৰু অন্য <ph name="TAB_COUNT" /> টা টেব</translation>
-<translation id="4409271659088619928">আপোনাৰ সন্ধানৰ ইঞ্জিনটো হৈছে <ph name="DSE" />। যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক।</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> মচা হ’ল</translation>
 <translation id="4415276339145661267">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4425140285732600465">মূল্য ট্ৰেক কৰাটো সক্ষম কৰা হ’ল। কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক।</translation>
@@ -827,7 +824,6 @@
 <translation id="481574578487123132">লিংক কৰি থোৱা ডিভাইচ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> টা টেবৰ গোট বন্ধ কৰি ছেভ কৰা হ’ল</translation>
 <translation id="4826163340425232009">ছাইন ইন কৰাৰ সুবিধা থকা তলৰ শ্বীট।</translation>
-<translation id="4834007576107377210">যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক</translation>
 <translation id="4834250788637067901">Google Pay ব্যৱহাৰ কৰা পৰিশোধ পদ্ধতি, অফাৰ আৰু ঠিকনা</translation>
 <translation id="4835385943915508971">অনুৰোধ জনোৱা সমললৈ Chromeৰ এক্সেছ নাই।</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে <ph name="TAB_COUNT_ONE" /> টা টেবৰ গোটটো, <ph name="COLOR_NAME" /> ৰং পুনঃস্থাপন কৰক।}one{এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে <ph name="TAB_COUNT_MANY" /> টা টেবৰ গোটটো, <ph name="COLOR_NAME" /> ৰং পুনঃস্থাপন কৰক।}other{এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে <ph name="TAB_COUNT_MANY" /> টা টেবৰ গোটটো, <ph name="COLOR_NAME" /> ৰং পুনঃস্থাপন কৰক।}}</translation>
@@ -885,7 +881,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> টা টেব - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> টা টেব - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> টা টেব - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="504456571576643789">বিবেচনা কৰিব লগা বিষয়</translation>
-<translation id="5054455334322721892">আপুনি ছাইন ইন হৈ থকাৰ সময়ত আপোনাৰ Google একাউণ্টত <ph name="BEGIN_LINK1" />অন্য প্ৰকাৰৰ কাৰ্যকলাপ<ph name="END_LINK1" /> ছেভ কৰা হ’ব পাৰে। আপুনি যিকোনো সময়তে সেইবোৰ মচিব পাৰে।</translation>
 <translation id="506254248375231072">কোনো টেব নাই</translation>
 <translation id="5062960805900435602">পাছৱৰ্ড একত্ৰীকৰণ সম্পৰ্কীয় আপডে’ট বন্ধ হৈছে</translation>
 <translation id="5075939510584558547">এনক্ৰিপশ্বনৰ অবিহনে ছেভ কৰক</translation>
@@ -1423,7 +1418,6 @@
 <translation id="7431991332293347422">আপোনাক Search আৰু অন্য সেৱাসমূহত ব্যক্তিগতকৰণ কৰা অভিজ্ঞতা প্ৰদান কৰিবলৈ কেনেকৈ আপোনাৰ ব্ৰাউজিংৰ ইতিহাস ব্যৱহাৰ কৰা হয় সেয়া নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="7435356471928173109">আপোনাৰ প্ৰশাসকে অফ কৰিছে</translation>
 <translation id="7437998757836447326">Chromeৰ পৰা ছাইন আউট কৰক</translation>
-<translation id="7453467225369441013">অধিকাংশ ছাইটৰ পৰাই আপোনাক ছাইন আউট কৰায়। আপোনাক নিজৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰোৱা নহয়।</translation>
 <translation id="7453810262525006706">ছাইড ভিউলৈ সংকোচন কৰক</translation>
 <translation id="7454641608352164238">পৰ্যাপ্ত খালী ঠাই নাই</translation>
 <translation id="7454744349230173024">আপোনাৰ প্ৰতিষ্ঠানে পাছৱৰ্ড ছেভ কৰাটো অফ কৰিছে</translation>
@@ -1442,7 +1436,6 @@
 <translation id="749294055653435199">এই ডিভাইচটোত Google Lens উপলব্ধ নহয়</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> ( <ph name="TIME_SINCE_UPDATE" />ত আপডে'ট কৰা হৈছিল)</translation>
 <translation id="7498271377022651285">অনুগ্ৰহ কৰি অপেক্ষা কৰক…</translation>
-<translation id="7502234197872745058">আটাইবোৰ ৱেবছাইটত আপোনাৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ <ph name="BEGIN_LINK1" />Chromeৰ পৰা ছাইন আউট কৰক<ph name="END_LINK1" />।</translation>
 <translation id="750228856503700085">আপডে’ট উপলব্ধ নহয়</translation>
 <translation id="7507207699631365376">এই প্ৰদানকাৰীৰ <ph name="BEGIN_LINK" />গোপনীয়তাৰ নীতি<ph name="END_LINK" /> চাওক</translation>
 <translation id="750886945254958667">পাছত টেবসমূহ যোগ দিবলৈ এই গোটটো ৰাখক বা যদি আপুনি এইটো আৰু এক্সেছ কৰিব নিবিচাৰে তেন্তে ইয়াৰ পৰা বাহিৰ হওক</translation>

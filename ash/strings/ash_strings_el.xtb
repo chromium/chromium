@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">Εμφάνιση λίστας δικτύων. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Ξεκλειδώστε τη συσκευή για εκτέλεση της ενέργειας ειδοποίησης</translation>
 <translation id="1420408895951708260">Εναλλαγή νυχτερινού φωτισμού. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Προτεινόμενη ομάδα</translation>
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1435537621343861112">Δεν είναι δυνατή η έναρξη της υπαγόρευσης. Το μικρόφωνό σας είναι απενεργοποιημένο.</translation>
 <translation id="1445031758921122223">Έγινε λήψη των αρχείων ελέγχου προσώπου</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">Υπολογισμοί</translation>
 <translation id="1774796056689732716">Ημερολόγιο, <ph name="CURRENT_MONTH_YEAR" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Ρύθμιση προβολής των πρόσφατων φωτογραφιών, μέσων και ειδοποιήσεων του τηλεφώνου σας</translation>
+<translation id="1785317913592722944">Κατάργηση στοιχείου από προτεινόμενη ομάδα</translation>
 <translation id="1786487376942610288">Εναλλαγή μεταξύ του μέγιστου ή του τρέχοντος μεγέθους του παραθύρου picture-in-picture</translation>
 <translation id="1787955149152357925">Ανενεργό</translation>
 <translation id="1796561540704213354">Ιστότοποι, συμπεριλαμβανομένων σελίδων που έχετε επισκεφτεί και ανοικτών σελίδων</translation>
 <translation id="179842970735685253">Όροι Παροχής Υπηρεσιών της Google</translation>
 <translation id="1805407494113167797">Δεν ήταν δυνατή η αναπαραγωγή ήχων Εστίασης</translation>
 <translation id="181103072419391116">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
+<translation id="1815039896005206046">Με την επιλογή "Δεν μου αρέσει" θα υποβληθεί ένα σχόλιο ότι δεν σας αρέσει αυτή η προτεινόμενη ομάδα</translation>
 <translation id="1816896987747843206">Αυτό επιτρέπει την πρόσβαση στην κάμερα για όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Ενεργοποίηση πρόσβασης στην τοποθεσία</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">"Γεια σας" στα κινεζικά</translation>
 <translation id="2370971919968699910">Ενδέχεται να προκύψουν χρεώσεις δεδομένων.
 <ph name="DEVICECOUNT" /> συνδεδεμένες συσκευές.</translation>
+<translation id="2383521554963939360">Ομάδες εφαρμογών και καρτελών</translation>
 <translation id="2386292613071805067">Επιλογή όλων στη σελίδα</translation>
 <translation id="2389423187722941333">Εναλλαγή Gemini</translation>
 <translation id="2392659840443812875">Δεν υπάρχει διαθέσιμο σημείο πρόσβασης Wi-Fi. Βεβαιωθείτε ότι η συσκευή σας βρίσκεται σε κοντινή απόσταση και ότι το Bluetooth είναι ενεργοποιημένο.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">Ρετουσάρισμα πορτρέτου</translation>
 <translation id="4156293514828496577">Απομένει <ph name="PERCENTAGE" />% μπαταρία (περίπου <ph name="TIME_LEFT" />).
 Ορισμένες λειτουργίες έχουν περιοριστεί, προκειμένου να αυξηθεί η διάρκεια ζωής της μπαταρίας.</translation>
+<translation id="4158003972857765638">Οργάνωση σε νέο γραφείο</translation>
 <translation id="4160919062868802509">Εντοπίστηκαν πολλές πηγές ήχου</translation>
 <translation id="416245495747357243">Μπράβο!</translation>
 <translation id="4165275524535002941">Το καλώδιο δεν υποστηρίζει οθόνες</translation>
@@ -984,6 +989,7 @@
 <translation id="4322742403972824594">Η συντόμευση πληκτρολογίου Ctrl + Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Home, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Αριστερό βέλος.</translation>
 <translation id="4324840740119394760">Αυτό επιτρέπει την πρόσβαση στην κάμερα για την εφαρμογή <ph name="APP_NAME" /> και όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας.</translation>
 <translation id="4327147325944669226">Εγγραφή παιχνιδιού</translation>
+<translation id="4329076911374908740">Συμπληρώθηκε ο μέγιστος αριθμός αποθηκευμένων ομάδων.</translation>
 <translation id="4338109981321384717">Μεγεθυντικός φακός</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Σε σίγαση</translation>
 <translation id="4351244548802238354">Κλείσιμο παραθύρου διαλόγου</translation>
@@ -1939,6 +1945,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Δημιουργία</translation>
 <translation id="7526573455193969409">Το δίκτυο ενδέχεται να παρακολουθείται</translation>
+<translation id="7534543072325030705">Με την επιλογή "Μου αρέσει" θα υποβληθεί ένα σχόλιο ότι σας αρέσει αυτή η προτεινόμενη ομάδα</translation>
 <translation id="7536035074519304529">Διεύθυνση IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Ενημέρωση του αριστερού παραθύρου</translation>
 <translation id="7543399541175347147">Προς το παρόν, δεν υποστηρίζονται εφαρμογές Linux και παράθυρα για ανώνυμη περιήγηση. Οι άλλες εφαρμογές θα αποθηκευτούν.</translation>
@@ -2103,6 +2110,7 @@
 <translation id="8004512796067398576">Αύξηση</translation>
 <translation id="8005527720597583355">Έναρξη περιόδου λειτουργίας συγκέντρωσης</translation>
 <translation id="8015361438441228492">Δεν ήταν δυνατή η επεξεργασία της εργασίας.</translation>
+<translation id="8027187124910699148">Συνέχιση στην προτεινόμενη ομάδα</translation>
 <translation id="802782383769312836">Προηγούμενο γραφείο: <ph name="DESK_NAME" />. Γραφείο <ph name="DESK_INDEX" /> από <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Αποτυχία σύνδεσης σημείου πρόσβασης Wi-Fi</translation>
 <translation id="8029629653277878342">Απαιτείται PIN ή κωδικός πρόσβασης για περισσότερη ασφάλεια.</translation>
@@ -2211,6 +2219,7 @@
 <translation id="8426708595819210923">Καλησπέρα <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> έως <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Αποθήκευση ομάδας για αργότερα</translation>
 <translation id="8433186206711564395">Ρυθμίσεις δικτύου</translation>
 <translation id="8433977262951327081">Η συντόμευση για να εμφανίσετε το συννεφάκι μενού επιλογών εισαγωγής άλλαξε. Χρησιμοποιήστε το <ph name="NEW_SHORTCUT" /> αντί για το <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Άνοιγμα εργαλείου υποβολής σχολίων</translation>
@@ -2219,6 +2228,7 @@
 <translation id="8446884382197647889">Μάθετε περισσότερα</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Κλείσιμο λειτουργίας Επιλέξτε για αυτόματη ανάγνωση</translation>
+<translation id="8466665972451889002">Εμφάνιση στοιχείων στην ομάδα <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">Προθεσμία <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Εμφάνιση ρυθμίσεων κλίμακας</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> έχει <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
@@ -2241,6 +2251,7 @@
 <translation id="8551588720239073785">Ρυθμίσεις ημερομηνίας και ώρας</translation>
 <translation id="8553395910833293175">Έχει εκχωρηθεί ήδη σε όλα τα γραφεία.</translation>
 <translation id="8555757996376137129">Κατάργηση τρέχοντος γραφείου</translation>
+<translation id="8558521694042102707">Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του.</translation>
 <translation id="8559845965695780508">Το επεξεργάστηκε ο χρήστης <ph name="USER" /></translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Δείτε μερικές προτάσεις που μπορείτε να δοκιμάσετε</translation>
@@ -2263,6 +2274,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="8638637208069328956">Ενεργοποίηση/απενεργοποίηση μικροφώνου</translation>
 <translation id="8639760480004882931">Απομένει <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">Απόκρυψη όλων των προτάσεων για ομάδες</translation>
 <translation id="8641510901370802679">Εμφάνιση πληροφοριών για <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Χρονόμετρο <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Για να προσθέσετε ένα άτομο, εισαγάγετε τον κωδικό πρόσβασης γονέα Family Link</translation>
@@ -2345,6 +2357,7 @@
 <translation id="8905919797434099235">(Χωρίς τίτλο)</translation>
 <translation id="890616557918890486">Αλλαγή πηγής</translation>
 <translation id="8909138438987180327">Η μπαταρία βρίσκεται στο <ph name="PERCENTAGE" /> τοις εκατό.</translation>
+<translation id="8916866375277139011">Απόκρυψη στοιχείων στην ομάδα <ph name="GROUP_NAME" /></translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Ο Βοηθός Google δεν είναι διαθέσιμος σε αυτήν τη γλώσσα.</translation>
 <translation id="8926951137623668982">Το ράφι θα αποκρύπτεται πάντα</translation>

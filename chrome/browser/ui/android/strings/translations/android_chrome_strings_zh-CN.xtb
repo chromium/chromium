@@ -152,7 +152,6 @@
 <translation id="164269334534774161">您目前浏览的是此网页的离线副本（创建时间：<ph name="CREATION_TIME" />）</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1645262572857218659">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登录</translation>
-<translation id="1670399744444387456">基本</translation>
 <translation id="1671236975893690980">正在等待下载…</translation>
 <translation id="1672586136351118594">不再显示</translation>
 <translation id="1680919990519905526">使用 Google 智能镜头搜索图中商品信息<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 天前检查过}other{# 天前检查过}}</translation>
 <translation id="2842985007712546952">父文件夹</translation>
 <translation id="2854916915045135148">轻触并按住即可切换到无痕模式</translation>
-<translation id="2855243985454069333">从所有已同步的设备中删除历史记录</translation>
 <translation id="2860954141821109167">请确保已在此设备上启用了一款电话应用</translation>
 <translation id="2861923151411510142">部分 Chrome 功能将不再可用</translation>
 <translation id="2869430948265924908">为了保护您在车载系统上存放的敏感内容，您必须设置一种车载系统个人资料锁定方式。为此，您可以使用 PIN 码、验证码或密码。</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3208584281581115441">立即检查</translation>
 <translation id="3211426585530211793">已删除“<ph name="ITEM_TITLE" />”</translation>
-<translation id="3214996641768123781">当您登录后，系统可能会将<ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="3220943972464248773">若要同步您的密码，请验证是您本人在操作</translation>
 <translation id="3232293466644486101">删除浏览数据…</translation>
 <translation id="3232754137068452469">网络应用</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">移动到…</translation>
 <translation id="4405636711880428279">移除您的虚拟卡？</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" />及另外 <ph name="TAB_COUNT" /> 个标签页</translation>
-<translation id="4409271659088619928">您所用的搜索引擎是<ph name="DSE" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="4414179633735763985">已删除 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">管理您的 Google 账号</translation>
 <translation id="4425140285732600465">正在跟踪价格。当任一网站上的商品降价时，您会收到提醒。</translation>
@@ -827,7 +823,6 @@
 <translation id="481574578487123132">已关联的设备</translation>
 <translation id="4822710610088666676">已关闭并保存“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="4826163340425232009">用于进行登录的底部工作表。</translation>
-<translation id="4834007576107377210">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）</translation>
 <translation id="4834250788637067901">Google Pay 中存储的付款方式、优惠和地址信息</translation>
 <translation id="4835385943915508971">Chrome 无权访问请求的资源。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{将包含 <ph name="TAB_COUNT_ONE" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}other{将包含 <ph name="TAB_COUNT_MANY" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}}</translation>
@@ -885,7 +880,6 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页 - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> 个标签页 - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="504456571576643789">注意事项</translation>
-<translation id="5054455334322721892">当您登录后，系统可能会将<ph name="BEGIN_LINK1" />其他形式的活动记录<ph name="END_LINK1" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5062960805900435602">已关闭关于密码合并的更新</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
@@ -1421,7 +1415,6 @@
 <translation id="7431991332293347422">控制 Google 如何利用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
 <translation id="7437998757836447326">退出 Chrome</translation>
-<translation id="7453467225369441013">您会从大多数网站退出，但不会退出自己的 Google 账号。</translation>
 <translation id="7453810262525006706">合拢为侧边视图</translation>
 <translation id="7454641608352164238">空间不足</translation>
 <translation id="7454744349230173024">贵组织已关闭密码保存功能</translation>
@@ -1440,7 +1433,6 @@
 <translation id="749294055653435199">无法在此设备上使用 Google 智能镜头</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />（上次更新时间：<ph name="TIME_SINCE_UPDATE" />）</translation>
 <translation id="7498271377022651285">请稍候…</translation>
-<translation id="7502234197872745058">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK1" />退出 Chrome<ph name="END_LINK1" />。</translation>
 <translation id="750228856503700085">无法获取更新</translation>
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组</translation>

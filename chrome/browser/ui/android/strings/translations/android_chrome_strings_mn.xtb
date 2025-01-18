@@ -152,7 +152,6 @@
 <translation id="164269334534774161">Та энэ хуудасны офлайн хуулбарыг <ph name="CREATION_TIME" />-с харж байна</translation>
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р нэвтрэх</translation>
-<translation id="1670399744444387456">Үндсэн</translation>
 <translation id="1671236975893690980">Таталт хүлээгдэж байна...</translation>
 <translation id="1672586136351118594">Дахиж бүү харуул</translation>
 <translation id="1680919990519905526">Google Lens-р зураг авах <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
@@ -400,7 +399,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 хоногийн өмнө шалгасан}other{# хоногийн өмнө шалгасан}}</translation>
 <translation id="2842985007712546952">Толгой хавтас</translation>
 <translation id="2854916915045135148">Нууцлалтай горим руу сэлгэхийн тулд хүрээд удаан дарна уу</translation>
-<translation id="2855243985454069333">Синк хийсэн бүх төхөөрөмжөөс түүхийг устгана</translation>
 <translation id="2860954141821109167">Гар утасны аппыг энэ төхөөрөмж дээр идэвхжүүлсэн эсэхийг шалгана уу</translation>
 <translation id="2861923151411510142">Chrome-ын зарим онцлог \u2019 цаашид боломжгүй болно</translation>
 <translation id="2869430948265924908">Машиндаа эмзэг контентоо хамгаалахын тулд та машины профайлын түгжээ үүсгэх ёстой.  Та үүнийг пин, код эсвэл нууц үгээр хийх боломжтой.</translation>
@@ -483,7 +481,6 @@
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3208584281581115441">Одоо шалгах</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" />-г устгасан</translation>
-<translation id="3214996641768123781">Таныг нэвтэрсэн үед <ph name="BEGIN_LINK1" />хайлтын түүх<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK2" /> Google Бүртгэлд тань хадгалж магадгүй. Та тэдгээрийг хүссэн үедээ устгах боломжтой.</translation>
 <translation id="3220943972464248773">Нууц үгнүүдээ синк хийхийн тулд өөрийгөө мөн болохыг бататгана уу</translation>
 <translation id="3232293466644486101">Интернэтээр үзсэн өгөгдлийг устгах…</translation>
 <translation id="3232754137068452469">Веб Апп</translation>
@@ -727,7 +724,6 @@
 <translation id="4405224443901389797">руу зөөх…</translation>
 <translation id="4405636711880428279">Виртуал картаа хасах уу?</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> болон өөр <ph name="TAB_COUNT" /> таб</translation>
-<translation id="4409271659088619928">Таны хайлтын систем <ph name="DSE" /> байна. Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд үүний зааварчилгааг харна уу.</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" />-г устгасан</translation>
 <translation id="4415276339145661267">Google Бүртгэлээ удирдах</translation>
 <translation id="4425140285732600465">Үнийг хянаж байна. Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай.</translation>
@@ -827,7 +823,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="481574578487123132">Холбосон төхөөрөмжүүд</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> табын бүлгийг хааж, хадгалсан</translation>
 <translation id="4826163340425232009">Нэвтрэх доод хүснэгт.</translation>
-<translation id="4834007576107377210">Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд хайлтын системийн зааварчилгаагаа харна уу</translation>
 <translation id="4834250788637067901">Google Pay-г ашиглаж буй төлбөрийн хэрэгсэл, санал болон хаяг</translation>
 <translation id="4835385943915508971">Chrome хүсэлт тавьсан нөөцөд хандах эрхгүй.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> өнгөтэй, <ph name="TAB_COUNT_ONE" /> табтай табын бүлгийг шинэ дэвсгэр табын бүлгээр сэргээх.}other{<ph name="COLOR_NAME" /> өнгөтэй, <ph name="TAB_COUNT_MANY" /> табтай табын бүлгийг шинэ дэвсгэр табын бүлгээр сэргээх.}}</translation>
@@ -885,7 +880,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> таб - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> таб - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Нууцлал</translation>
 <translation id="504456571576643789">Анхаарч үзэх зүйлс</translation>
-<translation id="5054455334322721892">Таныг нэвтэрсэн үед <ph name="BEGIN_LINK1" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK1" /> Google Бүртгэлд тань хадгалж магадгүй. Та тэдгээрийг хүссэн үедээ устгах боломжтой.</translation>
 <translation id="506254248375231072">Таб байхгүй</translation>
 <translation id="5062960805900435602">Нууц үг нэгтгэх талаарх шинэчлэлтийг хаасан</translation>
 <translation id="5075939510584558547">Шифрлэлтгүйгээр хадгалах</translation>
@@ -1423,7 +1417,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7431991332293347422">Таны хайлтын түүх Хайлт болон бусад зүйлийг хувийн болгоход хэрхэн ашигладгийг хянах</translation>
 <translation id="7435356471928173109">Танай администратор идэвхгүй болгосон</translation>
 <translation id="7437998757836447326">Chrome-с гарах</translation>
-<translation id="7453467225369441013">Таныг ихэнх сайтаас гаргах болно. Таныг Google бүртгэлээс гаргахгүй.</translation>
 <translation id="7453810262525006706">Хажуугийн харагдах байдал руу хураах</translation>
 <translation id="7454641608352164238">Хангалттай зай алга</translation>
 <translation id="7454744349230173024">Танай байгууллага нууц үгнүүдийг хадгалахыг унтраасан</translation>
@@ -1442,7 +1435,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="749294055653435199">Энэ төхөөрөмж дээр Google Lens боломжгүй</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Шинэчилсэн <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Түр хүлээнэ үү...</translation>
-<translation id="7502234197872745058">Бүх вебсайт дээр Google Бүртгэлээсээ гарахын тулд <ph name="BEGIN_LINK1" />Chrome-с гарна уу<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Шинэчлэлтүүд боломжгүй</translation>
 <translation id="7507207699631365376">Энэ хангагчийн <ph name="BEGIN_LINK" />нууцлалын бодлогыг<ph name="END_LINK" /> харах</translation>
 <translation id="750886945254958667">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл та цаашид уг бүлэгт хандахыг хүсэхгүй байвал гарна уу</translation>

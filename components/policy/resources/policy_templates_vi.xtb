@@ -5888,11 +5888,6 @@ các chính sách cụ thể.
 Lưu ý: Chính sách này không áp dụng cho bản nâng cấp HSTS.</translation>
 <translation id="5297948043665200363">Cho phép người dùng tiếp tục đăng nhập sau khi tài khoản của họ không còn được xác thực</translation>
 <translation id="5298949392804966105">Không có các quy định hạn chế đối với tài khoản được quản lý</translation>
-<translation id="5300770793658186741">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách nguồn gốc (URL) hoặc mẫu tên máy chủ (chẳng hạn như *.example.com) mà các hạn chế về bảo mật đối với nguồn gốc không an toàn sẽ không áp dụng. Các tổ chức có thể chỉ định những nguồn gốc cho các ứng dụng cũ không thể triển khai TLS, hoặc thiết lập một máy chủ thử nghiệm để phát triển web nội bộ. Nhờ vậy, các nhà phát triển có thể thử nghiệm những tính năng cần có bối cảnh bảo mật mà không phải triển khai TLS trên máy chủ thử nghiệm này. Ngoài ra, chính sách này cũng không cho gắn nhãn nguồn gốc này là "Không bảo mật" trong thanh địa chỉ.
-
-Việc lập danh sách URL trong chính sách này có tác dụng tương tự như việc đặt cờ hiệu dòng lệnh --unsafely-treat-insecure-origin-as-secure thành một danh sách các URL tương tự được phân tách bằng dấu phẩy. Chính sách này ghi đè cờ hiệu dòng lệnh và UnsafelyTreatInsecureOriginAsSecure, nếu có.
-
-Để biết thêm thông tin về bối cảnh bảo mật, hãy xem trang Bối cảnh bảo mật (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="530111809849214840">Ẩn lựa chọn <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">Thời điểm trong ngày (theo giờ địa phương) để gia hạn hạn mức sử dụng.</translation>
 <translation id="5303080953475303561">Việc đặt chính sách này sẽ kiểm soát tần suất màn hình khóa yêu cầu mật khẩu để mở khóa nhanh. Mỗi lần màn hình khóa xuất hiện, nếu lần nhập mật khẩu gần đây nhất diễn ra trước khoảng thời gian chỉ định theo giá trị đã chọn, thì người dùng sẽ không sử dụng được tính năng mở khóa nhanh. Nếu vượt quá khoảng thời gian này mà người dùng vẫn chưa mở khóa màn hình, thì hệ thống sẽ yêu cầu mật khẩu vào lần tới khi người dùng nhập sai mã hoặc khi màn hình khóa xuất hiện lại, tùy theo trường hợp nào xảy ra trước.

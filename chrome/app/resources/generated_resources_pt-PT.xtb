@@ -523,6 +523,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="135389172849514421">Funciona offline</translation>
 <translation id="1353980523955420967">Não é possível encontrar o PPD. Certifique-se de que o Chromebook está online e tente novamente.</translation>
 <translation id="1354045473509304750">Continuar a permitir que <ph name="HOST" /> utilize e mova a câmara</translation>
+<translation id="1354148503392558902">A alterar a palavra-passe…</translation>
 <translation id="1355088139103479645">Apagar todos os dados?</translation>
 <translation id="1356376170199999104">Permitido: <ph name="PERMISSION_DETAILS" />. Ative o microfone através do interrutor físico.</translation>
 <translation id="1356959069439783953">Os separadores inativos têm um novo aspeto</translation>
@@ -1094,6 +1095,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1751335846119670066">Ajuda-me a ler</translation>
 <translation id="17513872634828108">Separadores abertos</translation>
 <translation id="175196451752279553">Voltar a abrir o s&amp;eparador fechado</translation>
+<translation id="1752557850776261983">A verificar o início de sessão…</translation>
 <translation id="1753067873202720523">O seu Chromebook pode não carregar enquanto estiver ligado.</translation>
 <translation id="1753557900380512635">Interiores</translation>
 <translation id="1753905327828125965">Mais visitados</translation>
@@ -2371,6 +2373,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2638662041295312666">Imagem do início de sessão</translation>
 <translation id="2640299212685523844">Usar GTK</translation>
 <translation id="264083724974021997">Associar ao seu telemóvel – Caixa de diálogo</translation>
+<translation id="2641098199809442625">A sua palavra-passe não foi atualizada, mas ainda deve conseguir aceder ao site com a palavra-passe antiga.</translation>
 <translation id="2642111877055905627">Bola de futebol</translation>
 <translation id="2642206811783203764">Sempre em <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Pode sempre eliminar dados de medição de anúncios ao eliminar os seus dados de navegação</translation>
