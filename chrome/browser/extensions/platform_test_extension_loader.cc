@@ -36,6 +36,9 @@ PlatformTestExtensionLoader::~PlatformTestExtensionLoader() = default;
 
 scoped_refptr<const Extension> PlatformTestExtensionLoader::LoadExtension(
     const base::FilePath& path) {
+  // Clean up the kMetadataFolder if necessary.
+  file_util::MaybeCleanupMetadataFolder(path);
+
   scoped_refptr<const Extension> extension = LoadExtensionFromDirectory(path);
   if (!extension) {
     return nullptr;
