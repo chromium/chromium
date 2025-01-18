@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/launcher/glic_status_icon.h"
 
+#include <memory>
 #include <optional>
 
 #include "chrome/app/chrome_command_ids.h"
@@ -90,8 +91,10 @@ GlicStatusIcon::~GlicStatusIcon() {
   context_menu_ = nullptr;
   if (status_icon_) {
     status_icon_->RemoveObserver(this);
-    status_tray_->RemoveStatusIcon(status_icon_);
+    std::unique_ptr<StatusIcon> removed_icon =
+        status_tray_->RemoveStatusIcon(status_icon_);
     status_icon_ = nullptr;
+    removed_icon.reset();
   }
   status_tray_ = nullptr;
 }

@@ -10,7 +10,6 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 
 bool IsMediaPickerModalWindow(content::WebContents* web_contents) {
@@ -20,7 +19,7 @@ bool IsMediaPickerModalWindow(content::WebContents* web_contents) {
 
 views::Widget* CreateMediaPickerDialogWidget(Browser* browser,
                                              content::WebContents* web_contents,
-                                             views::WidgetDelegate* delegate,
+                                             views::DialogDelegate* delegate,
                                              gfx::NativeWindow context,
                                              gfx::NativeView parent) {
   // If |web_contents| is not a background page then the picker will be shown
@@ -36,11 +35,12 @@ views::Widget* CreateMediaPickerDialogWidget(Browser* browser,
     widget =
         constrained_window::ShowWebModalDialogViews(delegate, web_contents);
   } else {
-#if BUILDFLAG(IS_MAC)
-    // On Mac, ModalType::kChild with a null parent isn't allowed - fall back to
-    // ModalType::kWindow.
-    delegate->SetModalType(ui::mojom::ModalType::kWindow);
-#endif
+    // This becomes a top-level window if it does not have a parent.
+    // Top-level windows should usually be draggable.
+    if (!parent) {
+      delegate->set_draggable(true);
+      delegate->SetModalType(ui::mojom::ModalType::kNone);
+    }
     widget =
         views::DialogDelegate::CreateDialogWidget(delegate, context, parent);
     widget->Show();

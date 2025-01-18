@@ -449,6 +449,10 @@ bool WebContentsDelegate::IsWaitingForPointerLockPrompt(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+bool WebContentsDelegate::SupportsForwardTransitionAnimation() {
+  return true;
+}
+
 SkBitmap WebContentsDelegate::MaybeCopyContentAreaAsBitmapSync() {
   return SkBitmap();
 }

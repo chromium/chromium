@@ -167,8 +167,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void ExitTestMode() const override { RunCommand("exit_test_mode"); }
 
-  void SetGroupPolicies(const base::Value::Dict& values) const override {
-    RunCommand("set_group_policies",
+  void SetDictPolicies(const base::Value::Dict& values) const override {
+    RunCommand("set_dict_policies",
                {Param("values", StringFromValue(base::Value(values.Clone())))});
   }
 

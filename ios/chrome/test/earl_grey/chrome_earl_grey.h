@@ -993,6 +993,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 - (void)requestTipsNotification:(TipsNotificationType)type;
 
+#pragma mark - Variations Utilities
+
+// Forces an override of the variations stored permanent country.
+- (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_H_

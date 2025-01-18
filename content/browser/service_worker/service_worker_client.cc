@@ -400,7 +400,6 @@ void ServiceWorkerClient::ClaimedByRegistration(
 blink::mojom::ServiceWorkerClientType ServiceWorkerClient::GetClientType()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(client_info_);
   return absl::visit(
       base::Overloaded(
           [](GlobalRenderFrameHostId render_frame_host_id) {
@@ -412,30 +411,24 @@ blink::mojom::ServiceWorkerClientType ServiceWorkerClient::GetClientType()
           [](blink::SharedWorkerToken shared_worker_token) {
             return blink::mojom::ServiceWorkerClientType::kSharedWorker;
           }),
-      *client_info_);
+      client_info_);
 }
 
 bool ServiceWorkerClient::IsContainerForWindowClient() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return client_info_ &&
-         absl::holds_alternative<GlobalRenderFrameHostId>(*client_info_);
+  return absl::holds_alternative<GlobalRenderFrameHostId>(client_info_);
 }
 
 bool ServiceWorkerClient::IsContainerForWorkerClient() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  using blink::mojom::ServiceWorkerClientType;
-  if (!client_info_) {
-    return false;
-  }
-
-  return absl::holds_alternative<blink::DedicatedWorkerToken>(*client_info_) ||
-         absl::holds_alternative<blink::SharedWorkerToken>(*client_info_);
+  return absl::holds_alternative<blink::DedicatedWorkerToken>(client_info_) ||
+         absl::holds_alternative<blink::SharedWorkerToken>(client_info_);
 }
 
 ServiceWorkerClientInfo ServiceWorkerClient::GetServiceWorkerClientInfo()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return *client_info_;
+  return client_info_;
 }
 
 blink::mojom::ServiceWorkerContainerInfoForClientPtr
@@ -629,7 +622,7 @@ blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
                                  shared_worker_token, origin)
                            : std::nullopt;
           }),
-      *client_info_);
+      client_info_);
 
   if (storage_key) {
     return *storage_key;
@@ -752,7 +745,7 @@ bool ServiceWorkerClient::is_execution_ready() const {
 GlobalRenderFrameHostId ServiceWorkerClient::GetRenderFrameHostId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForWindowClient());
-  return absl::get<GlobalRenderFrameHostId>(*client_info_);
+  return absl::get<GlobalRenderFrameHostId>(client_info_);
 }
 
 int ServiceWorkerClient::GetProcessId() const {

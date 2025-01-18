@@ -2627,12 +2627,10 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_Pixel[] = {
-        {segmentation_platform::features::kMaxAuxiliarySearchForceShow.name,
-         "true"}};
+        {"force_card_shown", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_NonPixel[] = {
-        {segmentation_platform::features::kMaxAuxiliarySearchForceShow.name,
-         "true"},
+        {"force_card_shown", "true"},
         {"show_third_party_card", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
@@ -4390,7 +4388,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"feedback-include-variations",
      flag_descriptions::kFeedbackIncludeVariationsName,
      flag_descriptions::kFeedbackIncludeVariationsDescription,
-     kOsWin | kOsLinux | kOsMac,
+     kOsWin | kOsLinux | kOsMac | kOsAndroid,
      FEATURE_VALUE_TYPE(variations::kFeedbackIncludeVariations)},
 #endif
     {"ui-disable-partial-swap", flag_descriptions::kUiPartialSwapName,
@@ -6272,7 +6270,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationModuleName,
      flag_descriptions::kAndroidAppIntegrationModuleDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kAndroidAppIntegrationModule,
+         chrome::android::kAndroidAppIntegrationModule,
          kAndroidAppIntegrationModuleVariations,
          "AndroidAppIntegrationModule")},
 
@@ -7174,6 +7172,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(IS_WIN)
+    {"enable-windows-gaming-input-data-fetcher",
+     flag_descriptions::kEnableWindowsGamingInputDataFetcherName,
+     flag_descriptions::kEnableWindowsGamingInputDataFetcherDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kEnableWindowsGamingInputDataFetcher)},
+
     {"windows11-mica-titlebar", flag_descriptions::kWindows11MicaTitlebarName,
      flag_descriptions::kWindows11MicaTitlebarDescription, kOsWin,
      FEATURE_VALUE_TYPE(kWindows11MicaTitlebar)},

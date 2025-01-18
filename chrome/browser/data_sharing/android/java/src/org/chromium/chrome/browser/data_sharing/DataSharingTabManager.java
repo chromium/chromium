@@ -88,6 +88,9 @@ public class DataSharingTabManager {
     private static final String LEARN_ABOUT_BLOCKED_ACCOUNTS_URL =
             "https://support.google.com/chrome/?p=chrome_collaboration";
 
+    // Separator for description and link in share sheet.
+    private static final String SHARED_TEXT_SEPARATOR = "\n";
+
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
@@ -394,6 +397,7 @@ public class DataSharingTabManager {
                 || previewData.sharedDataPreview.sharedTabGroupPreview == null) {
             DataSharingMetrics.recordJoinActionFlowState(
                     DataSharingMetrics.JoinActionStateAndroid.PREVIEW_PERMISSION_DENIED);
+
             showInvitationFailureDialog();
             return;
         }
@@ -577,6 +581,22 @@ public class DataSharingTabManager {
     }
 
     /**
+     * Open and focus on the tab group.
+     *
+     * @param collaborationId The collaboration id of the shared tab group.
+     */
+    public void promoteTabGroup(String collaborationId) {
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mProfile);
+        SavedTabGroup existingGroup =
+                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
+                        collaborationId, tabGroupSyncService);
+        assert existingGroup != null;
+
+        onSavedTabGroupAvailable(existingGroup);
+    }
+
+    /**
      * Called when a saved tab group is available.
      *
      * @param group The SavedTabGroup that became available.
@@ -714,10 +734,12 @@ public class DataSharingTabManager {
                         createGroupFinishedCallback.onResult(true);
                         DataSharingMetrics.recordShareActionFlowState(
                                 DataSharingMetrics.ShareActionStateAndroid.GROUP_CREATE_SUCCESS);
+                        // Consider using an utility to convert result to GroupData.
                         showShareSheet(
+                                activity,
                                 new GroupData(
                                         result.getGroupId(),
-                                        tabGroupDisplayName,
+                                        /* displayName= */ null,
                                         /* members= */ null,
                                         result.getAccessToken()),
                                 onCreateFinished);
@@ -750,17 +772,26 @@ public class DataSharingTabManager {
                 /* maxFaviconsToFetch= */ 4);
     }
 
-    private void showShareSheet(GroupData groupData, Callback<Boolean> onShareSheetShown) {
+    private void showShareSheet(
+            Context context, GroupData groupData, Callback<Boolean> onShareSheetShown) {
         mDataSharingTabGroupsDelegate.getPreviewBitmap(
                 groupData.groupToken.collaborationId,
                 ShareHelper.getTextPreviewImageSizePx(mResources),
                 (preview) -> {
-                    showShareSheetWithPreview(groupData, preview, onShareSheetShown);
+                    showShareSheetWithPreview(context, groupData, preview, onShareSheetShown);
                 });
     }
 
     private void showShareSheetWithPreview(
-            GroupData groupData, Bitmap preview, Callback<Boolean> onShareSheetShown) {
+            Context context,
+            GroupData groupData,
+            Bitmap preview,
+            Callback<Boolean> onShareSheetShown) {
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mProfile);
+        SavedTabGroup tabGroup =
+                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
+                        groupData.groupToken.collaborationId, tabGroupSyncService);
         GURL url = mDataSharingService.getDataSharingUrl(groupData);
         if (url == null) {
             // TODO(ritikagup) : Show error dialog showing fetching URL failed. Contact owner for
@@ -777,8 +808,26 @@ public class DataSharingTabManager {
                         .setDetailedContentType(DetailedContentType.TAB_GROUP_LINK)
                         .build();
 
+        String tabGroupName = null;
+        // TODO(ssid): The tab group should not be null, if we wait for makeTabGroupShared() to
+        // finish. Remove this check when its integrated.
+        if (tabGroup != null) {
+            tabGroupName = tabGroup.title;
+        }
+        if (TextUtils.isEmpty(tabGroupName)) {
+            tabGroupName =
+                    context.getString(R.string.collaboration_share_sheet_tab_group_fallback_name);
+        }
+        // TODO(ssid): Share delegate adds another separator, fix the formatting.
+        String text =
+                context.getString(R.string.collaboration_share_sheet_message, tabGroupName)
+                        + SHARED_TEXT_SEPARATOR;
         ShareParams.Builder shareParamsBuilder =
-                new ShareParams.Builder(mWindowAndroid, groupData.displayName, url.getSpec());
+                new ShareParams.Builder(
+                                mWindowAndroid,
+                                context.getString(R.string.collaboration_share_sheet_title),
+                                url.getSpec())
+                        .setText(text);
 
         if (preview != null) {
             shareParamsBuilder.setPreviewImageBitmap(preview);
@@ -853,10 +902,12 @@ public class DataSharingTabManager {
                     @Override
                     public void onShareInviteLinkClickedWithWait(
                             GroupToken groupToken, Callback<Boolean> onFinished) {
+                        // Consider pass GroupData from the UI.
                         showShareSheet(
+                                activity,
                                 new GroupData(
                                         groupToken.collaborationId,
-                                        tabGroupName,
+                                        /* displayName= */ null,
                                         /* members= */ null,
                                         groupToken.accessToken),
                                 onFinished);

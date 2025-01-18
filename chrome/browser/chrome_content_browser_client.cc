@@ -2430,15 +2430,9 @@ ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto& registrar =
       web_app::WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
-  // TODO(crbug.com/379916273): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::vector<webapps::AppId> app_ids_for_origin =
       registrar.FindAllAppsNestedInUrl(
-          app_origin.GetURL(),
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          });
+          app_origin.GetURL(), web_app::WebAppFilter::InstalledInChrome());
   if (app_ids_for_origin.empty()) {
     return blink::ParsedPermissionsPolicy();
   }

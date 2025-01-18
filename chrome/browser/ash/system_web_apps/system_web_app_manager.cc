@@ -546,15 +546,9 @@ std::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
     return std::nullopt;
   }
 
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id =
       provider_->registrar_unsafe().FindBestAppWithUrlInScope(
-          url,
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          });
+          url, web_app::WebAppFilter::InstalledInChrome());
   if (!app_id.has_value()) {
     return std::nullopt;
   }

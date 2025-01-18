@@ -9264,17 +9264,14 @@ bool WebContentsImpl::MaybeCopyContentAreaAsBitmap(
 
 bool WebContentsImpl::SupportsForwardTransitionAnimation() {
 #if BUILDFLAG(IS_ANDROID)
-  return supports_forward_transition_animation_;
+  if (!GetDelegate()) {
+    return true;
+  }
+  return GetDelegate()->SupportsForwardTransitionAnimation();
 #else
   return true;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void WebContentsImpl::SetSupportsForwardTransitionAnimation(bool supports) {
-  supports_forward_transition_animation_ = supports;
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void WebContentsImpl::DidChangeName(RenderFrameHostImpl* render_frame_host,
                                     const std::string& name) {

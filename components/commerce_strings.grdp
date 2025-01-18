@@ -688,8 +688,14 @@
   <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_TAB" desc="The label for the comparison table list dropdown menu item for opening a comparison table in a new tab.">
     Open in new tab
   </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_WINDOW" desc="The label for the comparison table list dropdown menu item for opening a comparison table in a new window.">
+    Open in new window
+  </message>
   <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_WITH_COUNT" desc="The label for the comparison table list dropdown menu item for opening comparison table(s) in new tab(s).">
     Open all (<ph name="ITEMS">$1<ex>3</ex></ph>)
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_IN_NEW_WINDOW_WITH_COUNT" desc="The label for the comparison table list dropdown menu item for opening comparison table(s) in a new window.">
+    Open all (<ph name="ITEMS">$1<ex>3</ex></ph>) in new window
   </message>
   <message name="IDS_COMPARE_CONTEXT_MENU_RENAME" desc="The label for the comparison table list dropdown menu item for renaming a comparison table.">
     Rename

@@ -9,6 +9,8 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import './images/icons.html.js';
 
+import {ShowSetDisposition} from '//resources/cr_components/commerce/product_specifications.mojom-webui.js';
+import type {ProductSpecificationsBrowserProxy} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import {ProductSpecificationsBrowserProxyImpl} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
@@ -72,6 +74,8 @@ export class ComparisonTableListElement extends CrLitElement {
   private selectedUuids_: Set<Uuid> = new Set();
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
+  private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
+      ProductSpecificationsBrowserProxyImpl.getInstance();
 
   protected getSelectionLabel_(numSelected: number): string {
     return loadTimeData.getStringF('numSelected', numSelected);
@@ -79,6 +83,10 @@ export class ComparisonTableListElement extends CrLitElement {
 
   protected getOpenAllString_(numSelected: number): string {
     return loadTimeData.getStringF('menuOpenAll', numSelected);
+  }
+
+  protected getOpenAllInNewWindowString_(numSelected: number): string {
+    return loadTimeData.getStringF('menuOpenAllInNewWindow', numSelected);
   }
 
   protected onEditClick_() {
@@ -110,15 +118,19 @@ export class ComparisonTableListElement extends CrLitElement {
   }
 
   protected async onOpenAllClick_() {
-    this.selectedUuids_.forEach(uuid => {
-      ProductSpecificationsBrowserProxyImpl.getInstance()
-          .showProductSpecificationsSetForUuid(uuid, true);
-    });
-
+    this.productSpecificationsProxy_.showProductSpecificationsSetsForUuids(
+        Array.from(this.selectedUuids_), ShowSetDisposition.kInNewTabs);
     this.$.menu.get().close();
-    this.stopEditing_();
 
     this.fire('open-all-finished-for-testing');
+  }
+
+  protected async onOpenAllInNewWindowClick_() {
+    this.productSpecificationsProxy_.showProductSpecificationsSetsForUuids(
+        Array.from(this.selectedUuids_), ShowSetDisposition.kInNewWindow);
+    this.$.menu.get().close();
+
+    this.fire('open-all-in-new-window-finished-for-testing');
   }
 
   protected onCheckboxChange_(event:

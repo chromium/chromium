@@ -47,31 +47,8 @@ class IsolatedWebAppUninstallBrowserTest
 
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-
     src_bundle_path_ = scoped_temp_dir_.GetPath().Append(
         base::FilePath::FromASCII("bundle.swbn"));
-    switch (mode_and_file_op_) {
-      case IwaSourceBundleModeAndFileOp::kDevModeCopy:
-        src_source_ = IsolatedWebAppInstallSource::FromDevUi(
-            IwaSourceBundleDevModeWithFileOp(src_bundle_path_,
-                                             IwaSourceBundleDevFileOp::kCopy));
-        break;
-      case IwaSourceBundleModeAndFileOp::kDevModeMove:
-        src_source_ = IsolatedWebAppInstallSource::FromDevUi(
-            IwaSourceBundleDevModeWithFileOp(src_bundle_path_,
-                                             IwaSourceBundleDevFileOp::kMove));
-        break;
-      case IwaSourceBundleModeAndFileOp::kProdModeCopy:
-        src_source_ = IsolatedWebAppInstallSource::FromGraphicalInstaller(
-            IwaSourceBundleProdModeWithFileOp(
-                src_bundle_path_, IwaSourceBundleProdFileOp::kCopy));
-        break;
-      case IwaSourceBundleModeAndFileOp::kProdModeMove:
-        src_source_ = IsolatedWebAppInstallSource::FromGraphicalInstaller(
-            IwaSourceBundleProdModeWithFileOp(
-                src_bundle_path_, IwaSourceBundleProdFileOp::kMove));
-        break;
-    }
 
     IsolatedWebAppBrowserTestHarness::SetUp();
   }
@@ -82,9 +59,28 @@ class IsolatedWebAppUninstallBrowserTest
             ManifestBuilder().SetName("app-1.0.0").SetVersion("1.0.0"))
             .BuildBundle(src_bundle_path_, key_pair_);
 
-    bundle->TrustSigningKey();
-    ASSERT_THAT(bundle->InstallWithSource(profile(), *src_source_),
-                base::test::HasValue());
+    switch (mode_and_file_op_) {
+      case IwaSourceBundleModeAndFileOp::kDevModeCopy:
+        ASSERT_THAT(bundle->InstallWithSource(
+                        profile(), &IsolatedWebAppInstallSource::FromDevUi,
+                        IwaSourceBundleDevFileOp::kCopy),
+                    base::test::HasValue());
+        break;
+      case IwaSourceBundleModeAndFileOp::kDevModeMove:
+        ASSERT_THAT(bundle->InstallWithSource(
+                        profile(), &IsolatedWebAppInstallSource::FromDevUi,
+                        IwaSourceBundleDevFileOp::kMove),
+                    base::test::HasValue());
+        break;
+      case IwaSourceBundleModeAndFileOp::kProdModeCopy:
+      case IwaSourceBundleModeAndFileOp::kProdModeMove:
+        ASSERT_THAT(
+            bundle->InstallWithSource(
+                profile(), &IsolatedWebAppInstallSource::FromGraphicalInstaller,
+                mode_and_file_op_),
+            base::test::HasValue());
+        break;
+    }
 
     const WebApp* web_app =
         provider()->registrar_unsafe().GetAppById(url_info_.app_id());
@@ -129,7 +125,6 @@ class IsolatedWebAppUninstallBrowserTest
           test::GetDefaultEd25519WebBundleId());
 
   base::FilePath src_bundle_path_;
-  std::optional<IsolatedWebAppInstallSource> src_source_;
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {

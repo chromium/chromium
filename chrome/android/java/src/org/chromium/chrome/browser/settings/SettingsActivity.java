@@ -240,8 +240,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 new ScrimCoordinator(
                         this,
                         /* systemUiScrimDelegate= */ null,
-                        (ViewGroup) sheetContainer.getParent(),
-                        getColor(R.color.default_scrim_color));
+                        (ViewGroup) sheetContainer.getParent());
 
         mManagedBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(

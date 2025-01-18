@@ -33,6 +33,15 @@
     <message name ="IDS_COLLABORATION_SOMETHING_WENT_WRONG_BODY" desc="The body of of the error dialog something went wrong." formatter_data="android_java">
       There was an error. Try again.
     </message>
+    <message name ="IDS_COLLABORATION_SHARE_SHEET_TITLE" desc="The title of the share sheet when sharing a tab group." formatter_data="android_java">
+      Collaborate on tab group
+    </message>
+    <message name ="IDS_COLLABORATION_SHARE_SHEET_MESSAGE" desc="The contents of the message when sharing a tab group." formatter_data="android_java">
+      <ph name="TAB_GROUP_DISPLAY_NAME">%1$s<ex>Vacation plan</ex></ph> link expires in 48 hours
+    </message>
+    <message name ="IDS_COLLABORATION_SHARE_SHEET_TAB_GROUP_FALLBACK_NAME" desc="Fallback name if the tab group was not named by the user." formatter_data="android_java">
+      Shared tab group
+    </message>
   </if>
   <!-- Error Messages -->
   <!-- /Data Sharing -->

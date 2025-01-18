@@ -28,6 +28,11 @@ class FaviconProviderImpl implements FaviconProvider {
         mFaviconCache = new FaviconCache(MAX_NUM_FAVICONS_TO_CACHE);
     }
 
+    @Override
+    public void destroy() {
+        mFaviconHelper.destroy();
+    }
+
     // FaviconProvider implementation.
     @Override
     public void getFavicon(String url, int faviconSizePx, Callback<Bitmap> callback) {

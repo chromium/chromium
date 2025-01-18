@@ -1902,8 +1902,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface hasFirstRunSentinel];
 }
 
+#pragma mark - Notification Utilities
+
 - (void)requestTipsNotification:(TipsNotificationType)type {
   return [ChromeEarlGreyAppInterface requestTipsNotification:type];
+}
+
+#pragma mark - Variations Utilities
+
+- (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country {
+  return [ChromeEarlGreyAppInterface
+      overrideVariationsServiceStoredPermanentCountry:country];
 }
 
 @end

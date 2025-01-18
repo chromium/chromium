@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.history.AppFilterCoordinator.MAX_SHEET
 import static org.chromium.chrome.browser.history.AppFilterCoordinator.MAX_VISIBLE_ITEM_COUNT;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
@@ -98,10 +97,7 @@ public class AppFilterCoordinatorTest {
         ViewGroup activityContentView = getActivity().findViewById(android.R.id.content);
         ScrimCoordinator scrimCoordinator =
                 new ScrimCoordinator(
-                        getActivity(),
-                        /* systemUiScrimDelegate= */ null,
-                        activityContentView,
-                        Color.WHITE);
+                        getActivity(), /* systemUiScrimDelegate= */ null, activityContentView);
         return BottomSheetControllerFactory.createBottomSheetController(
                 () -> scrimCoordinator,
                 (unused) -> {},

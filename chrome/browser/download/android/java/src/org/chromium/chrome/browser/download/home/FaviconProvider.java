@@ -10,8 +10,12 @@ import org.chromium.base.Callback;
 
 /** Responsible for providing favicon for a given URL. */
 public interface FaviconProvider {
+    /** Destroys the native component. */
+    void destroy();
+
     /**
      * Fetches favicon for the given URL.
+     *
      * @param url The associated URL.
      * @param faviconSizePx The desired size of the favicon in pixels.
      * @param callback The callback to be run after the favicon is fetched.

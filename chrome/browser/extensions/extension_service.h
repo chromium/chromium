@@ -482,7 +482,7 @@ class ExtensionService : public ExtensionServiceInterface,
 
 #if defined(UNIT_TEST)
   void FinishInstallationForTest(const Extension* extension) {
-    FinishInstallation(extension);
+    extension_registrar_.FinishInstallation(extension);
   }
 
   void UninstallMigratedExtensionsForTest() { UninstallMigratedExtensions(); }
@@ -552,7 +552,7 @@ class ExtensionService : public ExtensionServiceInterface,
       ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override;
   void ShowExtensionDisabledError(const Extension* extension,
                                   bool is_remote_install) override;
-
+  void FinishDelayedInstallationsIfAny() override;
   bool CanAddExtension(const Extension* extension) override;
   bool CanEnableExtension(const Extension* extension) override;
   bool CanDisableExtension(const Extension* extension) override;
@@ -594,9 +594,6 @@ class ExtensionService : public ExtensionServiceInterface,
                                 const syncer::StringOrdinal& page_ordinal,
                                 const std::string& install_parameter,
                                 base::Value::Dict ruleset_install_prefs);
-
-  // Common helper to finish installing the given extension.
-  void FinishInstallation(const Extension* extension);
 
   // Disables the extension if the privilege level has increased
   // (e.g., due to an upgrade).

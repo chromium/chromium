@@ -39,6 +39,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -82,6 +83,7 @@ public class AuxiliarySearchDonor {
     private Callback<Boolean> mPendingCallback;
     private boolean mSharedTabsWithOsState;
     private Boolean mIsDeviceCompatible;
+    private boolean mIsCreatedSessionAndInitForTesting;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
@@ -99,7 +101,9 @@ public class AuxiliarySearchDonor {
         mSkipSchemaCheck = AuxiliarySearchUtils.SKIP_SCHEMA_CHECK.getValue();
 
         mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
-        if (mSharedTabsWithOsState) {
+        boolean shouldInit = mSharedTabsWithOsState || !isShareTabsWithOsEnabledKeyExist();
+        if (shouldInit) {
+            mIsCreatedSessionAndInitForTesting = true;
             createSessionAndInit();
         }
     }
@@ -671,6 +675,12 @@ public class AuxiliarySearchDonor {
                 UI_THREAD_EXECUTOR);
     }
 
+    @VisibleForTesting
+    boolean isShareTabsWithOsEnabledKeyExist() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.contains(ChromePreferenceKeys.SHARING_TABS_WITH_OS);
+    }
+
     public boolean getIsSchemaSetForTesting() {
         return mIsSchemaSet;
     }
@@ -713,5 +723,13 @@ public class AuxiliarySearchDonor {
         ListenableFuture<AppSearchSession> oldSession = mAppSearchSession;
         mAppSearchSession = sessionForTesting;
         ResettersForTesting.register(() -> mAppSearchSession = oldSession);
+    }
+
+    public static AuxiliarySearchDonor createDonorForTesting() {
+        return new AuxiliarySearchDonor();
+    }
+
+    public boolean getIsCreatedSessionAndInitForTesting() {
+        return mIsCreatedSessionAndInitForTesting;
     }
 }

@@ -50,6 +50,10 @@ bool CanAssignToOptGroupSlot(const Node& node) {
          node.HasTagName(html_names::kHrTag);
 }
 
+HTMLLegendElement* FirstChildLegend(const HTMLOptGroupElement& optgroup) {
+  return Traversal<HTMLLegendElement>::FirstChild(optgroup);
+}
+
 }  // namespace
 
 HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
@@ -102,15 +106,24 @@ void HTMLOptGroupElement::ChildrenChanged(const ChildrenChange& change) {
   DCHECK_NE(change.type,
             ChildrenChangeType::kFinishedBuildingDocumentFragmentTree);
   if (change.type == ChildrenChangeType::kElementInserted) {
-    if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed))
+    if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
       select->OptionInserted(*option, option->Selected());
+    } else if (IsA<HTMLLegendElement>(change.sibling_changed)) {
+      UpdateGroupLabel();
+    }
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
-    if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed))
+    if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
       select->OptionRemoved(*option);
+    } else if (IsA<HTMLLegendElement>(change.sibling_changed)) {
+      UpdateGroupLabel();
+    }
   } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
     for (Node* node : change.removed_nodes) {
-      if (auto* option = DynamicTo<HTMLOptionElement>(node))
+      if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
         select->OptionRemoved(*option);
+      } else if (IsA<HTMLLegendElement>(change.sibling_changed)) {
+        UpdateGroupLabel();
+      }
     }
   }
 }
@@ -150,10 +163,8 @@ String HTMLOptGroupElement::GroupLabelText() const {
   String label_attribute_text = LabelAttributeText();
   if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       label_attribute_text.ContainsOnlyWhitespaceOrEmpty()) {
-    for (auto& node : NodeTraversal::DescendantsOf(*this)) {
-      if (auto* legend = DynamicTo<HTMLLegendElement>(node)) {
-        return legend->textContent();
-      }
+    if (auto* legend = FirstChildLegend(*this)) {
+      return legend->textContent();
     }
   }
   return label_attribute_text;
@@ -233,7 +244,7 @@ void HTMLOptGroupElement::UpdateGroupLabel() {
   HTMLDivElement& label = OptGroupLabelElement();
   label.setTextContent(label_text);
   label.setAttribute(html_names::kAriaLabelAttr, AtomicString(label_text));
-  if (label_text.ContainsOnlyWhitespaceOrEmpty()) {
+  if (label_text.ContainsOnlyWhitespaceOrEmpty() || FirstChildLegend(*this)) {
     if (customizable_select_rendering_) {
       // If the author uses <legend> to label the <optgroup> instead of the
       // label attribute, then we don't want extra space being taken up for the

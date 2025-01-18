@@ -159,12 +159,8 @@ public class ReorderDelegate {
                         || mActiveStrategy == mTabStrategy);
     }
 
-    boolean getReorderingForTabDrop() {
+    private boolean isReorderingForTabDrop() {
         return getInReorderMode() && mActiveStrategy == mExternalViewDragDropReorderStrategy;
-    }
-
-    StripLayoutTab getInteractingTab() {
-        return (StripLayoutTab) mActiveStrategy.getInteractingView();
     }
 
     private ReorderStrategy getReorderStrategy(
@@ -348,7 +344,7 @@ public class ReorderDelegate {
         // added. As such, we need to base this on the most recent x-position of the drag, rather
         // than the interacting view's drawX.
         final float x =
-                getReorderingForTabDrop()
+                isReorderingForTabDrop()
                         ? adjustXForTabDrop(mLastReorderX)
                         : mActiveStrategy.getInteractingView().getDrawX();
 
@@ -367,7 +363,7 @@ public class ReorderDelegate {
         // Note that we only allow scrolling in each direction if the user has already manually
         // moved that way.
         final float width =
-                getReorderingForTabDrop()
+                isReorderingForTabDrop()
                         ? mTabWidthSupplier.get()
                         : mActiveStrategy.getInteractingView().getWidth();
         float dragSpeedRatio = 0.f;
@@ -395,6 +391,13 @@ public class ReorderDelegate {
 
     void removeInReorderModeObserver(Callback<Boolean> observer) {
         mInReorderModeSupplier.removeObserver(observer);
+    }
+
+    /** Update and animate views for external view drop on strip. */
+    void handleTabDropForExternalView(
+            StripLayoutGroupTitle[] groupTitles, int draggedTabId, int dropIndex) {
+        assert mExternalViewDragDropReorderStrategy != null;
+        mExternalViewDragDropReorderStrategy.handleDrop(groupTitles, draggedTabId, dropIndex);
     }
 
     // ============================================================================================
@@ -1348,6 +1351,9 @@ public class ReorderDelegate {
     private class ExternalViewDragDropReorderStrategy implements ReorderStrategy {
         // View on the strip being hovered on by the dragged view.
         private StripLayoutView mInteractingView;
+        // View on the strip last hovered on by dragged view. This can be used post stop reorder to
+        // handle drop event (eg: reparenting dropped tab).
+        private StripLayoutView mInteractingViewDuringStop;
 
         /** Initiate reorder when external view is dragged onto strip. */
         @Override
@@ -1358,6 +1364,7 @@ public class ReorderDelegate {
                 PointF startPoint) {
             // 1. Set initial state and add edge margins.
             mInteractingView = interactingView;
+            mInteractingViewDuringStop = null;
             resetReorderState(startPoint.x);
             setEdgeMarginsForReorder(stripTabs);
 
@@ -1445,6 +1452,7 @@ public class ReorderDelegate {
                 StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
             List<Animator> animatorList = new ArrayList<>();
             handleStopReorderMode(groupTitles, stripTabs, mInteractingView, animatorList);
+            mInteractingViewDuringStop = mInteractingView;
             // Start animations.
             mAnimationHost.startAnimations(
                     animatorList,
@@ -1459,6 +1467,44 @@ public class ReorderDelegate {
         @Override
         public StripLayoutView getInteractingView() {
             return mInteractingView;
+        }
+
+        /** Merges dropped tab to interacting view's tab group, if one exists. */
+        public void handleDrop(
+                StripLayoutGroupTitle[] groupTitles, int draggedTabId, int dropIndex) {
+            if (mInteractingViewDuringStop == null) return;
+
+            StripLayoutTab interactingView = (StripLayoutTab) mInteractingViewDuringStop;
+            Tab interactingTab = mModel.getTabById(interactingView.getTabId());
+
+            // 1. If hovered on tab is not part of group, no-op.
+            if (!mTabGroupModelFilter.isTabInTabGroup(interactingTab)) return;
+
+            // 2. Merge dragged tab to hovered tab's group at drop index.
+            mTabGroupModelFilter.mergeTabsToGroup(
+                    draggedTabId, interactingTab.getId(), /* skipUpdateTabModel= */ true);
+            mModel.moveTab(draggedTabId, dropIndex);
+
+            // 3. Animate bottom indicator. Done after merging the dragged tab to group,
+            // so that the calculated bottom indicator width will be correct.
+            StripLayoutGroupTitle groupTitle =
+                    StripLayoutUtils.findGroupTitle(groupTitles, interactingTab.getRootId());
+            List<Animator> animators = new ArrayList<>();
+            updateBottomIndicatorWidthForTabReorder(
+                    mAnimationHost.getAnimationHandler(),
+                    mTabGroupModelFilter,
+                    groupTitle,
+                    /* isMovingOutOfGroup= */ false,
+                    /* throughGroupTitle= */ false,
+                    animators);
+            mAnimationHost.startAnimations(
+                    animators,
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mInteractingViewDuringStop = null;
+                        }
+                    });
         }
     }
 
@@ -1615,13 +1661,17 @@ public class ReorderDelegate {
         mInReorderModeSupplier.set(inReorderMode);
     }
 
+    float getLastReorderXForTesting() {
+        return mLastReorderX;
+    }
+
+    StripLayoutTab getInteractingTabForTesting() {
+        return (StripLayoutTab) mActiveStrategy.getInteractingView();
+    }
+
     float getDragLastOffsetXForTesting() {
         if (mSourceViewDragDropReorderStrategy == null) return 0f;
         return mSourceViewDragDropReorderStrategy.mLastOffsetX;
-    }
-
-    float getLastReorderXForTesting() {
-        return mLastReorderX;
     }
 
     void setDragLastOffsetXForTesting(float offsetX) {

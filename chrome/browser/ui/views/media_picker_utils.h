@@ -12,8 +12,8 @@ class WebContents;
 }
 
 namespace views {
+class DialogDelegate;
 class Widget;
-class WidgetDelegate;
 }  // namespace views
 
 class Browser;
@@ -26,7 +26,7 @@ bool IsMediaPickerModalWindow(content::WebContents* web_contents);
 // window.
 views::Widget* CreateMediaPickerDialogWidget(Browser* browser,
                                              content::WebContents* web_contents,
-                                             views::WidgetDelegate* delegate,
+                                             views::DialogDelegate* delegate,
                                              gfx::NativeWindow context,
                                              gfx::NativeView parent);
 

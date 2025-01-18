@@ -1706,11 +1706,7 @@ public class RootUiCoordinator
                         RootUiCoordinator.this.setStatusBarScrimFraction(scrimFraction);
                     }
                 };
-        return new ScrimCoordinator(
-                mActivity,
-                delegate,
-                coordinator,
-                coordinator.getContext().getColor(R.color.omnibox_focused_fading_background_color));
+        return new ScrimCoordinator(mActivity, delegate, coordinator);
     }
 
     protected void setStatusBarScrimFraction(float scrimFraction) {

@@ -9,9 +9,12 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/reading_list/core/reading_list_entry.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -30,6 +33,8 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
                                                                this)),
       bookmark_model_(
           ios::BookmarkModelFactory::GetForProfile(browser->GetProfile())),
+      reading_list_model_(
+          ReadingListModelFactory::GetForProfile(browser->GetProfile())),
       url_loading_notifier_(
           UrlLoadingNotifierBrowserAgent::FromBrowser(browser)),
       command_dispatcher_(browser->GetCommandDispatcher()),
@@ -40,6 +45,7 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
           IsSendTabIOSPushNotificationsEnabledWithTabReminders() &&
       bookmark_model_) {
     bookmark_model_observation_.Observe(bookmark_model_.get());
+    reading_list_model_observation_.Observe(reading_list_model_.get());
   }
   url_loading_notifier_->AddObserver(this);
 }
@@ -132,12 +138,55 @@ void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
   if (send_tab_to_self::
           IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
     StopObservingBookmarkModel();
+    StopObservingReadingListModel();
   }
 
   web_state_list_ = nil;
   url_loading_notifier_ = nil;
   command_dispatcher_ = nil;
   engagement_tracker_ = nil;
+}
+
+#pragma mark - ReadingListModelObserver
+
+void TabBasedIPHBrowserAgent::ReadingListModelLoaded(
+    const ReadingListModel* model) {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  reading_list_model_loaded_ = true;
+}
+
+void TabBasedIPHBrowserAgent::ReadingListModelBeingShutdown(
+    const ReadingListModel* model) {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(reading_list_model_loaded_);
+
+  // The model passed is `const`, which makes it impossible to call
+  // `model->RemoveObserver(...)`. Other `ReadingListModelObserver`
+  // clients address this by removing themselves as observers using a reference
+  // to the model maintained in their class, so a similar approach is followed
+  // in `StopObservingReadingListModel()`. Fortunately,
+  // `reading_list_model_observation_` will gracefully handle removing
+  // `TabBasedIPHBrowserAgent` as an observer if all else fails.
+  StopObservingReadingListModel();
+}
+
+void TabBasedIPHBrowserAgent::ReadingListDidAddEntry(
+    const ReadingListModel* model,
+    const GURL& url,
+    reading_list::EntrySource source) {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(reading_list_model_loaded_);
+
+  if (source == reading_list::EntrySource::ADDED_VIA_CURRENT_APP) {
+    // A reading list entry was manually added by the user.
+
+    // TODO(crbug.com/389911609): Fire a UI command to display the relevant
+    // Reminder Notifications Bubble IPH.
+  }
 }
 
 #pragma mark - UrlLoadingObserver
@@ -250,6 +299,19 @@ void TabBasedIPHBrowserAgent::StopObservingBookmarkModel() {
 
   bookmark_model_ = nullptr;
   bookmark_model_observation_.Reset();
+}
+
+void TabBasedIPHBrowserAgent::StopObservingReadingListModel() {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  if (reading_list_model_) {
+    reading_list_model_->RemoveObserver(this);
+  }
+
+  reading_list_model_ = nullptr;
+  reading_list_model_observation_.Reset();
+  reading_list_model_loaded_ = false;
 }
 
 void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {

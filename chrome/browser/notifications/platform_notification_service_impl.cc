@@ -679,15 +679,9 @@ std::optional<webapps::AppId> PlatformNotificationServiceImpl::FindWebAppId(
 #if !BUILDFLAG(IS_ANDROID)
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   if (web_app_provider) {
     return web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
-        web_app_hint_url,
-        {
-            web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-        });
+        web_app_hint_url, web_app::WebAppFilter::InstalledInChrome());
   }
 #endif
 
@@ -701,15 +695,19 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
-    // TODO(crbug.com/379827962): Evaluate call sites of
-    // FindBestAppWithUrlInScope for correctness.
+#if BUILDFLAG(IS_CHROMEOS)
+    // The PlatformNotificationServiceTest FindWebAppIconAndTitle seems to be
+    // verifying the availability of an icon and a title for notification
+    // purposes, even though the app is not installed with OS integration, which
+    // is surprising.
+    web_app::WebAppFilter filter = web_app::WebAppFilter::InstalledInChrome();
+#else
+    web_app::WebAppFilter filter =
+        web_app::WebAppFilter::SupportsOsNotifications();
+#endif
     const std::optional<webapps::AppId> app_id =
         web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
-            web_app_hint_url,
-            {
-                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-            });
+            web_app_hint_url, filter);
     if (app_id) {
       std::optional<WebAppIconAndTitle> icon_and_title;
       icon_and_title.emplace();
@@ -740,8 +738,7 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
   }
   const std::optional<webapps::AppId> app_id =
       web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
-          web_app_url,
-          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+          web_app_url, web_app::WebAppFilter::SupportsOsNotifications());
   return app_id.has_value();
 #endif
 }

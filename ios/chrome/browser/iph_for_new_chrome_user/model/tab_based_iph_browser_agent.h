@@ -8,6 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
+#import "components/reading_list/core/reading_list_model_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -18,9 +19,14 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
+namespace reading_list {
+enum EntrySource;
+}  // namespace reading_list
+
 class Browser;
 @class CommandDispatcher;
 @protocol HelpCommands;
+class ReadingListModel;
 class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
 
@@ -33,6 +39,7 @@ class Tracker;
 class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
                                 public BrowserUserData<TabBasedIPHBrowserAgent>,
                                 public BrowserObserver,
+                                public ReadingListModelObserver,
                                 public UrlLoadingObserver,
                                 public web::WebStateObserver {
  public:
@@ -81,6 +88,13 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
 
+  // ReadingListModelObserver
+  void ReadingListModelLoaded(const ReadingListModel* model) override;
+  void ReadingListModelBeingShutdown(const ReadingListModel* model) override;
+  void ReadingListDidAddEntry(const ReadingListModel* model,
+                              const GURL& url,
+                              reading_list::EntrySource source) override;
+
   // UrlLoadingObserver
   void TabDidLoadUrl(const GURL& url,
                      ui::PageTransition transition_type) override;
@@ -109,6 +123,12 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   // longer react to bookmark modifications.
   void StopObservingBookmarkModel();
 
+  // Stops observing changes to the reading list model. This is typically
+  // called when `TabBasedIPHBrowserAgent` is being destroyed, when reactions
+  // to reading list modifications are no longer needed, or when the reading
+  // list model itself is being destroyed.
+  void StopObservingReadingListModel();
+
   // For all IPH features managed by this class, resets their tracker variables
   // to `false`, and remove currently displaying IPH views from the view.
   void ResetFeatureStatesAndRemoveIPHViews();
@@ -128,6 +148,16 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BaseBookmarkModelObserver>
       bookmark_model_observation_{this};
+  // `ReadingListModel` instance providing access to the reading list. May be
+  // `nullptr`.
+  raw_ptr<ReadingListModel> reading_list_model_ = nullptr;
+  // Tracks whether the reading list model has finished loading. Until the model
+  // is fully loaded, it is unsafe to use or interact with it.
+  bool reading_list_model_loaded_ = false;
+  // Automatically removes this observer from the reading list model when
+  // destroyed.
+  base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
+      reading_list_model_observation_{this};
   // Observer for URL loading.
   raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;
   // Command dispatcher for the browser; used to retrieve help handler.

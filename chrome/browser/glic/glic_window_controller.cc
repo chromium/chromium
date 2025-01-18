@@ -252,6 +252,19 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   glic_widget_observer_ =
       std::make_unique<GlicWidgetObserver>(this, glic_window_widget_.get());
 
+  // This is used to handle the case where the native window is closed
+  // directly (e.g., Windows context menu close on the title bar). The widget
+  // can't be deleted by the OnWidgetDestroyed notification because the widget
+  // code doesn't support that.
+  glic_window_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
+      base::BindOnce(
+          [](const base::WeakPtr<GlicWindowController>& weak_this) {
+            if (weak_this) {
+              weak_this->Close();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+
   // If the web client is already initialized, go to phase 2. Otherwise, wait
   // for the web client to initialize.
   if (web_client_) {

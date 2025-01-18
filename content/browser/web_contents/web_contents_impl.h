@@ -1064,10 +1064,6 @@ class CONTENT_EXPORT WebContentsImpl
       base::OnceCallback<void(const SkBitmap&)> callback) override;
   bool SupportsForwardTransitionAnimation() override;
 
-#if BUILDFLAG(IS_ANDROID)
-  void SetSupportsForwardTransitionAnimation(bool supports);
-#endif
-
   // RenderWidgetHostDelegate --------------------------------------------------
 
   void SetTopControlsShownRatio(RenderWidgetHostImpl* render_widget_host,
@@ -2692,10 +2688,6 @@ class CONTENT_EXPORT WebContentsImpl
   // no popin can open a popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   base::WeakPtr<WebContents> opened_partitioned_popin_;
-
-#if BUILDFLAG(IS_ANDROID)
-  bool supports_forward_transition_animation_ = true;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

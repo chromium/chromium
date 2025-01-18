@@ -140,4 +140,9 @@ message FeatureTextSafetyConfiguration {
 
   // Configures check that run on parsed model output, with request as context.
   repeated ResponseSafetyCheck response_check = 6;
+
+  // When enabled, the unsafe text does not cancel a pending response, but
+  // instead just doesn't send it until it is safe again. If the text is still
+  // unsafe on complete, then it cancels the pending response.
+  optional bool only_cancel_unsafe_response_on_complete = 7;
 }

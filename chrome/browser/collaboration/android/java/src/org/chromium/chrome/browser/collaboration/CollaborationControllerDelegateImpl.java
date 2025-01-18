@@ -228,8 +228,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void promoteTabGroup(String collaborationId, long resultCallback) {
+        mDataSharingTabManager.promoteTabGroup(collaborationId);
         CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.FAILURE, resultCallback);
+                .runResultCallback(Outcome.SUCCESS, resultCallback);
     }
 
     /** Focus and show the current flow screen. */

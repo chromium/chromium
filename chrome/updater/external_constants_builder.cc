@@ -143,13 +143,15 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearCrxVerifierFormat() {
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::SetGroupPolicies(
-    const base::Value::Dict& group_policies) {
-  overrides_.Set(kDevOverrideKeyGroupPolicies, group_policies.Clone());
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetDictPolicies(
+    const base::Value::Dict& dict_policies) {
+  overrides_.Set(kDevOverrideKeyDictPolicies, dict_policies.Clone());
+  overrides_.Set(kDevOverrideKeyGroupPolicies, dict_policies.Clone());
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::ClearGroupPolicies() {
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearDictPolicies() {
+  overrides_.Remove(kDevOverrideKeyDictPolicies);
   overrides_.Remove(kDevOverrideKeyGroupPolicies);
   return *this;
 }
@@ -266,8 +268,8 @@ bool ExternalConstantsBuilder::Modify() {
   if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat)) {
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
   }
-  if (!overrides_.contains(kDevOverrideKeyGroupPolicies)) {
-    SetGroupPolicies(verifier->GroupPolicies());
+  if (!overrides_.contains(kDevOverrideKeyDictPolicies)) {
+    SetDictPolicies(verifier->DictPolicies());
   }
   if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout)) {
     SetOverinstallTimeout(verifier->OverinstallTimeout());

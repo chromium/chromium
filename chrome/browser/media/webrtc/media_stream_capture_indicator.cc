@@ -675,8 +675,10 @@ void MediaStreamCaptureIndicator::MaybeDestroyStatusTrayIcon() {
 
   StatusTray* status_tray = g_browser_process->status_tray();
   if (status_tray != nullptr) {
-    status_tray->RemoveStatusIcon(status_icon_);
+    std::unique_ptr<StatusIcon> removed_icon =
+        status_tray->RemoveStatusIcon(status_icon_);
     status_icon_ = nullptr;
+    removed_icon.reset();
   }
 }
 

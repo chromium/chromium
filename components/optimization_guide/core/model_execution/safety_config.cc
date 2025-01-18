@@ -277,4 +277,8 @@ std::optional<SubstitutionResult> SafetyConfig::GetResponseCheckInput(
   return result;
 }
 
+bool SafetyConfig::OnlyCancelUnsafeResponseOnComplete() const {
+  return proto_ && proto_->only_cancel_unsafe_response_on_complete();
+}
+
 }  // namespace optimization_guide

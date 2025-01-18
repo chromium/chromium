@@ -23,11 +23,12 @@ StatusIcon* StatusTray::CreateStatusIcon(StatusIconType type,
   return status_icons_.back().icon.get();
 }
 
-void StatusTray::RemoveStatusIcon(StatusIcon* icon) {
+std::unique_ptr<StatusIcon> StatusTray::RemoveStatusIcon(StatusIcon* icon) {
   for (auto iter = status_icons_.begin(); iter != status_icons_.end(); ++iter) {
     if (iter->icon.get() == icon) {
+      auto removed_icon = std::move(iter->icon);
       status_icons_.erase(iter);
-      return;
+      return removed_icon;
     }
   }
   NOTREACHED();

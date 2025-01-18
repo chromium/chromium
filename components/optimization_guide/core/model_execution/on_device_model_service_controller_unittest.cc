@@ -3094,6 +3094,53 @@ TEST_F(OnDeviceModelServiceControllerTest, MinimumSafetyTokens) {
   EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, WaitUntilCompleteToCancel) {
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.set_only_cancel_unsafe_response_on_complete(true);
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config.add_allowed_languages("en");
+    return safety_config;
+  }());
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &safety_asset,
+      .language = &standard_assets_.language,
+      .adaptations = {&standard_assets_.compose},
+  });
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+
+  fake_settings_.set_execute_result(
+      {"safe", " safe", " lang:en=1.0", " safe", " unsafe"});
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+
+  // The full output was unsafe so it resulted it in it being filtered.
+  EXPECT_FALSE(response_.GetFinalStatus());
+  EXPECT_EQ(
+      response_.error(),
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+
+  const std::vector<std::string> expected_responses = {
+      // The first two responses are filtered because their language hasn't been
+      // detected yet. Because `only_cancel_unsafe_response_on_complete` is
+      // true, this doesn't cause the input to be cancelled.
+      //
+      // "safe", "safe safe",
+
+      // The next two responses are not filtered because the language has been
+      // reliably detected as a supported language.
+      "safe safe lang:en=1.0", "safe safe lang:en=1.0 safe",
+
+      // The last response is unsafe so it is filtered. Since the output is
+      // complete the response is cancelled.
+      //
+      // "safe safe lang:en=1.0 safe unsafe",
+  };
+  EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
+}
+
 // Validate chunk-by-chunk streaming mode works correctly.
 TEST_F(OnDeviceModelServiceControllerTest, TsInterval1_ChunkByChunk) {
   // Configure a token interval to enable streaming responses.

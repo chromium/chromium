@@ -944,12 +944,6 @@ void WebContentsAndroid::SetLongPressLinkSelectText(JNIEnv* env,
   web_contents_->SetLongPressLinkSelectText((bool)enabled);
 }
 
-void WebContentsAndroid::SetSupportsForwardTransitionAnimation(
-    JNIEnv* env,
-    jboolean supports) {
-  web_contents_->SetSupportsForwardTransitionAnimation(supports);
-}
-
 void WebContentsAndroid::NotifyControlsConstraintsChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jold_tags_info,

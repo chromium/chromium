@@ -72,11 +72,7 @@ public class HistoryActivity extends SnackbarActivity {
                 (ViewGroup)
                         LayoutInflater.from(this).inflate(R.layout.bottom_sheet_container, null);
         ScrimCoordinator scrim =
-                new ScrimCoordinator(
-                        this,
-                        /* systemUiScrimDelegate= */ null,
-                        contentView,
-                        getColor(R.color.default_scrim_color));
+                new ScrimCoordinator(this, /* systemUiScrimDelegate= */ null, contentView);
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> scrim,

@@ -32,9 +32,9 @@ class GlicLauncherConfiguration {
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  bool IsEnabled();
+  static bool IsEnabled();
 
-  ui::Accelerator GetGlobalHotkey();
+  static ui::Accelerator GetGlobalHotkey();
 
  private:
   void OnEnabledPrefChanged();

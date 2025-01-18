@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -104,6 +105,10 @@ class ExtensionRegistrar : public ProcessManagerObserver {
     virtual void ShowExtensionDisabledError(const Extension* extension,
                                             bool is_remote_install) = 0;
 
+    // Finishes the deplayed installations if there are any delayed
+    // extensions ready to be installed.
+    virtual void FinishDelayedInstallationsIfAny() = 0;
+
     // Returns true if |extension| can be added.
     virtual bool CanAddExtension(const Extension* extension) = 0;
 
@@ -139,7 +144,7 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // Note: Extensions will not be removed from other sets (blocklisted or
   // blocked). ExtensionService handles that, since it also adds it to those
   // sets. TODO(michaelpg): Make ExtensionRegistrar the sole mutator of
-  // ExtensionRegsitry to simplify this usage.
+  // ExtensionRegistry to simplify this usage.
   void RemoveExtension(const ExtensionId& extension_id,
                        UnloadedExtensionReason reason);
 
@@ -160,6 +165,13 @@ class ExtensionRegistrar : public ProcessManagerObserver {
       const Extension* source_extension,
       const std::string& extension_id,
       disable_reason::DisableReason disable_reasons);
+
+  // Attempts to enable all disabled extensions which the only disabled reason
+  // is reloading.
+  void EnabledReloadableExtensions();
+
+  // Removes the specified component extension.
+  void RemoveComponentExtension(const std::string& extension_id);
 
   // Removes the disable reason and enable the extension if there are no disable
   // reasons left and is not blocked for another reason.
@@ -191,6 +203,12 @@ class ExtensionRegistrar : public ProcessManagerObserver {
       UninstallReason reason,
       std::u16string* error,
       base::OnceClosure done_callback = base::NullCallback());
+
+  // Uninstalls extensions that have been migrated to component extensions.
+  void UninstallMigratedExtensions(base::span<const char* const> migrated_ids);
+
+  // Finishes installing |extension| and notifying the observers.
+  void FinishInstallation(const Extension* extension);
 
   // TODO(michaelpg): Add methods for blocklisting and blocking extensions.
 

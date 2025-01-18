@@ -540,7 +540,7 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Stop reorder on drop and drag end.
         verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
         // Verify tab is not moved.
@@ -576,9 +576,9 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Strip clears state for drop on drag exit.
-        verify(mSourceStripLayoutHelper, times(1)).clearForTabDrop(anyBoolean(), anyBoolean());
+        verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is on source toolbar.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
@@ -606,9 +606,9 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Strip clears state for drop on drag exit.
-        verify(mSourceStripLayoutHelper, times(1)).clearForTabDrop(anyBoolean(), anyBoolean());
+        verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is outside strip.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
@@ -656,9 +656,9 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Strip clears state for drop on drag exit.
-        verify(mSourceStripLayoutHelper, times(1)).clearForTabDrop(anyBoolean(), anyBoolean());
+        verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
         // Verify Since the drop is outside the TabToolbar area the tab will be move to a new
         // Chrome Window.
         verify(mSourceMultiInstanceManager, times(1)).moveTabToNewWindow(mTabBeingDragged);
@@ -810,7 +810,7 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
         // Verify destination strip calls.
         verify(mDestStripLayoutHelper)
-                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         verify(mDestStripLayoutHelper).stopReorderMode();
 
         assertNull(ShadowToast.getLatestToast());
@@ -896,14 +896,14 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Source strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Source strip clears state for drop on drag exit.
-        verify(mSourceStripLayoutHelper, times(1)).clearForTabDrop(anyBoolean(), anyBoolean());
+        verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
         // Destination strip prepares for drop on drag enter.
         verify(mDestStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Destination strip clears state for drop on drag exit.
-        verify(mDestStripLayoutHelper, times(1)).clearForTabDrop(anyBoolean(), anyBoolean());
+        verify(mDestStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is on source toolbar.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
@@ -936,7 +936,7 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter. Entered twice.
         verify(mSourceStripLayoutHelper, times(2))
-                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Stop reorder on drop and drag end.
         verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
         // Verify tab is not moved.

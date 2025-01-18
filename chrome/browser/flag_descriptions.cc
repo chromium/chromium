@@ -1546,6 +1546,12 @@ const char kEnablePerfettoSystemTracingDescription[] =
     "When enabled, Chrome will attempt to connect to the system tracing "
     "service";
 
+const char kEnableWindowsGamingInputDataFetcherName[] =
+    "Enable Windows.Gaming.Input";
+const char kEnableWindowsGamingInputDataFetcherDescription[] =
+    "Enable Windows.Gaming.Input by default to provide game controller "
+    "support on Windows 10 desktop.";
+
 const char kBlockInsecurePrivateNetworkRequestsName[] =
     "Block insecure private network requests.";
 const char kBlockInsecurePrivateNetworkRequestsDescription[] =

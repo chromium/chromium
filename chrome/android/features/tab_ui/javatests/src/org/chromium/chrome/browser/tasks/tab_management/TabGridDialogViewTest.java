@@ -20,7 +20,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.a
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -107,7 +106,7 @@ public class TabGridDialogViewTest {
                             mTabGridDialogView.findViewById(R.id.dialog_animation_card_view);
                     mBackgroundFrameView = mTabGridDialogView.findViewById(R.id.dialog_frame);
                     ScrimCoordinator scrimCoordinator =
-                            new ScrimCoordinator(sActivity, null, mTestParent, Color.RED);
+                            new ScrimCoordinator(sActivity, null, mTestParent);
                     mTabGridDialogView.setupScrimCoordinator(scrimCoordinator);
                     mTabGridDialogView.setScrimClickRunnable(() -> {});
 

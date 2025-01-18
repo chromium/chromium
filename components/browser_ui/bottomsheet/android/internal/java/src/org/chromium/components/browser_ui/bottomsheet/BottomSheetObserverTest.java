@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -130,8 +129,7 @@ public class BottomSheetObserverTest {
                                     new ScrimCoordinator(
                                             sTestRule.getActivity(),
                                             /* systemUiScrimDelegate= */ null,
-                                            rootView,
-                                            Color.WHITE);
+                                            rootView);
                             Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;
                             Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(

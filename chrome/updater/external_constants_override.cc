@@ -181,17 +181,17 @@ crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
       crx_format_verifier_value->GetInt());
 }
 
-base::Value::Dict ExternalConstantsOverrider::GroupPolicies() const {
-  if (!override_values_.contains(kDevOverrideKeyGroupPolicies)) {
-    return next_provider_->GroupPolicies();
+base::Value::Dict ExternalConstantsOverrider::DictPolicies() const {
+  if (!override_values_.contains(kDevOverrideKeyDictPolicies)) {
+    return next_provider_->DictPolicies();
   }
 
-  const base::Value* group_policies_value =
-      override_values_.Find(kDevOverrideKeyGroupPolicies);
-  CHECK(group_policies_value->is_dict())
-      << "Unexpected type of override[" << kDevOverrideKeyGroupPolicies
-      << "]: " << base::Value::GetTypeName(group_policies_value->type());
-  return group_policies_value->GetDict().Clone();
+  const base::Value* dict_policies_value =
+      override_values_.Find(kDevOverrideKeyDictPolicies);
+  CHECK(dict_policies_value->is_dict())
+      << "Unexpected type of override[" << kDevOverrideKeyDictPolicies
+      << "]: " << base::Value::GetTypeName(dict_policies_value->type());
+  return dict_policies_value->GetDict().Clone();
 }
 
 base::TimeDelta ExternalConstantsOverrider::OverinstallTimeout() const {

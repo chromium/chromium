@@ -128,8 +128,7 @@ public class ScrimTest {
                     mAnchorView = new View(sActivity);
                     sParent.addView(mAnchorView);
 
-                    mScrimCoordinator =
-                            new ScrimCoordinator(sActivity, mScrimDelegate, sParent, Color.RED);
+                    mScrimCoordinator = new ScrimCoordinator(sActivity, mScrimDelegate, sParent);
 
                     mDelegatedEventHelper = new CallbackHelper();
                     mCustomGestureDetector =
@@ -233,7 +232,7 @@ public class ScrimTest {
         assertScrimColor(Color.GREEN);
         assertEquals(Color.GREEN, mScrimColorCallbackHelper.getOnlyPayloadBlocking().intValue());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> model.set(BACKGROUND_COLOR, Color.RED));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setScrimColor(Color.RED, model));
         assertScrimColor(Color.RED);
         assertEquals(Color.RED, mScrimColorCallbackHelper.getPayloadByIndexBlocking(1).intValue());
     }

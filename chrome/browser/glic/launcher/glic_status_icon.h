@@ -47,8 +47,7 @@ class GlicStatusIcon : public StatusIconObserver,
       native_theme_observer_{this};
 
   raw_ptr<StatusTray> status_tray_;
-  // TODO(crbug.com/390463341): Figure out how to not dangle this pointer.
-  raw_ptr<StatusIcon, DanglingUntriaged> status_icon_;
+  raw_ptr<StatusIcon> status_icon_;
   raw_ptr<StatusIconMenuModel> context_menu_;
 };
 

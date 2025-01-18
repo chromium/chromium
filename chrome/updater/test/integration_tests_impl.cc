@@ -513,8 +513,8 @@ void EnterTestMode(const GURL& update_url,
           .Modify());
 }
 
-void SetGroupPolicies(const base::Value::Dict& values) {
-  ASSERT_TRUE(ExternalConstantsBuilder().SetGroupPolicies(values).Modify());
+void SetDictPolicies(const base::Value::Dict& values) {
+  ASSERT_TRUE(ExternalConstantsBuilder().SetDictPolicies(values).Modify());
 }
 
 void SetMachineManaged(bool is_managed_device) {

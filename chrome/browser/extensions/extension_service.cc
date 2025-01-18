@@ -585,16 +585,7 @@ void ExtensionService::Init() {
 void ExtensionService::EnabledReloadableExtensions() {
   TRACE_EVENT0("browser,startup",
                "ExtensionService::EnabledReloadableExtensions");
-
-  std::vector<std::string> extensions_to_enable;
-  for (const auto& e : registry_->disabled_extensions()) {
-    if (extension_prefs_->GetDisableReasons(e->id()) ==
-        disable_reason::DISABLE_RELOAD)
-      extensions_to_enable.push_back(e->id());
-  }
-  for (const std::string& extension : extensions_to_enable) {
-    EnableExtension(extension);
-  }
+  extension_registrar_.EnabledReloadableExtensions();
 }
 
 void ExtensionService::MaybeFinishShutdownDelayed() {
@@ -789,6 +780,10 @@ void ExtensionService::LoadExtensionForReload(
 void ExtensionService::ShowExtensionDisabledError(const Extension* extension,
                                                   bool is_remote_install) {
   AddExtensionDisabledError(this, extension, is_remote_install);
+}
+
+void ExtensionService::FinishDelayedInstallationsIfAny() {
+  MaybeFinishDelayedInstallations();
 }
 
 void ExtensionService::OnUnpackedReloadFailure(const Extension* extension,
@@ -1384,13 +1379,7 @@ void ExtensionService::UnloadExtension(const std::string& extension_id,
 
 void ExtensionService::RemoveComponentExtension(
     const std::string& extension_id) {
-  scoped_refptr<const Extension> extension(
-      registry_->enabled_extensions().GetByID(extension_id));
-  UnloadExtension(extension_id, UnloadedExtensionReason::UNINSTALL);
-  if (extension.get()) {
-    ExtensionRegistry::Get(profile_)->TriggerOnUninstalled(
-        extension.get(), UNINSTALL_REASON_COMPONENT_REMOVED);
-  }
+  extension_registrar_.RemoveComponentExtension(extension_id);
 }
 
 void ExtensionService::UnloadAllExtensionsForTest() {
@@ -1771,7 +1760,7 @@ void ExtensionService::AddNewOrUpdatedExtension(
   if (InstallVerifier::NeedsVerification(*extension, GetBrowserContext()))
     InstallVerifier::Get(GetBrowserContext())->VerifyExtension(extension->id());
 
-  FinishInstallation(extension);
+  extension_registrar_.FinishInstallation(extension);
 }
 
 bool ExtensionService::FinishDelayedInstallationIfReady(
@@ -1809,37 +1798,8 @@ bool ExtensionService::FinishDelayedInstallationIfReady(
     NOTREACHED();
   }
 
-  FinishInstallation(delayed_install.get());
+  extension_registrar_.FinishInstallation(delayed_install.get());
   return true;
-}
-
-void ExtensionService::FinishInstallation(const Extension* extension) {
-  const Extension* existing_extension =
-      registry_->GetInstalledExtension(extension->id());
-  bool is_update = false;
-  std::string old_name;
-  if (existing_extension) {
-    is_update = true;
-    old_name = existing_extension->name();
-  }
-  registry_->TriggerOnWillBeInstalled(extension, is_update, old_name);
-
-  // Unpacked extensions default to allowing file access, but if that has been
-  // overridden, don't reset the value.
-  if (Manifest::ShouldAlwaysAllowFileAccess(extension->location()) &&
-      !extension_prefs_->HasAllowFileAccessSetting(extension->id())) {
-    extension_prefs_->SetAllowFileAccess(extension->id(), true);
-  }
-
-  AddExtension(extension);
-
-  // Notify observers that need to know when an installation is complete.
-  registry_->TriggerOnInstalled(extension, is_update);
-
-  // Check extensions that may have been delayed only because this shared module
-  // was not available.
-  if (SharedModuleInfo::IsSharedModule(extension))
-    MaybeFinishDelayedInstallations();
 }
 
 const Extension* ExtensionService::GetPendingExtensionUpdate(
@@ -2299,17 +2259,8 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
 }
 
 void ExtensionService::UninstallMigratedExtensions() {
-  const ExtensionSet installed_extensions =
-      registry_->GenerateInstalledExtensionsSet();
-  for (const std::string& extension_id : kObsoleteComponentExtensionIds) {
-    auto* extension = installed_extensions.GetByID(extension_id);
-    if (extension) {
-      UninstallExtension(extension_id, UNINSTALL_REASON_COMPONENT_REMOVED,
-                         nullptr);
-      extension_prefs_->MarkObsoleteComponentExtensionAsRemoved(
-          extension->id(), extension->location());
-    }
-  }
+  extension_registrar_.UninstallMigratedExtensions(
+      kObsoleteComponentExtensionIds);
 }
 
 void ExtensionService::OnDeveloperModePrefChanged() {

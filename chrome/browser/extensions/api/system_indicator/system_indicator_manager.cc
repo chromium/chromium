@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -62,7 +63,7 @@ class ExtensionIndicatorIcon : public StatusIconObserver,
 
   raw_ptr<const Extension> extension_;
   raw_ptr<StatusTray> status_tray_;
-  raw_ptr<StatusIcon, DanglingUntriaged> status_icon_;
+  raw_ptr<StatusIcon> status_icon_;
   raw_ptr<Profile> profile_;
   IconImage manifest_icon_;
   gfx::Image dynamic_icon_;
@@ -88,7 +89,10 @@ std::unique_ptr<ExtensionIndicatorIcon> ExtensionIndicatorIcon::Create(
 ExtensionIndicatorIcon::~ExtensionIndicatorIcon() {
   if (status_icon_) {
     status_icon_->RemoveObserver(this);
-    status_tray_->RemoveStatusIcon(status_icon_);
+    std::unique_ptr<StatusIcon> removed_icon =
+        status_tray_->RemoveStatusIcon(status_icon_);
+    status_icon_ = nullptr;
+    removed_icon.reset();
   }
 }
 

@@ -326,10 +326,7 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
 
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
                        initial_bundle->InstallWithSource(
-                           profile(), IsolatedWebAppInstallSource::FromDevUi(
-                                          IwaSourceBundleDevModeWithFileOp(
-                                              initial_bundle->path(),
-                                              kDefaultBundleDevFileOp))));
+                           profile(), &IsolatedWebAppInstallSource::FromDevUi));
 
   page_state.manifest_before_default_processing = CreateDefaultManifest(
       url_info.origin().GetURL(), u"updated iwa", base::Version("2.0.0"));

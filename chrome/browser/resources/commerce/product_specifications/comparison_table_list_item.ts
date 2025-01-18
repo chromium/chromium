@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
+import {ShowSetDisposition} from '//resources/cr_components/commerce/product_specifications.mojom-webui.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -165,6 +166,12 @@ export class ComparisonTableListItemElement extends CrLitElement {
     this.$.menu.get().close();
     this.productSpecificationsProxy_.showProductSpecificationsSetForUuid(
         this.uuid, true);
+  }
+
+  protected onOpenInNewWindowClick_() {
+    this.$.menu.get().close();
+    this.productSpecificationsProxy_.showProductSpecificationsSetsForUuids(
+        [this.uuid], ShowSetDisposition.kInNewWindow);
   }
 
   protected async onRenameClick_() {

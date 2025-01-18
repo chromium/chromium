@@ -193,11 +193,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         // TODO(crbug.com/40067282): Because the show/hide animation already uses the
         // RootUiCoordinator's ScrimCoordinator, a separate instance is needed. However, the way
         // this is implemented the status bar color is not updated. This should be fixed.
-        return new ScrimCoordinator(
-                activity,
-                /* systemUiScrimDelegate= */ null,
-                coordinator,
-                activity.getColor(R.color.omnibox_focused_fading_background_color));
+        return new ScrimCoordinator(activity, /* systemUiScrimDelegate= */ null, coordinator);
     }
 
     @VisibleForTesting

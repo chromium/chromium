@@ -11,8 +11,9 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {ComparisonTableListItemElement} from 'chrome://compare/comparison_table_list_item.js';
+import {ShowSetDisposition} from 'chrome://compare/product_specifications.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -115,6 +116,24 @@ suite('ComparisonTableListItemTest', () => {
       assertEquals(TABLE_UUID, args[0]);
       assertEquals(/*inNewTab=*/ true, args[1]);
     });
+
+    test(
+        'open in new window option opens the table in a new window',
+        async () => {
+          const openInNewWindowButton =
+              menu.querySelector<HTMLButtonElement>('#openInNewWindow');
+          assertTrue(!!openInNewWindowButton);
+          openInNewWindowButton.click();
+
+          assertEquals(
+              1,
+              productSpecsProxy.getCallCount(
+                  'showProductSpecificationsSetsForUuids'));
+          const args = productSpecsProxy.getArgs(
+              'showProductSpecificationsSetsForUuids')[0];
+          assertArrayEquals([TABLE_UUID], args[0]);
+          assertEquals(ShowSetDisposition.kInNewWindow, args[1]);
+        });
 
     test(
         'rename option displays input, and submitting emits event with UUID ' +

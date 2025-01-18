@@ -51,6 +51,10 @@ export function getHtml(this: ComparisonTableListItemElement) {
               @click="${this.onOpenInNewTabClick_}">
             $i18n{menuOpenInNewTab}
           </button>
+          <button id="openInNewWindow" class="dropdown-item" role="menuitem"
+              @click="${this.onOpenInNewWindowClick_}">
+            $i18n{menuOpenInNewWindow}
+          </button>
           <hr>
           <button id="rename" class="dropdown-item" role="menuitem"
               @click="${this.onRenameClick_}">
