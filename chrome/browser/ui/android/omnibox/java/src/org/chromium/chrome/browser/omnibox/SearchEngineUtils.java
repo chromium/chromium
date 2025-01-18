@@ -111,6 +111,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     @Override
     public void destroy() {
         mTemplateUrlService.removeObserver(this);
+        mFaviconHelper.destroy();
     }
 
     @Override
