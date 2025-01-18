@@ -50,11 +50,13 @@ void GlicLauncherConfiguration::RegisterLocalStatePrefs(
           .Set(kHotkeyModifiers, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
 }
 
+// static
 bool GlicLauncherConfiguration::IsEnabled() {
   return g_browser_process->local_state()->GetBoolean(
       prefs::kGlicLauncherEnabled);
 }
 
+// static
 ui::Accelerator GlicLauncherConfiguration::GetGlobalHotkey() {
   const base::Value::Dict& hotkey_dictionary =
       g_browser_process->local_state()->GetDict(

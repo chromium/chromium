@@ -33,8 +33,9 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
     : configuration_(std::make_unique<GlicLauncherConfiguration>(this)),
       controller_(std::make_unique<GlicController>()),
       status_tray_(status_tray),
-      enabled_pref_(configuration_->IsEnabled()),
-      expected_registered_hotkey_(configuration_->GetGlobalHotkey()) {
+      enabled_pref_(GlicLauncherConfiguration::IsEnabled()),
+      expected_registered_hotkey_(
+          GlicLauncherConfiguration::GetGlobalHotkey()) {
   UpdateState();
   g_browser_process->profile_manager()->AddObserver(this);
 }
