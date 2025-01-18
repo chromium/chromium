@@ -18,6 +18,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -1167,7 +1168,7 @@ void CompositorFrameSinkSupport::UpdateDisplayRootReference(
 }
 
 void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
-  int64_t trace_id = ComputeTraceId();
+  int64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(trace_id), [trace_id](perfetto::EventContext ctx) {
@@ -1506,15 +1507,6 @@ const char* CompositorFrameSinkSupport::GetSubmitResultAsString(
       return "Surface belongs to another client";
   }
   NOTREACHED();
-}
-
-int64_t CompositorFrameSinkSupport::ComputeTraceId() {
-  // This is losing some info, but should normally be sufficient to avoid
-  // collisions.
-  ++trace_sequence_;
-  uint64_t client = (frame_sink_id_.client_id() & 0xffff);
-  uint64_t sink = (frame_sink_id_.sink_id() & 0xffff);
-  return (client << 48) | (sink << 32) | trace_sequence_;
 }
 
 bool CompositorFrameSinkSupport::ShouldSendBeginFrame(

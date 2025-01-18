@@ -316,8 +316,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // BeginFrame and FrameAck are done.
   void HandleCallback();
 
-  int64_t ComputeTraceId();
-
   void MaybeEvictSurfaces();
   void EvictLastActiveSurface();
   bool ShouldSendBeginFrame(base::TimeTicks timestamp,
