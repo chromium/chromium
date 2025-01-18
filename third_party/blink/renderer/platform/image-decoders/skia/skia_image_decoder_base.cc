@@ -101,6 +101,7 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
             SetEmbeddedColorProfile(std::make_unique<ColorProfile>(*profile));
           }
         }
+        orientation_ = static_cast<ImageOrientationEnum>(codec_->getOrigin());
         return;
       }
 
