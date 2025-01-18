@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
@@ -121,7 +122,10 @@ FakeWebContentsManager::FakePageState& FakeInstallPageState(
 base::expected<IsolatedWebAppUrlInfo, std::string> Install(
     Profile* profile,
     const web_package::SignedWebBundleId& web_bundle_id,
-    const IsolatedWebAppInstallSource& install_source) {
+    const IsolatedWebAppInstallSource& install_source,
+    const ManifestBuilder& manifest_builder,
+    bool fake_install_page,
+    bool trust_key) {
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
   if (FakeWebAppProvider* fake_provider = GetFakeWebAppProvider(profile)) {
@@ -137,10 +141,20 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
     auto& web_contents_manager = static_cast<FakeWebContentsManager&>(
         fake_provider->web_contents_manager());
     if (!web_contents_manager.HasPageState(install_url)) {
-      LOG(WARNING) << "The install page for this IWA has not been faked. "
-                   << "You likely need to call FakeInstallPageState before "
-                   << "Install.";
+      if (fake_install_page) {
+        FakeInstallPageState(
+            profile, url_info,
+            manifest_builder.ToBlinkManifest(url_info.origin()));
+      } else {
+        LOG(WARNING) << "The install page for this IWA has not been faked. "
+                     << "You likely need to remove DoNotFakeInstallPage or "
+                     << "manually call FakeInstallPageState before Install.";
+      }
     }
+  }
+
+  if (trust_key) {
+    AddTrustedWebBundleIdForTesting(web_bundle_id);
   }
 
   base::test::TestFuture<InstallResult> future;
@@ -169,161 +183,6 @@ web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
 }
 
 }  // namespace
-
-BundledIsolatedWebApp::BundledIsolatedWebApp(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const std::vector<uint8_t> serialized_bundle,
-    const base::FilePath path,
-    ManifestBuilder manifest_builder)
-    : web_bundle_id_(web_bundle_id),
-      path_(std::move(path)),
-      manifest_builder_(manifest_builder) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  CHECK(base::WriteFile(path_, std::move(serialized_bundle)));
-}
-
-BundledIsolatedWebApp::~BundledIsolatedWebApp() = default;
-
-void BundledIsolatedWebApp::TrustSigningKey() {
-  AddTrustedWebBundleIdForTesting(web_bundle_id_);
-}
-
-std::string BundledIsolatedWebApp::GetBundleData() const {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::string content;
-  CHECK(base::ReadFileToString(path_, &content));
-  return content;
-}
-
-IsolatedWebAppUrlInfo BundledIsolatedWebApp::InstallChecked(Profile* profile) {
-  auto result = Install(profile);
-  CHECK(result.has_value()) << result.error();
-  return *result;
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
-  TrustSigningKey();
-  return Install(profile);
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::Install(Profile* profile) {
-  return ::web_app::Install(
-      profile, web_bundle_id_,
-      IsolatedWebAppInstallSource::FromGraphicalInstaller(
-          web_app::IwaSourceBundleProdModeWithFileOp(
-              path(), web_app::IwaSourceBundleProdFileOp::kCopy)));
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::InstallWithSource(Profile* profile,
-                                         IsolatedWebAppInstallSource source) {
-  return ::web_app::Install(profile, web_bundle_id_, source);
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::InstallWithSource(
-    Profile* profile,
-    base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceDevModeWithFileOp)>
-        install_source_provider,
-    IwaSourceBundleDevFileOp file_op) {
-  return ::web_app::Install(
-      profile, web_bundle_id_,
-      install_source_provider(web_app::IwaSourceDevModeWithFileOp(
-          web_app::IwaSourceBundleDevModeWithFileOp(path(), file_op))));
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::InstallWithSource(
-    Profile* profile,
-    base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceProdModeWithFileOp)>
-        install_source_provider,
-    IwaSourceBundleProdFileOp file_op) {
-  return ::web_app::Install(
-      profile, web_bundle_id_,
-      install_source_provider(web_app::IwaSourceProdModeWithFileOp(
-          web_app::IwaSourceBundleProdModeWithFileOp(path(), file_op))));
-}
-
-FakeWebContentsManager::FakePageState&
-BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
-  auto url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
-  return ::web_app::FakeInstallPageState(
-      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
-}
-
-// static
-std::unique_ptr<ScopedBundledIsolatedWebApp>
-ScopedBundledIsolatedWebApp::Create(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const std::vector<uint8_t> serialized_bundle,
-    ManifestBuilder manifest_builder) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempFile bundle_file;
-  CHECK(bundle_file.Create());
-
-  return base::WrapUnique(new ScopedBundledIsolatedWebApp(
-      web_bundle_id, std::move(serialized_bundle), std::move(bundle_file),
-      std::move(manifest_builder)));
-}
-
-ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const std::vector<uint8_t> serialized_bundle,
-    base::ScopedTempFile bundle_file,
-    ManifestBuilder manifest_builder)
-    : BundledIsolatedWebApp(web_bundle_id,
-                            std::move(serialized_bundle),
-                            bundle_file.path(),
-                            std::move(manifest_builder)),
-      bundle_file_(std::move(bundle_file)) {}
-
-ScopedBundledIsolatedWebApp::~ScopedBundledIsolatedWebApp() {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  bundle_file_.Reset();
-}
-
-ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
-    std::unique_ptr<net::EmbeddedTestServer> proxy_server,
-    std::optional<ManifestBuilder> manifest_builder)
-    : proxy_server_(std::move(proxy_server)),
-      manifest_builder_(manifest_builder) {}
-
-ScopedProxyIsolatedWebApp::~ScopedProxyIsolatedWebApp() = default;
-
-IsolatedWebAppUrlInfo ScopedProxyIsolatedWebApp::InstallChecked(
-    Profile* profile) {
-  auto result = Install(profile);
-  CHECK(result.has_value()) << result.error();
-  return *result;
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-ScopedProxyIsolatedWebApp::Install(Profile* profile) {
-  return Install(profile,
-                 web_package::SignedWebBundleId::CreateRandomForProxyMode());
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-ScopedProxyIsolatedWebApp::Install(
-    Profile* profile,
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  return ::web_app::Install(profile, web_bundle_id,
-                            IsolatedWebAppInstallSource::FromDevUi(
-                                IwaSourceProxy(proxy_server_->GetOrigin())));
-}
-
-FakeWebContentsManager::FakePageState&
-ScopedProxyIsolatedWebApp::FakeInstallPageState(
-    Profile* profile,
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  auto url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
-  return ::web_app::FakeInstallPageState(
-      profile, url_info, manifest_builder_->ToBlinkManifest(url_info.origin()));
-}
 
 ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
     bool wildcard,
@@ -875,6 +734,128 @@ IsolatedWebAppBuilder::HandleRequest(
     response->set_code(net::HTTP_NOT_FOUND);
   }
   return response;
+}
+
+BundledIsolatedWebApp::BundledIsolatedWebApp(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<uint8_t> serialized_bundle,
+    const base::FilePath path,
+    ManifestBuilder manifest_builder)
+    : web_bundle_id_(web_bundle_id),
+      path_(std::move(path)),
+      manifest_builder_(manifest_builder) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  CHECK(base::WriteFile(path_, std::move(serialized_bundle)));
+}
+
+BundledIsolatedWebApp::~BundledIsolatedWebApp() = default;
+
+std::string BundledIsolatedWebApp::GetBundleData() const {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string content;
+  CHECK(base::ReadFileToString(path_, &content));
+  return content;
+}
+
+void BundledIsolatedWebApp::TrustSigningKey() {
+  AddTrustedWebBundleIdForTesting(web_bundle_id_);
+}
+
+FakeWebContentsManager::FakePageState&
+BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
+  return ::web_app::FakeInstallPageState(
+      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
+  TrustSigningKey();
+  return Install(profile);
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::InstallWithSource(Profile* profile,
+                                         IsolatedWebAppInstallSource source,
+                                         bool fake_install_page,
+                                         bool trust_key) {
+  return ::web_app::Install(profile, web_bundle_id_, source, manifest_builder_,
+                            fake_install_page, trust_key);
+}
+
+// static
+std::unique_ptr<ScopedBundledIsolatedWebApp>
+ScopedBundledIsolatedWebApp::Create(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<uint8_t> serialized_bundle,
+    ManifestBuilder manifest_builder) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempFile bundle_file;
+  CHECK(bundle_file.Create());
+
+  return base::WrapUnique(new ScopedBundledIsolatedWebApp(
+      web_bundle_id, std::move(serialized_bundle), std::move(bundle_file),
+      std::move(manifest_builder)));
+}
+
+ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<uint8_t> serialized_bundle,
+    base::ScopedTempFile bundle_file,
+    ManifestBuilder manifest_builder)
+    : BundledIsolatedWebApp(web_bundle_id,
+                            std::move(serialized_bundle),
+                            bundle_file.path(),
+                            std::move(manifest_builder)),
+      bundle_file_(std::move(bundle_file)) {}
+
+ScopedBundledIsolatedWebApp::~ScopedBundledIsolatedWebApp() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  bundle_file_.Reset();
+}
+
+ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
+    std::unique_ptr<net::EmbeddedTestServer> proxy_server,
+    const ManifestBuilder& manifest_builder)
+    : proxy_server_(std::move(proxy_server)),
+      manifest_builder_(manifest_builder) {}
+
+ScopedProxyIsolatedWebApp::~ScopedProxyIsolatedWebApp() = default;
+
+IsolatedWebAppUrlInfo ScopedProxyIsolatedWebApp::InstallChecked(
+    Profile* profile) {
+  auto result = Install(profile);
+  CHECK(result.has_value()) << result.error();
+  return *result;
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+ScopedProxyIsolatedWebApp::Install(Profile* profile) {
+  return Install(profile,
+                 web_package::SignedWebBundleId::CreateRandomForProxyMode());
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+ScopedProxyIsolatedWebApp::Install(
+    Profile* profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  return ::web_app::Install(profile, web_bundle_id,
+                            IsolatedWebAppInstallSource::FromDevUi(
+                                IwaSourceProxy(proxy_server_->GetOrigin())),
+                            manifest_builder_,
+                            /*fake_install_page=*/true,
+                            /*trust_key=*/false);
+}
+
+FakeWebContentsManager::FakePageState&
+ScopedProxyIsolatedWebApp::FakeInstallPageState(
+    Profile* profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
+  return ::web_app::FakeInstallPageState(
+      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
 }
 
 }  // namespace web_app
