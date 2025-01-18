@@ -501,7 +501,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   base::flat_set<PendingUpdateVersion> versions_to_update_;
 
   // The type of client.
-  std::optional<ServiceWorkerClientInfo> client_info_;
+  ServiceWorkerClientInfo client_info_;
 
   // The URL used for service worker scope matching. It is empty except in the
   // case of a service worker client with a blob, about:blank or about:srcdoc
