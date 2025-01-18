@@ -190,11 +190,11 @@ all other OS specific variables will be false.
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <message name="IDS_IOS_SEARCH_WIDGET_TITLE" desc="Title of the widget.">
-        Chrome - Quick Actions
-      </message>
       <message name="IDS_IOS_SEARCH_WIDGET_LABEL" desc="Label of the widget. This is a message to indicate the deprecation of the extension.">
                 To keep using this widget, at the bottom of the screen, tap Edit, then tap +. Go to Chrome and select Quick Actions.
+      </message>
+      <message name="IDS_IOS_SEARCH_WIDGET_TITLE" desc="Title of the widget.">
+        Chrome - Quick Actions
       </message>
     </messages>
   </release>
