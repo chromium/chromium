@@ -639,6 +639,16 @@ public class DataSharingTabManagerUnitTest {
         verify(mMessagingBackendService).getActivityLog(any());
     }
 
+    @Test
+    public void testPromoteTabGroup() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
+
+        mDataSharingTabManager.promoteTabGroup(COLLABORATION_ID1);
+        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_ID);
+    }
+
     private void setupActivityLogItemsOnTheBackend() {
         List<ActivityLogItem> logItems = new ArrayList<>();
 

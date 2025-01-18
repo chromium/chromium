@@ -577,6 +577,22 @@ public class DataSharingTabManager {
     }
 
     /**
+     * Open and focus on the tab group.
+     *
+     * @param collaborationId The collaboration id of the shared tab group.
+     */
+    public void promoteTabGroup(String collaborationId) {
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mProfile);
+        SavedTabGroup existingGroup =
+                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
+                        collaborationId, tabGroupSyncService);
+        assert existingGroup != null;
+
+        onSavedTabGroupAvailable(existingGroup);
+    }
+
+    /**
      * Called when a saved tab group is available.
      *
      * @param group The SavedTabGroup that became available.

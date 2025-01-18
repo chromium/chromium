@@ -180,4 +180,16 @@ public class CollaborationControllerDelegateImplUnitTest {
         // Exit callback should be ran.
         verify(mCollaborationControllerDelegateImplNativeMock).runExitCallback(eq(exitCallback));
     }
+
+    @Test
+    public void testPromoteTabGroup() {
+        createDelegate(FlowType.JOIN);
+        long resultCallback = 1;
+        String collaborationId = "collaboration";
+
+        mCollaborationControllerDelegateImpl.promoteTabGroup(collaborationId, resultCallback);
+        verify(mDataSharingTabManager).promoteTabGroup(collaborationId);
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
+    }
 }
