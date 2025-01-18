@@ -169,7 +169,6 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
 template <typename Callback>
 NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
                                        const Callback& callback) {
-  const ComputedStyle& style = params.node.Style();
   const LayoutBox& box = *params.node.GetLayoutBox();
   if (box.IsFlexibleBox()) {
     CreateAlgorithmAndRun<FlexLayoutAlgorithm>(params, callback);
@@ -198,7 +197,7 @@ NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
   // we would have done block fragmentation with the legacy engine.
   // Otherwise writing data back into the legacy tree will fail. Look for
   // the flow thread.
-  else if (GetFlowThread(box) && style.SpecifiesColumns()) {
+  else if (GetFlowThread(box) && params.node.Style().SpecifiesColumns()) {
     CreateAlgorithmAndRun<ColumnLayoutAlgorithm>(params, callback);
   } else if (!box.Parent() && params.node.IsPaginatedRoot()) [[unlikely]] {
     CreateAlgorithmAndRun<PaginatedRootLayoutAlgorithm>(params, callback);
