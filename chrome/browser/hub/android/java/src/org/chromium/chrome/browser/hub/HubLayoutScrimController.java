@@ -76,7 +76,9 @@ public class HubLayoutScrimController implements ScrimController {
     }
 
     private void onIncognitoChange(Boolean ignored) {
-        mPropertyModel.set(ScrimProperties.BACKGROUND_COLOR, calculateScrimColor());
+        if (mPropertyModel == null) return;
+
+        mScrimCoordinator.setScrimColor(calculateScrimColor(), mPropertyModel);
     }
 
     private @ColorInt int calculateScrimColor() {

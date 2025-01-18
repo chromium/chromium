@@ -18,10 +18,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MathUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyObservable;
-import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
+
+import java.util.Objects;
 
 /** This class holds the animation and related business logic for the scrim. */
 class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
@@ -30,8 +29,6 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     /** A means of changing the system UI color. */
     private final @Nullable ScrimCoordinator.SystemUiScrimDelegate mSystemUiScrimDelegate;
-
-    private final PropertyObserver<PropertyKey> mOnModelChange = this::onModelChange;
 
     private final @ColorInt int mDefaultScrimColor;
 
@@ -89,9 +86,6 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         assert model.get(ScrimProperties.ANCHOR_VIEW) != null
                 : "The anchor for the scrim cannot be null.";
 
-        if (mModel != null && mSystemUiScrimDelegate != null) {
-            mModel.removeObserver(mOnModelChange);
-        }
         mModel = model;
         mModel.set(ScrimProperties.TOUCH_EVENT_DELEGATE, this);
         mIsHidingOrHidden = false;
@@ -114,8 +108,6 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
                 @ColorInt int currentScrimColor = model.get(ScrimProperties.BACKGROUND_COLOR);
                 mSystemUiScrimDelegate.setScrimColor(currentScrimColor);
             }
-            // Watch for model changes in case the client changes color post-show.
-            mModel.addObserver(mOnModelChange);
         }
 
         // Make sure alpha is reset to 0 since the model may be reused.
@@ -148,15 +140,6 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         mIsNewEventFilter = model.get(ScrimProperties.GESTURE_DETECTOR) != null;
         mOverlayFadeInAnimator.setFloatValues(mModel.get(ScrimProperties.ALPHA), 1f);
         runFadeAnimation(mOverlayFadeInAnimator);
-    }
-
-    private void onModelChange(
-            PropertyObservable<PropertyKey> source, @Nullable PropertyKey propertyKey) {
-        assert mSystemUiScrimDelegate != null;
-        if (propertyKey == ScrimProperties.BACKGROUND_COLOR) {
-            @ColorInt int color = mModel.get(ScrimProperties.BACKGROUND_COLOR);
-            mSystemUiScrimDelegate.setScrimColor(color);
-        }
     }
 
     private int getAnimationDuration(int animDurationMs) {
@@ -251,16 +234,20 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         mCurrentVisibility = isVisible;
 
         if (mIsHidingOrHidden && !isVisible && mModel != null) {
-            if (mSystemUiScrimDelegate != null) {
-                mModel.removeObserver(mOnModelChange);
-            }
             mModel = null;
             mScrimHiddenRunnable.run();
         }
     }
 
+    /*package */ void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
+        if (!Objects.equals(mModel, propertyModel)) return;
+        mModel.set(ScrimProperties.BACKGROUND_COLOR, scrimColor);
+        mSystemUiScrimDelegate.setScrimColor(scrimColor);
+    }
+
     /**
      * Runs an animation for this view. If one is running, the existing one will be canceled.
+     *
      * @param fadeAnimation The animation to run.
      */
     private void runFadeAnimation(Animator fadeAnimation) {

@@ -206,10 +206,16 @@ public class ScrimCoordinator {
 
     /**
      * Manually set the alpha for the scrim.
+     *
      * @param alpha The alpha in range [0, 1].
      */
     public void setAlpha(float alpha) {
+        // TODO(skym): This method should take a PropertyModel as well.
         mMediator.setAlpha(alpha);
+    }
+
+    public void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
+        mMediator.setScrimColor(scrimColor, propertyModel);
     }
 
     /** Clean up this coordinator. */
