@@ -468,6 +468,10 @@ public class DataSharingTabManagerUnitTest {
                         mShareParamsCaptor.capture(),
                         any(),
                         eq(ShareDelegate.ShareOrigin.TAB_GROUP));
+        ShareParams shareParams = mShareParamsCaptor.getValue();
+        assertEquals(shareParams.getText(), "Shared tab group link expires in 48 hours\n");
+        assertEquals(shareParams.getUrl(), TEST_URL.getSpec());
+        assertEquals(shareParams.getTitle(), "Collaborate on tab group");
     }
 
     @Test
@@ -504,6 +508,11 @@ public class DataSharingTabManagerUnitTest {
 
         DataSharingCreateUiConfig uiConfig = uiConfigCaptor.getValue();
 
+        mSavedTabGroup.collaborationId = COLLABORATION_ID1;
+        mSavedTabGroup.title = "test title";
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
+        doReturn(new String[] {SYNC_GROUP_ID1}).when(mTabGroupSyncService).getAllGroupIds();
+
         assertNotNull(uiConfig.getCreateCallback());
         uiConfig.getCreateCallback()
                 .onGroupCreatedWithWait(
@@ -520,7 +529,15 @@ public class DataSharingTabManagerUnitTest {
 
         // Verifying DataSharingService createGroup API is called.
         verify(mTabGroupSyncService).makeTabGroupShared(LOCAL_ID, COLLABORATION_ID1);
-        verify(mShareDelegate).share(any(), any(), eq(ShareDelegate.ShareOrigin.TAB_GROUP));
+        verify(mShareDelegate)
+                .share(
+                        mShareParamsCaptor.capture(),
+                        any(),
+                        eq(ShareDelegate.ShareOrigin.TAB_GROUP));
+        ShareParams shareParams = mShareParamsCaptor.getValue();
+        assertEquals(shareParams.getText(), "test title link expires in 48 hours\n");
+        assertEquals(shareParams.getUrl(), TEST_URL.getSpec());
+        assertEquals(shareParams.getTitle(), "Collaborate on tab group");
     }
 
     @Test

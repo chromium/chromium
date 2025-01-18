@@ -100,6 +100,7 @@ if (is_android) {
       "//components/data_sharing/public/protocol:proto_java",
       "//components/embedder_support/android:util_java",
       "//components/saved_tab_groups/public:java",
+      "//components/strings:components_strings_grd",
       "//content/public/android:content_full_java",
       "//third_party/android_sdk:android_window_extensions_java",
       "//ui/android:ui_java",
