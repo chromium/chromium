@@ -1711,10 +1711,6 @@ public class StripLayoutHelper
         mTouchableRect.set(touchableRect);
     }
 
-    private boolean isTabDraggingInProgress() {
-        return mTabDragSource != null && mTabDragSource.isTabDraggingInProgress();
-    }
-
     /**
      * Checks whether a tab at the edge of the strip is partially hidden, in which case the close
      * button will be hidden to avoid accidental clicks.
@@ -1833,12 +1829,6 @@ public class StripLayoutHelper
         }
 
         mUpdateHost.requestUpdate();
-    }
-
-    void dragForTabDrop(long time, float x, float y, float deltaX, boolean draggedTabIncognito) {
-        if (mIncognito == draggedTabIncognito) {
-            drag(time, x, y, deltaX);
-        }
     }
 
     private void onStripScrollStart() {
@@ -3735,43 +3725,6 @@ public class StripLayoutHelper
         return mStripTabs.length;
     }
 
-    int getTabDropId() {
-        if (!mReorderDelegate.getReorderingForTabDrop()) {
-            return Tab.INVALID_TAB_ID;
-        }
-        StripLayoutTab interactingTab = mReorderDelegate.getInteractingTab();
-        if (interactingTab == null) {
-            return Tab.INVALID_TAB_ID;
-        }
-
-        Tab tab = getTabById(interactingTab.getTabId());
-        return mTabGroupModelFilter.isTabInTabGroup(tab) ? tab.getId() : Tab.INVALID_TAB_ID;
-    }
-
-    void mergeToGroupForTabDropIfNeeded(int destTabId, int draggedTabId, int index) {
-        if (destTabId == Tab.INVALID_TAB_ID) return;
-
-        Tab destTab = getTabById(destTabId);
-        StripLayoutGroupTitle groupTitle = findGroupTitle(destTab.getRootId());
-
-        mTabGroupModelFilter.mergeTabsToGroup(draggedTabId, destTabId, true);
-        mModel.moveTab(draggedTabId, index);
-
-        // Animate bottom indicator. Done after merging the dropped tab into a group, so that the
-        // calculated bottom indicator width will be correct.
-        if (groupTitle != null) {
-            List<Animator> animators = new ArrayList<>();
-            mReorderDelegate.updateBottomIndicatorWidthForTabReorder(
-                    mUpdateHost.getAnimationHandler(),
-                    mTabGroupModelFilter,
-                    groupTitle,
-                    /* isMovingOutOfGroup= */ false,
-                    /* throughGroupTitle= */ false,
-                    animators);
-            startAnimations(animators);
-        }
-    }
-
     StripLayoutTab getTabAtPosition(float x) {
         return (StripLayoutTab) getViewAtPositionX(x, false);
     }
@@ -3796,12 +3749,6 @@ public class StripLayoutHelper
         updateStrip();
         float x = tab.getDrawX() + (tab.getWidth() / 2);
         startReorderMode(x, 0, getTabAtPosition(x), ReorderType.DRAG_WITHIN_STRIP);
-    }
-
-    void stopReorderMode() {
-        if (mReorderDelegate.getInReorderMode()) {
-            mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
-        }
     }
 
     private void setCompositorButtonsVisible(boolean visible) {
@@ -4182,7 +4129,7 @@ public class StripLayoutHelper
      * @return The currently interacting tab.
      */
     StripLayoutTab getInteractingTabForTesting() {
-        return mReorderDelegate.getInteractingTab();
+        return mReorderDelegate.getInteractingTabForTesting(); // IN-TEST
     }
 
     /**
@@ -4270,21 +4217,11 @@ public class StripLayoutHelper
         stripTab.setAccessibilityDescription(builder.toString(), title, resId);
     }
 
-    void setLastOffsetXForTesting(float lastOffsetX) {
-        mReorderDelegate.setDragLastOffsetXForTesting(lastOffsetX); // IN-TEST
-    }
+    // ============================================================================================
+    // Drag and Drop View Delegate.
+    // ============================================================================================
 
-    float getLastOffsetXForTesting() {
-        return mReorderDelegate.getDragLastOffsetXForTesting(); // IN-TEST
-    }
-
-    void startDragAndDropTabForTesting(
-            @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
-        startReorderMode(
-                dragStartPointF.x, dragStartPointF.y, clickedTab, ReorderType.START_DRAG_DROP);
-    }
-
-    void prepareForTabDrop(
+    void handleDragEnter(
             float currX, float lastX, boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
             // Tab drag started reorder - update reorder to handle drag onto strip.
@@ -4314,7 +4251,13 @@ public class StripLayoutHelper
         }
     }
 
-    void clearForTabDrop(boolean isSourceStrip, boolean draggedTabIncognito) {
+    void handleDragWithin(long time, float x, float y, float deltaX, boolean draggedTabIncognito) {
+        if (mIncognito == draggedTabIncognito) {
+            drag(time, x, y, deltaX);
+        }
+    }
+
+    void handleDragExit(boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
             // Tab drag started reorder - update reorder to handle drag out of strip.
             // endX is inaccurate but unused.
@@ -4330,7 +4273,21 @@ public class StripLayoutHelper
         }
     }
 
-    void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
+    void maybeMergeToGroupOnDrop(int draggedTabId, int index) {
+        mReorderDelegate.handleTabDropForExternalView(mStripGroupTitles, draggedTabId, index);
+    }
+
+    void stopReorderMode() {
+        if (mReorderDelegate.getInReorderMode()) {
+            mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
+        }
+    }
+
+    private boolean isTabDraggingInProgress() {
+        return mTabDragSource != null && mTabDragSource.isTabDraggingInProgress();
+    }
+
+    private void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
         if (!TabUiFeatureUtilities.isTabDragAsWindowEnabled()) return;
         if (mWindowAndroid.getActivity().get() == null) return;
 
@@ -4354,5 +4311,19 @@ public class StripLayoutHelper
         intent.putExtra("MOVE_WINDOW_START_X", startXInScreen);
         intent.putExtra("MOVE_WINDOW_START_Y", startYInScreen);
         mWindowAndroid.sendBroadcast(intent);
+    }
+
+    void startDragAndDropTabForTesting(
+            @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
+        startReorderMode(
+                dragStartPointF.x, dragStartPointF.y, clickedTab, ReorderType.START_DRAG_DROP);
+    }
+
+    void setLastOffsetXForTesting(float lastOffsetX) {
+        mReorderDelegate.setDragLastOffsetXForTesting(lastOffsetX); // IN-TEST
+    }
+
+    float getLastOffsetXForTesting() {
+        return mReorderDelegate.getDragLastOffsetXForTesting(); // IN-TEST
     }
 }

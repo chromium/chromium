@@ -2165,7 +2165,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start reorder for tab drop between the 2nd and 3rd tab.
-        mStripLayoutHelper.prepareForTabDrop(/* currX= */ 300.f, /* lastX= */ 0f, false, false);
+        mStripLayoutHelper.handleDragEnter(/* currX= */ 300.f, /* lastX= */ 0f, false, false);
 
         // Test tab outline should show for the foregrounded tab in destination window during tab
         // drop.
@@ -2746,7 +2746,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Start reorder for tab drop between the 1st and 2nd tab.
-        mStripLayoutHelper.prepareForTabDrop(/* currX= */ 150.f, /* lastX= */ 0f, false, false);
+        mStripLayoutHelper.handleDragEnter(/* currX= */ 150.f, /* lastX= */ 0f, false, false);
 
         float expectedEndWidth =
                 expectedStartWidth
@@ -2768,7 +2768,7 @@ public class StripLayoutHelperTest {
         ReorderDelegate reorderDelegateSpy = spy(mStripLayoutHelper.getReorderDelegateForTesting());
 
         // Start and stop reorder mode for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(/* currX= */ 10.f, /* lastX= */ 0f, false, false);
+        mStripLayoutHelper.handleDragEnter(/* currX= */ 10.f, /* lastX= */ 0f, false, false);
         mStripLayoutHelper.stopReorderMode();
 
         // Verify: folio reattachment animation does not run for tab drop.
@@ -3610,8 +3610,8 @@ public class StripLayoutHelperTest {
         // Start drag tab out of group or drag off strip.
         if (draggingTabOffStrip) {
             // Drag onto strip before dragged off.
-            mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
-            mStripLayoutHelper.clearForTabDrop(true, false);
+            mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
+            mStripLayoutHelper.handleDragExit(true, false);
         } else {
             float dragDistance =
                     ((tabs[0].getWidth() - TAB_OVERLAP_WIDTH_DP) / 2)
@@ -4374,7 +4374,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getInReorderModeForTesting());
         assertTrue(
                 "Dragged Tab should match selected tab during drag action.",
-                mStripLayoutHelper.getReorderDelegateForTesting().getInteractingTab()
+                mStripLayoutHelper.getReorderDelegateForTesting().getInteractingTabForTesting()
                         == theClickedTab);
         mStripLayoutHelper.stopReorderMode();
         assertFalse(
@@ -4432,7 +4432,7 @@ public class StripLayoutHelperTest {
         // Drag tab back onto strip.
         float expectedOffsetX = 123.45f;
         mStripLayoutHelper.setLastOffsetXForTesting(expectedOffsetX);
-        mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
+        mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
 
         // Verify we continue reorder mode with the correct x-offset.
         assertFalse(
@@ -4443,6 +4443,8 @@ public class StripLayoutHelperTest {
                 expectedOffsetX,
                 mStripLayoutHelper.getInteractingTabForTesting().getOffsetX(),
                 EPSILON);
+
+        // Verify we continue reorder mode.
         assertTrue(
                 "Should re-enter reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
     }
@@ -4460,10 +4462,10 @@ public class StripLayoutHelperTest {
 
         // Drag tab out of strip.
         float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
+        mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
         StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
         draggedTab.setOffsetX(expectedOffsetX);
-        mStripLayoutHelper.clearForTabDrop(true, false);
+        mStripLayoutHelper.handleDragExit(true, false);
 
         // Finish animations.
         assertNotNull(
@@ -4499,8 +4501,8 @@ public class StripLayoutHelperTest {
 
         // Drag tab out of strip.
         mStripLayoutHelper.setTabAtPositionForTesting(draggedTab);
-        mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
-        mStripLayoutHelper.clearForTabDrop(true, false);
+        mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
+        mStripLayoutHelper.handleDragExit(true, false);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify 3rd, 4th and 5th tab's start divider is visible.
@@ -4573,7 +4575,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Prepare for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(0.f, 0.f, false, false);
+        mStripLayoutHelper.handleDragEnter(0.f, 0.f, false, false);
         // Start gap will be tabWidth(265) / 2 = 132.5
         mStripLayoutHelper.setScrollOffsetForTesting(-132);
 
@@ -4611,7 +4613,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testPrepareForTabDrop() {
+    public void testHandleDragEnter() {
         // Setup with 5 tabs.
         initializeTest(false, false, 1, 5);
         mStripLayoutHelper.onSizeChanged(
@@ -4626,7 +4628,7 @@ public class StripLayoutHelperTest {
         groupTabs(1, 3);
 
         // Prepare for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(0.f, 0.f, false, false);
+        mStripLayoutHelper.handleDragEnter(0.f, 0.f, false, false);
 
         // Verify.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -4662,7 +4664,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Prepare for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(0.f, 0.f, false, false);
+        mStripLayoutHelper.handleDragEnter(0.f, 0.f, false, false);
         mStripLayoutHelper.finishAnimations();
         // Verify initial trailing margins before hover.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -4705,7 +4707,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Prepare for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(0.f, 0.f, false, false);
+        mStripLayoutHelper.handleDragEnter(0.f, 0.f, false, false);
         // Start gap will be tabWidth(265) / 2 = 132.5
         mStripLayoutHelper.setScrollOffsetForTesting(-132);
         mStripLayoutHelper.finishAnimations();
@@ -4747,14 +4749,14 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Prepare and verify no interaction.
-        mStripLayoutHelper.prepareForTabDrop(0.f, 0.f, false, !isIncognito);
+        mStripLayoutHelper.handleDragEnter(0.f, 0.f, false, !isIncognito);
         assertFalse(
                 "Shouldn't start reorder when dragged tab Incognito state is different.",
                 mStripLayoutHelper.getInReorderModeForTesting());
 
         // Drag and verify no interaction.
         float expectedOffset = mStripLayoutHelper.getScrollOffset();
-        mStripLayoutHelper.dragForTabDrop(TIMESTAMP, PADDING_LEFT, 0.f, 50.f, !isIncognito);
+        mStripLayoutHelper.handleDragWithin(TIMESTAMP, PADDING_LEFT, 0.f, 50.f, !isIncognito);
         assertEquals(
                 "Shouldn't have scrolled when dragged tab Incognito is different.",
                 expectedOffset,
@@ -4763,7 +4765,7 @@ public class StripLayoutHelperTest {
 
         // Set reorder mode for testing, then clear for tab drop and verify no interaction.
         mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
-        mStripLayoutHelper.clearForTabDrop(false, !isIncognito);
+        mStripLayoutHelper.handleDragExit(false, !isIncognito);
         assertTrue(
                 "Shouldn't stop reorder when dragged tab Incognito state is different.",
                 mStripLayoutHelper.getInReorderModeForTesting());

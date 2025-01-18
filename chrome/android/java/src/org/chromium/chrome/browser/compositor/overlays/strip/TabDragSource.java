@@ -363,7 +363,7 @@ public class TabDragSource implements View.OnDragListener {
         }
         mStripLayoutHelperSupplier
                 .get()
-                .prepareForTabDrop(xPx * mPxToDp, mLastXDp, isDragSource, isDraggedTabIncognito());
+                .handleDragEnter(xPx * mPxToDp, mLastXDp, isDragSource, isDraggedTabIncognito());
         return true;
     }
 
@@ -372,7 +372,7 @@ public class TabDragSource implements View.OnDragListener {
         float yDp = yPx * mPxToDp;
         mStripLayoutHelperSupplier
                 .get()
-                .dragForTabDrop(
+                .handleDragWithin(
                         LayoutManagerImpl.time(),
                         xDp,
                         yDp,
@@ -383,9 +383,7 @@ public class TabDragSource implements View.OnDragListener {
 
     private boolean onDrop(DragEvent dropEvent) {
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
-        int destinationTabId = helper.getTabDropId();
         helper.stopReorderMode();
-
         if (isDragSource()) {
             DragDropMetricUtils.recordTabReorderStripWithDragDrop(mUmaState.mDragEverLeftStrip);
             return true;
@@ -413,10 +411,10 @@ public class TabDragSource implements View.OnDragListener {
                     mTabModelSelector.getModel(tabBeingDragged.isIncognito()).getCount());
             showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
         } else {
+            // Reparent tab at drop index and merge to group on destination if needed.
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
             mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
-            helper.mergeToGroupForTabDropIfNeeded(
-                    destinationTabId, tabBeingDragged.getId(), tabIndex);
+            helper.maybeMergeToGroupOnDrop(tabBeingDragged.getId(), tabIndex);
         }
         DragDropMetricUtils.recordTabDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
@@ -524,7 +522,7 @@ public class TabDragSource implements View.OnDragListener {
                 mShadowView.expand();
             }
         }
-        mStripLayoutHelperSupplier.get().clearForTabDrop(isDragSource(), isDraggedTabIncognito());
+        mStripLayoutHelperSupplier.get().handleDragExit(isDragSource(), isDraggedTabIncognito());
         return true;
     }
 
