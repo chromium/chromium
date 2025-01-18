@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.ui.UiUtils;
@@ -23,9 +22,6 @@ public class ScrimView extends View {
     /** The view that the scrim should exist in. */
     private final ViewGroup mParent;
 
-    /** The default background color. */
-    private final int mDefaultBackgroundColor;
-
     /** A means of passing all touch events to an external handler. */
     private ScrimCoordinator.TouchEventDelegate mEventDelegate;
 
@@ -33,16 +29,14 @@ public class ScrimView extends View {
      * @param context An Android {@link Context} for creating the view.
      * @param parent The {@link ViewGroup} the scrim should exist in.
      */
-    public ScrimView(Context context, ViewGroup parent, @ColorInt int defaultColor) {
+    public ScrimView(Context context, ViewGroup parent) {
         super(context);
         mParent = parent;
         setFocusable(false);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        mDefaultBackgroundColor = defaultColor;
 
         setAlpha(0.0f);
         setVisibility(View.GONE);
-        setBackgroundColor(mDefaultBackgroundColor);
         setLayoutParams(
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -76,12 +70,6 @@ public class ScrimView extends View {
         } else {
             UiUtils.insertBefore(mParent, this, anchorView);
         }
-    }
-
-    @Override
-    public void setBackgroundColor(@ColorInt int color) {
-        super.setBackgroundColor(
-                color == ScrimProperties.INVALID_COLOR ? mDefaultBackgroundColor : color);
     }
 
     @Override

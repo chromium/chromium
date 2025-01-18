@@ -87,8 +87,6 @@ public class ScrimCoordinator {
     /** The component's mediator for handling animation and model management. */
     private final ScrimMediator mMediator;
 
-    private final @ColorInt int mDefaultScrimColor;
-
     /**
      * A handle to the view to bind models to. This should otherwise remain untouched. Each time
      * {@link #showScrim(PropertyModel)} is called, this view is recreated, so all old state is
@@ -108,7 +106,8 @@ public class ScrimCoordinator {
             Context context,
             @Nullable SystemUiScrimDelegate systemUiScrimDelegate,
             ViewGroup parent) {
-        mDefaultScrimColor = ContextCompat.getColor(context, R.color.default_scrim_color);
+        @ColorInt
+        int defaultScrimColor = ContextCompat.getColor(context, R.color.default_scrim_color);
         mMediator =
                 new ScrimMediator(
                         () -> {
@@ -117,17 +116,18 @@ public class ScrimCoordinator {
                             mView = null;
                             mChangeProcessor = null;
                         },
-                        systemUiScrimDelegate);
+                        systemUiScrimDelegate,
+                        defaultScrimColor);
         mScrimViewBuilder =
                 () -> {
-                    ScrimView view = new ScrimView(context, parent, mDefaultScrimColor);
+                    ScrimView view = new ScrimView(context, parent);
                     return view;
                 };
     }
 
     /** Returns the default scrim color, not the currently shown color. */
     public @ColorInt int getDefaultScrimColor() {
-        return mDefaultScrimColor;
+        return mMediator.getDefaultScrimColor();
     }
 
     /**

@@ -33,6 +33,8 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     private final PropertyObserver<PropertyKey> mOnModelChange = this::onModelChange;
 
+    private final @ColorInt int mDefaultScrimColor;
+
     /** The animator for fading the view in. */
     private ValueAnimator mOverlayFadeInAnimator;
 
@@ -59,12 +61,20 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     /**
      * @param scrimHiddenRunnable A mechanism for hiding the scrim.
      * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
+     * @param defaultScrimColor The color of the scrim when not explicitly set.
      */
     ScrimMediator(
             @NonNull Runnable scrimHiddenRunnable,
-            @Nullable ScrimCoordinator.SystemUiScrimDelegate systemUiScrimDelegate) {
+            @Nullable ScrimCoordinator.SystemUiScrimDelegate systemUiScrimDelegate,
+            @ColorInt int defaultScrimColor) {
         mScrimHiddenRunnable = scrimHiddenRunnable;
         mSystemUiScrimDelegate = systemUiScrimDelegate;
+        mDefaultScrimColor = defaultScrimColor;
+    }
+
+    /* package */ @ColorInt
+    int getDefaultScrimColor() {
+        return mDefaultScrimColor;
     }
 
     /** Triggers a fade in of the scrim creating a new animation if necessary. */
@@ -83,16 +93,28 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             mModel.removeObserver(mOnModelChange);
         }
         mModel = model;
-        if (mModel != null) {
-            mModel.set(ScrimProperties.TOUCH_EVENT_DELEGATE, this);
-        }
+        mModel.set(ScrimProperties.TOUCH_EVENT_DELEGATE, this);
         mIsHidingOrHidden = false;
 
-        // Pass the current scrim color to the SystemUiScrimDelegate.
-        if (mSystemUiScrimDelegate != null
-                && model.getAllSetProperties().contains(ScrimProperties.BACKGROUND_COLOR)) {
-            @ColorInt int color = model.get(ScrimProperties.BACKGROUND_COLOR);
-            mSystemUiScrimDelegate.setScrimColor(color);
+        // TODO(crbug.com/371034867): This flag and the usage of it should be deleted. This is
+        // currently needed because SigninAccountPickerCoordinator incorrectly consumes the color in
+        // its #setScrimColor() observer method. Once the scrim logic publishes more easily consumed
+        // color + alpha values things can be cleaned up.
+        boolean colorIsDefault = false;
+
+        // When clients do not specify a background color, use the default.
+        if (mModel.get(ScrimProperties.BACKGROUND_COLOR) == ScrimProperties.INVALID_COLOR) {
+            mModel.set(ScrimProperties.BACKGROUND_COLOR, mDefaultScrimColor);
+            colorIsDefault = true;
+        }
+
+        if (mSystemUiScrimDelegate != null) {
+            if (!colorIsDefault) {
+                // Pass the current scrim color to the SystemUiScrimDelegate.
+                @ColorInt int currentScrimColor = model.get(ScrimProperties.BACKGROUND_COLOR);
+                mSystemUiScrimDelegate.setScrimColor(currentScrimColor);
+            }
+            // Watch for model changes in case the client changes color post-show.
             mModel.addObserver(mOnModelChange);
         }
 

@@ -60,7 +60,7 @@ public class ScrimProperties {
     /* package */ static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
     /**
-     * The background color for the scrim. If null, a default color will be set as the background.
+     * The background color for the scrim. If not set a default color will be set as the background.
      */
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
 
