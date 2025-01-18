@@ -216,6 +216,11 @@ class HostGetterCrossOrigin : public HostGetter {
   int index_ = 1;
 };
 
+class NoSupportForwardTransitionDelegate : public WebContentsDelegate {
+ public:
+  bool SupportsForwardTransitionAnimation() override { return false; }
+};
+
 }  // namespace
 
 class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
@@ -2021,7 +2026,8 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
                        BasicNavigationsNoSupportForForwardTransition) {
-  web_contents()->SetSupportsForwardTransitionAnimation(false);
+  NoSupportForwardTransitionDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;

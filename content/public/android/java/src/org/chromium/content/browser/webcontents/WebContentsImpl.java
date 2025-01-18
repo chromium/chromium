@@ -1262,12 +1262,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 .captureContentAsBitmapForTesting(mNativeWebContentsAndroid, callback);
     }
 
-    @Override
-    public void setSupportsForwardTransitionAnimation(boolean supports) {
-        WebContentsImplJni.get()
-                .setSupportsForwardTransitionAnimation(mNativeWebContentsAndroid, supports);
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
@@ -1484,7 +1478,5 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
         void captureContentAsBitmapForTesting(
                 long nativeWebContentsAndroid, Callback<Bitmap> callback);
-
-        void setSupportsForwardTransitionAnimation(long nativeWebContentsAndroid, boolean enabled);
     }
 }

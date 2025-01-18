@@ -384,7 +384,4 @@ public class MockWebContents implements WebContents {
 
     @Override
     public void disconnectFileSelectListenerIfAny() {}
-
-    @Override
-    public void setSupportsForwardTransitionAnimation(boolean supports) {}
 }

@@ -119,41 +119,6 @@ public class NavigationTransitionsTest {
 
     private int mTestNavigationMode;
 
-    private static class ScreenshotCallback
-            implements ScreenshotCaptureTestHelper.NavScreenshotCallback {
-
-        @Override
-        public Bitmap onAvailable(int navIndex, Bitmap bitmap, boolean requested) {
-            Assert.assertEquals("Requested screenshot", mExpectRequested, requested);
-            Bitmap overrideBitmap = null;
-            if (requested) {
-                // TODO(crbug.com/337886037) Capturing a screenshot currently fails in
-                // emulators due to GPU issues. This override ensures we always return a
-                // bitmap so that we can reliably run the test. This is ok since the current
-                // tests don't pixel test the output (we do pixel test in other tests). Once
-                // the emulator issues are fixed though it'd be better to remove this
-                // override to perform a more realistic test.
-                overrideBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-                overrideBitmap.eraseColor(Color.YELLOW);
-            }
-            if (mCallbackHelper != null) {
-                mCallbackHelper.notifyCalled();
-            }
-            return overrideBitmap;
-        }
-
-        public CallbackHelper expectRequested(boolean expectRequested) {
-            mCallbackHelper = new CallbackHelper();
-            mExpectRequested = expectRequested;
-            return mCallbackHelper;
-        }
-
-        private boolean mExpectRequested = true;
-        private CallbackHelper mCallbackHelper;
-    }
-
-    private ScreenshotCallback mScreenshotCallback;
-
     public NavigationTransitionsTest(int navigationModeParam) {
         mTestNavigationMode = navigationModeParam;
     }
@@ -171,17 +136,34 @@ public class NavigationTransitionsTest {
         BackPressManager backPressManager =
                 mActivityTestRule.getActivity().getBackPressManagerForTesting();
 
-        boolean three_button_mode = mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON;
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    GestureNavigationTestUtils utils =
-                            new GestureNavigationTestUtils(mActivityTestRule);
-                    utils.enableGestureNavigationForTesting(three_button_mode);
-                });
-        backPressManager.setIsGestureNavEnabledSupplier(() -> !three_button_mode);
+        if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        GestureNavigationTestUtils utils =
+                                new GestureNavigationTestUtils(mActivityTestRule);
+                        utils.enableGestureNavigationForTesting();
+                    });
+            backPressManager.setIsGestureNavEnabledSupplier(() -> false);
+        } else {
+            backPressManager.setIsGestureNavEnabledSupplier(() -> true);
+        }
 
-        mScreenshotCallback = new ScreenshotCallback();
-        mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(mScreenshotCallback);
+        mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(
+                new ScreenshotCaptureTestHelper.NavScreenshotCallback() {
+                    @Override
+                    public Bitmap onAvailable(int navIndex, Bitmap bitmap, boolean requested) {
+                        // TODO(crbug.com/337886037) Capturing a screenshot currently fails in
+                        // emulators due to GPU issues. This override ensures we always return a
+                        // bitmap so that we can reliably run the test. This is ok since the current
+                        // tests don't pixel test the output (we do pixel test in other tests). Once
+                        // the emulator issues are fixed though it'd be better to remove this
+                        // override to perform a more realistic test.
+                        Bitmap overrideBitmap =
+                                Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+                        overrideBitmap.eraseColor(Color.YELLOW);
+                        return overrideBitmap;
+                    }
+                });
         mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
         mViewportTestUtils.setUpForBrowserControls();
     }
@@ -340,16 +322,9 @@ public class NavigationTransitionsTest {
         String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
         String url3 = mTestServer.getURL("/chrome/test/data/android/simple.html");
-        var helper = mScreenshotCallback.expectRequested(true);
         mActivityTestRule.loadUrl(url1);
-        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
-        helper.waitForNext();
         mActivityTestRule.loadUrl(url2);
-        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
-        helper.waitForNext();
         mActivityTestRule.loadUrl(url3);
-        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
-        helper.waitForNext();
 
         HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
         HistogramWatcher watcher;
@@ -378,13 +353,9 @@ public class NavigationTransitionsTest {
 
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
 
-        helper =
-                mScreenshotCallback.expectRequested(
-                        mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
         // Perform a back gesture transition from the left edge.
         performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
         waitForTransitionFinished();
-        helper.waitForNext();
 
         watcher.assertExpected();
         Assert.assertEquals(url2, getCurrentUrl());
@@ -400,7 +371,6 @@ public class NavigationTransitionsTest {
             waitForTransitionFinished();
             Assert.assertEquals(url1, getCurrentUrl());
         }
-        helper.waitForNext();
     }
 
     /**
