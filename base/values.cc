@@ -1079,6 +1079,38 @@ Value& Value::List::operator[](size_t index) {
   return storage_[index];
 }
 
+bool Value::List::contains(bool val) const {
+  return contains(val, &Value::is_bool, &Value::GetBool);
+}
+
+bool Value::List::contains(int val) const {
+  return contains(val, &Value::is_int, &Value::GetInt);
+}
+
+bool Value::List::contains(double val) const {
+  return contains(val, &Value::is_double, &Value::GetDouble);
+}
+
+bool Value::List::contains(std::string_view val) const {
+  return contains(val, &Value::is_string, &Value::GetString);
+}
+
+bool Value::List::contains(const char* val) const {
+  return contains(std::string_view(val), &Value::is_string, &Value::GetString);
+}
+
+bool Value::List::contains(const BlobStorage& val) const {
+  return contains(val, &Value::is_blob, &Value::GetBlob);
+}
+
+bool Value::List::contains(const Dict& val) const {
+  return contains(val, &Value::is_dict, &Value::GetDict);
+}
+
+bool Value::List::contains(const List& val) const {
+  return contains(val, &Value::is_list, &Value::GetList);
+}
+
 void Value::List::clear() {
   storage_.clear();
 }

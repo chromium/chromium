@@ -762,6 +762,40 @@ TEST(ValuesTest, ListBackWhenEmpty) {
   EXPECT_CHECK_DEATH(const_list.back());
 }
 
+TEST(ValuesTest, ListContains) {
+  Value::List list;
+  list.Append(false);
+  list.Append(1);
+  list.Append(2.3);
+  list.Append("banana");
+  Value::BlobStorage blob = {0xF, 0x0, 0x0, 0xB, 0xA, 0x2};
+  list.Append(Value(blob));
+  Value::Dict dict;
+  dict.Set("foo", "bar");
+  list.Append(dict.Clone());
+  Value::List list2;
+  list2.Append(99);
+  list.Append(list2.Clone());
+
+  EXPECT_TRUE(list.contains(false));
+  EXPECT_TRUE(list.contains(1));
+  EXPECT_TRUE(list.contains(2.3));
+  EXPECT_TRUE(list.contains("banana"));
+  EXPECT_TRUE(list.contains(std::string_view("banana")));
+  EXPECT_TRUE(list.contains(std::string("banana")));
+  EXPECT_TRUE(list.contains(blob));
+  EXPECT_TRUE(list.contains(dict));
+  EXPECT_TRUE(list.contains(list2));
+
+  EXPECT_FALSE(list.contains(true));
+  EXPECT_FALSE(list.contains(0));
+  EXPECT_FALSE(list.contains(4.5));
+  EXPECT_FALSE(list.contains("orange"));
+  EXPECT_FALSE(list.contains(Value::BlobStorage({1, 2, 3})));
+  EXPECT_FALSE(list.contains(Value::Dict()));
+  EXPECT_FALSE(list.contains(list));
+}
+
 TEST(ValuesTest, ListErase) {
   Value::List list;
   list.Append(1);
