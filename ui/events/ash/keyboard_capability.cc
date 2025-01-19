@@ -1242,10 +1242,12 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 
   auto sorted_keyboards =
       DeviceDataManager::GetInstance()->GetKeyboardDevices();
-  base::ranges::sort(sorted_keyboards, [](const ui::KeyboardDevice& device1,
-                                          const ui::KeyboardDevice& device2) {
-    return device1.id < device2.id;
-  });
+  std::vector<int> sorted_keyboard_ids;
+  sorted_keyboard_ids.reserve(sorted_keyboards.size());
+  base::ranges::transform(sorted_keyboards,
+                          std::back_inserter(sorted_keyboard_ids),
+                          &KeyboardDevice::id);
+  base::ranges::sort(sorted_keyboard_ids);
 
   // Generate a vector with only the device ids from the
   // `keyboard_info_map_` map. Guaranteed to be sorted as flat_map is always
@@ -1257,17 +1259,13 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
                           [](const auto& pair) { return pair.first; });
   DCHECK(base::ranges::is_sorted(cached_keyboard_info_ids));
 
-  // Compares the `cached_keyboard_info_ids` to the id field of
-  // `sorted_keyboards`. Ids that are in `cached_keyboard_info_ids` but not
-  // in `sorted_keyboards` are inserted into `keyboard_ids_to_remove`.
-  // `sorted_keyboards` and `cached_keyboard_info_ids` must be sorted.
+  // Compares the `cached_keyboard_info_ids` to `sorted_keyboard_ids`. Ids that
+  // are in `cached_keyboard_info_ids` but not in `sorted_keyboard_ids` are
+  // inserted into `keyboard_ids_to_remove`. `sorted_keyboard_ids` and
+  // `cached_keyboard_info_ids` must be sorted.
   std::vector<int> keyboard_ids_to_remove;
-  base::ranges::set_difference(
-      cached_keyboard_info_ids, sorted_keyboards,
-      std::back_inserter(keyboard_ids_to_remove),
-      /*Comp=*/base::ranges::less(),
-      /*Proj1=*/std::identity(),
-      /*Proj2=*/[](const KeyboardDevice& device) { return device.id; });
+  base::ranges::set_difference(cached_keyboard_info_ids, sorted_keyboard_ids,
+                               std::back_inserter(keyboard_ids_to_remove));
 
   for (const auto& id : keyboard_ids_to_remove) {
     keyboard_info_map_.erase(id);

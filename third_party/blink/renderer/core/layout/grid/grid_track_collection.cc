@@ -69,9 +69,7 @@ GridRangeBuilder::GridRangeBuilder(const ComputedStyle& grid_style,
     : auto_repetitions_(line_resolver.AutoRepetitions(track_direction)),
       start_offset_(start_offset),
       must_sort_grid_lines_(false),
-      explicit_tracks_((track_direction == kForColumns)
-                           ? grid_style.GridTemplateColumns().track_list
-                           : grid_style.GridTemplateRows().track_list),
+      explicit_tracks_(grid_style.TemplateTracks(track_direction).track_list),
       implicit_tracks_((track_direction == kForColumns)
                            ? grid_style.GridAutoColumns()
                            : grid_style.GridAutoRows()) {
@@ -1001,14 +999,12 @@ void GridSizingTrackCollection::SetMinorBaseline(
 void GridSizingTrackCollection::BuildSets(const ComputedStyle& grid_style,
                                           LayoutUnit grid_available_size,
                                           LayoutUnit gutter_size) {
-  const bool is_for_columns = track_direction_ == kForColumns;
   gutter_size_ = gutter_size;
 
-  BuildSets(
-      is_for_columns ? grid_style.GridTemplateColumns().track_list
-                     : grid_style.GridTemplateRows().track_list,
-      is_for_columns ? grid_style.GridAutoColumns() : grid_style.GridAutoRows(),
-      grid_available_size == kIndefiniteSize);
+  BuildSets(grid_style.TemplateTracks(track_direction_).track_list,
+            (track_direction_ == kForColumns) ? grid_style.GridAutoColumns()
+                                              : grid_style.GridAutoRows(),
+            grid_available_size == kIndefiniteSize);
   InitializeSets(grid_available_size);
 }
 

@@ -426,7 +426,6 @@ TEST_F(UserAgentUtilsTest, InvalidCustomUserAgent) {
   // Make sure all APIs have the correct behavior once user provide invalid
   // custom user agent.
   const std::string major_version = version_info::GetMajorVersionNumber();
-  const std::string full_version(version_info::GetVersionNumber());
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

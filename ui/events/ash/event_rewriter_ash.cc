@@ -1477,7 +1477,8 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     // current key is already pressed or not.
     bool is_repeat = base::ranges::find(
                          pressed_key_states_,
-                         std::tuple(key_event.code(), key_event.GetDomKey(),
+                         std::tuple(key_event.code(),
+                                    DomKey::Base{key_event.GetDomKey()},
                                     key_event.key_code()),
                          [](auto entry) {
                            return std::tuple(entry.first.code, entry.first.key,

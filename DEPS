@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '0c8f10626e6cb2bc260a61365976d52f5967dfd4',
+  'dawn_revision': '571eea1e9b33486148be3257d49588f190956454',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1439,12 +1439,12 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '48de42fe3b63c7739e3d1fb15f8c6276b77cd3ce',
+    '7fd52e6c2500f8e4abec490edde07124fff3a4ac',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + 'c0d2d49a8b2736d18f9ffb5f7ddea1c1d3e38d55',
+    'url': Var('chromium_git') + '/website.git' + '@' + 'd449eb6e9d475df9e5a54125e6582baba549280e',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '31c6c6b86caa9ed9e1e7e05bd42c6d83301e6749',
+        'b4752700af4d89c303eea80d0088c07fb7a5cb21',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

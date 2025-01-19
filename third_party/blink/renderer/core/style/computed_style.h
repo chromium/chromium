@@ -1070,6 +1070,32 @@ class ComputedStyle final : public ComputedStyleBase {
            kInternalAutoFlowAlgorithmDense;
   }
 
+  // Masonry utility functions.
+  GridTrackSizingDirection MasonryTrackSizingDirection() const {
+    switch (MasonryDirection()) {
+      case EMasonryDirection::kColumn:
+      case EMasonryDirection::kColumnReverse:
+        return kForColumns;
+      case EMasonryDirection::kRow:
+      case EMasonryDirection::kRowReverse:
+        return kForRows;
+    }
+    NOTREACHED();
+  }
+
+  // Grid axis utility functions, usable in Grid and Masonry.
+  const ComputedGridTrackList& TemplateTracks(
+      GridTrackSizingDirection track_direction) const {
+    if (IsDisplayMasonryBox(Display())) {
+      DCHECK_EQ(track_direction, MasonryTrackSizingDirection())
+          << "Masonry containers have a single grid axis, we shouldn't try to "
+             "get the template tracks of its stacking axis.";
+      return MasonryTemplateTracks();
+    }
+    return (track_direction == kForColumns) ? GridTemplateColumns()
+                                            : GridTemplateRows();
+  }
+
   // Writing mode utility functions.
   WritingDirectionMode GetWritingDirection() const {
     return {GetWritingMode(), Direction()};
@@ -2416,6 +2442,10 @@ class ComputedStyle final : public ComputedStyleBase {
 
   static bool IsDisplayGridBox(EDisplay display) {
     return display == EDisplay::kGrid || display == EDisplay::kInlineGrid;
+  }
+
+  static bool IsDisplayMasonryBox(EDisplay display) {
+    return display == EDisplay::kMasonry || display == EDisplay::kInlineMasonry;
   }
 
   static bool IsDisplayMathBox(EDisplay display) {
