@@ -76,8 +76,6 @@ BASE_DECLARE_FEATURE(kAutofillExtractOnlyNonAdFrames);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillOptimizeFormExtraction);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillRemoveAlreadyAutofilledRendererFillSkipReason);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseFewerFormAndFieldComparison);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressFieldSwapping);
