@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/style/ash_color_id.h"
@@ -93,6 +94,7 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   label_ = AddChildView(std::make_unique<views::Label>(text));
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(this);
   SetAccessibleName(text);
 }
 
