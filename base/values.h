@@ -8,7 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
+#include <concepts>
 #include <initializer_list>
 #include <iosfwd>
 #include <iterator>
@@ -137,9 +139,9 @@ namespace base {
 // Lists support:
 // - `empty()`, `size()`, `begin()`, `end()`, `cbegin()`, `cend()`,
 //       `rbegin()`, `rend()`, `front()`, `back()`, `reserve()`, `operator[]`,
-//       `clear()`, `erase()`: Identical to the STL container equivalents, with
-//       additional safety checks, e.g. `operator[]` will `CHECK()` if the index
-//       is out of range.
+//       `contains()`, `clear()`, `erase()`: Identical to the STL container
+//       equivalents, with additional safety checks, e.g. `operator[]` will
+//       `CHECK()` if the index is out of range.
 // - `Clone()`: Create a deep copy.
 // - `Append()`: Append a value to the end of the list. Accepts `Value` or any
 //       of the subtypes that `Value` can hold.
@@ -700,6 +702,18 @@ class BASE_EXPORT GSL_OWNER Value {
     const Value& operator[](size_t index) const;
     Value& operator[](size_t index);
 
+    // Returns true if the specified `val` is present in the list.
+    bool contains(bool val) const;
+    bool contains(int val) const;
+    bool contains(double val) const;
+    // Note: std::u16string_view overload intentionally omitted: Value
+    // internally stores strings as UTF-8.
+    bool contains(std::string_view val) const;
+    bool contains(const char* val) const;
+    bool contains(const BlobStorage& val) const;
+    bool contains(const Dict& val) const;
+    bool contains(const List& val) const;
+
     // Removes all value from this list.
     REINITIALIZES_AFTER_MOVE void clear();
 
@@ -804,6 +818,17 @@ class BASE_EXPORT GSL_OWNER Value {
     BASE_EXPORT friend bool operator>=(const List& lhs, const List& rhs);
 
     explicit List(const std::vector<Value>& storage);
+
+    // Shared implementation of public `contains()` methods.
+    template <typename T, typename R>
+      requires std::equality_comparable_with<T, R>
+    bool contains(const T& val,
+                  bool (Value::*test)() const,
+                  R (Value::*get)() const) const {
+      return std::ranges::any_of(storage_, [&](const Value& value) {
+        return (value.*test)() && (value.*get)() == val;
+      });
+    }
 
     std::vector<Value> storage_;
   };

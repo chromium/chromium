@@ -1262,9 +1262,7 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
   }
   // Skip filling previously autofilled fields unless autofill is instructed to
   // override it.
-  if (element.IsAutofilled() &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillRemoveAlreadyAutofilledRendererFillSkipReason)) {
+  if (element.IsAutofilled()) {
     base::UmaHistogramEnumeration(kSkipReasonHistogram,
                                   SkipReason::kPreviouslyAutofilled);
     return true;

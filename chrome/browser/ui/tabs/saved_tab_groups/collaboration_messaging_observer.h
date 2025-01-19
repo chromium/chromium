@@ -7,12 +7,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/instant_message_queue_processor.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class Profile;
+
 namespace tab_groups {
 
+using collaboration::messaging::InstantMessage;
 using collaboration::messaging::MessagingBackendService;
 using collaboration::messaging::PersistentMessage;
 
@@ -34,6 +37,7 @@ enum class MessageDisplayStatus {
 // activity indicators.
 class CollaborationMessagingObserver
     : public MessagingBackendService::PersistentMessageObserver,
+      public MessagingBackendService::InstantMessageDelegate,
       public KeyedService {
  public:
   explicit CollaborationMessagingObserver(Profile* profile);
@@ -42,6 +46,9 @@ class CollaborationMessagingObserver
   CollaborationMessagingObserver& operator=(
       const CollaborationMessagingObserver&) = delete;
   ~CollaborationMessagingObserver() override;
+
+  using InstantMessageSuccessCallback =
+      CollaborationMessagingObserver::InstantMessageDelegate::SuccessCallback;
 
   // Testing-only method. Dispatch method as though it came from the
   // backend service.
@@ -59,6 +66,11 @@ class CollaborationMessagingObserver
   void OnMessagingBackendServiceInitialized() override;
   void DisplayPersistentMessage(PersistentMessage message) override;
   void HidePersistentMessage(PersistentMessage message) override;
+
+  // MessagingBackendService::InstantMessageDelegate
+  void DisplayInstantaneousMessage(
+      InstantMessage message,
+      InstantMessageSuccessCallback success_callback) override;
 
  private:
   // Finds the tab group designated by this message and sets/hides an
@@ -80,10 +92,13 @@ class CollaborationMessagingObserver
   void DispatchMessage(PersistentMessage message, MessageDisplayStatus display);
 
   raw_ptr<Profile> profile_;
+  InstantMessageQueueProcessor instant_message_queue_processor_;
+  raw_ptr<MessagingBackendService> service_;
 
+  // Observation for persistent messages.
   base::ScopedObservation<MessagingBackendService,
                           MessagingBackendService::PersistentMessageObserver>
-      messaging_service_observation_{this};
+      persistent_message_service_observation_{this};
 };
 
 }  // namespace tab_groups
