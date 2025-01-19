@@ -523,6 +523,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="135389172849514421">Internetsiz ishlaydi</translation>
 <translation id="1353980523955420967">PPD topilmadi. Chromebook internetga ulanganligini tekshiring va qaytadan urining.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> saytiga kamerangizdan foydalanish va siljitishga ruxsat bering</translation>
+<translation id="1354148503392558902">Parol oʻzgartirilmoqda...</translation>
 <translation id="1355088139103479645">Barcha maʼlumotlar tozalansinmi?</translation>
 <translation id="1356376170199999104">Ruxsat berildi: <ph name="PERMISSION_DETAILS" /> Jismoniy kalit yordamida mikrofonni yoqing.</translation>
 <translation id="1356959069439783953">Nofaol varaqlar endi yangi dizaynda</translation>
@@ -1092,6 +1093,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1751335846119670066">Oʻqishda yordam</translation>
 <translation id="17513872634828108">Ichki oynalarni ochish</translation>
 <translation id="175196451752279553">Yopiq ichki oynani &amp;qayta ochish</translation>
+<translation id="1752557850776261983">Hisobga kirish tekshirilmoqda...</translation>
 <translation id="1753067873202720523">Chromebook yoniq paytida quvvatlanmasligi mumkin.</translation>
 <translation id="1753557900380512635">Interyerlar</translation>
 <translation id="1753905327828125965">Eng ko‘p ochilganlar</translation>

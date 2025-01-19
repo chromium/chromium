@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Autentifikatsiya xatosi yuz berdi</translation>
 <translation id="1780152987505130652">Guruhni yopish</translation>
 <translation id="178400879184240105">Parollaringiz takrorlanmagan</translation>
+<translation id="17906873777101817">Parollar va kalitlarni saqlash taklif qilinsin</translation>
 <translation id="1807893857950749072">Narx kuzatuvi bildirishnomalariga ruxsat…</translation>
 <translation id="1810976980198522421">Bekor qilish</translation>
 <translation id="1815941218935345331">Maxfiy kod</translation>
@@ -1322,6 +1323,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
 <translation id="6755200887046212842">Hisoblarni boshqarish</translation>
+<translation id="6755733078693946548">Parollar va kalitlarni istalgan ilovadan ochish</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Brauzer tarixi tozalanadi</translation>
 <translation id="6790502149545262384">Tez orada yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
@@ -1589,6 +1591,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="7977451675950311423">Maʼlumotlar sizishi natijasida oshkor boʻlgan paroldan foydalansangiz, sizni ogohlantiradi.</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> ta yangi varaq, yopildi:<ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Varaqlar bu qurilmada ochiq qoladi, ammo guruh butunlay oʻchirib tashlanadi.</translation>
+<translation id="797874245254030665">Parollar va kalitlarni istalgan ilovadan oching</translation>
 <translation id="7982789257301363584">Tarmoq</translation>
 <translation id="7987685713885608670">Xavfsizlikni yanada oshirish uchun parolingizni Google Parollar menejeriga saqlashdan oldin qurilmangizda shifrlang</translation>
 <translation id="798991908416757345">Varaqlar guruhi mavjud emas</translation>
@@ -1670,6 +1673,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8299613349954694191">Brauzer tarixi saqlanmasligi uchun inkognito tab oching.</translation>
 <translation id="8307481894409578819">Bu faylni yuklash imkonsiz</translation>
 <translation id="8319076807703933069">Yangi qidiruv</translation>
+<translation id="8328607660158575887">Avtomatik kiritish va parollar sozlamalarini ochish</translation>
 <translation id="8343993175958086504">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching.</translation>
 <translation id="8349305172487531364">Xatcho‘plar paneli</translation>
 <translation id="8364563001733875155">PIN kodni oʻzgartirish uchun qurilmada kirish kodini sozlang</translation>
@@ -1821,6 +1825,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8909459547399237818">Parollar menejerini tanlang, keyin Vidjet kiritishni bosing</translation>
 <translation id="891282356902782456">Bu parol faqat mazkur qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda (<ph name="EMAIL" />) saqlang.</translation>
 <translation id="8915916167043355778">Hammasini yopish</translation>
+<translation id="892185197271200809">“<ph name="GROUP_NAME" />” varaqlar guruhi hammada ishlamay qoladi va barcha qurilmalardan oʻchiriladi</translation>
 <translation id="8921902386312975525">Pochta paketlarini kuzatish parametrlari</translation>
 <translation id="8923178205567790913">Parollar</translation>
 <translation id="892776311701544612">Batafsil…</translation>
