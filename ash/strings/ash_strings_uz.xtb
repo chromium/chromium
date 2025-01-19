@@ -968,6 +968,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4285498937028063278">Olib tashlash</translation>
 <translation id="428715201724021596">Profilga ulanmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="4287250812980588583">Chrome oynasi</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Mikrofon balandligi <ph name="APP_NAME" /> ilovasi boshqaruvida}other{Mikrofon balandligi # ta ilova boshqaruvida}}</translation>
 <translation id="4294319844246081198">Xayrli tong, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Barcha bildirishnomalarni tozalash (<ph name="COUNT" />)</translation>
 <translation id="4300272766492248925">Ilovani ochish</translation>

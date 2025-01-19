@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '9231e7b7fa20257a785cd84963b473dea3cfd4fd',
+  'dawn_revision': '50824d5923fa5c51c28f5625495bcf852a2d3e01',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1439,7 +1439,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '2a40567d867657e549e03420cb0c391d92251a4c',
+    '21a628d4022a0a1ee411ddf879aa5f11b187c408',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2946,7 +2946,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'BEgsMF48qQZ4D5S5i5wA-usVOZnBfsd1jo454wou_ygC',
+        'version': 'uMy7vOfonOvlppmthaEbPS0Hk5Fu-VCTlEycHHlHY6IC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2957,7 +2957,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'R86nCLtnx23yNHB-78b6PnoH9fdnl63Pol42oZXRv08C',
+        'version': 'CqrRs-8NaEMyLsBk1WrbKynksiwxfaMLnT2fKqSH8PYC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'b44f6ed6b1e294448b5d995d0db7f78835acb3a0',
+        '9044d97ac8caad506e931610bca226fd9e2ab8a1',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

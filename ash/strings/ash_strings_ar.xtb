@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">عرض قائمة الشبكات: <ph name="STATE_TEXT" /></translation>
 <translation id="1419738280318246476">فتح قفل الجهاز لتنفيذ إجراء الإشعارات</translation>
 <translation id="1420408895951708260">يمكنك تبديل "الإضاءة الليلية". <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">المجموعة المقترَحة</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1435537621343861112">يتعذّر بدء الإملاء بسبب إيقاف الميكروفون.</translation>
 <translation id="1445031758921122223">‏تم تنزيل ملفات التحكّم في ميزة FaceGaze</translation>
@@ -244,12 +245,14 @@
 <translation id="17722141032474077">عمليات حسابية</translation>
 <translation id="1774796056689732716">التقويم، <ph name="CURRENT_MONTH_YEAR" />، التاريخ المُحدّد حاليًا هو <ph name="DATE" />.</translation>
 <translation id="178347895271755507">إعداد ميزة عرض الصور والوسائط والإشعارات الحديثة في هاتفك</translation>
+<translation id="1785317913592722944">إزالة العنصر من المجموعة المقترَحة</translation>
 <translation id="1786487376942610288">التبديل بين الحد الأقصى أو الحجم الحالي للنافذة المفتوحة بميزة "نافذة ضمن النافذة"</translation>
 <translation id="1787955149152357925">غير مُفعَّل</translation>
 <translation id="1796561540704213354">المواقع الإلكترونية بما في ذلك الصفحات التي سبقَت زيارتها والصفحات المفتوحة الآن</translation>
 <translation id="179842970735685253">‏بنود خدمة Google</translation>
 <translation id="1805407494113167797">تعذَّر تشغيل المقاطع الصوتية التي تساعد على التركيز</translation>
 <translation id="181103072419391116">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
+<translation id="1815039896005206046">يؤدي النقر على رمز عدم الإعجاب إلى إرسال ملاحظات بأنّ هذه المجموعة المقترَحة لا تعجبك</translation>
 <translation id="1816896987747843206">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="1823873187264960516">الإيثرنت: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">تفعيل إذن الوصول إلى بيانات الموقع الجغرافي</translation>
@@ -391,6 +394,7 @@
 <translation id="2369165858548251131">"مرحبًا" باللغة الصينية</translation>
 <translation id="2370971919968699910">قد يتم تحصيل رسوم منك مقابل ذلك.
 عدد الأجهزة المتصلة <ph name="DEVICECOUNT" />.</translation>
+<translation id="2383521554963939360">مجموعات التطبيقات وعلامات التبويب</translation>
 <translation id="2386292613071805067">اختيار كل محتوى الصفحة</translation>
 <translation id="2389423187722941333">‏تفعيل Gemini أو إيقافه</translation>
 <translation id="2392659840443812875">لا تتوفّر نقطة اتصال. يجب تفعيل البلوتوث ووضع جهازك بالقرب منك.</translation>
@@ -918,6 +922,7 @@
 <translation id="4151054805501931758">تحسين صورة الوجه</translation>
 <translation id="4156293514828496577">‏يتبقّى ‎<ph name="PERCENTAGE" />% من شحن البطارية (حوالي <ph name="TIME_LEFT" />).
 لإطالة عمر البطارية، تم حصر وظائف بعض الميزات.</translation>
+<translation id="4158003972857765638">تنظيم الملفات في سطح مكتب جديد</translation>
 <translation id="4160919062868802509">تم رصد مصادر صوتية متعددة</translation>
 <translation id="416245495747357243">أحسنت!</translation>
 <translation id="4165275524535002941">قد يكون الكابل غير متوافق مع الشاشات</translation>
@@ -982,6 +987,7 @@
 <translation id="4322742403972824594">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Home، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليسار".</translation>
 <translation id="4324840740119394760">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من "<ph name="APP_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="4327147325944669226">تسجيل اللعبة</translation>
+<translation id="4329076911374908740">تم بلوغ الحد الأقصى لعدد المجموعات المحفوظة.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
 <translation id="4348580496249286403">‫<ph name="VOLUME_LEVEL" />، الصوت مكتوم</translation>
 <translation id="4351244548802238354">إغلاق مربع الحوار</translation>
@@ -1938,6 +1944,7 @@
 <translation id="7524043547948122239">‏مهام Google</translation>
 <translation id="7525067979554623046">إنشاء</translation>
 <translation id="7526573455193969409">قد تكون الشبكة خاضعة للمراقبة</translation>
+<translation id="7534543072325030705">يؤدي النقر على رمز الإعجاب إلى إرسال ملاحظات بأنّ هذه المجموعة المقترَحة تعجبك</translation>
 <translation id="7536035074519304529">‏عنوان IP: ‏<ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">تعديل النافذة اليمنى</translation>
 <translation id="7543399541175347147">‏تطبيقات Linux ونوافذ التصفّح المتخفي غير متوافقة حاليًا، ولكن سيتم حفظ التطبيقات الأخرى.</translation>
@@ -2102,6 +2109,7 @@
 <translation id="8004512796067398576">زيادة</translation>
 <translation id="8005527720597583355">بدء جلسة "وضع التركيز"</translation>
 <translation id="8015361438441228492">تعذَّر تعديل المهمة.</translation>
+<translation id="8027187124910699148">استئناف المجموعة المقترَحة</translation>
 <translation id="802782383769312836">سطح المكتب السابق: <ph name="DESK_NAME" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">تعذّر الاتصال بالإنترنت عبر نقطة الاتصال</translation>
 <translation id="8029629653277878342">يجب إدخال رقم التعريف الشخصي أو كلمة المرور لمزيد من الأمان.</translation>
@@ -2210,6 +2218,7 @@
 <translation id="8426708595819210923">مساء الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428810263141909179">‏‫‎<ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> من <ph name="KEY_ONE" /> إلى <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">حفظ المجموعة لوقت لاحق</translation>
 <translation id="8433186206711564395">إعدادات الشبكة</translation>
 <translation id="8433977262951327081">تم تغيير اختصار عرض الفقاعة التفسيرية لقائمة خيارات الإدخال في الرف. يُرجى استخدام <ph name="NEW_SHORTCUT" /> بدلاً من <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">فتح أداة "تعليقات"</translation>
@@ -2218,6 +2227,7 @@
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">إيقاف ميزة "سماع الاختيار"</translation>
+<translation id="8466665972451889002">إظهار العناصر في "<ph name="GROUP_NAME" />"</translation>
 <translation id="8468806060683421065">‏الموعد المحدّد للتسليم: ‎<ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">عرض إعدادات المقياس</translation>
 <translation id="8473301994082929012">الميزة <ph name="FEATURE_NAME" /> حالتها <ph name="FEATURE_STATE" /> في <ph name="ORGANIZATION_NAME" />.</translation>
@@ -2240,6 +2250,7 @@
 <translation id="8551588720239073785">إعدادات التاريخ والوقت</translation>
 <translation id="8553395910833293175">سبقَ نقل المحتوى المرئي إلى جميع أسطح المكتب.</translation>
 <translation id="8555757996376137129">إزالة سطح المكتب الحالي</translation>
+<translation id="8558521694042102707">قد ترتكب تكنولوجيا الذكاء الاصطناعي التوليدي أخطاء، بما فيها تلك المتعلّقة بالأشخاص، لذا يُنصَح بالتحقّق من ردودها.</translation>
 <translation id="8559845965695780508">تم تعديله من قِبل "<ph name="USER" />"</translation>
 <translation id="8569146227972631631">درجة فهرنهايت</translation>
 <translation id="8569751806372591456">إليك بعض الاقتراحات للتجربة:</translation>
@@ -2262,6 +2273,7 @@
 <translation id="8637598503828012618">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="8638637208069328956">تفعيل/إيقاف الميكروفون</translation>
 <translation id="8639760480004882931">يتبقى <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">إخفاء جميع اقتراحات المجموعات</translation>
 <translation id="8641510901370802679">جارٍ عرض معلومات <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">موقّت <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">‏لإضافة شخص، يُرجى إدخال رمز الدخول المخصّص للوالدَين في Family Link.</translation>
@@ -2344,6 +2356,7 @@
 <translation id="8905919797434099235">(بلا عنوان)</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>
 <translation id="8909138438987180327">مستوى طاقة البطارية عند <ph name="PERCENTAGE" /> في المئة.</translation>
+<translation id="8916866375277139011">إخفاء العناصر في "<ph name="GROUP_NAME" />"</translation>
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏لا يتحدث مساعد Google هذه اللغة.</translation>
 <translation id="8926951137623668982">إخفاء الرف دائمًا</translation>
