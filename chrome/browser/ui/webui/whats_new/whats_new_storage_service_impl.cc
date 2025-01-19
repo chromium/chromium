@@ -53,9 +53,7 @@ void WhatsNewStorageServiceImpl::SetModuleEnabled(
     std::string_view module_name) {
   // Ensure active feature is in local state.
   const base::Value::List& enabled_modules = ReadModuleData();
-  const std::string& (base::Value::*get_string)() const =
-      &base::Value::GetString;
-  if (!base::Contains(enabled_modules, module_name, get_string)) {
+  if (!base::Contains(enabled_modules, module_name)) {
     GetEnabledOrder()->Append(module_name);
   }
 }

@@ -244,10 +244,8 @@ class PrinterProviderApiTest : public ExtensionApiTest,
       const base::Value::List& printers,
       const std::vector<base::Value::Dict>& expected_printers) {
     ASSERT_EQ(expected_printers.size(), printers.size());
-    const base::Value::Dict& (base::Value::*get_dict)() const =
-        &base::Value::GetDict;
     for (const auto& printer_value : expected_printers) {
-      EXPECT_TRUE(base::Contains(printers, printer_value, get_dict))
+      EXPECT_TRUE(base::Contains(printers, printer_value))
           << "Unable to find " << printer_value << " in " << printers;
     }
   }

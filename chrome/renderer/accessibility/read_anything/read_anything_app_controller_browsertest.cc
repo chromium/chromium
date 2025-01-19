@@ -746,10 +746,8 @@ TEST_F(ReadAnythingAppControllerTest, OnLanguagePrefChange) {
   OnLanguagePrefChange(disabled_lang, false);
 
   EXPECT_CALL(page_handler_, OnLanguagePrefChange).Times(3);
-  const std::string& (base::Value::*get_string)() const =
-      &base::Value::GetString;
-  ASSERT_TRUE(base::Contains(EnabledLanguages(), enabled_lang, get_string));
-  ASSERT_FALSE(base::Contains(EnabledLanguages(), disabled_lang, get_string));
+  ASSERT_TRUE(base::Contains(EnabledLanguages(), enabled_lang));
+  ASSERT_FALSE(base::Contains(EnabledLanguages(), disabled_lang));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_ReturnsLatestVoice) {
