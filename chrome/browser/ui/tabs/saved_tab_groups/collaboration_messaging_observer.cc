@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
+using collaboration::messaging::MessagingBackendServiceFactory;
+
 namespace tab_groups {
 namespace {
 
@@ -201,20 +203,21 @@ void CollaborationMessagingObserver::DispatchMessage(
 }
 
 CollaborationMessagingObserver::CollaborationMessagingObserver(Profile* profile)
-    : profile_(profile) {
-  auto* service =
-      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
-          profile_);
-  CHECK(service);
-  messaging_service_observation_.Observe(service);
+    : profile_(profile),
+      instant_message_queue_processor_(profile),
+      service_(MessagingBackendServiceFactory::GetForProfile(profile_)) {
+  CHECK(service_);
+  persistent_message_service_observation_.Observe(service_);
+  service_->SetInstantMessageDelegate(this);
 }
 
-CollaborationMessagingObserver::~CollaborationMessagingObserver() = default;
+CollaborationMessagingObserver::~CollaborationMessagingObserver() {
+  service_->SetInstantMessageDelegate(nullptr);
+}
 
 void CollaborationMessagingObserver::OnMessagingBackendServiceInitialized() {
-  auto* service = messaging_service_observation_.GetSource();
-  CHECK(service);
-  auto messages = service->GetMessages(std::nullopt);
+  CHECK(service_);
+  auto messages = service_->GetMessages(std::nullopt);
   for (auto message : messages) {
     DispatchMessage(message, MessageDisplayStatus::kDisplay);
   }
@@ -236,6 +239,13 @@ void CollaborationMessagingObserver::DispatchMessageForTests(
   CHECK(tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups());
   DispatchMessage(message, display ? MessageDisplayStatus::kDisplay
                                    : MessageDisplayStatus::kHide);
+}
+
+void CollaborationMessagingObserver::DisplayInstantaneousMessage(
+    InstantMessage message,
+    InstantMessageSuccessCallback success_callback) {
+  instant_message_queue_processor_.Enqueue(message,
+                                           std::move(success_callback));
 }
 
 }  // namespace tab_groups
