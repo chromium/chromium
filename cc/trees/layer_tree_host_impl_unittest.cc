@@ -183,12 +183,6 @@ class LayerTreeHostImplTestBase : public testing::Test,
   }
 
   void SetUp() override {
-    LayerTreeSettings settings = DefaultSettings();
-    if (settings.UseLayerContextForDisplay()) {
-      GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                      "threaded mode";
-    }
-
     CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
 
     // TODO(bokan): Mac wheel scrolls don't cause smooth scrolling in the real
@@ -941,13 +935,7 @@ INSTANTIATE_COMMIT_TO_TREE_TEST_P(
 class LayerTreeHostImplTimelinesTest : public LayerTreeHostImplTest {
  public:
   void SetUp() override {
-    LayerTreeSettings settings = DefaultSettings();
-    if (settings.UseLayerContextForDisplay()) {
-      GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                      "threaded mode";
-    }
-
-    CreateHostImpl(settings, CreateLayerTreeFrameSink());
+    CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
 
     // TODO(bokan): Mac wheel scrolls don't cause smooth scrolling in the real
     // world. In tests, we force it on for consistency. Can be removed when
@@ -969,10 +957,6 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     settings.scrollbar_fade_delay = base::Milliseconds(500);
     settings.scrollbar_fade_duration = base::Milliseconds(300);
     settings.idle_thickness_scale = 0.4f;
-    if (settings.UseLayerContextForDisplay()) {
-      GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                      "threaded mode";
-    }
     CreateHostImpl(settings, CreateLayerTreeFrameSink());
   }
 
@@ -11874,14 +11858,8 @@ TEST_P(LayerTreeHostImplTestDrawAndTestDamage,
 class LayerTreeHostImplTestPrepareTiles : public LayerTreeHostImplTest {
  public:
   void SetUp() override {
-    LayerTreeSettings settings = LayerTreeSettings();
-    if (settings.UseLayerContextForDisplay()) {
-      GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                      "threaded mode";
-    }
-
     fake_host_impl_ = new FakeLayerTreeHostImpl(
-        settings, &task_runner_provider_, &task_graph_runner_);
+        LayerTreeSettings(), &task_runner_provider_, &task_graph_runner_);
     host_impl_.reset(fake_host_impl_);
     layer_tree_frame_sink_ = CreateLayerTreeFrameSink();
     host_impl_->SetVisible(true);
@@ -12264,12 +12242,7 @@ TEST_P(LayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
 class LayerTreeHostImplWithBrowserControlsTest : public LayerTreeHostImplTest {
  public:
   void SetUp() override {
-    LayerTreeSettings settings = DefaultSettings();
-    if (settings.UseLayerContextForDisplay()) {
-      GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                      "threaded mode";
-    }
-    CreateHostImpl(settings, CreateLayerTreeFrameSink());
+    CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
     host_impl_->active_tree()->SetBrowserControlsParams(
         {static_cast<float>(top_controls_height_), 0, 0, 0, false, false});
     host_impl_->active_tree()->SetCurrentBrowserControlsShownRatio(1.f, 1.f);
@@ -17806,11 +17779,6 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   }
 
   void SetUp() override {
-    LayerTreeSettings settings = DefaultSettings();
-    if (settings.UseLayerContextForDisplay()) {
-      GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                      "threaded mode";
-    }
     LayerTreeHostImplTest::SetUp();
 
     cur_time_ = base::TimeTicks() + base::Milliseconds(100);
@@ -19163,11 +19131,6 @@ class ConcurrentImplOnlyScrollAnimationsTest : public LayerTreeHostImplTest {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         features::kMultipleImplOnlyScrollAnimations);
-    LayerTreeSettings settings = DefaultSettings();
-    if (settings.UseLayerContextForDisplay()) {
-      GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                      "threaded mode";
-    }
     LayerTreeHostImplTest::SetUp();
   }
   gfx::PointF CreateAndTickScrollAnimations();
@@ -19320,11 +19283,6 @@ class ConcurrentSnapAnimationsTest : public LayerTreeHostImplTest {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         features::kMultipleImplOnlyScrollAnimations);
-    LayerTreeSettings settings = DefaultSettings();
-    if (settings.UseLayerContextForDisplay()) {
-      GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                      "threaded mode";
-    }
     LayerTreeHostImplTest::SetUp();
     gfx::Size viewport_size(100, 100);
     gfx::Size content_size(100, 5000);
