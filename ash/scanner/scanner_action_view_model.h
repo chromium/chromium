@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -41,9 +40,10 @@ class ASH_EXPORT ScannerActionViewModel {
   const gfx::VectorIcon& GetIcon() const;
   manta::proto::ScannerAction::ActionCase GetActionCase() const;
 
-  // Executes this action, running the provided callback with a success value
-  // when the execution finishes.
-  void ExecuteAction(ScannerCommandCallback action_finished_callback) const;
+  const ScannerUnpopulatedAction& unpopulated_action() const {
+    return unpopulated_action_;
+  }
+  base::WeakPtr<ScannerCommandDelegate> delegate() const { return delegate_; }
 
  private:
   ScannerUnpopulatedAction unpopulated_action_;
