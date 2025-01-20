@@ -10,8 +10,8 @@ module blink.mojom;
 
 // The specification of the query to digital credentials.
 struct DigitalCredentialProvider {
-  string? protocol;
-  string? request;
+  string protocol;
+  string request;
 };
 
 // The specification of the request to digital credentials.
