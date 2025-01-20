@@ -26,7 +26,7 @@ BASE_FEATURE(kCctSignInPrompt,
              "CctSignInPrompt",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUnoForAuto, "UnoForAuto", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUnoForAuto, "UnoForAuto", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Migrate usages of USM flag to force child account sign-in to use the account
 // capability `IsSubjectToParentalControls`.
