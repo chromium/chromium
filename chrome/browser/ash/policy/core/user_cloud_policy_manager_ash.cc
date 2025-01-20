@@ -227,7 +227,7 @@ void UserCloudPolicyManagerAsh::ConnectManagementService(
       dm_protocol::kChromeExtensionPolicyType, component_policy_cache_path_,
       cloud_policy_client.get(), schema_registry());
   core()->Connect(std::move(cloud_policy_client));
-  client()->AddObserver(this);
+  observed_cloud_policy_client_.Observe(client());
 
   external_data_manager_->Connect(system_url_loader_factory);
 
@@ -259,7 +259,7 @@ void UserCloudPolicyManagerAsh::ConnectManagementService(
     OnCloudPolicyServiceInitializationCompleted();
   } else {
     // Wait for the CloudPolicyStore to finish initializing.
-    service()->AddObserver(this);
+    observed_cloud_policy_service_.Observe(service());
   }
 
   app_install_event_log_uploader_ =
@@ -346,12 +346,8 @@ void UserCloudPolicyManagerAsh::Shutdown() {
   local_files_cleanup_.reset();
   app_install_event_log_uploader_.reset();
   report_scheduler_.reset();
-  if (client()) {
-    client()->RemoveObserver(this);
-  }
-  if (service()) {
-    service()->RemoveObserver(this);
-  }
+  observed_cloud_policy_client_.Reset();
+  observed_cloud_policy_service_.Reset();
   token_fetcher_.reset();
   external_data_manager_->Disconnect();
   CloudPolicyManager::Shutdown();
@@ -369,7 +365,7 @@ bool UserCloudPolicyManagerAsh::IsInitializationComplete(
 }
 
 void UserCloudPolicyManagerAsh::OnCloudPolicyServiceInitializationCompleted() {
-  service()->RemoveObserver(this);
+  observed_cloud_policy_service_.Reset();
 
   // If the CloudPolicyClient isn't registered at this stage then it needs an
   // OAuth token for the initial registration (there's no cached policy).
@@ -502,7 +498,7 @@ void UserCloudPolicyManagerAsh::OnUserProfileLoaded(
     return;
   }
 
-  session_manager::SessionManager::Get()->RemoveObserver(this);
+  observed_session_manager_.Reset();
   StartReportSchedulerIfReady(false /* enable_delayed_creation */);
 }
 
@@ -760,7 +756,7 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
   // doesn't finish, the creation of |report_scheduler_| will be delayed and
   // relies on SessionManagerObserver methods to monitor the progress.
   if (enable_delayed_creation && !primary_user->is_profile_created()) {
-    session_manager::SessionManager::Get()->AddObserver(this);
+    observed_session_manager_.Observe(session_manager::SessionManager::Get());
     VLOG(0) << "Report scheduler is delayed to create because the primary "
                "user profile hasn't been loaded. This is a designed behavior.";
     return;
