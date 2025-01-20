@@ -17,6 +17,7 @@
 #include "components/performance_manager/render_process_user_data.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -27,7 +28,7 @@ namespace performance_manager {
 namespace {
 
 void BindRenderProcessCoordinationUnit(
-    int render_process_host_id,
+    content::ChildProcessId render_process_host_id,
     mojo::PendingReceiver<mojom::ProcessCoordinationUnit> receiver) {
   content::RenderProcessHost* render_process_host =
       content::RenderProcessHost::FromID(render_process_host_id);
@@ -55,7 +56,7 @@ void BindChildProcessCoordinationUnitOnPMSequence(
 }
 
 void BindChildProcessCoordinationUnitForRenderProcessHost(
-    int render_process_host_id,
+    content::ChildProcessId render_process_host_id,
     mojo::PendingReceiver<mojom::ChildProcessCoordinationUnit> receiver) {
   DCHECK(PerformanceManagerImpl::IsAvailable());
   PerformanceManagerImpl::CallOnGraph(
@@ -63,7 +64,7 @@ void BindChildProcessCoordinationUnitForRenderProcessHost(
       base::BindOnce(
           &BindChildProcessCoordinationUnitOnPMSequence,
           PerformanceManagerImpl::GetProcessNodeForRenderProcessHostId(
-              RenderProcessHostId(render_process_host_id)),
+              render_process_host_id),
           std::move(receiver)));
 }
 
@@ -100,12 +101,12 @@ void BindDocumentCoordinationUnit(
 void Binders::ExposeInterfacesToRendererProcess(
     service_manager::BinderRegistry* registry,
     content::RenderProcessHost* host) {
-  registry->AddInterface(base::BindRepeating(&BindRenderProcessCoordinationUnit,
-                                             host->GetDeprecatedID()),
-                         base::SequencedTaskRunner::GetCurrentDefault());
+  registry->AddInterface(
+      base::BindRepeating(&BindRenderProcessCoordinationUnit, host->GetID()),
+      base::SequencedTaskRunner::GetCurrentDefault());
   registry->AddInterface(
       base::BindRepeating(&BindChildProcessCoordinationUnitForRenderProcessHost,
-                          host->GetDeprecatedID()),
+                          host->GetID()),
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 
