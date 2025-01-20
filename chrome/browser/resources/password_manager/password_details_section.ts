@@ -236,12 +236,11 @@ export class PasswordDetailsSectionElement extends
 
   private maybeRegisterPasswordSharingHelpBubble_() {
     afterNextRender(this, () => {
-      if (this.selectedGroup_?.entries[0]?.isPasskey) {
-        return;
+      if (this.selectedGroup_?.entries[0]?.isPasskey === false) {
+        // Only try to show the promo when the first entry is not a passkey.
+        this.shadowRoot!.querySelector('password-details-card')
+            ?.maybeRegisterSharingHelpBubble();
       }
-
-      this.shadowRoot!.querySelector('password-details-card')
-          ?.maybeRegisterSharingHelpBubble();
     });
   }
 }
