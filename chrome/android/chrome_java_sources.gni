@@ -31,7 +31,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/KeyboardShortcuts.java",
   "java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java",
   "java/src/org/chromium/chrome/browser/LauncherShortcutActivity.java",
-  "java/src/org/chromium/chrome/browser/NearOomMonitor.java",
   "java/src/org/chromium/chrome/browser/OmahaServiceStartDelayer.java",
   "java/src/org/chromium/chrome/browser/PlayServicesVersionInfo.java",
   "java/src/org/chromium/chrome/browser/ServiceTabLauncher.java",
