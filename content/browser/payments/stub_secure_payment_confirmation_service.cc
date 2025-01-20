@@ -2,32 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/payments/stub_payment_credential.h"
+#include "content/browser/payments/stub_secure_payment_confirmation_service.h"
 
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace content {
 
-void StubPaymentCredential::Create(
+void StubSecurePaymentConfirmationService::Create(
     RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
+    mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+        receiver) {
   CHECK(render_frame_host);
   // Avoid creating the service if the RenderFrameHost isn't active, e.g. if a
   // request arrives during a navigation.
   if (!render_frame_host->IsActive()) {
     return;
   }
-  // StubPaymentCredential owns itself. It self-destructs when the
-  // RenderFrameHost navigates or is deleted. See DocumentService for details.
-  new StubPaymentCredential(*render_frame_host, std::move(receiver));
+  // StubSecurePaymentConfirmationService owns itself. It self-destructs when
+  // the RenderFrameHost navigates or is deleted. See DocumentService for
+  // details.
+  new StubSecurePaymentConfirmationService(*render_frame_host,
+                                           std::move(receiver));
 }
 
-StubPaymentCredential::StubPaymentCredential(
+StubSecurePaymentConfirmationService::StubSecurePaymentConfirmationService(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver)
+    mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+        receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
-void StubPaymentCredential::StorePaymentCredential(
+void StubSecurePaymentConfirmationService::StorePaymentCredential(
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,
     const std::vector<uint8_t>& user_id,
@@ -36,7 +40,7 @@ void StubPaymentCredential::StorePaymentCredential(
       payments::mojom::PaymentCredentialStorageStatus::SUCCESS);
 }
 
-void StubPaymentCredential::MakePaymentCredential(
+void StubSecurePaymentConfirmationService::MakePaymentCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakePaymentCredentialCallback callback) {
   // This method on this stub is not implemented.

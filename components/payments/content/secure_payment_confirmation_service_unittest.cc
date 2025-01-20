@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/payment_credential.h"
+#include "components/payments/content/secure_payment_confirmation_service.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -31,17 +31,17 @@ using ::testing::Pointee;
 
 namespace {
 
-struct PaymentCredentialDeleter {
-  void operator()(PaymentCredential* payment_credential) {
-    payment_credential->ResetAndDeleteThis();
+struct SecurePaymentConfirmationServiceDeleter {
+  void operator()(SecurePaymentConfirmationService* spc_service) {
+    spc_service->ResetAndDeleteThis();
   }
 };
 
 }  // namespace
 
-class PaymentCredentialTest : public ::testing::Test {
+class SecurePaymentConfirmationServiceTest : public ::testing::Test {
  public:
-  PaymentCredentialTest() = default;
+  SecurePaymentConfirmationServiceTest() = default;
 
   void SetUp() override {
     web_contents_ = web_contents_factory_.CreateWebContents(&context_);
@@ -62,25 +62,26 @@ class PaymentCredentialTest : public ::testing::Test {
     return base::WrapUnique<BrowserBoundKeyStore>(key_store.release());
   }
 
-  std::unique_ptr<PaymentCredential, PaymentCredentialDeleter>
-  CreatePaymentCredential() {
-    mojo::PendingRemote<mojom::PaymentCredential> remote;
-    mojo::PendingReceiver<mojom::PaymentCredential> receiver =
+  std::unique_ptr<SecurePaymentConfirmationService,
+                  SecurePaymentConfirmationServiceDeleter>
+  CreateSecurePaymentConfirmationService() {
+    mojo::PendingRemote<mojom::SecurePaymentConfirmationService> remote;
+    mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver =
         remote.InitWithNewPipeAndPassReceiver();
-    auto payment_credential =
-        std::unique_ptr<PaymentCredential, PaymentCredentialDeleter>(
-            new PaymentCredential(*web_contents_->GetPrimaryMainFrame(),
-                                  /*receiver=*/std::move(receiver),
-                                  mock_web_data_service_,
-                                  CreateMockInternalAuthenticator()));
-    payment_credential->SetBrowserBoundKeyStoreForTesting(
+    auto spc_service = std::unique_ptr<SecurePaymentConfirmationService,
+                                       SecurePaymentConfirmationServiceDeleter>(
+        new SecurePaymentConfirmationService(
+            *web_contents_->GetPrimaryMainFrame(),
+            /*receiver=*/std::move(receiver), mock_web_data_service_,
+            CreateMockInternalAuthenticator()));
+    spc_service->SetBrowserBoundKeyStoreForTesting(
         CreateFakeBrowserBoundKeyStore());
-    payment_credential->SetRandomBytesAsVectorForTesting(
+    spc_service->SetRandomBytesAsVectorForTesting(
         base::BindLambdaForTesting([this](size_t length) {
           EXPECT_EQ(length, 32u);
           return fake_browser_bound_key_id_;
         }));
-    return payment_credential;
+    return spc_service;
   }
 
   const std::vector<uint8_t> fake_challenge_ = {0x01, 0x02, 0x03, 0x04};
@@ -100,7 +101,8 @@ class PaymentCredentialTest : public ::testing::Test {
           base::MakeRefCounted<MockPaymentManifestWebDataService>();
   raw_ptr<webauthn::MockInternalAuthenticator> mock_internal_authenticator_;
   base::WeakPtr<FakeBrowserBoundKeyStore> fake_browser_bound_key_store_;
-  base::MockCallback<mojom::PaymentCredential::MakePaymentCredentialCallback>
+  base::MockCallback<
+      mojom::SecurePaymentConfirmationService::MakePaymentCredentialCallback>
       mock_payment_credential_callback_;
 };
 
@@ -114,11 +116,13 @@ AuthenticatorResponseWithBrowserBoundSignature(std::vector<uint8_t> signature) {
                     Eq(signature)))));
 }
 
-TEST_F(PaymentCredentialTest, MakePaymentCredentialAddsBrowserBoundKey) {
+TEST_F(SecurePaymentConfirmationServiceTest,
+       MakePaymentCredentialAddsBrowserBoundKey) {
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
-  std::unique_ptr<PaymentCredential, PaymentCredentialDeleter>
-      payment_credential = CreatePaymentCredential();
+  std::unique_ptr<SecurePaymentConfirmationService,
+                  SecurePaymentConfirmationServiceDeleter>
+      spc_service = CreateSecurePaymentConfirmationService();
   fake_browser_bound_key_store_->PutFakeKey(
       fake_browser_bound_key_id_,
       FakeBrowserBoundKey(fake_public_key_, fake_signature_,
@@ -161,8 +165,8 @@ TEST_F(PaymentCredentialTest, MakePaymentCredentialAddsBrowserBoundKey) {
       Run(Eq(::blink::mojom::AuthenticatorStatus::SUCCESS),
           AuthenticatorResponseWithBrowserBoundSignature(fake_signature_), _));
 
-  payment_credential->MakePaymentCredential(
-      creation_options.Clone(), mock_payment_credential_callback_.Get());
+  spc_service->MakePaymentCredential(creation_options.Clone(),
+                                     mock_payment_credential_callback_.Get());
   ASSERT_FALSE(actual_payment_options.is_null());
   EXPECT_EQ(actual_payment_options->browser_bound_public_key, fake_public_key_);
 }

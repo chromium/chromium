@@ -11,11 +11,11 @@ enum PaymentCredentialStorageStatus {
   FAILED_TO_STORE_CREDENTIAL,
 };
 
-// A per-frame interface restricted to secure contexts for storing
-// PaymentCredentials in browser local storage. It is implemented in the browser
-// process and called by the renderer after creation of a PublicKeyCredential
-// with "payment" extension through the Credential Management API.
-interface PaymentCredential {
+// Interface providing browser services related to SecurePaymentConfirmation,
+// which are not tied to a specific PaymentRequest instantiation. This includes
+// services required at credential-creation time, which occurs outside of the
+// scope of PaymentRequest.
+interface SecurePaymentConfirmationService {
 
   // Store a new PublicKeyCredential with "payment" extension on disk. It can be
   // later used for PaymentRequests.

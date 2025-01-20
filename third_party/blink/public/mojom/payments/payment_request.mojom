@@ -7,7 +7,7 @@ module payments.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/mojom/payments/payment_credential.mojom";
+import "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/webauthn/authenticator.mojom";

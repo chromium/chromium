@@ -284,9 +284,9 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/payments/content/payment_credential_factory.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/payment_request_display_manager.h"
+#include "components/payments/content/secure_payment_confirmation_service_factory.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
@@ -6947,10 +6947,12 @@ ChromeContentBrowserClient::GetWebAuthenticationRequestDelegate(
 }
 #endif
 
-void ChromeContentBrowserClient::CreatePaymentCredential(
+void ChromeContentBrowserClient::CreateSecurePaymentConfirmationService(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
-  payments::CreatePaymentCredential(render_frame_host, std::move(receiver));
+    mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+        receiver) {
+  payments::CreateSecurePaymentConfirmationService(render_frame_host,
+                                                   std::move(receiver));
 }
 
 std::unique_ptr<net::ClientCertStore>

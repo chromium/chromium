@@ -168,7 +168,7 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_state_host.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
-#include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
+#include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
@@ -954,8 +954,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::Authenticator>(
       base::BindRepeating(&BindAuthenticator, base::Unretained(host)));
 
-  map->Add<payments::mojom::PaymentCredential>(base::BindRepeating(
-      &RenderFrameHostImpl::CreatePaymentCredential, base::Unretained(host)));
+  map->Add<payments::mojom::SecurePaymentConfirmationService>(
+      base::BindRepeating(
+          &RenderFrameHostImpl::CreateSecurePaymentConfirmationService,
+          base::Unretained(host)));
 
   // BrowserMainLoop::GetInstance() may be null on unit tests.
   if (BrowserMainLoop::GetInstance()) {

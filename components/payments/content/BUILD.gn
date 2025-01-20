@@ -20,10 +20,6 @@ static_library("content") {
     "payment_app_factory.h",
     "payment_app_service.cc",
     "payment_app_service.h",
-    "payment_credential.cc",
-    "payment_credential.h",
-    "payment_credential_factory.cc",
-    "payment_credential_factory.h",
     "payment_details_converter.cc",
     "payment_details_converter.h",
     "payment_event_response_util.cc",
@@ -53,6 +49,10 @@ static_library("content") {
     "secure_payment_confirmation_no_creds_model.h",
     "secure_payment_confirmation_no_creds_view.cc",
     "secure_payment_confirmation_no_creds_view.h",
+    "secure_payment_confirmation_service.cc",
+    "secure_payment_confirmation_service.h",
+    "secure_payment_confirmation_service_factory.cc",
+    "secure_payment_confirmation_service_factory.h",
     "secure_payment_confirmation_view.h",
     "service_worker_payment_app.cc",
     "service_worker_payment_app.h",
@@ -232,7 +232,7 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "payment_credential_unittest.cc" ]
+    sources += [ "secure_payment_confirmation_service_unittest.cc" ]
   }
 
   if (!is_android) {

@@ -13163,11 +13163,12 @@ void RenderFrameHostImpl::CreatePaymentManager(
       BackForwardCacheDisablingFeature::kPaymentManager);
 }
 
-void RenderFrameHostImpl::CreatePaymentCredential(
-    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
+void RenderFrameHostImpl::CreateSecurePaymentConfirmationService(
+    mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+        receiver) {
   if (IsFrameAllowedToUseSecurePaymentConfirmation(this)) {
-    GetContentClient()->browser()->CreatePaymentCredential(this,
-                                                           std::move(receiver));
+    GetContentClient()->browser()->CreateSecurePaymentConfirmationService(
+        this, std::move(receiver));
   }
 }
 

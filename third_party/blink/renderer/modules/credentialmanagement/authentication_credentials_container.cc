@@ -16,7 +16,7 @@
 #include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom-blink.h"
-#include "third_party/blink/public/mojom/payments/payment_credential.mojom-blink.h"
+#include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -735,10 +735,9 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
   }
 
   Vector<uint8_t> credential_id = credential->info->raw_id;
-  auto* payment_credential_remote =
-      CredentialManagerProxy::From(resolver->GetScriptState())
-          ->PaymentCredential();
-  payment_credential_remote->StorePaymentCredential(
+  auto* spc_service = CredentialManagerProxy::From(resolver->GetScriptState())
+                          ->SecurePaymentConfirmationService();
+  spc_service->StorePaymentCredential(
       std::move(credential_id), rp_id_for_payment_extension,
       std::move(user_id_for_payment_extension),
       WTF::BindOnce(&OnSaveCredentialIdForPaymentExtension,
@@ -1982,10 +1981,10 @@ AuthenticationCredentialsContainer::create(
     WTF::Vector<uint8_t> user_id_for_payment_extension = mojo_options->user->id;
     if (base::FeatureList::IsEnabled(
             blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-      auto* payment_credential_remote =
+      auto* spc_service =
           CredentialManagerProxy::From(resolver->GetScriptState())
-              ->PaymentCredential();
-      payment_credential_remote->MakePaymentCredential(
+              ->SecurePaymentConfirmationService();
+      spc_service->MakePaymentCredential(
           std::move(mojo_options),
           WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
                         std::make_unique<ScopedPromiseResolver>(resolver),

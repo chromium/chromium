@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_H_
-#define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_SERVICE_H_
+#define COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_SERVICE_H_
 
 #include <cstdint>
 #include <memory>
@@ -21,7 +21,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
+#include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom.h"
 
 namespace webauthn {
 
@@ -34,31 +34,32 @@ namespace payments {
 class BrowserBoundKey;
 class PaymentManifestWebDataService;
 
-// Implementation of the mojom::PaymentCredential interface for storing
-// PaymentCredential instruments and their associated WebAuthn credential IDs.
-// These can be retrieved later to authenticate during a PaymentRequest
-// that uses Secure Payment Confirmation.
-class PaymentCredential
-    : public content::DocumentService<mojom::PaymentCredential>,
+// Implementation of the mojom::SecurePaymentConfirmationService interface,
+// which provides SPC-related functionality that is not tied to a specific
+// PaymentRequest invocation.
+class SecurePaymentConfirmationService
+    : public content::DocumentService<mojom::SecurePaymentConfirmationService>,
       public WebDataServiceConsumer {
  public:
-  PaymentCredential(
+  SecurePaymentConfirmationService(
       content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<mojom::PaymentCredential> receiver,
+      mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
       scoped_refptr<PaymentManifestWebDataService> web_data_service,
       std::unique_ptr<webauthn::InternalAuthenticator> authenticator);
-  ~PaymentCredential() override;
+  ~SecurePaymentConfirmationService() override;
 
-  PaymentCredential(const PaymentCredential&) = delete;
-  PaymentCredential& operator=(const PaymentCredential&) = delete;
+  SecurePaymentConfirmationService(const SecurePaymentConfirmationService&) =
+      delete;
+  SecurePaymentConfirmationService& operator=(
+      const SecurePaymentConfirmationService&) = delete;
 
-  // mojom::PaymentCredential:
+  // mojom::SecurePaymentConfirmationService:
   void StorePaymentCredential(const std::vector<uint8_t>& credential_id,
                               const std::string& rp_id,
                               const std::vector<uint8_t>& user_id,
                               StorePaymentCredentialCallback callback) override;
 
-  // mojom::PaymentCredential:
+  // mojom::SecurePaymentConfirmationService:
   void MakePaymentCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       MakePaymentCredentialCallback callback) override;
@@ -99,7 +100,7 @@ class PaymentCredential
 
   // MakeCredentialCallback:
   void OnAuthenticatorMakeCredential(
-      PaymentCredential::MakePaymentCredentialCallback callback,
+      SecurePaymentConfirmationService::MakePaymentCredentialCallback callback,
       std::string maybe_relying_party,
       std::optional<std::vector<uint8_t>> maybe_browser_bound_key_id,
       std::unique_ptr<BrowserBoundKey> maybe_browser_bound_key,
@@ -137,9 +138,10 @@ class PaymentCredential
       random_bytes_as_vector_callback_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::WeakPtrFactory<PaymentCredential> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SecurePaymentConfirmationService> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_SERVICE_H_

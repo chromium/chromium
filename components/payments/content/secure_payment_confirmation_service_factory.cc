@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/payment_credential_factory.h"
+#include "components/payments/content/secure_payment_confirmation_service_factory.h"
 
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/payments/content/payment_credential.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/secure_payment_confirmation_service.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/internal_authenticator_android.h"
 #endif
@@ -19,9 +19,9 @@
 
 namespace payments {
 
-void CreatePaymentCredential(
+void CreateSecurePaymentConfirmationService(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<mojom::PaymentCredential> receiver) {
+    mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver) {
   if (!content::IsFrameAllowedToUseSecurePaymentConfirmation(
           render_frame_host)) {
     return;
@@ -47,12 +47,13 @@ void CreatePaymentCredential(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new PaymentCredential(*render_frame_host, std::move(receiver),
-                        webdata_services::WebDataServiceWrapperFactory::
-                            GetPaymentManifestWebDataServiceForBrowserContext(
-                                web_contents->GetBrowserContext(),
-                                ServiceAccessType::EXPLICIT_ACCESS),
-                        std::move(maybe_authenticator));
+  new SecurePaymentConfirmationService(
+      *render_frame_host, std::move(receiver),
+      webdata_services::WebDataServiceWrapperFactory::
+          GetPaymentManifestWebDataServiceForBrowserContext(
+              web_contents->GetBrowserContext(),
+              ServiceAccessType::EXPLICIT_ACCESS),
+      std::move(maybe_authenticator));
 }
 
 }  // namespace payments

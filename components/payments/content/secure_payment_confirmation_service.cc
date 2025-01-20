@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/payment_credential.h"
+#include "components/payments/content/secure_payment_confirmation_service.h"
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -32,9 +32,9 @@ constexpr size_t kBrowserBoundKeyIdLength = 32;
 #endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace
 
-PaymentCredential::PaymentCredential(
+SecurePaymentConfirmationService::SecurePaymentConfirmationService(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<mojom::PaymentCredential> receiver,
+    mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
     scoped_refptr<PaymentManifestWebDataService> web_data_service,
     std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
     : DocumentService(render_frame_host, std::move(receiver)),
@@ -46,11 +46,11 @@ PaymentCredential::PaymentCredential(
 #endif
 }
 
-PaymentCredential::~PaymentCredential() {
+SecurePaymentConfirmationService::~SecurePaymentConfirmationService() {
   Reset();
 }
 
-void PaymentCredential::StorePaymentCredential(
+void SecurePaymentConfirmationService::StorePaymentCredential(
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,
     const std::vector<uint8_t>& user_id,
@@ -84,7 +84,7 @@ void PaymentCredential::StorePaymentCredential(
           /*consumer=*/this);
 }
 
-void PaymentCredential::MakePaymentCredential(
+void SecurePaymentConfirmationService::MakePaymentCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakePaymentCredentialCallback callback) {
   std::string relying_party_id;
@@ -125,26 +125,26 @@ void PaymentCredential::MakePaymentCredential(
 #endif  // BUILDFLAG(IS_ANDROID)
   authenticator_->MakeCredential(
       std::move(options),
-      base::BindOnce(&PaymentCredential::OnAuthenticatorMakeCredential,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(relying_party_id),
-                     std::move(browser_bound_key_id),
-                     std::move(browser_bound_key)));
+      base::BindOnce(
+          &SecurePaymentConfirmationService::OnAuthenticatorMakeCredential,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(relying_party_id), std::move(browser_bound_key_id),
+          std::move(browser_bound_key)));
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void PaymentCredential::SetBrowserBoundKeyStoreForTesting(
+void SecurePaymentConfirmationService::SetBrowserBoundKeyStoreForTesting(
     std::unique_ptr<BrowserBoundKeyStore> browser_bound_key_store) {
   browser_bound_key_store_ = std::move(browser_bound_key_store);
 }
 
-void PaymentCredential::SetRandomBytesAsVectorForTesting(
+void SecurePaymentConfirmationService::SetRandomBytesAsVectorForTesting(
     base::RepeatingCallback<std::vector<uint8_t>(size_t)> callback) {
   random_bytes_as_vector_callback_ = std::move(callback);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void PaymentCredential::OnWebDataServiceRequestDone(
+void SecurePaymentConfirmationService::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
 #if BUILDFLAG(IS_ANDROID)
@@ -176,8 +176,8 @@ void PaymentCredential::OnWebDataServiceRequestDone(
 
 // Handles the authenticator make credential callback by adding the browser
 // bound signature, then running the callback.
-void PaymentCredential::OnAuthenticatorMakeCredential(
-    PaymentCredential::MakePaymentCredentialCallback callback,
+void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
+    SecurePaymentConfirmationService::MakePaymentCredentialCallback callback,
     std::string relying_party,
     std::optional<std::vector<uint8_t>> browser_bound_key_id,
     std::unique_ptr<BrowserBoundKey> browser_bound_key,
@@ -204,7 +204,7 @@ void PaymentCredential::OnAuthenticatorMakeCredential(
                           std::move(maybe_exception_details));
 }
 
-bool PaymentCredential::IsCurrentStateValid() const {
+bool SecurePaymentConfirmationService::IsCurrentStateValid() const {
   if (!content::IsFrameAllowedToUseSecurePaymentConfirmation(
           &render_frame_host()) ||
       !web_data_service_) {
@@ -220,7 +220,7 @@ bool PaymentCredential::IsCurrentStateValid() const {
   }
 }
 
-void PaymentCredential::RecordFirstSystemPromptResult(
+void SecurePaymentConfirmationService::RecordFirstSystemPromptResult(
     SecurePaymentConfirmationEnrollSystemPromptResult result) {
   if (!is_system_prompt_result_recorded_) {
     is_system_prompt_result_recorded_ = true;
@@ -228,7 +228,7 @@ void PaymentCredential::RecordFirstSystemPromptResult(
   }
 }
 
-void PaymentCredential::Reset() {
+void SecurePaymentConfirmationService::Reset() {
   // Callbacks must either be run or disconnected before being destroyed, so
   // run them if they are still connected.
   if (storage_callback_) {
