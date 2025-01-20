@@ -2049,7 +2049,7 @@ def create_bindgen_module(blueprint: Blueprint, target,
   # Note: this module is not part of the generated build rules; it is expected
   # to already be present in AOSP (currently, in Android.extras.bp). See
   # https://r.android.com/3413202.
-  module.header_libs = ["cronet_repository_root_include_dirs_anchor"]
+  module.header_libs = {"cronet_repository_root_include_dirs_anchor"}
   module.min_sdk_version = 31
   module.apex_available = [tethering_apex]
   blueprint.add_module(module)
