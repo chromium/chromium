@@ -211,11 +211,6 @@ BASE_DECLARE_FEATURE(kBubbleMetricsApi);
 // If not set, these values fall back to the pre-defined Skia defaults.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kUseGammaContrastRegistrySettings);
-
-// Increases the contrast of text to align more closely with contemporary
-// applications.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kIncreaseWindowsTextContrast);
 #endif  // BUILDFLAG(IS_WIN)
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
