@@ -50,7 +50,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
     async function step1(arg, result) {
       var statistics = await result;
-      TestRunner.addResult(JSON.stringify(statistics));
+      TestRunner.addResult(JSON.stringify(statistics, null, '  '));
       setTimeout(next, 0);
     }
   }]);
