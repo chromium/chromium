@@ -4944,6 +4944,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "history-opt-in-entry-points",
+    "owners": [ "samarchehade@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "history-pane-android",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 140
