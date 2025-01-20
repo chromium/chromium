@@ -870,13 +870,6 @@ void MetricsService::InitializeMetricsState() {
 
   // Notify stability metrics providers about the launch.
   provider.LogLaunch();
-
-  // Call GetUptimes() for the first time, thus allowing all later calls
-  // to record incremental uptimes accurately.
-  base::TimeDelta ignored_uptime_parameter;
-  base::TimeDelta startup_uptime;
-  GetUptimes(local_state_, &startup_uptime, &ignored_uptime_parameter);
-  DCHECK_EQ(0, startup_uptime.InMicroseconds());
 }
 
 void MetricsService::OnUserAction(const std::string& action,
@@ -890,21 +883,6 @@ void MetricsService::FinishedInitTask() {
   DCHECK_EQ(INIT_TASK_SCHEDULED, state_);
   state_ = INIT_TASK_DONE;
   rotation_scheduler_->InitTaskComplete();
-}
-
-void MetricsService::GetUptimes(PrefService* pref,
-                                base::TimeDelta* incremental_uptime,
-                                base::TimeDelta* uptime) {
-  base::TimeTicks now = base::TimeTicks::Now();
-  // If this is the first call, init |first_updated_time_| and
-  // |last_updated_time_|.
-  if (last_updated_time_.is_null()) {
-    first_updated_time_ = now;
-    last_updated_time_ = now;
-  }
-  *incremental_uptime = now - last_updated_time_;
-  *uptime = now - first_updated_time_;
-  last_updated_time_ = now;
 }
 
 //------------------------------------------------------------------------------
@@ -1061,12 +1039,8 @@ void MetricsService::CloseCurrentLog(
   // MetricsLog class.
   std::unique_ptr<MetricsLog> current_log(std::move(current_log_));
   RecordCurrentEnvironment(current_log.get(), /*complete=*/true);
-  base::TimeDelta incremental_uptime;
-  base::TimeDelta uptime;
-  GetUptimes(local_state_, &incremental_uptime, &uptime);
-  current_log->RecordCurrentSessionData(incremental_uptime, uptime,
-                                        &delegating_provider_, local_state_);
   current_log->AssignFinalizedRecordId(local_state_);
+  current_log->RecordCurrentSessionData(&delegating_provider_, local_state_);
 
   auto log_histogram_writer =
       std::make_unique<MetricsLogHistogramWriter>(current_log.get());

@@ -176,14 +176,11 @@ class MetricsLog {
   void RecordPreviousSessionData(DelegatingProvider* delegating_provider,
                                  PrefService* local_state);
 
-  // Populates the log with data about the current session. The uptimes are used
-  // to populate the log with info about how long Chrome has been running.
+  // Populates the log with data about the current session.
   // |delegating_provider| forwards the call to provide data to registered
   // MetricsProviders. |local_state| is used to schedule a write because a side
   // effect of providing some data is updating Local State prefs.
-  void RecordCurrentSessionData(base::TimeDelta incremental_uptime,
-                                base::TimeDelta uptime,
-                                DelegatingProvider* delegating_provider,
+  void RecordCurrentSessionData(DelegatingProvider* delegating_provider,
                                 PrefService* local_state);
 
   // Returns the current time using |network_clock_| if non-null (falls back to
@@ -237,13 +234,6 @@ class MetricsLog {
   // Write the default state of the enable metrics checkbox.
   void WriteMetricsEnableDefault(EnableMetricsDefault metrics_default,
                                  SystemProfileProto* system_profile);
-
-  // Within the stability group, write attributes that need to be updated asap
-  // and can't be delayed until the user decides to restart chromium.
-  // Delaying these stats would bias metrics away from happy long lived
-  // chromium processes (ones that don't crash, and keep on running).
-  void WriteRealtimeStabilityAttributes(base::TimeDelta incremental_uptime,
-                                        base::TimeDelta uptime);
 
   // closed_ is true when record has been packed up for sending, and should
   // no longer be written to.  It is only used for sanity checking.
