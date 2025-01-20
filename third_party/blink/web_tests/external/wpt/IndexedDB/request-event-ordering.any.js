@@ -1,13 +1,11 @@
-<!doctype html>
-<meta charset="utf8">
-<meta name="timeout" content="long">
-<title>IndexedDB: request result events are delivered in order</title>
-<link rel="help" href="https://w3c.github.io/IndexedDB/#abort-transaction">
-<link rel="author" href="pwnall@chromium.org" title="Victor Costan">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/support-promises.js"></script>
-<script>
+// META: title=IndexedDB: request result events are delivered in order
+// META: global=window,worker
+// META: script=resources/support-promises.js
+// META: script=resources/support.js
+// META: timeout=long
+
+// Spec: https://w3c.github.io/IndexedDB/#abort-transaction
+
 'use strict';
 
 // Should be large enough to trigger large value handling in the IndexedDB
@@ -15,10 +13,10 @@
 const wrapThreshold = 128 * 1024;
 
 function populateStore(store) {
-  store.put({id: 1, key: 'k1', value: largeValue(wrapThreshold, 1) });
-  store.put({id: 2, key: 'k2', value: ['small-2'] });
-  store.put({id: 3, key: 'k3', value: largeValue(wrapThreshold, 3) });
-  store.put({id: 4, key: 'k4', value: ['small-4'] });
+  store.put({id: 1, key: 'k1', value: largeValue(wrapThreshold, 1)});
+  store.put({id: 2, key: 'k2', value: ['small-2']});
+  store.put({id: 3, key: 'k3', value: largeValue(wrapThreshold, 3)});
+  store.put({id: 4, key: 'k4', value: ['small-4']});
 }
 
 // Assigns cursor indexes for operations that require open cursors.
@@ -41,8 +39,8 @@ function openCursors(testCase, index, operations, onerror, onsuccess) {
     let request;
     switch (opcode) {
       case 'continue':
-        request = index.openCursor(
-            IDBKeyRange.lowerBound(`k${primaryKey - 1}`));
+        request =
+            index.openCursor(IDBKeyRange.lowerBound(`k${primaryKey - 1}`));
         break;
       case 'continue-empty':
         // k4 is the last key in the data set, so calling continue() will get
@@ -77,19 +75,21 @@ function doOperation(testCase, store, index, operation, requestId, results) {
     let request;
     switch (opcode) {
       case 'add':  // Tests returning a primary key.
-        request = store.add(
-            { key: `k${primaryKey}`, value: [`small-${primaryKey}`] });
+        request =
+            store.add({key: `k${primaryKey}`, value: [`small-${primaryKey}`]});
         break;
       case 'put':  // Tests returning a primary key.
-        request = store.put(
-            { key: `k${primaryKey}`, value: [`small-${primaryKey}`] });
+        request =
+            store.put({key: `k${primaryKey}`, value: [`small-${primaryKey}`]});
         break;
       case 'put-with-id':  // Tests returning success or a primary key.
-        request = store.put(
-            { key: `k${primaryKey}`, value: [`small-${primaryKey}`],
-              id: primaryKey });
+        request = store.put({
+          key: `k${primaryKey}`,
+          value: [`small-${primaryKey}`],
+          id: primaryKey
+        });
         break;
-      case 'get':  // Tests returning a value.
+      case 'get':        // Tests returning a value.
       case 'get-empty':  // Tests returning undefined.
         request = store.get(primaryKey);
         break;
@@ -97,8 +97,8 @@ function doOperation(testCase, store, index, operation, requestId, results) {
         request = store.getAll();
         break;
       case 'error':  // Tests returning an error.
-        request = store.put(
-            { key: `k${primaryKey}`, value: [`small-${primaryKey}`] });
+        request =
+            store.put({key: `k${primaryKey}`, value: [`small-${primaryKey}`]});
         request.onerror = testCase.step_func(event => {
           event.preventDefault();
           results.push([requestId, request.error]);
@@ -173,7 +173,8 @@ function checkOperationResult(operation, result, requestId) {
   const primaryKey = operation[1];
 
   const expectedValue = (primaryKey == 1 || primaryKey == 3) ?
-      largeValue(wrapThreshold, primaryKey) : [`small-${primaryKey}`];
+      largeValue(wrapThreshold, primaryKey) :
+      [`small-${primaryKey}`];
 
   const requestIndex = result[0];
   assert_equals(
@@ -211,7 +212,8 @@ function checkOperationResult(operation, result, requestId) {
             `get result ${i + 1} should match put value (key)`);
 
         const expectedValue = (i == 0 || i == 2) ?
-            largeValue(wrapThreshold, i + 1) : [`small-${i + 1}`];
+            largeValue(wrapThreshold, i + 1) :
+            [`small-${i + 1}`];
         assert_equals(
             object.value.join(','), object.value.join(','),
             `get result ${i + 1} should match put value (nested value)`);
@@ -253,56 +255,48 @@ function checkOperationResult(operation, result, requestId) {
 
 function eventsTest(label, operations) {
   promise_test(testCase => {
-    return createDatabase(testCase, (database, transaction) => {
-      const store = database.createObjectStore(
-          'test-store', { autoIncrement: true, keyPath: 'id' });
-      store.createIndex('test-index', 'key', { unique: true });
-      populateStore(store);
-    }).then(database => {
-      const transaction = database.transaction(['test-store'], 'readwrite');
-      const store = transaction.objectStore('test-store');
-      const index = store.index('test-index');
-      return new Promise((resolve, reject) => {
-        openCursors(testCase, index, operations, reject, () => {
-          const results = [];
-          const promises = [];
-          for (let i = 0; i < operations.length; ++i) {
-            const promise = doOperation(
-                testCase, store, index, operations[i], i, results);
-            promises.push(promise);
-          };
-          resolve(Promise.all(promises).then(() => results));
+    return createDatabase(
+               testCase,
+               (database, transaction) => {
+                 const store = database.createObjectStore(
+                     'test-store', {autoIncrement: true, keyPath: 'id'});
+                 store.createIndex('test-index', 'key', {unique: true});
+                 populateStore(store);
+               })
+        .then(database => {
+          const transaction = database.transaction(['test-store'], 'readwrite');
+          const store = transaction.objectStore('test-store');
+          const index = store.index('test-index');
+          return new Promise((resolve, reject) => {
+            openCursors(testCase, index, operations, reject, () => {
+              const results = [];
+              const promises = [];
+              for (let i = 0; i < operations.length; ++i) {
+                const promise = doOperation(
+                    testCase, store, index, operations[i], i, results);
+                promises.push(promise);
+              };
+              resolve(Promise.all(promises).then(() => results));
+            });
+          });
+        })
+        .then(results => {
+          assert_equals(
+              results.length, operations.length,
+              'Promise.all should resolve after all sub-promises resolve');
+          for (let i = 0; i < operations.length; ++i)
+            checkOperationResult(operations[i], results[i], i);
         });
-      });
-    }).then(results => {
-      assert_equals(
-          results.length, operations.length,
-          'Promise.all should resolve after all sub-promises resolve');
-      for (let i = 0; i < operations.length; ++i)
-        checkOperationResult(operations[i], results[i], i);
-    });
   }, label);
 }
 
 eventsTest('small values', [
-  ['get', 2],
-  ['count', 4],
-  ['continue-empty', null],
-  ['get-empty', 5],
-  ['add', 5],
-  ['open', 2],
-  ['continue', 2],
-  ['get', 4],
-  ['get-empty', 6],
-  ['count', 5],
-  ['put-with-id', 5],
-  ['put', 6],
-  ['error', 3],
-  ['continue', 4],
-  ['count', 6],
-  ['get-empty', 7],
-  ['open', 4],
-  ['open-empty', 7],
+  ['get', 2],       ['count', 4],       ['continue-empty', null],
+  ['get-empty', 5], ['add', 5],         ['open', 2],
+  ['continue', 2],  ['get', 4],         ['get-empty', 6],
+  ['count', 5],     ['put-with-id', 5], ['put', 6],
+  ['error', 3],     ['continue', 4],    ['count', 6],
+  ['get-empty', 7], ['open', 4],        ['open-empty', 7],
   ['add', 7],
 ]);
 
@@ -365,5 +359,3 @@ eventsTest('large values mixed with small values', [
   ['error', 3],
   ['count', 7],
 ]);
-
-</script>
