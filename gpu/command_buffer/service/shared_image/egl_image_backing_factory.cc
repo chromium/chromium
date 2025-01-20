@@ -116,9 +116,7 @@ bool EGLImageBackingFactory::IsSupported(SharedImageUsageSet usage,
 
   if ((usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
                     SHARED_IMAGE_USAGE_WEBGPU_WRITE)) &&
-      (gr_context_type != GrContextType::kGL ||
-       gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
-       gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL)) {
+      (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES)) {
     return false;
   }
 
