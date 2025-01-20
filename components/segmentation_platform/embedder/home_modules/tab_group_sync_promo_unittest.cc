@@ -25,6 +25,21 @@ class TabGroupSyncPromoTest : public testing::Test {
 
   void TearDown() override { Test::TearDown(); }
 
+  void TestComputeCardResultImpl(bool hasTabGroupSyncPromoInteracted,
+                                 float syncedTabGroupExists,
+                                 float tabGroupSyncPromoShownCount,
+                                 EphemeralHomeModuleRank position) {
+    pref_service_.SetUserPref(
+        kTabGroupSyncPromoInteractedPref,
+        std::make_unique<base::Value>(hasTabGroupSyncPromoInteracted));
+    auto card = std::make_unique<TabGroupSyncPromo>(&pref_service_);
+    AllCardSignals all_signals = CreateAllCardSignals(
+        card.get(), {syncedTabGroupExists, tabGroupSyncPromoShownCount});
+    CardSelectionSignals card_signal(&all_signals, kTabGroupSyncPromo);
+    CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
+    EXPECT_EQ(position, result.position);
+  }
+
  protected:
   TestingPrefServiceSimple pref_service_;
 };
@@ -44,15 +59,10 @@ TEST_F(TabGroupSyncPromoTest, GetInputsReturnsExpectedInputs) {
 // Validates that ComputeCardResult() returns kLast when tab group sync promo
 // card is enabled.
 TEST_F(TabGroupSyncPromoTest, TestComputeCardResultWithCardEnabled) {
-  pref_service_.SetUserPref(kTabGroupSyncPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<TabGroupSyncPromo>(&pref_service_);
-  AllCardSignals all_signals =
-      CreateAllCardSignals(card.get(), {/* kSyncedTabGroupExists */ 1,
-                                        /* kTabGroupSyncPromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupSyncPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kLast, result.position);
+  TestComputeCardResultImpl(
+      /* hasTabGroupSyncPromoInteracted */ false,
+      /* syncedTabGroupExists */ 1,
+      /* tabGroupSyncPromoShownCount */ 0, EphemeralHomeModuleRank::kLast);
 }
 
 // Validates that when the tab group sync promo card is disabled because the
@@ -60,15 +70,10 @@ TEST_F(TabGroupSyncPromoTest, TestComputeCardResultWithCardEnabled) {
 // kNotShown.
 TEST_F(TabGroupSyncPromoTest,
        TestComputeCardResultWithCardDisabledForSyncedTabGroupNotExists) {
-  pref_service_.SetUserPref(kTabGroupSyncPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<TabGroupSyncPromo>(&pref_service_);
-  AllCardSignals all_signals =
-      CreateAllCardSignals(card.get(), {/* kSyncedTabGroupExists */ 0,
-                                        /* kTabGroupSyncPromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupSyncPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(
+      /* hasTabGroupSyncPromoInteracted */ false,
+      /* syncedTabGroupExists */ 0,
+      /* tabGroupSyncPromoShownCount */ 0, EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -76,15 +81,10 @@ TEST_F(TabGroupSyncPromoTest,
 // allows.
 TEST_F(TabGroupSyncPromoTest,
        TestComputeCardResultWithCardDisabledForHasReachedSessionLimit) {
-  pref_service_.SetUserPref(kTabGroupSyncPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<TabGroupSyncPromo>(&pref_service_);
-  AllCardSignals all_signals =
-      CreateAllCardSignals(card.get(), {/* kSyncedTabGroupExists */ 1,
-                                        /* kTabGroupSyncPromoShownCount */ 3});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupSyncPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(
+      /* hasTabGroupSyncPromoInteracted */ false,
+      /* syncedTabGroupExists */ 1,
+      /* tabGroupSyncPromoShownCount */ 3, EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -92,15 +92,10 @@ TEST_F(TabGroupSyncPromoTest,
 // with the card.
 TEST_F(TabGroupSyncPromoTest,
        TestComputeCardResultWithCardDisabledForUserInteraction) {
-  pref_service_.SetUserPref(kTabGroupSyncPromoInteractedPref,
-                            std::make_unique<base::Value>(true));
-  auto card = std::make_unique<TabGroupSyncPromo>(&pref_service_);
-  AllCardSignals all_signals =
-      CreateAllCardSignals(card.get(), {/* kSyncedTabGroupExists */ 1,
-                                        /* kTabGroupSyncPromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupSyncPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(
+      /* hasTabGroupSyncPromoInteracted */ true,
+      /* syncedTabGroupExists */ 1,
+      /* tabGroupSyncPromoShownCount */ 0, EphemeralHomeModuleRank::kNotShown);
 }
 
 }  // namespace segmentation_platform::home_modules
