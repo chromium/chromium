@@ -273,10 +273,11 @@
               <span>[[item.email]]</span>
             </button>
           </template>
-          <button class="dropdown-item" on-click="onSigninClick_"
-              disabled="[[syncStatus.firstSetupInProgress]]" id="sign-in-item">
-            <img class="account-icon small" alt=""
-                src="chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE">
+          <button class="dropdown-item" on-click="onSigninClick_" 
+                  disabled="[[syncStatus.firstSetupInProgress]]" 
+                  id="sign-in-item">
+              <cr-icon icon="cr:add" class="account-icon small" alt="">
+              </cr-icon>
             <span>$i18n{useAnotherAccount}</span>
           </button>
           <button class="dropdown-item" on-click="onSignoutClick_"
