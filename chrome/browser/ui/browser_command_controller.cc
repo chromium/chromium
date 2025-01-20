@@ -71,7 +71,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
-#include "chrome/browser/ui/webui/inspect/inspect_ui.h"
+#include "chrome/browser/ui/webui/inspect_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -540,6 +540,16 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_DUPLICATE_TAB:
       DuplicateTab(browser_);
       break;
+
+    // Hypertrail
+    case IDC_DUPLICATE_TAB_TO_WINDOW:
+      DuplicateToNewWindow(browser_);
+      break;
+    case IDC_UPDATE_CHECK:
+      UpdateCheckCommand(browser_);
+      break;
+
+    // End of Hypertrail    
     case IDC_RESTORE_TAB:
       RestoreTab(browser_);
       break;
@@ -558,6 +568,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_NAME_WINDOW:
       PromptToNameWindow(browser_);
+      break;
+    case IDC_COMPACT_MODE:
+      ToggleCompactMode(browser_);
       break;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1251,9 +1264,14 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_TAB, true);
   command_updater_.UpdateCommandEnabled(
       IDC_DUPLICATE_TAB, !browser_->is_type_picture_in_picture());
+  command_updater_.UpdateCommandEnabled(IDC_DUPLICATE_TAB_TO_WINDOW, true);
   UpdateTabRestoreCommandState();
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
+  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
+    command_updater_.UpdateCommandEnabled(IDC_COMPACT_MODE, true);
+  }
+
   command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_CREATE_NEW_TAB_GROUP, true);
   command_updater_.UpdateCommandEnabled(IDC_DECLUTTER_TABS, true);
@@ -1433,7 +1451,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SET_BROWSER_AS_DEFAULT, true);
 
   // Safety Hub commands.
-  command_updater_.UpdateCommandEnabled(IDC_OPEN_SAFETY_HUB, true);
+  command_updater_.UpdateCommandEnabled(
+      IDC_OPEN_SAFETY_HUB, base::FeatureList::IsEnabled(features::kSafetyHub));
 
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_MUTE_SITE, normal_window);
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB, normal_window);
@@ -1471,9 +1490,6 @@ void BrowserCommandController::InitCommandState() {
   // Compare commands.
   command_updater_.UpdateCommandEnabled(IDC_COMPARE_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_ALL_COMPARISON_TABLES, true);
-  command_updater_.UpdateCommandEnabled(IDC_ADD_TO_COMPARISON_TABLE_MENU, true);
-  command_updater_.UpdateCommandEnabled(
-      IDC_CREATE_NEW_COMPARISON_TABLE_WITH_TAB, true);
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();
@@ -1617,6 +1633,10 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB, is_normal);
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_GROUP_TAB, is_normal);
 
+  // Enabling Hypertrail commands
+  command_updater_.UpdateCommandEnabled(IDC_DUPLICATE_TAB_TO_WINDOW, !is_app && CanDuplicateTab(browser_));
+  command_updater_.UpdateCommandEnabled(IDC_UPDATE_CHECK, !is_app);
+  
   // Page-related commands
   window()->SetStarredState(
       BookmarkTabHelper::FromWebContents(current_web_contents)->is_starred());
@@ -1670,12 +1690,6 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // Update the zoom commands when an active tab is selected.
   UpdateCommandsForZoomState();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
-
-  // Disable the add to comparison table menu when the page is not a standard
-  // webpage.
-  const GURL& current_url = current_web_contents->GetLastCommittedURL();
-  command_updater_.UpdateCommandEnabled(IDC_ADD_TO_COMPARISON_TABLE_MENU,
-                                        current_url.SchemeIsHTTPOrHTTPS());
 }
 
 void BrowserCommandController::UpdateCommandsForZoomState() {
