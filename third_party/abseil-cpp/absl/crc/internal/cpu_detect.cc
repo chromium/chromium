@@ -296,24 +296,12 @@ static absl::optional<T> ReadSysctlByName(const char* name) {
   size_t val_size = sizeof(T);
   int ret = sysctlbyname(name, &val, &val_size, nullptr, 0);
   if (ret == -1) {
-    return std::nullopt;
+    return absl::nullopt;
   }
   return val;
 }
 
 bool SupportsArmCRC32PMULL() {
-#if ABSL_HAVE_BUILTIN(__builtin_cpu_supports)
-  // Support for the AES and PMULL instructions are tied together:
-  // "When Cryptographic extensions are implemented and enabled then AESE, AESD,
-  // AESMC, and AESIMC instructions are implemented and also PMULL/PMULL2
-  // instructions operating on 64-bit data quantities."
-  //
-  // __builtin_cpu_supports expects users of PMULL to check for AES.
-  //
-  // https://developer.arm.com/documentation/101800/0201/AArch64-registers/AArch64-Identification-register-summary/ID-AA64ISAR0-EL1--AArch64-Instruction-Set-Attribute-Register-0
-  return __builtin_cpu_supports("crc+aes");
-#endif
-
   // Newer XNU kernels support querying all capabilities in a single
   // sysctlbyname.
 #if defined(CAP_BIT_CRC32) && defined(CAP_BIT_FEAT_PMULL)
