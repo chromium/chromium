@@ -12,9 +12,11 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/profiler/thread_group_profiler.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/profiler/chrome_thread_group_profiler_client.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/utility/services.h"
@@ -35,6 +37,8 @@
 #endif
 
 ChromeContentUtilityClient::ChromeContentUtilityClient() {
+  base::ThreadGroupProfiler::SetClient(
+      std::make_unique<ChromeThreadGroupProfilerClient>());
   sampling_profiler::ThreadProfiler::SetClient(
       std::make_unique<ChromeThreadProfilerClient>());
 }

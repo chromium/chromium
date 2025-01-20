@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
+#include "base/profiler/thread_group_profiler.h"
 #include "base/run_loop.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/strings/string_util.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/chrome_thread_group_profiler_client.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -204,6 +206,11 @@ bool ChromeTestChromeMainDelegate::ShouldHandleConsoleControlEvents() {
 #endif
 
 void ChromeTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
+  // The ThreadGroupProfiler client must be set before thread pool is
+  // created (below).
+  base::ThreadGroupProfiler::SetClient(
+      std::make_unique<ChromeThreadGroupProfilerClient>());
+
   base::test::TaskEnvironment::CreateThreadPool();
 
   // The ThreadProfiler client must be set before main thread profiling is

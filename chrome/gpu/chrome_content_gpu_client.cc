@@ -10,10 +10,12 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/profiler/thread_group_profiler.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/profiler/chrome_thread_group_profiler_client.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
@@ -39,6 +41,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 ChromeContentGpuClient::ChromeContentGpuClient() {
+  base::ThreadGroupProfiler::SetClient(
+      std::make_unique<ChromeThreadGroupProfilerClient>());
   sampling_profiler::ThreadProfiler::SetClient(
       std::make_unique<ChromeThreadProfilerClient>());
 
