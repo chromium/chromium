@@ -22,9 +22,6 @@ include_rules = [
   "+components/vector_icons",
   "+ui/base",
   "+ui/gfx",
-
-  # TODO(crbug.com/40251822) Remove when async canned helper logic is removed.
-  "+components/page_info/core",
 ]
 
 specific_include_rules = {

@@ -50,10 +50,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/page_info/core/features.h"
-#endif
-
 using content::BrowserThread;
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
