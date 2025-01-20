@@ -51,7 +51,7 @@ namespace {
 // like a stream of InterpolableValues,
 //    consisting of 2 Lengths for the origin + 0-6 values per segments, mostly
 //    InerpolableLength: 0 for Close, 1 length for hline/vLine, 4 or 6 Lengths
-//    for curves, 4 lengths + angle for arc, 2 lengths for the rest.
+//    for curves, 4 lengths + 3 numbers for arc, 2 lengths for the rest.
 // Converting to/from this interpolation value consists of either "writing" to
 // this stream from a CSSValue/StyleShape, or "reading" from it when converting
 // it to the end result (a StyleShape).
@@ -60,10 +60,9 @@ class ShapeNonInterpolableValue : public NonInterpolableValue {
  public:
   struct SegmentParams {
     SVGPathSegType type;
-    bool arc_large;
-    bool arc_sweep;
     StyleShape::ControlPoint::Origin control_point_origin_1;
     StyleShape::ControlPoint::Origin control_point_origin_2;
+    bool operator==(const SegmentParams&) const = default;
   };
 
   ~ShapeNonInterpolableValue() override = default;
@@ -87,27 +86,6 @@ class ShapeNonInterpolableValue : public NonInterpolableValue {
   Vector<SegmentParams> params_;
   WindRule wind_rule_;
 };
-
-bool ParamsMatch(
-    const Vector<ShapeNonInterpolableValue::SegmentParams>& list_a,
-    const Vector<ShapeNonInterpolableValue::SegmentParams>& list_b) {
-  if (list_a.size() != list_b.size()) {
-    return false;
-  }
-  for (size_t i = 0; i < list_a.size(); ++i) {
-    const auto& a = list_a[i];
-    const auto& b = list_b[i];
-
-    // We only match curves, as mismatching arcs can still interpolate.
-    if (a.type != b.type ||
-        a.control_point_origin_1 != b.control_point_origin_1 ||
-        a.control_point_origin_2 != b.control_point_origin_2) {
-      return false;
-    }
-  }
-
-  return true;
-}
 
 class ShapeSegmentInterpolationBuilder {
   STACK_ALLOCATED();
@@ -184,8 +162,10 @@ class ShapeSegmentInterpolationBuilder {
         segment.angle, CSSPrimitiveValue::UnitType::kDegrees));
     Write(segment.radius.Width());
     Write(segment.radius.Height());
-    params.arc_large = segment.large;
-    params.arc_sweep = segment.sweep;
+    interpolable_values.push_back(
+        MakeGarbageCollected<InterpolableNumber>(segment.large ? 1.f : 0.f));
+    interpolable_values.push_back(
+        MakeGarbageCollected<InterpolableNumber>(segment.sweep ? 1.f : 0.f));
   }
 
   template <SVGPathSegType Type>
@@ -300,8 +280,12 @@ InterpolationValue ConvertPath(const StylePath* style_path,
                 segment.ArcAngle(), CSSPrimitiveValue::UnitType::kDegrees));
         WriteLength(segment.ArcRadiusX());
         WriteLength(segment.ArcRadiusY());
-        params.arc_large = segment.LargeArcFlag();
-        params.arc_sweep = segment.SweepFlag();
+        interpolable_segments.push_back(
+            MakeGarbageCollected<InterpolableNumber>(
+                segment.LargeArcFlag() ? 1.f : 0.f));
+        interpolable_segments.push_back(
+            MakeGarbageCollected<InterpolableNumber>(
+                segment.SweepFlag() ? 1.f : 0.f));
         break;
       case SVGPathSegType::kPathSegClosePath:
         break;
@@ -367,10 +351,8 @@ class UnderlyingShapeConversionChecker final
     return value_->GetWindRule() ==
                To<ShapeNonInterpolableValue>(*underlying.non_interpolable_value)
                    .GetWindRule() &&
-           ParamsMatch(
-               To<ShapeNonInterpolableValue>(*underlying.non_interpolable_value)
-                   .GetParams(),
-               value_->GetParams());
+           To<ShapeNonInterpolableValue>(*underlying.non_interpolable_value)
+                   .GetParams() == value_->GetParams();
   }
 
  private:
@@ -416,12 +398,14 @@ class ShapeInterpolationReader {
   StyleShape::Segment ReadArc(
       const ShapeNonInterpolableValue::SegmentParams& params) {
     LengthPoint target_point = ReadPoint();
-    double angle = To<InterpolableNumber>(*value_list_.Get(index_))
+    double angle = To<InterpolableNumber>(*value_list_.Get(index_++))
                        .Value(conversion_data_);
-    index_++;
     LengthSize radius(ReadLength(), ReadLength());
-    return T{
-        {{target_point}, angle, radius, params.arc_large, params.arc_sweep}};
+    double arc_large = To<InterpolableNumber>(*value_list_.Get(index_++))
+                           .Value(conversion_data_);
+    double arc_sweep = To<InterpolableNumber>(*value_list_.Get(index_++))
+                           .Value(conversion_data_);
+    return T{{{target_point}, angle, radius, arc_large > 0.f, arc_sweep > 0.f}};
   }
 
   Length ReadLength() {
@@ -583,19 +567,16 @@ void CSSShapeInterpolationType::Composite(
     UnderlyingValueOwner& underlying_value_owner,
     double underlying_fraction,
     const InterpolationValue& value,
-    double) const {
+    double interpolation_fraction) const {
   const auto& value1 = To<ShapeNonInterpolableValue>(
       *underlying_value_owner.Value().non_interpolable_value);
   const auto& value2 =
       To<ShapeNonInterpolableValue>(*value.non_interpolable_value);
 
-  DCHECK(ParamsMatch(value1.GetParams(), value2.GetParams()));
-  // TODO(crbug.com/384781868) arcs with different size/sweep should default to
-  // large/cw.
-  underlying_value_owner.MutableValue().non_interpolable_value =
-      value.non_interpolable_value.get();
+  DCHECK(value1.GetParams() == value2.GetParams());
   underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
       underlying_fraction, *value.interpolable_value);
+  underlying_value_owner.MutableValue().non_interpolable_value = &value1;
 }
 
 InterpolationValue CSSShapeInterpolationType::MaybeConvertNeutral(
@@ -650,6 +631,8 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertNeutral(
         values.push_back(*MakeGarbageCollected<InterpolableNumber>(
             0, CSSPrimitiveValue::UnitType::kDegrees));
         WriteLength(2);
+        values.push_back(*MakeGarbageCollected<InterpolableNumber>(0));
+        values.push_back(*MakeGarbageCollected<InterpolableNumber>(0));
         break;
       }
       case SVGPathSegType::kPathSegUnknown:
@@ -793,8 +776,12 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
         interpolable_segments.push_back(
             MakeGarbageCollected<InterpolableNumber>(arc.Angle()));
         WritePair(arc.Radius());
-        params.arc_large = arc.Size() == CSSValueID::kLarge;
-        params.arc_sweep = arc.Sweep() == CSSValueID::kCw;
+        interpolable_segments.push_back(
+            MakeGarbageCollected<InterpolableNumber>(
+                arc.Size() == CSSValueID::kLarge ? 1.f : 0.f));
+        interpolable_segments.push_back(
+            MakeGarbageCollected<InterpolableNumber>(
+                arc.Sweep() == CSSValueID::kCw ? 1.f : 0.f));
         break;
       }
       case SVGPathSegType::kPathSegUnknown:
@@ -825,7 +812,7 @@ PairwiseInterpolationValue CSSShapeInterpolationType::MaybeMergeSingles(
   auto& end_params = To<ShapeNonInterpolableValue>(*end.non_interpolable_value);
 
   if (start_params.GetWindRule() != end_params.GetWindRule() ||
-      !ParamsMatch(start_params.GetParams(), end_params.GetParams())) {
+      start_params.GetParams() != end_params.GetParams()) {
     return nullptr;
   }
 
