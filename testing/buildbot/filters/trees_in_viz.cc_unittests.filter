@@ -1,3 +1,10 @@
-# TODO(crbug.com/389148369) TreesInViz: Implement copy output requests
+# TODO(crbug.com/389148369) Implement copy output requests
 -PixelResourceTest/LayerTreeHostMaskPixelTest*
 -PixelResourceTest/LayerTreeHostMasksForBackdropFiltersPixelTest*
+
+# These tests rely on LayerTreeHostImpl to produce CompositorFrames, which it
+# doesn't do in TreesInViz mode.
+-LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles.RunMultiThread_DelegatingRenderer
+-LayerTreeHostTestCrispUpAfterPinchEnds.RunMultiThread_DelegatingRenderer
+-LayerTreeHostTestDamagePropagatesFromViewTransitionSurface.RunMultiThread_DelegatingRenderer
+-LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOriginWithLayerList.RunMultiThread_DelegatingRenderer
