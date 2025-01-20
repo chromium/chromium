@@ -33,12 +33,17 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
     return {
       languages: Object,
       languageHelper: Object,
+      limitedByPolicy: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   // Public API: Downwards data flow.
   languages: LanguagesModel|undefined;
   languageHelper: LanguageHelper;
+  limitedByPolicy: boolean;
 
   // Internal state.
   private readonly shouldPrioritiseVietnameseExtensions_ =

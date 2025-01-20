@@ -244,8 +244,8 @@ suite('<os-settings-input-page>', () => {
     });
 
     test('shows managed input methods label', () => {
-      const inputMethodsManagedbyPolicy =
-          inputPage.shadowRoot!.querySelector('#inputMethodsManagedbyPolicy');
+      const inputMethodsManagedbyPolicy = inputPage.shadowRoot!.querySelector(
+          '#inputMethodsManagedbyPolicyIcon');
       assertNull(inputMethodsManagedbyPolicy);
 
       inputPage.setPrefValue(
@@ -253,7 +253,7 @@ suite('<os-settings-input-page>', () => {
       flush();
 
       assertTrue(!!inputPage.shadowRoot!.querySelector(
-          '#inputMethodsManagedbyPolicy'));
+          '#inputMethodsManagedbyPolicyIcon'));
     });
   });
 
