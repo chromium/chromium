@@ -129,6 +129,15 @@ void EditorMenuControllerImpl::OnAnchorBoundsChanged(
 
 void EditorMenuControllerImpl::OnDismiss(bool is_other_command_executed) {
   if (editor_menu_widget_ && !editor_menu_widget_->IsActive()) {
+    auto* const editor_menu_view = editor_menu_widget_->GetContentsView();
+    if (views::IsViewClass<EditorMenuView>(editor_menu_view)) {
+      views::AsViewClass<EditorMenuView>(editor_menu_view)
+          ->OnAnchorMenuDismissed();
+    } else if (views::IsViewClass<EditorMenuPromoCardView>(editor_menu_view)) {
+      views::AsViewClass<EditorMenuPromoCardView>(editor_menu_view)
+          ->OnAnchorMenuDismissed();
+    }
+
     editor_menu_widget_.reset();
   }
 }

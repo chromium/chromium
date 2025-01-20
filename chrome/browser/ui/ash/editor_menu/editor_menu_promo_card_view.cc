@@ -189,6 +189,13 @@ EditorMenuPromoCardView::GetTraversableViewsByUpDownKeys() {
   return {this};
 }
 
+void EditorMenuPromoCardView::OnAnchorMenuDismissed() {
+  // Avoid closing the anchor menu again if it has been closed.
+  if (pre_target_handler_) {
+    pre_target_handler_->set_dismiss_anchor_menu_on_view_closed(false);
+  }
+}
+
 void EditorMenuPromoCardView::InitLayout() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorPrimaryBackground,
