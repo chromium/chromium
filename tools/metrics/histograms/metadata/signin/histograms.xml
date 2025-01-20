@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountManagementType"
-    enum="AccountManagedStatusFinderOutcome" expires_after="2025-05-25">
+    enum="AccountManagedStatusFinderOutcome" expires_after="2025-11-25">
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -355,7 +355,23 @@ chromium-metrics-reviews@google.com.
     Records, for each account in the IdentityManager at profile startup, the
     &quot;type&quot; of account, i.e. whether it's a consumer or enterprise/EDU
     account. If the check doesn't finish before shutdown, nothing may be
-    recorded.
+    recorded. See also &quot;Signin.AccountManagementTypesSummary&quot; for a
+    combined view of all existing accounts.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountManagementTypesSummary"
+    enum="AccountManagementTypesSummary" expires_after="2025-11-25">
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the numbers of consumer and enterprise/EDU accounts in the
+    IdentityManager at profile startup. Accounts for which the type check failed
+    or timed out are not counted. If the check for any account doesn't finish
+    before shutdown, nothing may be recorded. See also
+    &quot;Signin.AccountManagementType&quot; for the more detailed type of each
+    individual account.
   </summary>
 </histogram>
 
