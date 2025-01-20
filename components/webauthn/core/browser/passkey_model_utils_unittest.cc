@@ -143,8 +143,7 @@ TEST(PasskeyModelUtilsTest, EncryptWebauthnCredentialSpecificsData) {
 
 TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
   auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
-      kRpId, kTestUser, kTestKey, kTestKeyVersion,
-      /*generate_hmac_secret=*/false);
+      kRpId, kTestUser, kTestKey, kTestKeyVersion, /*extension_input_data=*/{});
   EXPECT_EQ(passkey.sync_id().size(), 16u);
   EXPECT_EQ(passkey.credential_id().size(), 16u);
   EXPECT_EQ(passkey.rp_id(), kRpId);
@@ -180,9 +179,11 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
 }
 
 TEST(PasskeyModelUtilsTest, GeneratePasskeyWithHMACAndEncryptSecrets) {
+  std::vector<uint8_t> prf_input1, prf_input2;
+  prf_input1.emplace_back('a');
+  ExtensionInputData extension_input_data(prf_input1, prf_input2);
   auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
-      kRpId, kTestUser, kTestKey, kTestKeyVersion,
-      /*generate_hmac_secret=*/true);
+      kRpId, kTestUser, kTestKey, kTestKeyVersion, extension_input_data);
   EXPECT_EQ(passkey.sync_id().size(), 16u);
   EXPECT_EQ(passkey.credential_id().size(), 16u);
   EXPECT_EQ(passkey.rp_id(), kRpId);

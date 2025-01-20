@@ -65,7 +65,7 @@ ArchivableCredential* TestPasskeyCredential() {
                                                  user_name_str),
               trusted_vault_key,
               /*trusted_vault_key_version=*/0,
-              /*generate_hmac_secret=*/false);
+              /*extension_input_data=*/{});
 
   return [[ArchivableCredential alloc] initWithFavicon:nil
                                                   gaia:nil
