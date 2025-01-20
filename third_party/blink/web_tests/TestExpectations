@@ -547,12 +547,6 @@ crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
 
-# CSS clip-path: shape()/path() interpolation
-crbug.com/389707045 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-003.html [ Failure ]
-crbug.com/389707045 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-004.html [ Failure ]
-crbug.com/389707045 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-003.html [ Failure ]
-crbug.com/389707045 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-004.html [ Failure ]
-
 # CSS shape() interpolation windows-specific issues
 crbug.com/384781868 [ Win ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
 crbug.com/384781868 [ Win ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape-control-points.tentative.html [ Failure ]

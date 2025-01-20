@@ -11,23 +11,33 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css_position_axis_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_path_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_shape_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/shape_functions.h"
+#include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_shape.h"
+#include "third_party/blink/renderer/core/svg/svg_path_blender.h"
+#include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
+#include "third_party/blink/renderer/core/svg/svg_path_parser.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -170,8 +180,8 @@ class ShapeSegmentInterpolationBuilder {
   void Write(const StyleShape::ArcSegment<Type>& segment,
              ShapeNonInterpolableValue::SegmentParams& params) {
     Write(segment.target_point);
-    interpolable_values.push_back(
-        MakeGarbageCollected<InterpolableNumber>(segment.angle));
+    interpolable_values.push_back(MakeGarbageCollected<InterpolableNumber>(
+        segment.angle, CSSPrimitiveValue::UnitType::kDegrees));
     Write(segment.radius.Width());
     Write(segment.radius.Height());
     params.arc_large = segment.large;
@@ -213,6 +223,100 @@ class ShapeSegmentInterpolationBuilder {
   float zoom_;
 };
 
+InterpolationValue ConvertPath(const StylePath* style_path,
+                               const CSSProperty& property) {
+  if (!style_path) {
+    return nullptr;
+  }
+
+  CHECK(!style_path->ByteStream().IsEmpty());
+
+  HeapVector<Member<InterpolableValue>> interpolable_segments;
+  Vector<ShapeNonInterpolableValue::SegmentParams> non_interpolable_segments;
+  SVGPathByteStreamSource path_source(style_path->ByteStream());
+
+  auto WriteLength = [&](double value) {
+    interpolable_segments.push_back(InterpolableLength::CreatePixels(value));
+  };
+
+  auto WritePoint = [&](const gfx::PointF& point) {
+    WriteLength(point.x());
+    WriteLength(point.y());
+  };
+
+  // The first command is always a move-to (M)
+  PathSegmentData first_segment = path_source.ParseSegment();
+  WritePoint(first_segment.target_point);
+
+  while (path_source.HasMoreData()) {
+    PathSegmentData segment = path_source.ParseSegment();
+    ShapeNonInterpolableValue::SegmentParams params{segment.command};
+    StyleShape::ControlPoint::Origin control_point_origin =
+        IsAbsolutePathSegType(segment.command)
+            ? StyleShape::ControlPoint::Origin::kReferenceBox
+            : StyleShape::ControlPoint::Origin::kSegmentStart;
+    switch (segment.command) {
+      case SVGPathSegType::kPathSegMoveToAbs:
+      case SVGPathSegType::kPathSegMoveToRel:
+      case SVGPathSegType::kPathSegLineToAbs:
+      case SVGPathSegType::kPathSegLineToRel:
+      case SVGPathSegType::kPathSegCurveToQuadraticSmoothAbs:
+      case SVGPathSegType::kPathSegCurveToQuadraticSmoothRel:
+        WritePoint(segment.target_point);
+        break;
+      case SVGPathSegType::kPathSegLineToHorizontalAbs:
+      case SVGPathSegType::kPathSegLineToHorizontalRel:
+        WriteLength(segment.target_point.x());
+        break;
+      case SVGPathSegType::kPathSegLineToVerticalAbs:
+      case SVGPathSegType::kPathSegLineToVerticalRel:
+        WriteLength(segment.target_point.y());
+        break;
+      case SVGPathSegType::kPathSegCurveToCubicAbs:
+      case SVGPathSegType::kPathSegCurveToCubicRel:
+        WritePoint(segment.target_point);
+        WritePoint(segment.point1);
+        WritePoint(segment.point2);
+        params.control_point_origin_1 = params.control_point_origin_2 =
+            control_point_origin;
+        break;
+      case SVGPathSegType::kPathSegCurveToQuadraticAbs:
+      case SVGPathSegType::kPathSegCurveToQuadraticRel:
+        WritePoint(segment.target_point);
+        WritePoint(segment.point1);
+        params.control_point_origin_1 = control_point_origin;
+        break;
+      case SVGPathSegType::kPathSegCurveToCubicSmoothAbs:
+      case SVGPathSegType::kPathSegCurveToCubicSmoothRel:
+        WritePoint(segment.target_point);
+        WritePoint(segment.point2);
+        params.control_point_origin_1 = control_point_origin;
+        break;
+      case SVGPathSegType::kPathSegArcAbs:
+      case SVGPathSegType::kPathSegArcRel:
+        WritePoint(segment.target_point);
+        interpolable_segments.push_back(
+            MakeGarbageCollected<InterpolableNumber>(
+                segment.ArcAngle(), CSSPrimitiveValue::UnitType::kDegrees));
+        WriteLength(segment.ArcRadiusX());
+        WriteLength(segment.ArcRadiusY());
+        params.arc_large = segment.LargeArcFlag();
+        params.arc_sweep = segment.SweepFlag();
+        break;
+      case SVGPathSegType::kPathSegClosePath:
+        break;
+      case SVGPathSegType::kPathSegUnknown:
+        NOTREACHED();
+    }
+
+    non_interpolable_segments.push_back(params);
+  }
+
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
+      ShapeNonInterpolableValue::Create(style_path->GetWindRule(),
+                                        std::move(non_interpolable_segments)));
+}
 InterpolationValue ConvertShape(const StyleShape* style_shape,
                                 const CSSProperty& property,
                                 float zoom) {
@@ -234,6 +338,15 @@ InterpolationValue ConvertShape(const StyleShape* style_shape,
       MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
       ShapeNonInterpolableValue::Create(style_shape->GetWindRule(),
                                         std::move(non_interpolable_segments)));
+}
+
+InterpolationValue ConvertShapeOrPath(const BasicShape* shape,
+                                      const CSSProperty& property,
+                                      float zoom) {
+  if (auto* style_shape = DynamicTo<StyleShape>(shape)) {
+    return ConvertShape(style_shape, property, zoom);
+  }
+  return ConvertPath(To<StylePath>(shape), property);
 }
 
 class UnderlyingShapeConversionChecker final
@@ -405,12 +518,17 @@ scoped_refptr<StyleShape> CreateStyleShape(
 
 // Returns the property's shape() value.
 // If the property's value is not a shape(), returns nullptr.
-const StyleShape* GetShape(const CSSProperty& property,
-                           const ComputedStyle& style) {
+const BasicShape* GetShapeOrPath(const CSSProperty& property,
+                                 const ComputedStyle& style) {
   // TODO(crbug.com/389713717) support also offset-path
   CHECK_EQ(property.PropertyID(), CSSPropertyID::kClipPath);
-  if (auto* shape = DynamicTo<ShapeClipPathOperation>(style.ClipPath())) {
-    return DynamicTo<StyleShape>(shape->GetBasicShape());
+  auto* shape = DynamicTo<ShapeClipPathOperation>(style.ClipPath());
+  if (!shape) {
+    return nullptr;
+  }
+  if (IsA<StylePath>(shape->GetBasicShape()) ||
+      IsA<StyleShape>(shape->GetBasicShape())) {
+    return shape->GetBasicShape();
   }
   return nullptr;
 }
@@ -419,17 +537,17 @@ class InheritedShapeChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedShapeChecker(const CSSProperty& property,
-                        scoped_refptr<const StyleShape> style_shape)
-      : property_(property), style_shape_(std::move(style_shape)) {}
+                        scoped_refptr<const BasicShape> shape)
+      : property_(property), shape_(std::move(shape)) {}
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    return GetShape(property_, *state.ParentStyle()) == style_shape_.get();
+    return GetShapeOrPath(property_, *state.ParentStyle()) == shape_.get();
   }
 
   const CSSProperty& property_;
-  const scoped_refptr<const StyleShape> style_shape_;
+  const scoped_refptr<const BasicShape> shape_;
 };
 
 }  // namespace
@@ -529,7 +647,8 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertNeutral(
       case SVGPathSegType::kPathSegArcAbs:
       case SVGPathSegType::kPathSegArcRel: {
         WriteLength(2);
-        values.push_back(*MakeGarbageCollected<InterpolableNumber>(0));
+        values.push_back(*MakeGarbageCollected<InterpolableNumber>(
+            0, CSSPrimitiveValue::UnitType::kDegrees));
         WriteLength(2);
         break;
       }
@@ -557,23 +676,31 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertInherit(
     return nullptr;
   }
 
-  auto* shape = GetShape(CssProperty(), *state.ParentStyle());
+  auto* shape = GetShapeOrPath(CssProperty(), *state.ParentStyle());
+  if (!shape) {
+    return nullptr;
+  }
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedShapeChecker>(CssProperty(), shape));
-  return ConvertShape(shape, CssProperty(),
-                      state.ParentStyle()->EffectiveZoom());
+  return ConvertShapeOrPath(shape, CssProperty(),
+                            state.ParentStyle()->EffectiveZoom());
 }
 
 InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
     ConversionCheckers&) const {
-  const cssvalue::CSSShapeValue* shape_value = nullptr;
+  const CSSValue* first_value = &value;
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
-    shape_value = DynamicTo<cssvalue::CSSShapeValue>(list->First());
-  } else {
-    shape_value = DynamicTo<cssvalue::CSSShapeValue>(value);
+    first_value = &list->First();
   }
+
+  if (const auto* path = DynamicTo<cssvalue::CSSPathValue>(first_value)) {
+    return ConvertPath(path->GetStylePath(), CssProperty());
+  }
+
+  const auto* shape_value = DynamicTo<cssvalue::CSSShapeValue>(first_value);
+
   if (!shape_value) {
     return nullptr;
   }
@@ -686,8 +813,8 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
 InterpolationValue
 CSSShapeInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
-  return ConvertShape(GetShape(CssProperty(), style), CssProperty(),
-                      style.EffectiveZoom());
+  return ConvertShapeOrPath(GetShapeOrPath(CssProperty(), style), CssProperty(),
+                            style.EffectiveZoom());
 }
 
 PairwiseInterpolationValue CSSShapeInterpolationType::MaybeMergeSingles(
