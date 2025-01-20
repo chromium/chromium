@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/metrics/metrics_pref_names.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"

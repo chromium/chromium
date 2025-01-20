@@ -6,7 +6,7 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/components/regional_capabilities/RegionalCapabilitiesServiceClientAndroid.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/regional_capabilities/RegionalCapabilitiesServiceClientAndroid.java" ]
 
   srcjar_deps = [ ":jni_headers" ]
 
@@ -21,12 +21,12 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/components/regional_capabilities/RegionalCapabilitiesServiceClientAndroid.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/regional_capabilities/RegionalCapabilitiesServiceClientAndroid.java" ]
 }
 
 android_library("test_utils_java") {
   testonly = true
-  sources = [ "java/src/org/chromium/components/regional_capabilities/test/util/RegionalCapabilitiesServiceTestUtil.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/regional_capabilities/test/util/RegionalCapabilitiesServiceTestUtil.java" ]
   deps = [
     ":java",
     "//base:base_java_test_support",
@@ -40,5 +40,5 @@ android_library("test_utils_java") {
 
 generate_jni("test_utils_jni_headers") {
   testonly = true
-  sources = [ "java/src/org/chromium/components/regional_capabilities/test/util/RegionalCapabilitiesServiceTestUtil.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/regional_capabilities/test/util/RegionalCapabilitiesServiceTestUtil.java" ]
 }

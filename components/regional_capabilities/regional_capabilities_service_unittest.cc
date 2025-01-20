@@ -5,55 +5,69 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check_deref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
-#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "components/regional_capabilities/android/test_utils_jni_headers/RegionalCapabilitiesServiceTestUtil_jni.h"
-#endif
-
 namespace regional_capabilities {
+
+using testing::regional_capabilities::GetCountryId;
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-class TestSupportAndroid {
+class AsyncRegionalCapabilitiesServiceClient
+    : public RegionalCapabilitiesService::Client {
  public:
-  TestSupportAndroid() {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    base::android::ScopedJavaLocalRef<jobject> java_ref =
-        Java_RegionalCapabilitiesServiceTestUtil_Constructor(env);
-    java_test_util_ref_.Reset(env, java_ref.obj());
+  explicit AsyncRegionalCapabilitiesServiceClient(
+      int fallback_country_id = country_codes::kCountryIDUnknown)
+      : fallback_country_id_(fallback_country_id) {}
+
+  ~AsyncRegionalCapabilitiesServiceClient() override = default;
+
+  int GetFallbackCountryId() override { return fallback_country_id_; }
+
+  void FetchCountryId(CountryIdCallback country_id_fetched_callback) override {
+    ASSERT_FALSE(cached_country_id_callback_) << "Test setup error";
+    if (fetched_country_id_.has_value()) {
+      std::move(country_id_fetched_callback).Run(fetched_country_id_.value());
+    } else {
+      // To be run next time we run `SetFetchedCountry()`;
+      cached_country_id_callback_ = std::move(country_id_fetched_callback);
+    }
   }
 
-  ~TestSupportAndroid() {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_RegionalCapabilitiesServiceTestUtil_destroy(env, java_test_util_ref_);
+  void SetFetchedCountry(std::optional<int> fetched_country_id) {
+    fetched_country_id_ = fetched_country_id;
+    if (cached_country_id_callback_ && fetched_country_id_.has_value()) {
+      std::move(cached_country_id_callback_).Run(fetched_country_id_.value());
+    }
   }
 
-  void ReturnDeviceCountry(const std::string& device_country) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_RegionalCapabilitiesServiceTestUtil_returnDeviceCountry(
-        env, java_test_util_ref_,
-        base::android::ConvertUTF8ToJavaString(env, device_country));
+  base::WeakPtr<AsyncRegionalCapabilitiesServiceClient> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> java_test_util_ref_;
-};
-#endif
+  const int fallback_country_id_;
+  std::optional<int> fetched_country_id_;
+  CountryIdCallback cached_country_id_callback_;
 
-const int kBelgiumCountryId = country_codes::CountryCharsToCountryID('B', 'E');
+  base::WeakPtrFactory<AsyncRegionalCapabilitiesServiceClient>
+      weak_ptr_factory_{this};
+};
+
+constexpr char kBelgiumCountryCode[] = "BE";
+
+constexpr int kBelgiumCountryId =
+    country_codes::CountryCharsToCountryID('B', 'E');
 
 }  // namespace
 
@@ -61,40 +75,41 @@ class RegionalCapabilitiesServiceTest : public ::testing::Test {
  public:
   RegionalCapabilitiesServiceTest() {
     country_codes::RegisterProfilePrefs(pref_service_.registry());
-
-    // Override the country checks to simulate being in Belgium.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry, "BE");
   }
 
   ~RegionalCapabilitiesServiceTest() override = default;
 
-  void InitService(
-      int variation_country_id = country_codes::kCountryIDUnknown) {
-    CHECK(!regional_capabilities_service_);
-    std::unique_ptr<RegionalCapabilitiesService::Client> client =
-#if BUILDFLAG(IS_ANDROID)
-        // Use a real C++ client to test the JNI integration code, faking is
-        // done via `TestSupportAndroid`.
-        std::make_unique<RegionalCapabilitiesService::Client>();
-#else
-        std::make_unique<FakeRegionalCapabilitiesServiceClient>(
-            variation_country_id);
-#endif
-
-    regional_capabilities_service_ =
-        std::make_unique<RegionalCapabilitiesService>(pref_service_,
-                                                      std::move(client));
+  void ClearCommandLineCountry() {
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kSearchEngineChoiceCountry);
   }
 
-  int GetCountryId() { return regional_capabilities_service().GetCountryId(); }
+  void SetCommandLineCountry(std::string_view country_code) {
+    ClearCommandLineCountry();
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry, country_code);
+  }
 
-  RegionalCapabilitiesService& regional_capabilities_service() {
-    if (!regional_capabilities_service_) {
-      InitService();
+  std::optional<int> GetPrefCountry() {
+    if (!pref_service().HasPrefPath(country_codes::kCountryIDAtInstall)) {
+      return std::nullopt;
     }
 
-    return CHECK_DEREF(regional_capabilities_service_.get());
+    return pref_service().GetInteger(country_codes::kCountryIDAtInstall);
+  }
+
+  void SetPrefCountry(int country_id) {
+    pref_service().SetInteger(country_codes::kCountryIDAtInstall, country_id);
+  }
+
+  std::unique_ptr<RegionalCapabilitiesService> InitService(
+      int fallback_country_id = country_codes::kCountryIDUnknown) {
+    auto client = std::make_unique<AsyncRegionalCapabilitiesServiceClient>(
+        fallback_country_id);
+    weak_client_ = client->AsWeakPtr();
+
+    return std::make_unique<RegionalCapabilitiesService>(pref_service_,
+                                                         std::move(client));
   }
 
   sync_preferences::TestingPrefServiceSyncable& pref_service() {
@@ -103,147 +118,164 @@ class RegionalCapabilitiesServiceTest : public ::testing::Test {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  base::WeakPtr<AsyncRegionalCapabilitiesServiceClient> client() {
+    return weak_client_;
+  }
+
  private:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<RegionalCapabilitiesService> regional_capabilities_service_;
+  base::WeakPtr<AsyncRegionalCapabilitiesServiceClient> weak_client_;
 
   base::HistogramTester histogram_tester_;
 };
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdCommandLineOverride) {
-  // The test is set up to use the command line to simulate the country as being
-  // Belgium.
-  EXPECT_EQ(GetCountryId(), kBelgiumCountryId);
+  // The command line value bypasses the country ID cache and does not
+  // require recreating the service.
+  std::unique_ptr<RegionalCapabilitiesService> service = InitService();
 
-  // When removing the command line flag, the default value is based on the
-  // device locale.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
+  SetCommandLineCountry(kBelgiumCountryCode);
+  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
 
-  // Note that if the format matches (2-character strings), we might get a
+  // If the format matches (2-character strings), we might get a
   // country ID that is not valid/supported.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry, "??");
-  EXPECT_NE(GetCountryId(), country_codes::kCountryIDUnknown);
-  EXPECT_EQ(GetCountryId(), country_codes::CountryCharsToCountryID('?', '?'));
-}
-
-TEST_F(RegionalCapabilitiesServiceTest,
-       GetCountryIdCommandLineOverrideSetsToUnknownOnFormatMismatch) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
+  SetCommandLineCountry("??");
+  EXPECT_NE(GetCountryId(*service), country_codes::kCountryIDUnknown);
+  EXPECT_EQ(GetCountryId(*service),
+            country_codes::CountryCharsToCountryID('?', '?'));
 
   // When the command line value is invalid, the country code should be unknown.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry, "USA");
-  EXPECT_EQ(GetCountryId(), country_codes::kCountryIDUnknown);
+  SetCommandLineCountry("USA");
+  EXPECT_EQ(GetCountryId(*service), country_codes::kCountryIDUnknown);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(RegionalCapabilitiesServiceTest, PlayResponseBeforeGetCountryId) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
-  TestSupportAndroid test_support;
-  test_support.ReturnDeviceCountry(
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_FetchedSync) {
+  const int kFallbackCountryId = country_codes::CountryStringToCountryID("FR");
 
-  // We got response from Play API before `GetCountryId` was invoked for the
-  // first time this run, so the new value should be used right away.
-  EXPECT_EQ(GetCountryId(), kBelgiumCountryId);
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(kFallbackCountryId);
+  client()->SetFetchedCountry(kBelgiumCountryId);
+
+  // The fetched country is available synchronously, before `GetCountryId` was
+  // invoked for the first time this run, so the new value should be used
+  // right away.
+  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
   // The pref should be updated as well.
-  EXPECT_EQ(pref_service().GetInteger(country_codes::kCountryIDAtInstall),
-            kBelgiumCountryId);
+  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId);
 }
 
-TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdBeforePlayResponse) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
+TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_FetchedAsyncUsesFallback) {
+  const int kFallbackCountryId = country_codes::CountryStringToCountryID("FR");
 
-  TestSupportAndroid test_support;
-  // We didn't get a response from Play API before `GetCountryId` was invoked,
-  // so the last known country from prefs should be used.
-  EXPECT_EQ(GetCountryId(), country_codes::GetCurrentCountryID());
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(kFallbackCountryId);
+
+  // We didn't get a response from the device API call before `GetCountryId`
+  // was invoked, so the fallback country should be used.
+  EXPECT_EQ(GetCountryId(*service), kFallbackCountryId);
+  // The pref should not be updated.
+  EXPECT_EQ(GetPrefCountry(), std::nullopt);
 
   // Simulate a response arriving after the first `GetCountryId` call.
-  test_support.ReturnDeviceCountry(
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+  client()->SetFetchedCountry(kBelgiumCountryId);
 
   // The pref should be updated so the new country can be used the next run.
-  EXPECT_EQ(pref_service().GetInteger(country_codes::kCountryIDAtInstall),
-            kBelgiumCountryId);
-  // However, `GetCountryId` result shouldn't change until the next run.
-  EXPECT_EQ(GetCountryId(), country_codes::GetCurrentCountryID());
+  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId);
+  // However, the `GetCountryId()` result shouldn't change until the next run.
+  EXPECT_EQ(GetCountryId(*service), kFallbackCountryId);
 }
 
-TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdPrefAlreadyWritten) {
-  // The value set from the pref should be used.
-  pref_service().SetInteger(country_codes::kCountryIDAtInstall,
-                            kBelgiumCountryId);
-  // Don't create `TestSupportAndroid` - since the pref isn't set we should not
-  // reach out to Java.
-  EXPECT_EQ(GetCountryId(), kBelgiumCountryId);
-}
-#else
-// On Android, internal device APIs are used to get the current country.
-TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdDefault) {
-  // Remove the command line flag set by the test.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
+TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefAlreadyWritten) {
+  const int kFallbackCountryId = country_codes::CountryStringToCountryID("FR");
+  const int kFetchedCountryId = country_codes::CountryStringToCountryID("US");
 
-  // The default value should be based on the device locale.
-  EXPECT_EQ(GetCountryId(), country_codes::GetCurrentCountryID());
-}
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(kFallbackCountryId);
+  client()->SetFetchedCountry(kFetchedCountryId);
 
-TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdFromPrefs) {
-  // Remove the command line flag set by the test.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
+  SetPrefCountry(kBelgiumCountryId);
 
-  // The value set from the pref should be used.
-  pref_service().SetInteger(country_codes::kCountryIDAtInstall,
-                            kBelgiumCountryId);
-  EXPECT_EQ(GetCountryId(), kBelgiumCountryId);
+  // The value set from the pref should be used instead of the ones from the
+  // client.
+  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
+
+  // The fetched value from the client does not overwrite the prefs either.
+  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId);
 }
 
-TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdChangesAfterReading) {
-  // Remove the command line flag set by the test.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
+TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefChangesAfterReading) {
+  const int kFallbackCountryId = country_codes::CountryStringToCountryID("FR");
+
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(kFallbackCountryId);
 
   // The value set from the pref should be used.
-  pref_service().SetInteger(country_codes::kCountryIDAtInstall,
-                            kBelgiumCountryId);
-  EXPECT_EQ(GetCountryId(), kBelgiumCountryId);
+  SetPrefCountry(kBelgiumCountryId);
+  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
 
   // Change the value in pref.
-  pref_service().SetInteger(country_codes::kCountryIDAtInstall,
-                            country_codes::CountryCharsToCountryID('U', 'S'));
+  SetPrefCountry(country_codes::CountryStringToCountryID("US"));
   // The value returned by `GetCountryId` shouldn't change.
-  EXPECT_EQ(GetCountryId(), kBelgiumCountryId);
+  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+// TODO: make it parameterized?
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry) {
-#if BUILDFLAG(IS_ANDROID)
-  TestSupportAndroid test_support;
-  test_support.ReturnDeviceCountry(
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
-#endif
   base::test::ScopedFeatureList scoped_feature_list{
       switches::kClearPrefForUnknownCountry};
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
-  InitService(kBelgiumCountryId);
+
+  SetPrefCountry(country_codes::kCountryIDUnknown);
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(kBelgiumCountryId);
+
+  // The fetch needs to succeed, otherwise the obtained value is the fallback
+  // one and the pref will not be persisted.
+  client()->SetFetchedCountry(kBelgiumCountryId);
+
   histogram_tester().ExpectTotalCount(
       "Search.ChoiceDebug.UnknownCountryIdStored", 0);
 
-  pref_service().SetInteger(country_codes::kCountryIDAtInstall,
-                            country_codes::kCountryIDUnknown);
-  EXPECT_EQ(GetCountryId(), kBelgiumCountryId);
-  histogram_tester().ExpectBucketCount(
-      "Search.ChoiceDebug.UnknownCountryIdStored", 2, 1);
+  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
+  histogram_tester().ExpectUniqueSample(
+      "Search.ChoiceDebug.UnknownCountryIdStored", 2 /* kClearedPref */, 1);
+  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId);
+}
+
+TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kClearPrefForUnknownCountry);
+
+  SetPrefCountry(country_codes::kCountryIDUnknown);
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(kBelgiumCountryId);
+  histogram_tester().ExpectTotalCount(
+      "Search.ChoiceDebug.UnknownCountryIdStored", 0);
+
+  EXPECT_EQ(GetCountryId(*service), country_codes::kCountryIDUnknown);
+  histogram_tester().ExpectUniqueSample(
+      "Search.ChoiceDebug.UnknownCountryIdStored",
+      1 /* kDontClearInvalidCountry */, 1);
+  EXPECT_EQ(GetPrefCountry(), country_codes::kCountryIDUnknown);
+}
+
+TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kClearPrefForUnknownCountry};
+
+  SetPrefCountry(kBelgiumCountryId);
+  std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+
+  histogram_tester().ExpectTotalCount(
+      "Search.ChoiceDebug.UnknownCountryIdStored", 0);
+
+  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
+  histogram_tester().ExpectUniqueSample(
+      "Search.ChoiceDebug.UnknownCountryIdStored", 0 /* kValidCountryId */, 1);
+  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_LINUX)

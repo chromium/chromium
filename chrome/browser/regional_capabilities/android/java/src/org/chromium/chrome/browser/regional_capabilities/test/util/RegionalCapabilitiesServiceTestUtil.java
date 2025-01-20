@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.regional_capabilities.test.util;
+package org.chromium.chrome.browser.regional_capabilities.test.util;
 
 import static org.mockito.Mockito.doReturn;
 
@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.util.LooperUtils;
-import org.chromium.components.regional_capabilities.RegionalCapabilitiesServiceClientAndroid;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceClientAndroid;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate;
 
@@ -45,14 +45,27 @@ final class RegionalCapabilitiesServiceTestUtil {
     }
 
     /**
-     * Fulfills the promise returned by `SearchEngineCountryDelegate` to simulate a response from
-     * the device APIs.
+     * Fulfills the promise returned by `SearchEngineChoiceCountry` to simulate a response from the
+     * device APIs.
      *
      * @param deviceCountry the result of the device country request.
      */
     @CalledByNative
     public void returnDeviceCountry(String deviceCountry) {
         mDeviceCountry.fulfill(deviceCountry);
+        // `Promise` posts callback tasks on Android Looper which is not integrated with native
+        // RunLoop in NativeTest. Run these tasks synchronously now.
+        // TODO(crbug.com/40723709): remove this hack once Promise uses PostTask.
+        runLooperTasks();
+    }
+
+    /**
+     * Rejects the promise returned by `SearchEngineChoiceCountry` to simulate a failure of the
+     * request to the device APIs.
+     */
+    @CalledByNative
+    public void triggerDeviceCountryFailure() {
+        mDeviceCountry.reject();
         // `Promise` posts callback tasks on Android Looper which is not integrated with native
         // RunLoop in NativeTest. Run these tasks synchronously now.
         // TODO(crbug.com/40723709): remove this hack once Promise uses PostTask.

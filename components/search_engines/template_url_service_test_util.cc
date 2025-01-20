@@ -10,6 +10,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"

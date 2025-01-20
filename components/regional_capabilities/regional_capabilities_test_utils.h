@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_TEST_UTILS_H_
 #define COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_TEST_UTILS_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
 namespace regional_capabilities {
+
+class RegionalCapabilitiesService;
 
 std::unique_ptr<RegionalCapabilitiesService> CreateServiceWithFakeClient(
     PrefService& profile_prefs,
@@ -31,10 +35,20 @@ class FakeRegionalCapabilitiesServiceClient
   void FetchCountryId(
       base::OnceCallback<void(int)> on_country_id_fetched) override;
 
+  int GetFallbackCountryId() override;
+
  private:
   const int country_id_;
 };
 
 }  // namespace regional_capabilities
+
+namespace testing::regional_capabilities {
+
+// Exposes `RegionalCapabilitiesService::GetCountryId()` to test functions,
+// as it is a friended private method.
+int GetCountryId(::regional_capabilities::RegionalCapabilitiesService& service);
+
+}  // namespace testing::regional_capabilities
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_TEST_UTILS_H_

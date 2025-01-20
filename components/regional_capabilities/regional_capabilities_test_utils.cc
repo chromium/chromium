@@ -4,7 +4,10 @@
 
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 
+#include <memory>
+
 #include "base/functional/callback.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 
 namespace regional_capabilities {
 
@@ -23,9 +26,24 @@ FakeRegionalCapabilitiesServiceClient::FakeRegionalCapabilitiesServiceClient(
 FakeRegionalCapabilitiesServiceClient::
     ~FakeRegionalCapabilitiesServiceClient() = default;
 
+int FakeRegionalCapabilitiesServiceClient::GetFallbackCountryId() {
+  return country_id_;
+}
+
 void FakeRegionalCapabilitiesServiceClient::FetchCountryId(
     base::OnceCallback<void(int)> on_country_id_fetched) {
   std::move(on_country_id_fetched).Run(country_id_);
 }
 
+namespace testing {}  // namespace testing
+
 }  // namespace regional_capabilities
+
+namespace testing::regional_capabilities {
+
+int GetCountryId(
+    ::regional_capabilities::RegionalCapabilitiesService& service) {
+  return service.GetCountryId();
+}
+
+}  // namespace testing::regional_capabilities

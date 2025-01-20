@@ -12,6 +12,7 @@ source_set("model") {
     "regional_capabilities_service_factory.mm",
   ]
   deps = [
+    "//components/country_codes",
     "//components/prefs",
     "//components/regional_capabilities",
     "//ios/chrome/browser/shared/model/profile",

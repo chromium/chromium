@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package org.chromium.components.regional_capabilities;
+package org.chromium.chrome.browser.regional_capabilities;
 
 import android.text.TextUtils;
 
