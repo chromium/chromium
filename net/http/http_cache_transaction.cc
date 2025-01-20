@@ -25,6 +25,8 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
@@ -1269,7 +1271,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntry() {
     return cache_->OpenEntry(cache_key_, &new_entry_, this);
   }
 
-  if (no_vary_search_cache_erase_handle_) {
+  if (IsUsingURLFromNoVarySearchCache()) {
     // We should never create a new entry with the original URL.
     if (entry_not_suitable) {
       return ERR_CACHE_ENTRY_NOT_SUITABLE;
@@ -1324,7 +1326,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
             base::TimeTicks::Now() - first_cache_access_since_);
       }
 
-      CHECK(!no_vary_search_cache_erase_handle_);
+      CHECK(!IsUsingURLFromNoVarySearchCache());
 
       // Entry was created so mode changes to WRITE.
       mode_ = WRITE;
@@ -1341,8 +1343,10 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
 
   // This handles the case where opening the disk cache entry failed, or it was
   // found to be unusable due to in-memory flags.
-  if (no_vary_search_cache_erase_handle_) {
+  if (IsUsingURLFromNoVarySearchCache()) {
     if (result == ERR_CACHE_ENTRY_NOT_SUITABLE) {
+      // If a future request had the LOAD_SKIP_CACHE_VALIDATION flag the entry
+      // would be usable, so don't delete it.
       return RestartWithoutNoVarySearchCache(
           RestartCacheEntryAction::kDontErase,
           NoVarySearchUseResult::kNotSuitable);
@@ -1955,6 +1959,14 @@ int HttpCache::Transaction::DoSendRequest() {
         websocket_handshake_stream_base_create_helper_);
   }
 
+  if (IsUsingURLFromNoVarySearchCache()) {
+    // If we are using the NoVarySearchCache, double-check that the network
+    // request we are about to send is conditionalized and not a range request.
+    CHECK_EQ(mode_, READ_WRITE);
+    CHECK(!couldnt_conditionalize_request_);
+    CHECK(!partial_);
+  }
+
   TransitionToState(STATE_SEND_REQUEST_COMPLETE);
   rv = network_trans_->Start(request_, io_callback_, net_log_);
   if (rv != ERR_IO_PENDING && waiting_for_cache_io_) {
@@ -2060,7 +2072,7 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
   if (!ValidatePartialResponse() && !auth_response_.headers.get()) {
     // Something went wrong with this request and we have to restart it.
     // If we have an authentication response, we are exposed to weird things
-    // hapenning if the user cancels the authentication before we receive
+    // happening if the user cancels the authentication before we receive
     // the new response.
     net_log_.AddEvent(NetLogEventType::HTTP_CACHE_RE_SEND_PARTIAL_REQUEST);
     UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
@@ -2649,6 +2661,7 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
 
   request_ = initial_request_;
   custom_request_.reset();
+  no_vary_search_cache_erase_handle_.reset();
 
   effective_load_flags_ = request_->load_flags;
   method_ = request_->method;
@@ -2792,7 +2805,7 @@ int HttpCache::Transaction::BeginCacheRead() {
   }
 
   if (RequiresValidation() != VALIDATION_NONE) {
-    if (no_vary_search_cache_erase_handle_) {
+    if (IsUsingURLFromNoVarySearchCache()) {
       // A future transaction that is not read-only may be able to use this
       // entry, so don't remove it from the cache.
       return RestartWithoutNoVarySearchCache(
@@ -2821,7 +2834,7 @@ int HttpCache::Transaction::BeginCacheValidation() {
   const bool incomplete_body =
       truncated_ || response_.headers->response_code() == HTTP_PARTIAL_CONTENT;
 
-  if (no_vary_search_cache_erase_handle_ && incomplete_body) {
+  if (IsUsingURLFromNoVarySearchCache() && incomplete_body) {
     // Avoid using the No-Vary-Search cache in partial content situations.
     return RestartWithoutNoVarySearchCache(
         RestartCacheEntryAction::kErase,
@@ -2901,7 +2914,7 @@ int HttpCache::Transaction::BeginCacheValidation() {
       if (partial_) {
         return DoRestartPartialRequest();
       }
-      if (no_vary_search_cache_erase_handle_) {
+      if (IsUsingURLFromNoVarySearchCache()) {
         // We shouldn't send an unconditional request for the original URL, so
         // restart the transaction. However, don't remove the cache entry, as it
         // might still be usable by a future request with the
@@ -4218,6 +4231,10 @@ void HttpCache::Transaction::RecordEntrySizeHistograms(
 
 bool HttpCache::Transaction::IsNoVarySearchApplicable() const {
   return !partial_ && MethodUsesNoVarySearch(method_);
+}
+
+bool HttpCache::Transaction::IsUsingURLFromNoVarySearchCache() const {
+  return no_vary_search_cache_erase_handle_.has_value();
 }
 
 HttpCache::Transaction::NoVarySearchUseResult
