@@ -5138,7 +5138,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4598776695426288251">Wi-Fi disponível por meio de vários dispositivos</translation>
 <translation id="4599323532350839656">Sem permissão para capturar e usar a entrada do teclado</translation>
 <translation id="4600071396330666617">Número de sugestões</translation>
-<translation id="4601095002996233687">Verificações detalhadas de downloads suspeitos.</translation>
+<translation id="4601095002996233687">Faz verificações detalhadas de downloads suspeitos.</translation>
 <translation id="4601426376352205922">Marcar como não lido</translation>
 <translation id="460190672235687855">Mostrar senhas</translation>
 <translation id="4602466770786743961">Sempre permitir que <ph name="HOST" /> acesse sua câmera e seu microfone</translation>
@@ -9033,7 +9033,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
     na parte superior da tela do painel do ChromeVox</translation>
 <translation id="7429568074268678162">O arquivo <ph name="FILENAME" /> pode ser perigoso. Adicione uma senha se quiser que o Chrome o verifique ou baixe de forma direta.</translation>
 <translation id="7431719494109538750">Nenhum dispositivo HID encontrado</translation>
-<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e mais</translation>
+<translation id="7431991332293347422">Controle como o histórico de navegação é usado para personalizar a Pesquisa e mais</translation>
 <translation id="7432200167665670017">Seu administrador bloqueou a extensão <ph name="EXTENSION_NAME" />: ID do app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Insira o cartão inteligente para continuar usando seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Manter assim</translation>
@@ -9517,7 +9517,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7774792847912242537">Excesso de solicitações.</translation>
 <translation id="7775694664330414886">A guia foi movida para um grupo sem nome: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> poderá ver arquivos em <ph name="FOLDERNAME" /> até que você feche todas as guias desse site</translation>
-<translation id="777637629667389858">Quando sua conta está conectada, essa opção protege você nos Serviços do Google.</translation>
+<translation id="777637629667389858">Protege você em todos os Serviços do Google quando sua conta está conectada.</translation>
 <translation id="7776701556330691704">Nenhuma voz encontrada</translation>
 <translation id="7776950606649732730">Tente de novo depois que a sincronização do arquivo for concluída.</translation>
 <translation id="7777624210360383048">Atalho <ph name="SHORTCUT" /> para a extensão <ph name="EXTENSION_NAME" /></translation>

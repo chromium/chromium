@@ -784,7 +784,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4592672037257622855">{count,plural, =1{Página adicionada à Lista de leitura}one{{count} página adicionada à Lista de leitura}other{{count} páginas adicionadas à Lista de leitura}}</translation>
 <translation id="459644946100970322">Ativar os alertas de preço?</translation>
 <translation id="4597892826846980979">Receber notificações de guias</translation>
-<translation id="4601095002996233687">Verificações detalhadas de downloads suspeitos.</translation>
+<translation id="4601095002996233687">Faz verificações detalhadas de downloads suspeitos.</translation>
 <translation id="4606247758155004938">O navegador é gerenciado pela sua organização.</translation>
 <translation id="4607887340472970274">Monitoramento de preços</translation>
 <translation id="4611811151908969241">Ocultar opção "Parar de seguir <ph name="DOMAIN_NAME" />"</translation>
@@ -1307,7 +1307,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6723740634201835758">Na Conta do Google</translation>
 <translation id="672735642903863329">Acesse seus favoritos, senhas e mais em todos os seus dispositivos.</translation>
 <translation id="6732087373923685049">câmera</translation>
-<translation id="6746338529702829275">Analisar os dados da sua conta</translation>
+<translation id="6746338529702829275">Analise os dados da sua conta</translation>
 <translation id="6755200887046212842">Gerenciar contas</translation>
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6779455296366983087">Os dados de navegação serão excluídos</translation>
@@ -1439,7 +1439,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7419565702166471774">Sempre usar conexões seguras</translation>
 <translation id="7425053386765766120">Adicionar forma de pagamento…</translation>
 <translation id="7425346204213733349">Alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na Conta do Google.</translation>
-<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e mais</translation>
+<translation id="7431991332293347422">Controle como o histórico de navegação é usado para personalizar a Pesquisa e mais</translation>
 <translation id="7435356471928173109">Desativado pelo administrador</translation>
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
@@ -1521,7 +1521,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar senha</translation>
 <translation id="7772948288262733182">Que bom que você voltou</translation>
-<translation id="777637629667389858">Quando sua conta está conectada, essa opção protege você nos Serviços do Google.</translation>
+<translation id="777637629667389858">Protege você em todos os Serviços do Google quando sua conta está conectada.</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7788868432173225918">Dispensar exibição expandida</translation>
 <translation id="7791543448312431591">Adicionar</translation>
@@ -1855,7 +1855,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9100610230175265781">Senha necessária</translation>
 <translation id="91023216973987714">Formas de pagamento</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
-<translation id="9107664647686727385">Verificar senhas comprometidas</translation>
+<translation id="9107664647686727385">Veja se há senhas comprometidas</translation>
 <translation id="9124387962554796433">O Google pode usar seu histórico para personalizar a Pesquisa e outros Serviços do Google.</translation>
 <translation id="9130317582644834675">Ocultar "Aplicar zoom no texto"</translation>
 <translation id="913036870884277353">Abra links com facilidade em outros apps.</translation>
