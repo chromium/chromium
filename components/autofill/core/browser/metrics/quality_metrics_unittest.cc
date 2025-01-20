@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -162,7 +164,8 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
 
 struct AlternativeNameFieldValueCharacterSetTestRecord {
   std::u16string name;
-  AutofillAlternativeNameFieldValueCharacterSet expected_character_set;
+  std::optional<AutofillAlternativeNameFieldValueCharacterSet>
+      expected_character_set;
 };
 
 class AlternativeNameFieldValueCharacterSetTest
@@ -188,10 +191,15 @@ TEST_P(AlternativeNameFieldValueCharacterSetTest, LoggedCorrectly) {
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
-  // Check for the expected enum value in the histogram
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
-      GetParam().expected_character_set, 1);
+  if (GetParam().expected_character_set.has_value()) {
+    // Check for the expected enum value in the histogram
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
+        GetParam().expected_character_set.value(), 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.SubmittedAlternativeNameFieldValueCharacterSet", 0);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -206,7 +214,9 @@ INSTANTIATE_TEST_SUITE_P(
             AutofillAlternativeNameFieldValueCharacterSet::kHiragana},
         AlternativeNameFieldValueCharacterSetTestRecord{
             u"Elvis Aaron Presley",
-            AutofillAlternativeNameFieldValueCharacterSet::kOther}));
+            AutofillAlternativeNameFieldValueCharacterSet::kOther},
+        // If value was empty metric should not be recorded.
+        AlternativeNameFieldValueCharacterSetTestRecord{u""}));
 
 // Test that we log quality metrics appropriately with fields having
 // only_fill_when_focused and are supposed to log RATIONALIZATION_OK.
