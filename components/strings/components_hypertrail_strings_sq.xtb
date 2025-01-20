@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sq">
+<translation id="130631256467250065">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh pajisjen.</translation>
+<translation id="275588974610408078">Raportimi i ndërprerjes aksidentale nuk ofrohet në Chromium.</translation>
+<translation id="3064346599913645280">Po shikon një faqe të sigurt të Chromium</translation>
+<translation id="3255926992597692024">Chromium po përpiqet të modifikojë cilësimet për plotësimin e mënyrave të pagesave.</translation>
+<translation id="358997566136285270">Logoja e Chromium</translation>
+<translation id="4050599136622776556">Chromium po përpiqet të modifikojë mënyrat e pagesës.</translation>
+<translation id="4365115785552740256">Chromium është bërë i mundur nga projekti me burim të hapur <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dhe <ph name="BEGIN_LINK_OSS" />softuerë të tjerë me burim të hapur<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Shko te
+          menyja e Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Cilësimet e rrjetit LAN
+          dhe anulo zgjedhjen e kutisë së kontrollit "Përdor një server përfaqësues për rrjetin LAN".</translation>
+<translation id="4622039161600275920">Kjo faqe është bllokuar nga Chromium</translation>
+<translation id="48558539577516920">Lejo Chromium të qaset në rrjet, në cilësimet e murit mbrojtës ose
+      të antivirusit.</translation>
+<translation id="580822234363523061">Shko te
+          menyja e Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          dhe sigurohu që konfigurimi yt të jetë i caktuar në "pa përfaqësues" ose "direkt".</translation>
+<translation id="6549378540556750549">Chromium është mundësuar po ashtu nga <ph name="BEGIN_LINK_OSS" />softuerë të tjerë me burim të hapur<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Chromium.</translation>
+<translation id="691026815377248078">Chromium i nevojitet leje te Bluetooth-i për të vazhduar me çiftimin. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium është mundësuar nga projekti me burim të hapur <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Shko te
+          menyja e Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          dhe anulo zgjedhjen e "<ph name="NO_PREFETCH_DESCRIPTION" />."
+          Nëse kjo nuk e zgjidh këtë problem, rekomandojmë ta zgjedhësh përsëri këtë opsion
+          për një veprimtari më të mirë funksionimi.</translation>
+<translation id="8187289872471304532">Shko te Aplikacionet &gt; Preferencat e sistemit &gt; Rrjeti &gt; Të përparuara &gt; Përfaqësuesit dhe anulo zgjedhjen për çdo përfaqësues që është zgjedhur.</translation>
+<translation id="8597726643333341451">Po shikon një faqe të sigurt të Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium nuk u mbyll si duhet.</translation>
+</translationbundle>

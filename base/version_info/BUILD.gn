@@ -47,7 +47,7 @@ source_set("channel") {
 process_version("generate_version_info") {
   template_file = "version_info_values.h.version"
   sources = [
-    "//chrome/VERSION",
+    "//chrome/HYPERTRAIL_VERSION",
     branding_file_path,
     lastchange_file,
   ]

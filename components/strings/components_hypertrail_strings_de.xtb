@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="de">
+<translation id="130631256467250065">Deine Änderungen werden beim nächsten Neustart wirksam.</translation>
+<translation id="275588974610408078">Absturzberichte sind in Chromium nicht verfügbar.</translation>
+<translation id="3064346599913645280">Dies ist eine sichere Chromium-Seite</translation>
+<translation id="3255926992597692024">Chromium versucht, Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
+<translation id="358997566136285270">Chromium-Logo</translation>
+<translation id="4050599136622776556">Chromium versucht, Zahlungsmethoden zu bearbeiten.</translation>
+<translation id="4365115785552740256">Chromium wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> und andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
+<translation id="4559775032954821361">Gehe zum Chromium-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="ADVANCED_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ &gt; „LAN-Einstellungen“ und deaktiviere das Kästchen „Proxyserver für LAN verwenden“.</translation>
+<translation id="4622039161600275920">Diese Seite wurde von Chromium blockiert</translation>
+<translation id="48558539577516920">Erlaube Chromium in deinen Firewall- und Virenschutzeinstellungen den Zugriff auf das Netzwerk.</translation>
+<translation id="580822234363523061">Gehe zum Chromium-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="ADVANCED_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ und vergewissere dich, dass in deiner Konfiguration die Einstellung „Kein Proxy“ oder „Direkt“ verwendet wird.</translation>
+<translation id="6549378540556750549">Chromium wird auch durch andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
+<translation id="6613594504749178791">Deine Änderungen werden beim nächsten Neustart von Chromium wirksam.</translation>
+<translation id="691026815377248078">Chromium benötigt Zugriff auf Bluetooth, um mit der Koppelung fortzufahren. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ermöglicht.</translation>
+<translation id="7861509383340276692">Öffne
+          das Chromium-Menü &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          und deaktiviere "<ph name="NO_PREFETCH_DESCRIPTION" />".
+          Falls das Problem nicht dadurch verursacht wurde, empfehlen wir,
+          diese Option für eine verbesserte Leistung wieder zu aktivieren.</translation>
+<translation id="8187289872471304532">Gehe zu „Programme“ &gt; „Systemeinstellungen“ &gt; „Netzwerk“ &gt; „Erweitert“ &gt; „Proxys“ und deaktiviere alle ausgewählten Proxyserver.</translation>
+<translation id="8597726643333341451">Du siehst eine sichere Chrome for Testing-Seite</translation>
+<translation id="8684913864886094367">Chromium wurde nicht richtig beendet.</translation>
+</translationbundle>

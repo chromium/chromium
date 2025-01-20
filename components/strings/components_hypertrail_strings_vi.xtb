@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="vi">
+<translation id="130631256467250065">Thay đổi của bạn sẽ có hiệu lực vào lần tiếp theo bạn khởi động lại thiết bị của mình.</translation>
+<translation id="275588974610408078">Báo cáo sự cố hiện không khả dụng trong Chromium.</translation>
+<translation id="3064346599913645280">Bạn đang xem trang Chromium an toàn</translation>
+<translation id="3255926992597692024">Chromium đang cố gắng sửa đổi chế độ cài đặt cho việc điền phương thức thanh toán.</translation>
+<translation id="358997566136285270">Biểu trưng Chromium</translation>
+<translation id="4050599136622776556">Chromium đang cố gắng chỉnh sửa phương thức thanh toán.</translation>
+<translation id="4365115785552740256">Chromium trở nên khả thi là nhờ dự án nguồn mở <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> và các <ph name="BEGIN_LINK_OSS" />phần mềm nguồn mở<ph name="END_LINK_OSS" /> khác.</translation>
+<translation id="4559775032954821361">Đi tới
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Cài đặt mạng LAN
+          và bỏ chọn hộp kiểm "Sử dụng máy chủ proxy cho mạng LAN của bạn".</translation>
+<translation id="4622039161600275920">Trang này bị Chromium chặn</translation>
+<translation id="48558539577516920">Cho phép Chromium truy cập mạng trong cài đặt tường lửa hoặc diệt vi-rút 
+        của bạn.</translation>
+<translation id="580822234363523061">Đi tới
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          và đảm bảo cấu hình của bạn được đặt thành "không có proxy" hoặc "trực tiếp".</translation>
+<translation id="6549378540556750549">Chromium cũng được cung cấp thông qua <ph name="BEGIN_LINK_OSS" />phần mềm nguồn mở<ph name="END_LINK_OSS" /> khác.</translation>
+<translation id="6613594504749178791">Các thay đổi của bạn sẽ có hiệu lực vào lần tới khi bạn chạy lại Chromium.</translation>
+<translation id="691026815377248078">Chromium cần có quyền truy cập Bluetooth để tiếp tục 
+ ghép nối. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium được cung cấp thông qua dự án nguồn mở <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Chuyển đến
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          và bỏ chọn "<ph name="NO_PREFETCH_DESCRIPTION" />."
+          Nếu cách này không giải quyết được sự cố thì chúng tôi khuyên bạn nên chọn lại tùy chọn này
+          để cải thiện hiệu suất.</translation>
+<translation id="8187289872471304532">Đi tới
+          Ứng dụng&gt; Tùy chọn hệ thống &gt; Mạng &gt; Nâng cao &gt; Proxy
+          và bỏ chọn bất kỳ proxy nào đã được chọn.</translation>
+<translation id="8597726643333341451">Bạn đang xem một trang Chrome for Testing an toàn</translation>
+<translation id="8684913864886094367">Chromium không tắt đúng cách.</translation>
+</translationbundle>

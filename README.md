@@ -1,21 +1,15 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
+# Hypertrail Browser
 
-Chromium is an open-source browser project that aims to build a safer, faster,
-and more stable way for all users to experience the web.
+A chromium based browser for the future of the internet.
 
-The project's web site is https://www.chromium.org.
+### Overview
+HyperTrail is a fast, secure, and feature-rich browser built on top of the Chromium project. Our goal is to provide a unique browsing experience that's tailored to the needs of our users.
 
-To check out the source code locally, don't use `git clone`! Instead,
-follow [the instructions on how to get the code](docs/get_the_code.md).
+### Contributing
+Contributions from the community are welcome! If you're interested in helping out, please fork the repository and submit a pull request with your changes.
 
-Documentation in the source is rooted in [docs/README.md](docs/README.md).
+### License
+HyperTrail is licensed under the [BSD-3-Clause/MIT/Apache License 2.0] license.
 
-Learn how to [Get Around the Chromium Source Code Directory
-Structure](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code).
-
-For historical reasons, there are some small top level directories. Now the
-guidance is that new top level directories are for product (e.g. Chrome,
-Android WebView, Ash). Even if these products have multiple executables, the
-code should be in subdirectories of the product.
-
-If you found a bug, please file it at https://crbug.com/new.
+### Credits
+[Chromium project](https://www.chromium.org/)

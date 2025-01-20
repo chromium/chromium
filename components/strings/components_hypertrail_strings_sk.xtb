@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sk">
+<translation id="130631256467250065">Zmeny sa prejavia po ďalšom reštartovaní zariadenia.</translation>
+<translation id="275588974610408078">Správy o zlyhaní nie sú v prehliadači Chromium k dispozícii.</translation>
+<translation id="3064346599913645280">Prezeráte si zabezpečenú stránku prehliadača Chromium</translation>
+<translation id="3255926992597692024">Chromium sa pokúša upraviť nastavenia vypĺňania spôsobov platby.</translation>
+<translation id="358997566136285270">Logo prehliadača Chromium</translation>
+<translation id="4050599136622776556">Chromium sa pokúša upraviť spôsoby platby.</translation>
+<translation id="4365115785552740256">Prehliadač Chromium mohol vzniknúť vďaka projektu s otvoreným zdrojom <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> a ďalšiemu <ph name="BEGIN_LINK_OSS" />softvéru s otvoreným zdrojom<ph name="END_LINK_OSS" /> .</translation>
+<translation id="4559775032954821361">Prejdite na
+          ponuku Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          nastavenia siete LAN
+          a zrušte začiarknutie políčka „Používať server proxy pre sieť LAN".</translation>
+<translation id="4622039161600275920">Táto stránka bola zablokovaná prehliadačom Chromium</translation>
+<translation id="48558539577516920">Prehliadaču Chromium povoľte prístup k sieti v nastaveniach brány firewall alebo antivírusového softvéru.</translation>
+<translation id="580822234363523061">Prejdite na
+          ponuku Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          a uistite sa, že je vaša konfigurácia nastavená na hodnotu „žiadny server proxy" alebo „priame".</translation>
+<translation id="6549378540556750549">Prehliadač Chromium je založený aj na inom <ph name="BEGIN_LINK_OSS" />softvéri open source<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Chromium.</translation>
+<translation id="691026815377248078">Prehliadač Chromium potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 
+ v párovaní. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Prehliadač Chromium je založený na projekte open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Prejdite do
+        ponuky Chromium &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        a zrušte výber položky <ph name="NO_PREFETCH_DESCRIPTION" />.
+        Ak to problém nevyrieši, odporúčame túto možnosť vybrať,
+        aby ste získali lepšiu výkonnosť.</translation>
+<translation id="8187289872471304532">Prejdite na možnosť
+          Aplikácie &gt; Systémové predvoľby &gt; Sieť &gt; Rozšírené nastavenia &gt; Servery proxy
+          a zrušte výber všetkých vybratých serverov proxy.</translation>
+<translation id="8597726643333341451">Prezeráte si zabezpečenú stránku Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium nebol správne vypnutý.</translation>
+</translationbundle>

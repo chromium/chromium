@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fil">
+<translation id="130631256467250065">Magkakabisa ang iyong mga pagbabago sa susunod na i-restart ang iyong device.</translation>
+<translation id="275588974610408078">Hindi available ang pag-uulat ng crash sa Chromium.</translation>
+<translation id="3064346599913645280">Isang ligtas na page ng Chromium ang tinitingnan mo</translation>
+<translation id="3255926992597692024">Sinusubukan ng Chromium na baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>
+<translation id="358997566136285270">Logo ng Chromium</translation>
+<translation id="4050599136622776556">Sinusubukan ng Chromium na i-edit ang mga paraan ng pagbabayad.</translation>
+<translation id="4365115785552740256">Nagiging posible ang Chromium sa pamamagitan ng proyekto sa open source ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> at iba pang <ph name="BEGIN_LINK_OSS" />open source na software<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Pumunta sa
+          menu ng Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Mga Setting ng LAN
+          at alisin sa pagkakapili ang checkbox ng "Gumamit ng proxy server para sa iyong LAN."</translation>
+<translation id="4622039161600275920">Na-block ng Chromium ang page na ito</translation>
+<translation id="48558539577516920">Pahintulutan ang Chromium na i-access ang network sa
+          mga setting ng iyong firewall o antivirus.</translation>
+<translation id="580822234363523061">Pumunta sa
+          menu ng Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          at tiyaking nakatakda sa "walang proxy" o "direkta" ang iyong configuration.</translation>
+<translation id="6549378540556750549">Nagiging posible rin ang Chromium sa pamamagitan ng iba pang <ph name="BEGIN_LINK_OSS" />open source na software<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Magkakabisa ang iyong mga pagbabago sa susunod na ilunsad mong muli ang Chromium.</translation>
+<translation id="691026815377248078">Nangangailangan ang Chromium ng access sa Bluetooth para magpatuloy sa 
+ pagpapares. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Nagiging posible ang Chromium sa pamamagitan ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open source project.</translation>
+<translation id="7861509383340276692">Pumunta
+          sa menu ng Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          at alisin sa pagkakapili ang "<ph name="NO_PREFETCH_DESCRIPTION" />."
+          Kung hindi nito malulutas ang isyu, inirerekomenda naming piliing muli ang opsyong ito
+          para sa pinahusay na pagganap.</translation>
+<translation id="8187289872471304532">Pumunta sa
+          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
+          at alisin sa pagkakapili ang anumang mga napiling proxy.</translation>
+<translation id="8597726643333341451">Isang secure na page ng Chrome na Pang-test ang tinitingnan mo</translation>
+<translation id="8684913864886094367">Hindi nag-shut down nang tama ang Chromium.</translation>
+</translationbundle>

@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ja">
+<translation id="130631256467250065">変更内容は、次回のデバイスの起動時に反映されます。</translation>
+<translation id="275588974610408078">Chromium では、障害レポートをご利用いただけません。</translation>
+<translation id="3064346599913645280">保護された Chromium ページを表示しています</translation>
+<translation id="3255926992597692024">Chromium がお支払い方法の入力の設定を変更しようとしています。</translation>
+<translation id="358997566136285270">Chromium ロゴ</translation>
+<translation id="4050599136622776556">Chromium がお支払い方法を編集しようとしています。</translation>
+<translation id="4365115785552740256">Chromium は <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> オープンソース プロジェクトやその他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />によって実現しました。</translation>
+<translation id="4559775032954821361">このオプションを無効にするには:
+          Chromium メニュー &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          [LAN の設定]
+          の順に移動して、[LAN にプロキシ サーバーを使用する] チェックボックスをオフにします。</translation>
+<translation id="4622039161600275920">このページは Chromium によってブロックされています</translation>
+<translation id="48558539577516920">ファイアウォールやウイルス対策の設定で、Chromium からネットワークへのアクセスを
+        許可します。</translation>
+<translation id="580822234363523061">このオプションを無効にするには:
+          Chromium メニュー &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          の順に移動して、設定が [プロキシなし] または [直接] になっていることを確認します。</translation>
+<translation id="6549378540556750549">Chromium の実現には、他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />もかかわっています。</translation>
+<translation id="6613594504749178791">変更内容は次に Chromium を再起動したときに有効になります。</translation>
+<translation id="691026815377248078">Chromium でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium は、<ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> のオープンソース プロジェクトによって実現しました。</translation>
+<translation id="7861509383340276692">Chromium メニュー &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          の順に移動して、[<ph name="NO_PREFETCH_DESCRIPTION" />] をオフにします。
+          上記を行っても問題が解決しない場合は、パフォーマンス向上のため
+          このオプションを再びオンにすることをおすすめします。</translation>
+<translation id="8187289872471304532">このオプションを無効にするには:
+          [アプリケーション] &gt; [システム環境設定] &gt; [ネットワーク] &gt; [詳細] &gt; [プロキシ] の順に移動して、
+          選択されているプロキシの選択を解除します。</translation>
+<translation id="8597726643333341451">保護された Chrome for Testing ページを表示しています</translation>
+<translation id="8684913864886094367">Chromium は正しく終了しませんでした。</translation>
+</translationbundle>

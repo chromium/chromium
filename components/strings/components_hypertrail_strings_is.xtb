@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="is">
+<translation id="130631256467250065">Breytingarnar taka gildi næst þegar þú endurræsir tækið.</translation>
+<translation id="275588974610408078">Hrunskýrslur eru ekki í boði í Chromium.</translation>
+<translation id="3064346599913645280">Þú ert að skoða örugga Chromium síðu</translation>
+<translation id="3255926992597692024">Chromium er að reyna að breyta stillingum fyrir útfyllingu greiðslumáta.</translation>
+<translation id="358997566136285270">Chromium lógóið</translation>
+<translation id="4050599136622776556">Chromium er að reyna að breyta greiðslumátum.</translation>
+<translation id="4365115785552740256">Opna kóðaverkefnið <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annar <ph name="BEGIN_LINK_OSS" />opinn hugbúnaður<ph name="END_LINK_OSS" /> gerir Chromium mögulegt.</translation>
+<translation id="4559775032954821361">Farðu í
+          valmynd Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Stillingar staðarnets
+          og taktu valið af gátreitnum „Nota proxy-þjón fyrir staðarnet“.</translation>
+<translation id="4622039161600275920">Chromium setti þessa síðu á bannlista</translation>
+<translation id="48558539577516920">Veittu Chromium aðgang að netkerfinu þínu í eldveggsstillingunum þínum eða
+          vírusvarnarstillingunum.</translation>
+<translation id="580822234363523061">Farðu í
+          valmynd Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          og gakktu úr skugga um að stillt sé á „ekki proxy“ eða „beint“.</translation>
+<translation id="6549378540556750549">Chromium virkar einnig í krafti annars <ph name="BEGIN_LINK_OSS" />hugbúnaðar með opinn kóða<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Breytingar þínar munu taka gildi næst þegar þú endurræsir Chromium.</translation>
+<translation id="691026815377248078">Google Chrome þarf Bluetooth-aðgang til að halda pörun 
+ áfram. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium virkar í krafti verkefnis <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> um opinn kóða.</translation>
+<translation id="7861509383340276692">Farðu í
+        valmynd Chromium &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        og taktu valið af „<ph name="NO_PREFETCH_DESCRIPTION" />“.
+        Ef þetta leysir ekki málið mælum við með að gera þennan valkost
+        virkan á ný til að auka afköst.</translation>
+<translation id="8187289872471304532">Farðu í
+          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
+          og taktu valið af öllum proxy-þjónum sem hafa verið valdir.</translation>
+<translation id="8597726643333341451">Þú ert að skoða örugga Chrome for Testing-síðu</translation>
+<translation id="8684913864886094367">Chromium lokaðist ekki á réttan hátt.</translation>
+</translationbundle>

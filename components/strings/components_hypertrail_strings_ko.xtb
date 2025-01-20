@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ko">
+<translation id="130631256467250065">기기를 다시 시작할 때 변경사항이 적용됩니다.</translation>
+<translation id="275588974610408078">비정상 종료 보고서는 Chromium에서 사용할 수 없습니다.</translation>
+<translation id="3064346599913645280">안전한 Chromium 페이지를 보는 중</translation>
+<translation id="3255926992597692024">Chromium에서 결제 수단 입력 설정을 수정하려고 합니다.</translation>
+<translation id="358997566136285270">Chromium 로고</translation>
+<translation id="4050599136622776556">Chromium에서 결제 수단을 수정하려고 합니다.</translation>
+<translation id="4365115785552740256">Chromium은 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 오픈소스 프로젝트를 비롯한 여러 <ph name="BEGIN_LINK_OSS" />오픈소스 소프트웨어<ph name="END_LINK_OSS" />에 기초해 만들어진 브라우저입니다.</translation>
+<translation id="4559775032954821361">Chromium 메뉴 &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN 설정으로 이동하여
+          '사용자 LAN에 프록시 서버 사용'을 선택 취소합니다.</translation>
+<translation id="4622039161600275920">Chromium에서 차단한 페이지입니다.</translation>
+<translation id="48558539577516920">Chromium이 방화벽이나 백신 프로그램이 설정된
+        네트워크에 액세스할 수 있도록 허용합니다.</translation>
+<translation id="580822234363523061">Chromium 메뉴 &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          (으)로 이동하여 '프록시 없음' 또는 '직접 연결'로 설정되어 있는지 확인합니다.</translation>
+<translation id="6549378540556750549">Chromium은 다른 <ph name="BEGIN_LINK_OSS" />오픈소스 소프트웨어<ph name="END_LINK_OSS" />를 사용하여 제작된 브라우저입니다.</translation>
+<translation id="6613594504749178791">변경사항은 다음에 Chromium을 다시 시작할 때 적용됩니다.</translation>
+<translation id="691026815377248078">페어링을 계속하려면 Chromium에서 블루투스 액세스 권한이
+필요합니다. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium은 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 오픈소스 프로젝트를 통해 제작된 브라우저입니다.</translation>
+<translation id="7861509383340276692">Chromium 메뉴 &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          (으)로 이동하고 '<ph name="NO_PREFETCH_DESCRIPTION" />'을(를) 선택 취소합니다.
+          그래도 문제가 해결되지 않으면 이 옵션을 다시 선택하여
+          성능을 개선해 보시기 바랍니다.</translation>
+<translation id="8187289872471304532">애플리케이션 &gt; 시스템 환경설정 &gt; 네트워크 &gt; 고급 &gt; 프록시로 이동한 다음
+          선택된 프록시를 선택 취소합니다.</translation>
+<translation id="8597726643333341451">안전한 Chrome for Testing 페이지를 보는 중</translation>
+<translation id="8684913864886094367">Chromium이 제대로 종료되지 않았습니다.</translation>
+</translationbundle>

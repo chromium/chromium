@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="km">
+<translation id="130631256467250065">ការប្តូររបស់អ្នកនឹងមានប្រសិទ្ធភាពនៅពេលដែលអ្នកចាប់ផ្តើមឧបករណ៍របស់អ្នកឡើងវិញពេលបន្ទាប់។</translation>
+<translation id="275588974610408078">ការរាយការណ៍ពីការគាំងមិនមាននៅក្នុង Chromium ទេ។</translation>
+<translation id="3064346599913645280">អ្នក​កំពុង​មើល​ទំព័រ Chromium ដែល​មាន​សុវត្ថិភាព</translation>
+<translation id="3255926992597692024">Chromium កំពុងព្យាយាម​កែប្រែ​ការកំណត់​សម្រាប់​ការបំពេញ​វិធីបង់ប្រាក់។</translation>
+<translation id="358997566136285270">និមិត្តសញ្ញា Chromium</translation>
+<translation id="4050599136622776556">Chromium កំពុង​ព្យាយាម​កែ​វិធីបង់ប្រាក់។</translation>
+<translation id="4365115785552740256">Chromium អាចបង្កើតឡើងបានដោយគម្រោងប្រភពបើកចំហរ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> និង <ph name="BEGIN_LINK_OSS" />កម្មវិធីប្រភពបើកចំហរ<ph name="END_LINK_OSS" /> ផ្សេងទៀត។</translation>
+<translation id="4559775032954821361">ទៅកាន់
+          ម៉ឺនុយ Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          ការកំណត់ LAN
+          ហើយដកការជ្រើសរើសប្រអប់ធីក "ប្រើម៉ាស៊ីនមេប្រូកស៊ីសម្រាប់ LAN របស់អ្នក"។</translation>
+<translation id="4622039161600275920">ទំព័រនេះត្រូវបានទប់ស្កាត់ដោយ Chromium</translation>
+<translation id="48558539577516920">អនុញ្ញាតឲ្យ Chromium ចូលប្រើបណ្តាញនៅក្នុងការកំណត់ firewall ឬកម្មវិធីកម្ចាត់មេរោគ
+        របស់អ្នក។</translation>
+<translation id="580822234363523061">ទៅកាន់
+          ម៉ឺនុយ Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          ហើយត្រូវប្រាកដថាការតំឡើងរបស់អ្នកកំណត់ទៅ "គ្មានប្រូកស៊ី" ឬ "ដោយផ្ទាល់។"</translation>
+<translation id="6549378540556750549">Chromium អាច​បង្កើត​ឡើង​បាន​ដោយ<ph name="BEGIN_LINK_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_OSS" />ផ្សេង​ទៀត​ផងដែរ។</translation>
+<translation id="6613594504749178791">ការផ្លាស់ប្តូររបស់អ្នកនឹងមានប្រសិទ្ធភាពនៅពេលដែលបើកដំណើរការ Chromium ឡើងវិញពេលក្រោយ។</translation>
+<translation id="691026815377248078">Chromium ត្រូវការសិទ្ធិ​ចូលប្រើប៊្លូធូស ដើម្បីបន្ត
+ផ្គូផ្គង។ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium អាច​បង្កើត​ឡើង​បាន​ដោយគម្រោងកូដ​ចំហ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />។</translation>
+<translation id="7861509383340276692">ទៅកាន់
+        ម៉ឺនុយ Chromium &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        ហើយ ដកការជ្រើសរើស "<ph name="NO_PREFETCH_DESCRIPTION" />."
+        ប្រសិនបើវាមិនដោះស្រាយបញ្ហានេះ យើងអាចណែនាំការជ្រើសរើសជម្រើសនេះ
+        ម្តងទៀតសម្រាប់ប្រតិបត្តិការដែលបានធ្វើឲ្យប្រសើរឡើង។</translation>
+<translation id="8187289872471304532">ទៅកាន់
+          កម្មវិធី &gt; ចំណូលចិត្តប្រព័ន្ធ &gt; បណ្តាញ &gt; កម្រិតខ្ពស់ &gt; ប្រូកស៊ី
+          ហើយលុបការជ្រើសរើសប្រូកស៊ីណាមួយដែលបានជ្រើសរើស។</translation>
+<translation id="8597726643333341451">អ្នកកំពុងមើលទំព័រ Chrome for Testing ដែលមានសុវត្ថិភាព</translation>
+<translation id="8684913864886094367">Chromium មិនបានបិទត្រឹមត្រូវទេ។</translation>
+</translationbundle>

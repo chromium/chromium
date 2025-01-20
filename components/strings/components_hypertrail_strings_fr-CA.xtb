@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fr-CA">
+<translation id="130631256467250065">Vos modifications prendront effet au prochain redémarrage de votre appareil.</translation>
+<translation id="275588974610408078">Les rapports sur les plantages ne sont pas activés dans Chromium.</translation>
+<translation id="3064346599913645280">Vous consultez une page Chromium sécurisée</translation>
+<translation id="3255926992597692024">Chromium tente de modifier les paramètres de remplissage des modes de paiement.</translation>
+<translation id="358997566136285270">Logo de Chromium</translation>
+<translation id="4050599136622776556">Chromium essaie de modifier les modes de paiement.</translation>
+<translation id="4365115785552740256">Chromium fonctionne grâce au projet de code source ouvert <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> et à d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Accédez au
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Paramètres réseau
+          et décochez l'option « Utiliser un serveur mandataire pour votre réseau local ».</translation>
+<translation id="4622039161600275920">Chromium a bloqué cette page</translation>
+<translation id="48558539577516920">Autorisez Chromium à accéder au réseau dans les paramètres de votre pare-feu
+        ou de votre antivirus.</translation>
+<translation id="580822234363523061">Accédez au
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          et assurez-vous que vos paramètres aient comme valeur « sans mandataire » ou « direct ».</translation>
+<translation id="6549378540556750549">Chromium est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
+<translation id="691026815377248078">Chromium nécessite l'accès au Bluetooth pour continuer l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium est rendu possible grâce au projet de logiciel libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Accédez au
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          et décochez « <ph name="NO_PREFETCH_DESCRIPTION" /> ».
+          Si le problème persiste, nous vous conseillons de sélectionner
+          à nouveau cette option pour améliorer les performances.</translation>
+<translation id="8187289872471304532">Sélectionnez
+          Applications &gt; Préférences Système &gt; Réseau &gt; Avancé... &gt; Proxys et 
+          désélectionnez tous les serveurs mandataires qui ont été sélectionnés.</translation>
+<translation id="8597726643333341451">Vous consultez une page sécurisée Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium n'a pas été fermé correctement.</translation>
+</translationbundle>

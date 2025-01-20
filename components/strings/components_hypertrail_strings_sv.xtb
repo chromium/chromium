@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sv">
+<translation id="130631256467250065">Dina ändringar börjar gälla nästa gång du startar om enheten.</translation>
+<translation id="275588974610408078">Felrapportering är inte tillgängligt i Chromium.</translation>
+<translation id="3064346599913645280">Du visar en säker Chromium-sida</translation>
+<translation id="3255926992597692024">Chromium försöker ändra inställningarna för att fylla i betalningsmetoder.</translation>
+<translation id="358997566136285270">Chromium-logotyp</translation>
+<translation id="4050599136622776556">Chromium försöker redigera betalningsmetoder.</translation>
+<translation id="4365115785552740256">Chromium finns tack vare projektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> med öppen källkod och <ph name="BEGIN_LINK_OSS" />andra program med öppen källkod<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Öppna
+          Chromium-menyn &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN-inställningar
+          och avmarkera kryssrutan Använd en proxyserver för nätverket.</translation>
+<translation id="4622039161600275920">Den här sidan har blockerats av Chromium</translation>
+<translation id="48558539577516920">Tillåt att Chromium får åtkomst till nätverket i inställningarna för brandväggen eller
+        antivirusprogrammet.</translation>
+<translation id="580822234363523061">Öppna
+          Chromium-menyn &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          och kontrollera att "ingen proxy" eller "direkt" har angetts i konfigurationen</translation>
+<translation id="6549378540556750549">Chromium möjliggörs även av andra <ph name="BEGIN_LINK_OSS" />program med öppen källkod<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Ändringarna tillämpas nästa gång du startar om Chromium.</translation>
+<translation id="691026815377248078">Chromium behöver åtkomst för Bluetooth för att fortsätta 
+ parkoppla. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium finns tack vare det öppna källkodsprojektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Öppna
+        Chromium-menyn &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        och avmarkera <ph name="NO_PREFETCH_DESCRIPTION" />.
+        Om det inte hjälper rekommenderar vi att du markerar det
+        här alternativet igen så att funktionaliteten förbättras.</translation>
+<translation id="8187289872471304532">Öppna
+          Program &gt; Systeminställningar &gt; Nätverk &gt; Avancerat &gt; Proxyservrar
+          och avmarkera alla proxyservrar.</translation>
+<translation id="8597726643333341451">Du visar en säker Chrome for Testing-sida</translation>
+<translation id="8684913864886094367">Chromium stängdes inte ordentligt.</translation>
+</translationbundle>

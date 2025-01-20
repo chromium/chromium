@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="si">
+<translation id="130631256467250065">ඔබේ උපාංගය නැවත අරඹන විට ඔබේ වෙනස්කම් බල පැවැත්වෙනු ඇත.</translation>
+<translation id="275588974610408078">අනතුරු වාර්තාකරණය  Chromiumහි නැත.</translation>
+<translation id="3064346599913645280">ඔබ ආරක්ෂිත Chromium පිටුවක් බලමින් සිටී</translation>
+<translation id="3255926992597692024">Chromium ගෙවීම් ක්‍රම පිරවීම සඳහා සැකසීම් වෙනස් කිරීමට උත්සාහ දරයි.</translation>
+<translation id="358997566136285270">Chromium ලාංඡනය</translation>
+<translation id="4050599136622776556">Chromium ගෙවීම් ක්‍රම සංස්කරණය කිරීමට උත්සාහ කරයි.</translation>
+<translation id="4365115785552740256">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> විවෘත මූලාශ්‍ර ව්‍යාපෘතිය සහ වෙනත් <ph name="BEGIN_LINK_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_OSS" /> මගින් නිපදවීමට හැකි විය.</translation>
+<translation id="4559775032954821361">ඒ සඳහා 
+          Chromium මෙනුව &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN සැකසුම්
+          "ඔබගේ LAN සඳහා ප්‍රොක්සි සේවාදායකයක් භාවිත කරන්න" සලකුණු කොටුව ඉවත් කරන්න.</translation>
+<translation id="4622039161600275920">මෙම පිටුව Chromium මගින් අවහිර කර ඇත</translation>
+<translation id="48558539577516920">ඔබගේ ෆයර් වෝල හා ප්‍රතිවයිරස සැකසීම් තුළ Chromium හට ජාලයට පිවිසීමට
+          අවසර දෙන්න.</translation>
+<translation id="580822234363523061">Chromium මෙනුව වෙත ගොස්
+          &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          ඔබේ වින්‍යාසකරණය "no proxy" හෝ "direct" ලෙස ඇති බව තහවුරු කරගන්න.</translation>
+<translation id="6549378540556750549">Chromium හට වෙනත් <ph name="BEGIN_LINK_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_OSS" /> මගින් ද හැකියාව සලසා ඇත</translation>
+<translation id="6613594504749178791">නැවත Chromium ආරම්බ කරන විට වෙනස්කම් ක්‍රියාත්මක වනු ඇත.</translation>
+<translation id="691026815377248078">යුගල කිරීම දිගටම කර ගෙන යාමට Chromium හට 
+ බ්ලූටූත් ප්‍රවේශය අවශ්‍යයි. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium හට <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> විවෘත මූලාශ්‍ර මෘදුකාංගය මගින් හැකියාව සලසා ඇත</translation>
+<translation id="7861509383340276692">මුලින්ම
+        Chromium මෙනුව වෙත ගොස්&gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        තෝරා "<ph name="NO_PREFETCH_DESCRIPTION" />." තේරීම ඉවත් කරන්න
+        මෙයින් නිරාකරණය නොවුන හොත්, වඩා දියුණු ක්‍රියාකාරීත්වයක් සඳහා මෙම අභිප්‍රේතය නැවත තෝරන්න.</translation>
+<translation id="8187289872471304532">යෙදුම් &gt; පද්ධති මනාප &gt; ජාලය &gt; උසස් කළ &gt; ප්‍රොක්සි වෙත ගොස්
+          තෝරා ඇති ඕනෑම ප්‍රොක්සියක් නොතෝරන්න.</translation>
+<translation id="8597726643333341451">ඔබ පරීක්ෂා කිරීම සඳහා සුරක්ෂිත Chrome පිටුවක් බලයි</translation>
+<translation id="8684913864886094367">Chromium නිවැරදිව වැසීමට නොහැකි විය.</translation>
+</translationbundle>

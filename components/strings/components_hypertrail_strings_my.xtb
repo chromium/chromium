@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="my">
+<translation id="130631256467250065">သင် ပြောင်းလဲခဲ့သည်များမျာ သင်က သင်၏ ကိရိယာကို နောက်တစ်ကြိမ် ပြန်ဖွင့်စဉ် အကျိုးသက်ရောက် လာကြပါမည်။</translation>
+<translation id="275588974610408078">Chromium တွင်ပျက်စီးမှု အစီရင်ခံချက် မရနိုင်ပါ။</translation>
+<translation id="3064346599913645280">သင်သည် လုံခြုံသည့် Chromium စာမျက်နှာကို ကြည့်ရှုနေပါသည်</translation>
+<translation id="3255926992597692024">Chromium သည် ငွေပေးချေနည်းလမ်းများ ဖြည့်သည့် ဆက်တင်များကို ပြင်ဆင်ရန် ကြိုးပမ်းနေသည်။</translation>
+<translation id="358997566136285270">Chromium လိုဂို</translation>
+<translation id="4050599136622776556">Chromium က ငွေပေးချေနည်းလမ်းများကို ပြင်ရန် ကြိုးပမ်းနေသည်။</translation>
+<translation id="4365115785552740256">Chromium အား <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ပွင့်လင်းအရင်းမြစ် စီမံကိန်းနှင့် အခြား <ph name="BEGIN_LINK_OSS" />ပွင့်လင်း အရင်းမြစ် ဆော့ဝဲ<ph name="END_LINK_OSS" /> မှပြုလုပ်ထားပါသည်။</translation>
+<translation id="4559775032954821361">Chromium မီးနူကို သွားပါ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN ဆက်တင်များ
+          ပြီးတော့ "သင်၏ LAN အတွက် ပရောက်စီ ဆာဗာ သုံရန်" ခြစ်ရမည့် အကွက် ရွေးထားမှုကို ပြန်ဖျက်လိုက်ပါ။</translation>
+<translation id="4622039161600275920">Chromium က ဤစာမျက်နှာကို ပိတ်ထားသည်</translation>
+<translation id="48558539577516920">သင့် Firewall သို့မဟုတ် ဗိုင်းရပ်စ်ခုခံစနစ် ဆက်တင်များအတွင်း ကွန်ရက်အသုံးပြုရန် Chromium ကိုခွင့်ပြုပါ။</translation>
+<translation id="580822234363523061">သွားရန်
+          Chromium မီနျူး &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          သင့်ပြုပြင်ချက်များကို "no proxy" သို့မဟုတ် "direct" ဟုသတ်မှတ်ပါ။</translation>
+<translation id="6549378540556750549">အခြား <ph name="BEGIN_LINK_OSS" />အခမဲ့ ရင်းမြစ်ဆော့ဖ်ဝဲ<ph name="END_LINK_OSS" /> ဖြင့်လည်း Chromium ကို ထုတ်လုပ်ထားသည်။</translation>
+<translation id="6613594504749178791">Chromium ကိုသင်နောက်တစ်ကြိမ် ပြန်လည်စတင်လျှင် သင့်ပြောင်းလဲမှုများ အကျိုးသက်ရောက်မှု ရှိမည်ဖြစ်သည်။</translation>
+<translation id="691026815377248078">Chromium သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
+ လိုပါသည်။ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> အခမဲ့ ရင်းမြစ်ပရောဂျက်ဖြင့် Chromium ကို ထုတ်လုပ်ထားသည်။</translation>
+<translation id="7861509383340276692">Chromium မီနူးဆီကို သွားပါ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          ပြီးတော့ "<ph name="NO_PREFETCH_DESCRIPTION" />"ကို ရွေးပါ။
+          ၎င်းက ပြဿနာကို ဖြေရှင်းမပေးနိုင်ခဲ့သော်၊ ပိုပြီး အဆင့်မြင့်သည့် လုပ်ကိုင်မှုအတွက် ဒီရွေးချယ်မှုကို ထပ်ပြီး ရွေးချယ်ရန်ကို ကျွန်ပ်တို့ အကြံပေးလိုပါသည်။</translation>
+<translation id="8187289872471304532">သွားမည်
+          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
+          and deselect any proxies that have been selected.</translation>
+<translation id="8597726643333341451">သင်သည် လုံခြုံသည့် Chrome for Testing စာမျက်နှာကို ကြည့်နေခြင်းဖြစ်သည်</translation>
+<translation id="8684913864886094367">Chromium သည် မှန်ကန်စွာ ပိတ်မသွားခဲ့ပါ။</translation>
+</translationbundle>

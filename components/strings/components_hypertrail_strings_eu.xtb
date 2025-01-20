@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="eu">
+<translation id="130631256467250065">Aldaketek gailua abiarazten duzun hurrengo aldian izango dute eragina.</translation>
+<translation id="275588974610408078">Chromium-ek ez du hutsegiteen berri emateko aukerarik ematen.</translation>
+<translation id="3064346599913645280">Chromium-eko orri seguru bat ari zara ikusten</translation>
+<translation id="3255926992597692024">Chromium-ek ordainketa-metodoak betetzeko ezarpenak aldatu behar ditu.</translation>
+<translation id="358997566136285270">Chromium logotipoa</translation>
+<translation id="4050599136622776556">Chromium-ek ordainketa-metodoak editatu behar ditu.</translation>
+<translation id="4365115785552740256">Kode irekiko <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> proiektuari esker eta <ph name="BEGIN_LINK_OSS" />kode irekiko softwareari<ph name="END_LINK_OSS" /> esker da posible Chromium arakatzailea.</translation>
+<translation id="4559775032954821361">Sakatu Chromium menua &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; LAN ezarpenak, eta desautatu "Erabili proxy-zerbitzaria LAN sarean" koadroa.</translation>
+<translation id="4622039161600275920">Chromium-ek blokeatu du orria</translation>
+<translation id="48558539577516920">Eman suebakiaren edo birusen aurkako softwarearen ezarpenetan sarea erabiltzeko baimena Chromium-i.</translation>
+<translation id="580822234363523061">Sakatu Chromium menua &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> eta ziurtatu konfigurazioan "proxyrik ez" edo "zuzena" gisa ezarrita dagoela.</translation>
+<translation id="6549378540556750549"><ph name="BEGIN_LINK_OSS" />Kode irekiko beste software<ph name="END_LINK_OSS" /> batzuek ere posible egiten dute Chromium.</translation>
+<translation id="6613594504749178791">Aldaketek Chromium abiarazten duzun hurrengo aldian izango dute eragina.</translation>
+<translation id="691026815377248078">Chromium-ek Bluetootha erabiltzeko baimena behar du parekatzen jarraitzeko. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Kode irekiko <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> proiektuak egiten du posible Chromium.</translation>
+<translation id="7861509383340276692">Sakatu
+          Chromium menua &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          eta desautatu "<ph name="NO_PREFETCH_DESCRIPTION" />."
+          Arazoa horrela konpontzen ez bada, aukera hori berriro hautatzea gomendatzen dizugu errendimendua hobetzeko.</translation>
+<translation id="8187289872471304532">Zoaz
+          Aplikazioak &gt; Sistemaren hobespenak &gt; Sarea &gt; Aurreratua &gt; Proxyak
+          atalera eta desautatu hautatutako proxy guztiak.</translation>
+<translation id="8597726643333341451">Chrome for Testing-eko orri seguru bat ari zara ikusten</translation>
+<translation id="8684913864886094367">Chromium ez da behar bezala itxi.</translation>
+</translationbundle>

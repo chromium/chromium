@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="et">
+<translation id="130631256467250065">Muudatused jõustuvad järgmine kord, kui seadme taaskäivitate.</translation>
+<translation id="275588974610408078">Krahhiaruandlus ei ole Chromiumis saadaval.</translation>
+<translation id="3064346599913645280">Vaatate turvalist Chromiumi lehte</translation>
+<translation id="3255926992597692024">Chromium proovib muuta makseviiside sisestamise seadeid.</translation>
+<translation id="358997566136285270">Chromiumi logo</translation>
+<translation id="4050599136622776556">Chromium üritab muuta makseviise.</translation>
+<translation id="4365115785552740256">Chromiumi aluseks on avatud lähtekoodiga projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ja muu <ph name="BEGIN_LINK_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Valige
+          Chromiumi menüü &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN-seaded
+          ja tühjendage ruut valiku „Kasutage LAN-i puhul puhverserverit” juures.</translation>
+<translation id="4622039161600275920">Chromium blokeeris selle lehe</translation>
+<translation id="48558539577516920">Lubage Chromiumi juurdepääs võrgule tulemüüri või viirusetõrje
+         seadetes.</translation>
+<translation id="580822234363523061">Minge
+          Chromiumi menüüsse &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          ja veenduge, et konfiguratsioon on määratud valikule „Puhverserverita” või „Otse”.</translation>
+<translation id="6549378540556750549">Chromiumi võimaldab pakkuda ka muu <ph name="BEGIN_LINK_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Teie muudatused jõustuvad järgmine kord, kui Chromiumi taaskäivitate.</translation>
+<translation id="691026815377248078">Chromium vajab sidumise jätkamiseks juurdepääsu Bluetoothile. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromiumi võimaldab pakkuda <ph name="BEGIN_LINK_CHROMIUM" />Chromiumi<ph name="END_LINK_CHROMIUM" /> avatud lähtekoodi projekt.</translation>
+<translation id="7861509383340276692">Avage
+        Chromiumi menüü &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        ja tühistage valik „<ph name="NO_PREFETCH_DESCRIPTION" />”.
+        Kui see probleemi ei lahenda, soovitame selle valiku
+        toimivuse parandamiseks uuesti teha.</translation>
+<translation id="8187289872471304532">Tehke valikud
+          Rakendused &gt; Süsteemieelised &gt; Võrk &gt; Täpsem &gt; Puhverserverid
+          ja tühjendage kõigi valitud puhverserverite märkeruudud.</translation>
+<translation id="8597726643333341451">Vaatate turvalist brauseri Chrome for Testing lehte</translation>
+<translation id="8684913864886094367">Chromium ei sulgunud õigesti.</translation>
+</translationbundle>

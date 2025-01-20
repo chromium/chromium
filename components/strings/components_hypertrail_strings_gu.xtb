@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="gu">
+<translation id="130631256467250065">તમારા ફેરફારો તમે આગલી વખતે તમારા ઉપકરણને ફરી પ્રારંભ કરશો ત્યારે પ્રભાવમાં આવશે.</translation>
+<translation id="275588974610408078">Chromium માં ક્રૅશ રિપોર્ટિંગ ઉપલબ્ધ નથી.</translation>
+<translation id="3064346599913645280">તમે એક સુરક્ષિત Chromium પેજ જોઈ રહ્યાં છો</translation>
+<translation id="3255926992597692024">ચુકવણી પદ્ધતિઓ ભરવા માટે, Chromium સેટિંગમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
+<translation id="358997566136285270">Chromium લોગો</translation>
+<translation id="4050599136622776556">Chromium ચુકવણી પદ્ધતિઓમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
+<translation id="4365115785552740256">Chromium એ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ઓપન સ્રોત પ્રોજેક્ટ અને અન્ય <ph name="BEGIN_LINK_OSS" />ઓપન સ્રોત સૉફ્ટવેર<ph name="END_LINK_OSS" /> દ્વારા શક્ય બનાવ્યું છે.</translation>
+<translation id="4559775032954821361">Chromium મેનૂ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN સેટિંગ
+          પર જાઓ અને "તમારા LAN માટે પ્રૉક્સી સર્વરનો ઉપયોગ કરો" ચેકબૉક્સથી પસંદ હટાવો.</translation>
+<translation id="4622039161600275920">Chromium દ્વારા આ પેજને બ્લૉક કરવામાં આવ્યું છે</translation>
+<translation id="48558539577516920">Chromiumને તમારા ફાયરવૉલ અથવા ઍન્ટિવાયરસ સેટિંગમાં નેટવર્ક ઍક્સેસ કરવાની
+        મંજૂરી આપો.</translation>
+<translation id="580822234363523061">Chromium મેનૂ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          પર જાઓ અને ખાતરી કરો કે ગોઠવણી "પ્રૉક્સી નહીંં" અથવા "પ્રત્યક્ષ" પર સેટ કરેલી છે.</translation>
+<translation id="6549378540556750549">અન્ય <ph name="BEGIN_LINK_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_OSS" /> દ્વારા પણ Chromiumને શક્ય બનાવવામાં આવ્યું છે.</translation>
+<translation id="6613594504749178791">તમારા ફેરફારો તમે આગલી વખતે Chromium ફરીથી લોંચ કરશો ત્યારે પ્રભાવમાં આવશે.</translation>
+<translation id="691026815377248078">જોડાણ કરવાનું ચાલુ રાખવા માટે, Chromiumને બ્લૂટૂથના ઍક્સેસની 
+ જરૂર છે. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ઓપન સૉર્સ પ્રોજેક્ટ દ્વારા પણ Chromiumને શક્ય બનાવવામાં આવ્યું છે.</translation>
+<translation id="7861509383340276692">Chromium મેનૂ &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        પર જાઓ અને "<ph name="NO_PREFETCH_DESCRIPTION" />" પસંદગીને હટાવો.
+        જો આનાથી સમસ્યા ઉકેલાતી નથી, તો અમે સુધારેલ પ્રદર્શન માટે ફરીથી આ વિકલ્પને પસંદ કરવાની 
+        ભલામણ કરીએ છીએ.</translation>
+<translation id="8187289872471304532">ઍપ્લિકેશનો &gt; સિસ્ટમ પસંદગીઓ &gt; નેટવર્ક &gt; વિગતવાર &gt; પ્રોક્સીઝ
+          પર જાઓ અને પસંદ કરવામાં આવેલી કોઈપણ પ્રોક્સીની પસંદગી હટાવો.</translation>
+<translation id="8597726643333341451">તમે સુરક્ષિત Chrome for Testing પેજ જોઈ રહ્યાં છો</translation>
+<translation id="8684913864886094367">Chromium યોગ્ય રીતે શટ ડાઉન થયું નહોતું.</translation>
+</translationbundle>

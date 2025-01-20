@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="az">
+<translation id="130631256467250065">Dəyişiklikləriniz cihazınızı işə salandan sonra qüvvəyə minəcək.</translation>
+<translation id="275588974610408078">Xəta hesabatı Chromium'da əlçatan deyil.</translation>
+<translation id="3064346599913645280">Təhlükəsiz Chromium səhifəsinə baxırsınız</translation>
+<translation id="3255926992597692024">Chromium ödəniş metodlarını doldurmaq üçün ayarlara dəyişiklik etməyə çalışır.</translation>
+<translation id="358997566136285270">Chromium loqo</translation>
+<translation id="4050599136622776556">Chromium ödəniş metodlarını redaktə etməyə çalışır.</translation>
+<translation id="4365115785552740256">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açıq mənbə layihəsi və digər <ph name="BEGIN_LINK_OSS" />açıq mənbə proqram təminatları tərəfindən<ph name="END_LINK_OSS" /> əlçatan edilib.</translation>
+<translation id="4559775032954821361">Go to
+          the Chromium menu &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN Settings
+          and deselect the "Use a proxy server for your LAN" checkbox.</translation>
+<translation id="4622039161600275920">Bu səhifə Chromium tərəfindən bloklanıb</translation>
+<translation id="48558539577516920">Chromium'a qoruyucu divar və ya antivirus ayarlarınızda şəbəkəyə daxil olmağa imkan verin.</translation>
+<translation id="580822234363523061">Chromium menyusuna gedin &gt;           <ph name="SETTINGS_TITLE" />           &gt;           <ph name="ADVANCED_TITLE" />           &gt;           <ph name="PROXIES_TITLE" />           və konfiqurasiyanın "heç bir proksi" və ya "birbaşa" ayarlandığına əmin olun."</translation>
+<translation id="6549378540556750549">Chromium, həmçinin <ph name="BEGIN_LINK_OSS" />digər açıq mənbə proqram təminatı<ph name="END_LINK_OSS" /> olmadan mümkün olmazdı.</translation>
+<translation id="6613594504749178791">Dəyişiklikləriniz gələn dəfə Chromium'u başlatdıqda qüvvəyə minəcək.</translation>
+<translation id="691026815377248078">Chromium birləşməyə davam etmək üçün Bluetooth'a giriş tələb edir. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açıq mənbə layihəsi olmadan mümkün olmazdı.</translation>
+<translation id="7861509383340276692">Buraya keçin:
+          Chromium menyusu &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          və "<ph name="NO_PREFETCH_DESCRIPTION" />" üzərindən seçimi qaldırın.
+Əgər problem bununla həll olmursa, bu variantı qabaqcıl performans üçün seçməyi tövsiyə edirik.</translation>
+<translation id="8187289872471304532">Tətbiqlər &gt; Sistem Tərcihləri &gt; Şəbəkə &gt; Qabaqcıl &gt; Proksilər bölməsinə gedin
+          və seçilmiş hər hansı proksidən seçimi qaldırın.</translation>
+<translation id="8597726643333341451">Təhlükəsiz Sınaq üçün Chrome səhifəsinə baxırsınız</translation>
+<translation id="8684913864886094367">Chromium düzgün qapadılmadı.</translation>
+</translationbundle>

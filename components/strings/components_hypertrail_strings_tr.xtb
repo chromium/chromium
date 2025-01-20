@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="tr">
+<translation id="130631256467250065">Yaptığınız değişiklikler cihazı yeniden başlattığınızda etkinleşecektir.</translation>
+<translation id="275588974610408078">Chromium'da kilitlenmeyi raporlama özelliği yoktur.</translation>
+<translation id="3064346599913645280">Güvenli bir Chromium sayfasını görüntülüyorsunuz</translation>
+<translation id="3255926992597692024">Chromium, ödeme yöntemi girmeyle ilgili ayarları değiştirmeye çalışıyor.</translation>
+<translation id="358997566136285270">Chromium logosu</translation>
+<translation id="4050599136622776556">Chromium ödeme yöntemlerini düzenlemeye çalışıyor.</translation>
+<translation id="4365115785552740256">Chromium, <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açık kaynak projesi ve diğer <ph name="BEGIN_LINK_OSS" />açık kaynak yazılımlar<ph name="END_LINK_OSS" /> ile hazırlanmıştır.</translation>
+<translation id="4559775032954821361">Chromium menüsü &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN Ayarları
+          öğesine gidin ve "LAN için proxy sunucusu kullan" onay kutusunun seçimini kaldırın.</translation>
+<translation id="4622039161600275920">Bu sayfa Chromium tarafından engellendi</translation>
+<translation id="48558539577516920">Güvenlik duvarınızın veya virüsten korunma programınızın ayarlarından,
+        Chromium'un ağa erişmesine izin verin.</translation>
+<translation id="580822234363523061">Chromium menüsü &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+           öğesine gidin ve yapılandırmanızın "proxy yok" veya "doğrudan" olarak ayarlandığından emin olun.</translation>
+<translation id="6549378540556750549">Chromium ayrıca diğer <ph name="BEGIN_LINK_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_OSS" /> yararlanılarak geliştirilmiştir.</translation>
+<translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
+<translation id="691026815377248078">Chromium'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium, <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açık kaynak projesiyle hazırlanmıştır.</translation>
+<translation id="7861509383340276692">Chromium menüsü &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" /> öğesine gidin
+          ve "<ph name="NO_PREFETCH_DESCRIPTION" />" seçeneğinin işaretini kaldırın.
+          Bu işlem sorunu çözmezse performansın iyileşmesi için bu seçeneği tekrar işaretlemenizi öneririz.</translation>
+<translation id="8187289872471304532">Uygulamalar &gt; Sistem Tercihleri &gt; Ağ &gt; Gelişmiş &gt; Proxy'ler
+          öğesine gidin ve seçilmiş olabilecek proxy'lerin seçimini kaldırın.</translation>
+<translation id="8597726643333341451">Güvenli bir Chrome for Testing sayfasını görüntülüyorsunuz</translation>
+<translation id="8684913864886094367">Chromium düzgün bir şekilde kapatılmadı.</translation>
+</translationbundle>

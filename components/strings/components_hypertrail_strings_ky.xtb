@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ky">
+<translation id="130631256467250065">Өзгөртүүлөрүңүз түзмөгүңүз өчүп күйгөндөн кийин күчүнө кирет.</translation>
+<translation id="275588974610408078">Chromium'да каталар жөнүндө кабар берүү мүмкүн эмес.</translation>
+<translation id="3064346599913645280">Коопсуз Chromium баракчасын карап жатасыз</translation>
+<translation id="3255926992597692024">Chromium төлөм ыкмаларын толтуруу параметрлерин өзгөртүүгө аракет кылууда.</translation>
+<translation id="358997566136285270">Chromium логотиби</translation>
+<translation id="4050599136622776556">Chromium төлөм ыкмаларын түзөтүүгө аракет кылууда.</translation>
+<translation id="4365115785552740256">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ачык булак долбоору жана башка <ph name="BEGIN_LINK_OSS" />ачык программа<ph name="END_LINK_OSS" /> аркылуу мүмкүн болду.</translation>
+<translation id="4559775032954821361">Төмөнкүгө өтүп, 
+          Chromium меню &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN параметрлери
+          жана "LAN үчүн прокси сервер колдонулсун" белгиленме кутусун тандоодон чыгарыңыз.</translation>
+<translation id="4622039161600275920">Бул баракты Chromium бөгөттөп койду</translation>
+<translation id="48558539577516920">Chromium'га коргоо системасында тармакка же антивирус параметрлерине кирүүгө уруксат
+          бериңиз.</translation>
+<translation id="580822234363523061">Төмөнкүгө өтүп:
+          Chromium менюсу &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          "прокси жок" же "түздөн-түз" деген жөндөөлөр коюлгандыгын текшериңиз.</translation>
+<translation id="6549378540556750549">Chromium башка <ph name="BEGIN_LINK_OSS" />ачык ресурс программасы<ph name="END_LINK_OSS" /> аркылуу да жеткиликтүү.</translation>
+<translation id="6613594504749178791">Өзгөртүүлөрүңүз Chromium кийинки жолу кайра ишке киргизилгенде күчүнө кирет.</translation>
+<translation id="691026815377248078">Жупташтырууну улантуу үчүн Chromium Bluetooth'ду 
+ пайдаланууга уруксат алышы керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ачык ресурс долбоору аркылуу түзүлдү.</translation>
+<translation id="7861509383340276692">Chromium меню &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        өтүп, "<ph name="NO_PREFETCH_DESCRIPTION" />" дегенди тандоодон чыгарыңыз.
+        Эгер ушуну менен маселе чечилбесе, иштин майнаптуулугун жогорулатуу үчүн бул параметрди  
+        кайра тандаңыз.</translation>
+<translation id="8187289872471304532">Төмөнкүгө өтүңүз
+          Колдонмолор &gt; Системанын параметрлери &gt; Тармак &gt; Өркүндөтүлгөн &gt; Проксилер
+          жана тандалган бардык проксилерди тандоодон чыгарыңыз.</translation>
+<translation id="8597726643333341451">Коопсуз Chrome for Testing баракчасын карап жатасыз</translation>
+<translation id="8684913864886094367">Chromium туура эмес жабылып калды.</translation>
+</translationbundle>

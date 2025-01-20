@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="bs">
+<translation id="130631256467250065">Vaše promjene će stupiti na snagu kada sljedeći put ponovo pokrenete uređaj.</translation>
+<translation id="275588974610408078">Izrada izvještaja o padovima aplikacije nije dostupna na Chromiumu.</translation>
+<translation id="3064346599913645280">Prikazana vam je sigurna stranica Chromiuma</translation>
+<translation id="3255926992597692024">Chromium pokušava izmijeniti postavke za popunjavanje načina plaćanja.</translation>
+<translation id="358997566136285270">Logotip Chromiuma</translation>
+<translation id="4050599136622776556">Chromium pokušava urediti načine plaćanja.</translation>
+<translation id="4365115785552740256">Chromium je dostupan zahvaljujući <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projektu otvorenog koda i drugom <ph name="BEGIN_LINK_OSS" />softveru otvorenog koda<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Idite na
+          Chromium meni &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN postavke
+          i poništite odabir u polju za potvrdu "Koristi proksi server za svoj LAN".</translation>
+<translation id="4622039161600275920">Ovu stranicu je blokirao Chromium</translation>
+<translation id="48558539577516920">U postavkama zaštitnog zida ili antivirusnog programa dozvolite Chromiumu da pristupi
+          mreži.</translation>
+<translation id="580822234363523061">Idite u
+          meni Chromiuma&gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          i provjerite je li vaša konfiguracija postavljena na "bez proksi servera" ili "direktno".</translation>
+<translation id="6549378540556750549">Chromium su omogućili i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Vaše promjene će stupiti na snagu kada sljedeći put budete ponovo pokrenuli Chromium.</translation>
+<translation id="691026815377248078">Chromiumu je potreban pristup Bluetoothu da nastavi s
+uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda.</translation>
+<translation id="7861509383340276692">Idite na
+          meni u Chromiumu &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          i poništite odabir za "<ph name="NO_PREFETCH_DESCRIPTION" />."
+          Ako ovo ne riješi problem, preporučujemo vam da ponovo odaberete
+          ovu opcija za unapređenje performansi.</translation>
+<translation id="8187289872471304532">Idite na
+          Aplikacije &gt; Postavke sistema &gt; Mreža &gt; Napredno &gt; Proksiji
+          i poništite odabir svih odabranih proksija.</translation>
+<translation id="8597726643333341451">Gledate sigurnu stranicu verzije Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium se nije ispravno zatvorio.</translation>
+</translationbundle>

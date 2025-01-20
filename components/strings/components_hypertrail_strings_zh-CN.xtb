@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-CN">
+<translation id="130631256467250065">您所做的更改会在下次重新启动设备时生效。</translation>
+<translation id="275588974610408078">Chromium 未提供崩溃报告。</translation>
+<translation id="3064346599913645280">您正在查看安全的 Chromium 网页</translation>
+<translation id="3255926992597692024">Chromium 正在尝试修改用于填入付款方式的设置。</translation>
+<translation id="358997566136285270">Chromium 徽标</translation>
+<translation id="4050599136622776556">Chromium 正在尝试修改付款方式。</translation>
+<translation id="4365115785552740256">Chromium 的诞生离不开 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 开放源代码项目以及其他<ph name="BEGIN_LINK_OSS" />开放源代码软件<ph name="END_LINK_OSS" />。</translation>
+<translation id="4559775032954821361">依次转到 Chromium 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="ADVANCED_TITLE" />”&gt;“<ph name="PROXIES_TITLE" />”&gt;“LAN 设置”，然后取消选中“为 LAN 使用代理服务器”复选框。</translation>
+<translation id="4622039161600275920">此页面已被 Chromium 屏蔽</translation>
+<translation id="48558539577516920">在防火墙或防病毒设置部分设为允许 Chromium 访问网络。</translation>
+<translation id="580822234363523061">依次转到 Chromium 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="ADVANCED_TITLE" />”&gt;“<ph name="PROXIES_TITLE" />”，并确保您已将配置设为“无代理”或“直接连接”。</translation>
+<translation id="6549378540556750549">Chromium 的诞生也离不开其他<ph name="BEGIN_LINK_OSS" />开源软件<ph name="END_LINK_OSS" />。</translation>
+<translation id="6613594504749178791">您所做的更改会在下次重新启动 Chromium 时生效。</translation>
+<translation id="691026815377248078">Chromium 需获得蓝牙使用权限才能继续配对。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium 的诞生离不开 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 开源项目。</translation>
+<translation id="7861509383340276692">前往 Chromium 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="ADVANCED_TITLE" />”部分，然后取消选中“<ph name="NO_PREFETCH_DESCRIPTION" />”。如果这无法解决该问题，我们建议您重新选中此选项，以便改善性能。</translation>
+<translation id="8187289872471304532">依次转到“应用”&gt;“系统偏好设置”&gt;“网络”&gt;“高级”&gt;“代理”，然后取消选中所有已选的代理。</translation>
+<translation id="8597726643333341451">您正在查看一个安全的 Chrome for Testing 网页</translation>
+<translation id="8684913864886094367">Chromium 未正确关闭。</translation>
+</translationbundle>

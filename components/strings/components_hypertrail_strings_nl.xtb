@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="nl">
+<translation id="130631256467250065">Je wijzigingen worden doorgevoerd wanneer je het apparaat opnieuw opstart.</translation>
+<translation id="275588974610408078">Crashrapportage is niet beschikbaar in Chromium.</translation>
+<translation id="3064346599913645280">Je bekijkt een beveiligde Chromium-pagina</translation>
+<translation id="3255926992597692024">Chromium probeert instellingen voor het invullen van betaalmethoden aan te passen.</translation>
+<translation id="358997566136285270">Chromium-logo</translation>
+<translation id="4050599136622776556">Chromium probeert betaalmethoden te bewerken.</translation>
+<translation id="4365115785552740256">Chromium wordt mogelijk gemaakt door het <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open-sourceproject en andere <ph name="BEGIN_LINK_OSS" />open-sourcesoftware<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Ga naar
+          het menu 'Chromium' &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN-instellingen
+          en verwijder het vinkje uit het selectievakje bij 'Een proxyserver voor het LAN-netwerk gebruiken'.</translation>
+<translation id="4622039161600275920">Deze pagina is geblokkeerd door Chromium</translation>
+<translation id="48558539577516920">Sta Chromium toe via je firewall- of antivirusinstellingen het netwerk te gebruiken.</translation>
+<translation id="580822234363523061">Ga naar
+          het menu 'Chromium' &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          en zorg ervoor dat de configuratie is ingesteld op 'geen proxy' of 'direct'.</translation>
+<translation id="6549378540556750549">Chromium wordt ook mogelijk gemaakt door andere <ph name="BEGIN_LINK_OSS" />opensource-software<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Je wijzigingen worden toegepast wanneer je Chromium opnieuw start.</translation>
+<translation id="691026815377248078">Chromium heeft bluetooth-toegang nodig om door te gaan met koppelen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium wordt mogelijk gemaakt door het opensource-project <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Ga naar
+          het Chromium-menu &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          en verwijder het vinkje bij '<ph name="NO_PREFETCH_DESCRIPTION" />'.
+          Als het probleem aanhoudt, adviseren we deze optie weer aan te
+          vinken voor betere prestaties.</translation>
+<translation id="8187289872471304532">Ga naar 'Applicaties &gt; Systeemvoorkeuren &gt; Netwerk &gt; Geavanceerd &gt; Proxy's' en verwijder de vinkjes bij proxyservers die zijn aangevinkt.</translation>
+<translation id="8597726643333341451">Je bekijkt een beveiligde pagina van Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium is niet goed afgesloten.</translation>
+</translationbundle>

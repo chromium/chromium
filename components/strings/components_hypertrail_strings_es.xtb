@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="es">
+<translation id="130631256467250065">Los cambios se aplicarán la próxima vez que reinicies el dispositivo.</translation>
+<translation id="275588974610408078">Los informes de errores no se encuentran disponibles en Chromium.</translation>
+<translation id="3064346599913645280">Estás viendo una página de Chromium segura</translation>
+<translation id="3255926992597692024">Chromium está intentando modificar la configuración para completar los métodos de pago.</translation>
+<translation id="358997566136285270">Logotipo de Chromium</translation>
+<translation id="4050599136622776556">Chromium está intentando editar los métodos de pago.</translation>
+<translation id="4365115785552740256">Chromium se ha creado gracias al proyecto de software libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> y a otro <ph name="BEGIN_LINK_OSS" />software libre<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Accede al
+          menú de Chromium, haz clic en
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Configuración de LAN
+          y desactiva la casilla de verificación Usar un servidor proxy para la LAN.</translation>
+<translation id="4622039161600275920">Chromium ha bloqueado esta página</translation>
+<translation id="48558539577516920">Configura tu cortafuegos o tu antivirus para permitir el acceso de Chromium
+          a la red.</translation>
+<translation id="580822234363523061">Accede al
+          menú de Chromium, haz clic en
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          y asegúrate de que esté seleccionada la opción de configuración sin proxy o directa.</translation>
+<translation id="6549378540556750549">Chromium también se ha podido crear gracias a otro <ph name="BEGIN_LINK_OSS" />software libre<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Los cambios se aplicarán la próxima vez que reinicies Chromium.</translation>
+<translation id="691026815377248078">Chromium necesita acceso al Bluetooth para continuar 
+ con la vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium se ha podido crear gracias al proyecto de software libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Accede al
+          menú de Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          y desactiva la opción "<ph name="NO_PREFETCH_DESCRIPTION" />".
+          Si esto no soluciona el problema, te recomendamos que vuelvas a seleccionar esta opción
+          para conseguir un mejor rendimiento.</translation>
+<translation id="8187289872471304532">Accede a
+          Aplicaciones &gt; Preferencias del Sistema &gt; Red &gt; Configuración avanzada &gt; Proxies
+          y desactiva las casillas de verificación de los proxies seleccionados.</translation>
+<translation id="8597726643333341451">Estás viendo una página segura de Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium no se ha cerrado correctamente.</translation>
+</translationbundle>

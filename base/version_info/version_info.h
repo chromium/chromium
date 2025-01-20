@@ -30,6 +30,7 @@ constexpr std::string_view GetVersionNumber() {
   return PRODUCT_VERSION;
 }
 
+
 // Returns the major component (aka the milestone) of the version as an int,
 // e.g. 6 when the version is "6.0.490.1".
 int GetMajorVersionNumberAsInt();

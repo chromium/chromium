@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hi">
+<translation id="130631256467250065">अगली बार अपना डिवाइस फिर से शुरू करने पर आपके बदलाव लागू हो जाएंगे.</translation>
+<translation id="275588974610408078">क्रोमियम में खराबी रिपोर्ट नहीं कर सकते.</translation>
+<translation id="3064346599913645280">एक सुरक्षित Chromium पेज देखा जा रहा है</translation>
+<translation id="3255926992597692024">Chromium, पेमेंट के तरीके की जानकारी भरने के लिए, सेटिंग में बदलाव करने की कोशिश कर रहा है.</translation>
+<translation id="358997566136285270">क्रोमियम लोगो</translation>
+<translation id="4050599136622776556">Chromium पेमेंट के तरीकों में बदलाव करने की कोशिश कर रहा है.</translation>
+<translation id="4365115785552740256">क्रोमियम <ph name="BEGIN_LINK_CHROMIUM" />क्रोमियम<ph name="END_LINK_CHROMIUM" /> खुला स्रोत प्रोजेक्ट और अन्‍य <ph name="BEGIN_LINK_OSS" />खुले स्रोत प्रोजेक्ट<ph name="END_LINK_OSS" /> द्वारा संभव बनाया गया है.</translation>
+<translation id="4559775032954821361">यहां
+          क्रोमियम मेन्यू &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN सेटिंग पर जाएं
+          और "अपने LAN के लिए किसी प्रॉक्सी सर्वर का इस्तेमाल करें" चेकबॉक्स को चुने हुए से हटाएं.</translation>
+<translation id="4622039161600275920">इस पेज को Chromium ने ब्लॉक कर दिया है</translation>
+<translation id="48558539577516920">क्रोमियम को अपनी फ़ायरवॉल या एंटीवायरस सेटिंग में
+          नेटवर्क को एक्सेस करने दें.</translation>
+<translation id="580822234363523061">यहां जाएं
+          क्रोमियम मेन्यू &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+           और पक्का करें कि आपका कॉन्फ़िगरेशन "कोई प्रॉक्सी नहीं" या "डायरेक्ट" पर सेट है.</translation>
+<translation id="6549378540556750549">Chromium को अन्य <ph name="BEGIN_LINK_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_OSS" /> की मदद से भी बनाया गया है.</translation>
+<translation id="6613594504749178791">अगली बार जब आप क्रोमियम फिर से लॉन्‍च करेंगे तो आपके बदलाव लागू होंगे .</translation>
+<translation id="691026815377248078">दूसरे डिवाइस से जोड़े रखने के लिए, Chromium को ब्लूटूथ का ऐक्सेस 
+ चाहिए. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium को <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ओपन सोर्स प्रोजेक्ट की मदद से बनाया गया है.</translation>
+<translation id="7861509383340276692">यहां जाएं
+          क्रोमियम मेन्यू &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          और "<ph name="NO_PREFETCH_DESCRIPTION" />" चुना हुआ हटाएं.
+          अगर इससे समस्‍या हल नहीं होती, तो बेहतर प्रदर्शन के लिए हम इस विकल्‍प को फिर से चुनने का सुझाव देते हैं.</translation>
+<translation id="8187289872471304532">यहां
+          ऐप्लिकेशन  &gt; सिस्टम प्राथमिकताएं &gt; नेटवर्क &gt; बेहतर &gt; प्रॉक्सी
+          पर जाएं और चुनी गई प्रॉक्सी को न चुनें.</translation>
+<translation id="8597726643333341451">आप एक सुरक्षित Chrome for Testing पेज पर हैं</translation>
+<translation id="8684913864886094367">क्रोमियम सही तरीके से बंद नहीं हुआ.</translation>
+</translationbundle>

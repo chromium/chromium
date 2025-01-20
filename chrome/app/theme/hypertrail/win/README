@@ -1,0 +1,4 @@
+Whenever chromium.ico changes, the profile shortcut icons (generated dynamically
+at runtime) need to be migrated to the new icon. Please increment the constant
+kCurrentProfileIconVersion in
+chrome/browser/profiles/profile_shortcut_manager_win.cc.

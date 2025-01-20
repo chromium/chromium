@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="af">
+<translation id="130631256467250065">Jou veranderinge sal in werking tree wanneer jy jou toestel herbegin.</translation>
+<translation id="275588974610408078">Omvalrapportering is nie beskikbaar in Chromium nie.</translation>
+<translation id="3064346599913645280">Jy bekyk tans 'n veilige Chromium-bladsy</translation>
+<translation id="3255926992597692024">Chromium probeer tans instellings vir die invul van betaalmetodes wysig.</translation>
+<translation id="358997566136285270">Chromium-logo</translation>
+<translation id="4050599136622776556">Chromium probeer tans om betaalmetodes te wysig.</translation>
+<translation id="4365115785552740256">Chromium word moontlik gemaak deur die <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-oopbronprojek en ander <ph name="BEGIN_LINK_OSS" />oopbronsagteware<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Gaan na
+          die Chromium-kieslys &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN-instellings
+          en ontmerk die "Gebruik 'n instaanbediener vir jou LAN"-merkblokkie.</translation>
+<translation id="4622039161600275920">Hierdie bladsy is deur Chromium geblokkeer</translation>
+<translation id="48558539577516920">Laat Chromium in jou brandmuur- of antivirusinstellings toe om by jou netwerk
+          in te gaan.</translation>
+<translation id="580822234363523061">Gaan na
+          die Chromium-kieslys &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          en maak seker jou opstelling is op "geen instaanbediener" of "direk" gestel.</translation>
+<translation id="6549378540556750549">Chromium word ook moontlik gemaak deur ander <ph name="BEGIN_LINK_OSS" />oopbronsagteware<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Jou veranderinge sal in werking tree wanneer jy Chromium weer herbegin.</translation>
+<translation id="691026815377248078">Chromium het Bluetooth-toegang nodig om voort te gaan met 
+ saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium word moontlik gemaak deur die <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-oopbronprojek.</translation>
+<translation id="7861509383340276692">Gaan na
+        die Chromium-kieslys &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        en ontmerk "<ph name="NO_PREFETCH_DESCRIPTION" />."
+        As dit nie die probleem oplos nie, beveel ons aan dat hierdie opsie
+        weer gekies word vir verbeterde werkverrigting.</translation>
+<translation id="8187289872471304532">Gaan na
+          Programme &gt; Stelselvoorkeure &gt; Netwerk &gt; Gevorderd &gt; Instaanbedieners
+          en ontkies enige instaanbedieners wat gekies is.</translation>
+<translation id="8597726643333341451">Jy bekyk tans ’n veilige Chrome-toetsweergawe-bladsy</translation>
+<translation id="8684913864886094367">Chrome het nie reg toegemaak nie.</translation>
+</translationbundle>

@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="id">
+<translation id="130631256467250065">Perubahan Anda akan diterapkan pada saat Anda nanti menyalakan ulang perangkat.</translation>
+<translation id="275588974610408078">Pelaporan kerusakan tidak tersedia di Chromium.</translation>
+<translation id="3064346599913645280">Anda melihat halaman Chromium yang aman</translation>
+<translation id="3255926992597692024">Chromium mencoba mengubah setelan pengisian metode pembayaran.</translation>
+<translation id="358997566136285270">Logo Chromium</translation>
+<translation id="4050599136622776556">Chromium mencoba mengedit metode pembayaran.</translation>
+<translation id="4365115785552740256">Chromium tercipta berkat proyek sumber terbuka <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dan berbagai <ph name="BEGIN_LINK_OSS" />software sumber terbuka<ph name="END_LINK_OSS" /> lainnya.</translation>
+<translation id="4559775032954821361">Buka
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Setelan LAN
+          dan hapus pilihan pada kotak centang "Gunakan server proxy untuk LAN".</translation>
+<translation id="4622039161600275920">Halaman ini telah diblokir oleh Chromium</translation>
+<translation id="48558539577516920">Izinkan Chromium untuk mengakses jaringan di setelan firewall atau antivirus
+          Anda.</translation>
+<translation id="580822234363523061">Buka
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          dan pastikan konfigurasi Anda disetel ke "tanpa proxy" atau "langsung".</translation>
+<translation id="6549378540556750549">Chromium juga terwujud karena adanya <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" /> lainnya.</translation>
+<translation id="6613594504749178791">Perubahan Anda akan berlaku saat berikutnya Anda membuka Chromium.</translation>
+<translation id="691026815377248078">Chromium memerlukan akses Bluetooth untuk melanjutkan 
+ penyambungan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium terwujud karena adanya project open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Buka
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          dan batalkan pilihan "<ph name="NO_PREFETCH_DESCRIPTION" />."
+          Jika hal ini tidak menyelesaikan masalah, sebaiknya pilih lagi opsi ini
+          untuk meningkatkan kinerja.</translation>
+<translation id="8187289872471304532">Buka
+          Aplikasi &gt; Preferensi Sistem &gt; Jaringan &gt; Lanjutan &gt; Proxy
+          dan hapus centang proxy apa pun yang telah dipilih.</translation>
+<translation id="8597726643333341451">Anda melihat halaman Chrome for Testing yang aman</translation>
+<translation id="8684913864886094367">Chromium tidak menutup dengan benar.</translation>
+</translationbundle>

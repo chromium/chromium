@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sl">
+<translation id="130631256467250065">Spremembe bodo uveljavljene pri naslednjem vnovičnem zagonu naprave.</translation>
+<translation id="275588974610408078">Poročanje o zrušitvah ni na voljo v Chromiumu.</translation>
+<translation id="3064346599913645280">Ogledujete si varno stran Chromiuma</translation>
+<translation id="3255926992597692024">Chromium poskuša spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih.</translation>
+<translation id="358997566136285270">Logotip Chromiuma</translation>
+<translation id="4050599136622776556">Chromium poskuša urediti plačilna sredstva.</translation>
+<translation id="4365115785552740256">Chromium omogočata odprtokodni projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> in druga <ph name="BEGIN_LINK_OSS" />odprtokodna programska oprema<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Odprite
+          meni Chromiuma &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Nastavitve lokalnega omrežja
+          in počistite potrditveno polje »Uporabi namestniški strežnik za lokalno omrežje«.</translation>
+<translation id="4622039161600275920">To stran je blokiral Chromium.</translation>
+<translation id="48558539577516920">V nastavitvah požarnega zidu ali protivirusnega programa omogočite Chromiumu dostop do
+        omrežja.</translation>
+<translation id="580822234363523061">Odprite
+          meni Chromiuma &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          in poskrbite, da je konfiguracija nastavljena na »brez namestniškega strežnika« ali »neposredno«.</translation>
+<translation id="6549378540556750549">Chromium omogoča tudi druga <ph name="BEGIN_LINK_OSS" />odprtokodna programska oprema<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Spremembe bodo začele veljati ob naslednjem zagonu Chromiuma.</translation>
+<translation id="691026815377248078">Chromium potrebuje dostop do Bluetootha za nadaljevanje 
+ seznanjanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium omogoča odprtokodni projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Odprite
+        meni Chromiuma &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        in počistite polje »<ph name="NO_PREFETCH_DESCRIPTION" />«.
+        Če s tem težave ne odpravite, priporočamo, da to možnost
+        zaradi izboljšanja delovanja znova izberete.</translation>
+<translation id="8187289872471304532">Odprite
+          Aplikacije &gt; Sistemske nastavitve &gt; Omrežje &gt; Dodatno &gt; Namestniški strežniki
+          in počistite polja z označenimi namestniškimi strežniki.</translation>
+<translation id="8597726643333341451">Ogledujete si varno stran brskalnika Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium se ni pravilno zaustavil.</translation>
+</translationbundle>

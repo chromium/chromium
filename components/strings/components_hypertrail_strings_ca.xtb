@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ca">
+<translation id="130631256467250065">Els canvis es faran efectius la propera vegada que reinicieu el dispositiu.</translation>
+<translation id="275588974610408078">La creació d'informes de bloqueig no està disponible a Chromium.</translation>
+<translation id="3064346599913645280">Estàs visualitzant una pàgina segura de Chromium</translation>
+<translation id="3255926992597692024">Chromium està provant de modificar la configuració per emplenar les formes de pagament.</translation>
+<translation id="358997566136285270">Logotip de Chromium</translation>
+<translation id="4050599136622776556">Chromium està provant d'editar les formes de pagament.</translation>
+<translation id="4365115785552740256">Chromium és possible gràcies al projecte de codi obert de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i a altre <ph name="BEGIN_LINK_OSS" />programari lliure<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Aneu al
+          menú de Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Configuració de LAN
+          i desmarqueu la casella de selecció Utilitza un servidor intermediari per a la LAN.</translation>
+<translation id="4622039161600275920">Chromium ha bloquejat aquesta pàgina</translation>
+<translation id="48558539577516920">Configureu el tallafoc o l'antivirus per permetre que Chromium accedeixi
+          a la xarxa.</translation>
+<translation id="580822234363523061">Aneu al
+          menú de Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          i assegureu-vos que la configuració estigui definida sense servidor intermediari o com a directa.</translation>
+<translation id="6549378540556750549">Chromium també és possible gràcies a un altre <ph name="BEGIN_LINK_OSS" />programari lliure<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Els canvis s'aplicaran la propera vegada que reinicieu Chromium.</translation>
+<translation id="691026815377248078">Chromium necessita accedir al Bluetooth per continuar 
+ amb la vinculació. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium és possible gràcies al projecte de codi obert de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Aneu al
+        menú de Chromium &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        i desmarqueu <ph name="NO_PREFETCH_DESCRIPTION" />.
+        Si això no resol el problema, us recomanem que torneu a seleccionar
+        aquesta opció per obtenir un rendiment millorat.</translation>
+<translation id="8187289872471304532">Aneu a
+          Aplicacions &gt; Preferències del sistema &gt; Xarxa &gt; Configuració avançada &gt; Servidors intermediaris
+          i desmarqueu tots els servidors intermediaris que s'hagin seleccionat.</translation>
+<translation id="8597726643333341451">Estàs consultant una pàgina segura de Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium no s'ha tancat correctament.</translation>
+</translationbundle>
