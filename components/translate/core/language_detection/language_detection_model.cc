@@ -12,8 +12,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/language/core/common/language_util.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_model.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 
@@ -56,15 +56,15 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
   DCHECK(IsAvailable());
 
   if (!predicted_language || !is_prediction_reliable) {
-    return translate::kUnknownLanguageCode;
+    return language_detection::kUnknownLanguageCode;
   }
 
   *is_prediction_reliable = false;
-  *predicted_language = translate::kUnknownLanguageCode;
+  *predicted_language = language_detection::kUnknownLanguageCode;
   prediction_reliability_score = 0.0;
 
   if (!tflite_model_->IsAvailable()) {
-    return translate::kUnknownLanguageCode;
+    return language_detection::kUnknownLanguageCode;
   }
 
   const language_detection::Prediction prediction = DetectLanguage(contents);

@@ -24,7 +24,6 @@
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/browser/translate_ui_languages_manager.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace infobars {

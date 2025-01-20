@@ -19,7 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/language/core/common/language_util.h"
-#include "components/translate/core/common/translate_constants.h"
+#include "components/language_detection/core/constants.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/language_detection/chinese_script_classifier.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
@@ -110,14 +110,14 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
   // Ignore unreliable, "unknown", and xx-Latn predictions that are currently
   // not supported.
   if (!is_detection_reliable)
-    return translate::kUnknownLanguageCode;
+    return language_detection::kUnknownLanguageCode;
   // TODO(crbug.com/40169055): Determine if ar-Latn and hi-Latn need to be added
   // for the TFLite-based detection model.
   if (detected_language == "bg-Latn" || detected_language == "el-Latn" ||
       detected_language == "ja-Latn" || detected_language == "ru-Latn" ||
       detected_language == "zh-Latn" ||
       detected_language == chrome_lang_id::NNetLanguageIdentifier::kUnknown) {
-    return translate::kUnknownLanguageCode;
+    return language_detection::kUnknownLanguageCode;
   }
 
   if (detected_language == "zh") {
@@ -132,7 +132,7 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
       return "zh-TW";
     if (zh_classification == "zh-Hans")
       return "zh-CN";
-    return translate::kUnknownLanguageCode;
+    return language_detection::kUnknownLanguageCode;
   }
   // The detection is reliable and none of the cases that are not handled by the
   // language detection model.
@@ -203,7 +203,7 @@ std::string DeterminePageLanguageNoModel(
     LanguageVerificationType language_verification_type) {
   translate::ReportLanguageVerification(language_verification_type);
   std::string language = GetHTMLOrHTTPContentLanguage(code, html_lang);
-  return language.empty() ? kUnknownLanguageCode : language;
+  return language.empty() ? language_detection::kUnknownLanguageCode : language;
 }
 
 // Now consider the web page language details along with the contents language.
@@ -213,7 +213,7 @@ std::string DeterminePageLanguage(const std::string& code,
                                   bool is_model_reliable) {
   std::string language = GetHTMLOrHTTPContentLanguage(code, html_lang);
   // If |language| is empty, just use model result even though it might be
-  // translate::kUnknownLanguageCode.
+  // language_detection::kUnknownLanguageCode.
   if (language.empty()) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelOnly);
@@ -222,7 +222,7 @@ std::string DeterminePageLanguage(const std::string& code,
 
   // If |model_detected_language| is empty, just use |language|.
   if (model_detected_language.empty() ||
-      model_detected_language == kUnknownLanguageCode) {
+      model_detected_language == language_detection::kUnknownLanguageCode) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelUnknown);
     return language;
@@ -251,7 +251,7 @@ std::string DeterminePageLanguage(const std::string& code,
   // rely on any of the language codes, and gives up suggesting a translation.
   translate::ReportLanguageVerification(
       translate::LanguageVerificationType::kModelDisagrees);
-  return kUnknownLanguageCode;
+  return language_detection::kUnknownLanguageCode;
 }
 
 void CorrectLanguageCodeTypo(std::string* code) {
