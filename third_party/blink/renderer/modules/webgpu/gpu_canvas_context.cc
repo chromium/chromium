@@ -120,14 +120,14 @@ SkColorType GPUCanvasContext::GetSkColorType() const {
 }
 
 gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
-  return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
+  if (!swap_buffers_) {
+    return gfx::ColorSpace::CreateSRGB();
+  }
+  return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }
 
 sk_sp<SkColorSpace> GPUCanvasContext::GetSkColorSpace() const {
-  if (!swap_buffers_) {
-    return SkColorSpace::MakeSRGB();
-  }
-  return PredefinedColorSpaceToSkColorSpace(color_space_);
+  return GetColorSpace().ToSkColorSpace();
 }
 
 void GPUCanvasContext::Stop() {
