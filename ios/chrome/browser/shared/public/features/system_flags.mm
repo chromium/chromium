@@ -355,4 +355,9 @@ bool AlwaysShowTheFirstPartyIncognitoUI() {
   return [value isEqualToString:@"AlwaysShowTheUI"];
 }
 
+bool EnableAIPrototypingMenu() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"EnableAIPrototypingMenu"];
+}
+
 }  // namespace experimental_flags
