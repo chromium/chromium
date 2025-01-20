@@ -509,11 +509,14 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
 
   const bool use_new_fields =
       base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics);
+  // Whether the ThemeSpecifics is from a client which commits all theme
+  // attributes via ThemeSpecifics.
+  const bool has_all_theme_attributes = new_specs.has_browser_color_scheme();
   // The new specifics will always include `browser_color_scheme` field. If it
   // is absent and the theme specifics is the default theme, avoid setting to
   // default theme. This is because the old clients can send such specifics upon
   // any change to theme sent via preferences which the new clients do not read.
-  if (use_new_fields && !new_specs.has_browser_color_scheme() &&
+  if (use_new_fields && !has_all_theme_attributes &&
       !HasNonDefaultTheme(new_specs)) {
     DVLOG(1) << "Skip setting default theme from old clients";
     return ThemeSyncState::kApplied;
@@ -593,6 +596,8 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     DVLOG(1) << "Switch to use system theme";
     theme_service_->UseSystemTheme();
   } else {
+    // NOTE: No need to check for `is_new_specifics` before setting to default
+    // theme. Empty incoming themes are ignored in MergeDataAndStartSyncing().
     DVLOG(1) << "Switch to use default theme";
     theme_service_->UseDefaultTheme();
   }
@@ -609,8 +614,11 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
         // of setting the pref directly.
         prefs->SetDict(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
                        std::move(*dict));
-      } else {
+      } else if (has_all_theme_attributes) {
         // Clear the current ntp background if none received from remote.
+        // NOTE: Ntp background is only cleared if the incoming ThemeSpecifics
+        // is the new one and is missing the ntp_background field because it was
+        // committed by an old client.
         DVLOG(1) << "Removing custom NTP background";
         prefs->ClearPref(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
       }
