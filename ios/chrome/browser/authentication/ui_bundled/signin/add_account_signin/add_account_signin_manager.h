@@ -39,17 +39,16 @@ enum class SigninAddAccountToDeviceResult : int {
 // Delegate that displays screens for the add account flows.
 @protocol AddAccountSigninManagerDelegate
 
-// Shows alert modal dialog and interrupts sign-in operation.
-// `error` is the error to be displayed.
-- (void)addAccountSigninManagerFailedWithError:(NSError*)error;
-
 // Completes the sign-in operation.
-// `signinResult` is the state of sign-in at add account flow completion.
-// `identity` is the identity of the added account.
-- (void)addAccountSigninManagerFinishedWithSigninResult:
-            (SigninCoordinatorResult)signinResult
-                                               identity:
-                                                   (id<SystemIdentity>)identity;
+//   * `result` the result of the add account flow.
+//   * `identity` is the identity of the added account (non-null when `result`
+//      is `SigninAddAccountToDeviceResult::kSuccess`).
+//   * `error` is the error to be displayed (non-null only when `result` is
+//     `SigninAddAccountToDeviceResult::kError`).
+- (void)addAccountSigninManagerFinishedWithResult:
+            (SigninAddAccountToDeviceResult)result
+                                         identity:(id<SystemIdentity>)identity
+                                            error:(NSError*)error;
 
 @end
 

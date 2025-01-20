@@ -149,26 +149,10 @@ using signin_metrics::PromoAction;
 
 #pragma mark - AddAccountSigninManagerDelegate
 
-- (void)addAccountSigninManagerFailedWithError:(NSError*)error {
-  DCHECK(error);
-  __weak AddAccountSigninCoordinator* weakSelf = self;
-  ProceduralBlock dismissAction = ^{
-    [weakSelf.alertCoordinator stop];
-    weakSelf.alertCoordinator = nil;
-    [weakSelf addAccountSigninManagerFinishedWithSigninResult:
-                  SigninCoordinatorResultCanceledByUser
-                                                     identity:nil];
-  };
-
-  self.alertCoordinator = ErrorCoordinator(
-      error, dismissAction, self.baseViewController, self.browser);
-  [self.alertCoordinator start];
-}
-
-- (void)addAccountSigninManagerFinishedWithSigninResult:
-            (SigninCoordinatorResult)signinResult
-                                               identity:(id<SystemIdentity>)
-                                                            identity {
+- (void)addAccountSigninManagerFinishedWithResult:
+            (SigninAddAccountToDeviceResult)result
+                                         identity:(id<SystemIdentity>)identity
+                                            error:(NSError*)error {
   if (!self.addAccountSigninManager) {
     // The AddAccountSigninManager callback might be called after the
     // interrupt method. If this is the case, the AddAccountSigninCoordinator
@@ -178,41 +162,65 @@ using signin_metrics::PromoAction;
   // Add account is done, we don't need `self.AddAccountSigninManager`
   // anymore.
   self.addAccountSigninManager = nil;
-  if (signinResult == SigninCoordinatorResultInterrupted) {
-    // Stop the reauth flow.
-    [self addAccountDoneWithSigninResult:signinResult identity:nil];
-    return;
-  }
 
-  // If the signin was successful, but the identity isn't showing up on the
-  // device, then it must be an identity that's restricted by policy.
-  if (signinResult == SigninCoordinatorResultSuccess) {
-    bool identityOnDeviceFound = false;
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
-      const GaiaId gaia(identity.gaiaID);
-      std::vector<AccountInfo> accountsOnDevice =
-          _identityManager->GetAccountsOnDevice();
-      for (const AccountInfo& accountInfo : accountsOnDevice) {
-        if (accountInfo.gaia == gaia) {
-          identityOnDeviceFound = true;
-          break;
-        }
-      }
-    } else {
-      identityOnDeviceFound = _accountManagerService->IsValidIdentity(identity);
-    }
-    if (!identityOnDeviceFound) {
-      __weak __typeof(self) weakSelf = self;
-      // A dispatch is needed to ensure that the alert is displayed after
-      // dismissing the signin view.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf presentSignInWithRestrictedAccountAlert];
-      });
+  switch (result) {
+    case SigninAddAccountToDeviceResult::kInterrupted:
+      // Stop the reauth flow.
+      [self addAccountDoneWithSigninResult:SigninCoordinatorResultInterrupted
+                                  identity:nil];
+      return;
+    case SigninAddAccountToDeviceResult::kCancelledByUser:
+      [self addAccountDoneWithSigninResult:SigninCoordinatorResultCanceledByUser
+                                  identity:nil];
+      return;
+    case SigninAddAccountToDeviceResult::kError: {
+      DCHECK(error);
+      __weak AddAccountSigninCoordinator* weakSelf = self;
+      ProceduralBlock dismissAction = ^{
+        [weakSelf.alertCoordinator stop];
+        weakSelf.alertCoordinator = nil;
+        [weakSelf
+            addAccountDoneWithSigninResult:SigninCoordinatorResultCanceledByUser
+                                  identity:nil];
+      };
+
+      self.alertCoordinator = ErrorCoordinator(
+          error, dismissAction, self.baseViewController, self.browser);
+      [self.alertCoordinator start];
       return;
     }
+    case SigninAddAccountToDeviceResult::kSuccess: {
+      // If the signin was successful, but the identity isn't showing up on the
+      // device, then it must be an identity that's restricted by policy.
+      bool identityOnDeviceFound = false;
+      if (AreSeparateProfilesForManagedAccountsEnabled()) {
+        const GaiaId gaia(identity.gaiaID);
+        std::vector<AccountInfo> accountsOnDevice =
+            _identityManager->GetAccountsOnDevice();
+        for (const AccountInfo& accountInfo : accountsOnDevice) {
+          if (accountInfo.gaia == gaia) {
+            identityOnDeviceFound = true;
+            break;
+          }
+        }
+      } else {
+        identityOnDeviceFound =
+            _accountManagerService->IsValidIdentity(identity);
+      }
+      if (!identityOnDeviceFound) {
+        __weak __typeof(self) weakSelf = self;
+        // A dispatch is needed to ensure that the alert is displayed after
+        // dismissing the signin view.
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [weakSelf presentSignInWithRestrictedAccountAlert];
+        });
+        return;
+      }
+      [self
+          continueAddAccountFlowWithSigninResult:SigninCoordinatorResultSuccess
+                                        identity:identity];
+    }
   }
-
-  [self continueAddAccountFlowWithSigninResult:signinResult identity:identity];
 }
 
 #pragma mark - Private
