@@ -319,6 +319,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _messagingService->RemovePersistentMessageObserver(
         _messagingBackendServiceBridge.get());
     _messagingBackendServiceBridge.reset();
+    _messagingService = nil;
   }
   _tabStripHandler = nil;
   _browserList = nullptr;

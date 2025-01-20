@@ -199,6 +199,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     _messagingService->RemovePersistentMessageObserver(
         _messagingBackendServiceBridge.get());
     _messagingBackendServiceBridge.reset();
+    _messagingService = nil;
   }
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
