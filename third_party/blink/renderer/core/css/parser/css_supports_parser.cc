@@ -324,6 +324,9 @@ bool CSSSupportsParser::ConsumeAtRuleFn(CSSParserTokenStream& stream) {
     return false;
   }
   AtRuleDescriptorID descriptor_id = stream.Peek().ParseAsAtRuleDescriptorID();
+  AtomicString variable_name = (descriptor_id == AtRuleDescriptorID::Variable
+                                    ? stream.Peek().Value().ToAtomicString()
+                                    : g_null_atom);
   if (descriptor_id == AtRuleDescriptorID::Invalid) {
     return false;
   }
@@ -338,7 +341,7 @@ bool CSSSupportsParser::ConsumeAtRuleFn(CSSParserTokenStream& stream) {
   // The descriptor value.
   HeapVector<CSSPropertyValue, 64> parsed_descriptors;
   bool ok = AtRuleDescriptorParser::ParseDescriptorValue(
-      rule_type, descriptor_id, stream, *parser_.GetContext(),
+      rule_type, descriptor_id, variable_name, stream, *parser_.GetContext(),
       parsed_descriptors);
 
   return ok && guard.Release();

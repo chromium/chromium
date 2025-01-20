@@ -184,6 +184,16 @@ bool IsInterpolation(CascadePriority priority) {
   }
 }
 
+const CSSValue* FindOrNull(
+    const HeapHashMap<String, Member<const CSSValue>>& map,
+    const String& key) {
+  auto it = map.find(key);
+  if (it == map.end()) {
+    return nullptr;
+  }
+  return it->value.Get();
+}
+
 }  // namespace
 
 MatchResult& StyleCascade::MutableMatchResult() {
@@ -1407,20 +1417,33 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   //
   // https://drafts.csswg.org/css-mixins-1/#locally-substitute-a-var
   if (function_context) {
-    // TODO(crbug.com/325504770): Support local variables.
-    const auto it = function_context->arguments.find(var_name);
-    if (it != function_context->arguments.end()) {
-      // Note that there's nothing to actually resolve within `arg_value`;
-      // substitution functions were already eliminated at the call-site
-      // by ResolveFunctionInto. We're still using ResolveTokensInto, since
-      // it's the most convenient way to "paste" `arg_value` into `out`.
+    // TODO(crbug.com/325504770): Handle cycles.
+
+    // Locals shadow arguments, which shadow custom properties
+    // from the element.
+    const CSSValue* sub_value = FindOrNull(function_context->locals, var_name);
+    if (!sub_value) {
+      sub_value = FindOrNull(function_context->arguments, var_name);
+    }
+    if (sub_value) {
+      // Note that for arguments, there's nothing to actually resolve within
+      // `sub_value`; substitution functions were already eliminated at the
+      // call-site by ResolveFunctionInto. We're still using ResolveTokensInto,
+      // since it's the most convenient way to "paste" `sub_value` into `out`.
       //
-      // TODO(crbug.com/325504770): Avoid tokenization and the call to
-      // ResolveTokensInto.
-      String arg_value = it->value->CssText();
-      CSSParserTokenStream arg_value_stream(arg_value);
-      return ResolveTokensInto(arg_value_stream, resolver, context,
-                               /* function_context */ nullptr,
+      // TODO(crbug.com/325504770): Avoid tokenization/ResolveTokensInto
+      // for arguments.
+      //
+      // For locals, we do need to resolve var() (etc) here, but we should
+      // probably find a way to not repeat work for multiple references to
+      // the same substitution. E.g. for --c:var(--a);--b:var(--a)--a:<stuff>,
+      // we should resolve <stuff> only once.
+      //
+      // TODO(crbug.com/325504770): Cache local resolves, as described above.
+      String sub_value_str = sub_value->CssText();
+      CSSParserTokenStream sub_value_stream(sub_value_str);
+      return ResolveTokensInto(sub_value_stream, resolver, context,
+                               function_context,
                                /* stop_type */ kEOFToken, out);
     }
   }
@@ -1532,8 +1555,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
 
     // We need to resolve the argument in the context of this function,
     // so that we can do type coercion on the resolved value before the call.
-    // In particular, we want any arg() within the argument to be resolved
-    // in our context; e.g., --foo(arg(--a)) should be our a, not foo's a
+    // In particular, we want any var() within the argument to be resolved
+    // in our context; e.g., --foo(var(--a)) should be our a, not foo's a
     // (if that even exists).
     //
     // Note that if this expression comes from directly a function call,
@@ -1553,7 +1576,6 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   // For now, we only support @function rules that contain a single
   // CSSNestedDeclarations rule with a single 'result' descriptor.
   //
-  // TODO(crbug.com/325504770): Support locals.
   // TODO(crbug.com/325504770): Support conditional rules.
   HeapVector<Member<StyleRuleBase>>& child_rules = function->ChildRules();
   if (child_rules.size() != 1u) {
@@ -1564,24 +1586,36 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   if (!nested_declartions) {
     return false;
   }
-  const CSSPropertyValueSet& properties = nested_declartions->Properties();
-  if (properties.PropertyCount() != 1u) {
-    return false;
+  const CSSPropertyValueSet& propety_value_set =
+      nested_declartions->Properties();
+
+  // Collect local variables. Any substitution functions found within relevant
+  // locals will be substituted during the call to ResolveFunctionExpression
+  // for the 'result' descriptor; they are not substituted here.
+  HeapHashMap<String, Member<const CSSValue>> locals;
+  for (const CSSPropertyValue& property_value :
+       propety_value_set.Properties()) {
+    if (property_value.PropertyID() == CSSPropertyID::kVariable) {
+      const auto& unresolved_local =
+          To<CSSUnparsedDeclarationValue>(property_value.Value());
+      locals.insert(property_value.CustomPropertyName(), &unresolved_local);
+    }
   }
+
   const auto* unresolved_result = DynamicTo<CSSUnparsedDeclarationValue>(
-      properties.GetPropertyCSSValue(CSSPropertyID::kResult));
+      propety_value_set.GetPropertyCSSValue(CSSPropertyID::kResult));
   if (!unresolved_result) {
     return false;
   }
 
-  FunctionContext local_function_context{function_arguments};
+  FunctionContext local_function_context{function_arguments, locals};
   const CSSValue* ret_value = ResolveFunctionExpression(
       unresolved_result->VariableDataValue()->OriginalText(),
       function->GetReturnType(), resolver, context, &local_function_context);
   if (ret_value == nullptr) {
     return false;
   }
-  // Urggg
+  // TODO(crbug.com/325504770): Urggg
   String ret_string = ret_value->CssText();
   CSSParserTokenStream ret_value_stream(ret_string);
   return ResolveTokensInto(ret_value_stream, resolver, context,

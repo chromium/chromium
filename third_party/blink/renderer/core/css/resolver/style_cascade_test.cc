@@ -4469,6 +4469,57 @@ TEST_F(StyleCascadeTest, CSSFunctionShadowingArgument) {
   EXPECT_EQ("20px", cascade.ComputedValue("left"));
 }
 
+TEST_F(StyleCascadeTest, CSSFunctionLocals) {
+  AppendSheet(R"HTML(
+     @function --foo(--a <length>) returns <length> {
+       --b: 7px;
+       --c: var(--b);
+       result: calc(var(--a) + var(--c));
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left", "--foo(10px)");
+  cascade.Apply();
+
+  EXPECT_EQ("17px", cascade.ComputedValue("left"));
+}
+
+TEST_F(StyleCascadeTest, CSSFunctionLocalShadowingArgument) {
+  AppendSheet(R"HTML(
+     @function --foo(--a <length>) returns <length> {
+       --a: 42px;
+       result: var(--a);
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left", "--foo(10px)");
+  cascade.Apply();
+
+  EXPECT_EQ("42px", cascade.ComputedValue("left"));
+}
+
+TEST_F(StyleCascadeTest, CSSFunctionLocalShadowingCustomProperty) {
+  AppendSheet(R"HTML(
+     @function --foo() returns <length> {
+       --a: 42px;
+       --b: var(--a);
+       result: calc(var(--a) + var(--b));
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--a", "10px");
+  cascade.Add("left", "--foo()");
+  cascade.Apply();
+
+  EXPECT_EQ("84px", cascade.ComputedValue("left"));
+}
+
 TEST_F(StyleCascadeTest, CSSFunctionCallingOtherFunction) {
   AppendSheet(R"HTML(
      @function --foo(--a <length>) returns <length> {

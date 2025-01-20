@@ -1156,6 +1156,7 @@ TEST(CSSParserImplTest, CSSFunction) {
 
   String sheet_text = R"CSS(
     @function --foo() returns <color> {
+      --local: green;
       result: red;
     }
   )CSS";
@@ -1177,7 +1178,13 @@ TEST(CSSParserImplTest, CSSFunction) {
   ASSERT_TRUE(nested_declarations);
 
   const CSSPropertyValueSet& properties = nested_declarations->Properties();
-  ASSERT_EQ(1u, properties.PropertyCount());
+  ASSERT_EQ(2u, properties.PropertyCount());
+
+  const auto* local = DynamicTo<CSSUnparsedDeclarationValue>(
+      properties.GetPropertyCSSValue(AtomicString("--local")));
+  ASSERT_TRUE(local);
+
+  EXPECT_EQ("green", local->VariableDataValue()->OriginalText());
 
   const auto* result = DynamicTo<CSSUnparsedDeclarationValue>(
       properties.GetPropertyCSSValue(CSSPropertyID::kResult));

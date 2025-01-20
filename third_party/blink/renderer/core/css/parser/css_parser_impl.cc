@@ -2873,8 +2873,13 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   if (id) {
     if (parsing_descriptor) {
       const AtRuleDescriptorID atrule_id = static_cast<AtRuleDescriptorID>(id);
+      const AtomicString& variable_name =
+          (atrule_id == AtRuleDescriptorID::Variable
+               ? lhs.Value().ToAtomicString()
+               : g_null_atom);
       AtRuleDescriptorParser::ParseDescriptorValue(
-          rule_type, atrule_id, stream, *context_, parsed_properties_);
+          rule_type, atrule_id, variable_name, stream, *context_,
+          parsed_properties_);
     } else {
       const CSSPropertyID unresolved_property = static_cast<CSSPropertyID>(id);
       if (unresolved_property == CSSPropertyID::kVariable) {
