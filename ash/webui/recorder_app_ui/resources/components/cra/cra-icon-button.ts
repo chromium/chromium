@@ -19,6 +19,15 @@ export class CraIconButton extends IconButton {
     css`
       :host {
         /*
+         * cros-icon-button has inline-block display, which resizes depending
+         * on any applicable line-height. Set line-height to 0 for tightly
+         * wrapping the underlying md-icon-button.
+         *
+         * TODO: b/390536688 - Remove this after we upstream cros-icon-button.
+         */
+        line-height: 0;
+
+        /*
          * A margin is added since in the original md-button, the touch region
          * has a minimal size of 48x48, but the element size is still 40x40.
          * In cros-button the design is changed to having touch region always
