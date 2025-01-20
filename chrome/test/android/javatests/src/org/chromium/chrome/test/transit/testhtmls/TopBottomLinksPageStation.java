@@ -62,7 +62,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
                     width / 2,
                     fromY,
                     toY,
-                    /* steps= */ 50,
+                    /* stepCount= */ 50,
                     /* duration= */ 500);
         };
     }

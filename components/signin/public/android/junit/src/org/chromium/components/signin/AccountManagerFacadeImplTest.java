@@ -214,7 +214,7 @@ public class AccountManagerFacadeImplTest {
 
         HistogramWatcher retriesHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.GetAccountsBackoffRetries", /* retries= */ 1)
+                        .expectIntRecord("Signin.GetAccountsBackoffRetries", /* value= */ 1)
                         .build();
         HistogramWatcher successHistogram =
                 HistogramWatcher.newBuilder()

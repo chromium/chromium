@@ -30,7 +30,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/payments/stub_payment_credential.h"
+#include "content/browser/payments/stub_secure_payment_confirmation_service.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
@@ -460,11 +460,12 @@ class WebAuthBrowserTestContentBrowserClient
     return std::make_unique<WebAuthBrowserTestClientDelegate>(test_state_);
   }
 
-  void CreatePaymentCredential(
+  void CreateSecurePaymentConfirmationService(
       RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver)
-      override {
-    StubPaymentCredential::Create(render_frame_host, std::move(receiver));
+      mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+          receiver) override {
+    StubSecurePaymentConfirmationService::Create(render_frame_host,
+                                                 std::move(receiver));
   }
 
   scoped_refptr<network::SharedURLLoaderFactory>

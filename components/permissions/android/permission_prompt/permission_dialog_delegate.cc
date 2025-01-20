@@ -114,10 +114,23 @@ void PermissionDialogJavaDelegate::DismissDialog() {
   Java_PermissionDialogDelegate_dismissFromNative(env, j_delegate_);
 }
 
-void PermissionDialogJavaDelegate::UpdateDialogWithNewScreenVariant() {
+void PermissionDialogJavaDelegate::UpdateDialog() {
+  CHECK(permission_prompt_->GetEmbeddedPromptVariant() !=
+        EmbeddedPermissionPromptFlowModel::Variant::kUninitialized);
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PermissionDialogController_updateDialogWithNewScreenVariant(
-      env, j_delegate_,
+  bool is_one_time = permission_prompt_->IsOneTimePermissionRequest();
+  Java_PermissionDialogDelegate_updateDialog(
+      env, j_delegate_, permission_prompt_->GetContentSettingTypes(env),
+      PermissionsClient::Get()->MapToJavaDrawableId(
+          permission_prompt_->GetIconId()),
+      ConvertUTF16ToJavaString(
+          env, permission_prompt_->GetAnnotatedMessageText().text),
+      permission_prompt_->GetBoldRanges(env),
+      permission_prompt_->GetPositiveButtonText(env, is_one_time),
+      permission_prompt_->GetNegativeButtonText(env, is_one_time),
+      permission_prompt_->GetPositiveEphemeralButtonText(env, is_one_time),
+      is_one_time &&
+          permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get(),
       static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant()));
 }
 
@@ -160,8 +173,14 @@ void PermissionDialogDelegate::AcceptThisTime(
   permission_prompt_->AcceptThisTime();
 }
 
-void PermissionDialogDelegate::Cancel(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void PermissionDialogDelegate::Acknowledge(JNIEnv* env,
+                                           const JavaParamRef<jobject>& obj) {
+  CHECK(permission_prompt_);
+  permission_prompt_->Acknowledge();
+}
+
+void PermissionDialogDelegate::Deny(JNIEnv* env,
+                                    const JavaParamRef<jobject>& obj) {
   CHECK(permission_prompt_);
   permission_prompt_->Deny();
 }
@@ -194,9 +213,9 @@ void PermissionDialogDelegate::Destroy(JNIEnv* env,
   java_delegate_.reset();
 }
 
-void PermissionDialogDelegate::UpdateDialogWithNewScreenVariant() {
+void PermissionDialogDelegate::UpdateDialog() {
   CHECK(java_delegate_);
-  java_delegate_->UpdateDialogWithNewScreenVariant();
+  java_delegate_->UpdateDialog();
 }
 
 PermissionDialogDelegate::PermissionDialogDelegate(

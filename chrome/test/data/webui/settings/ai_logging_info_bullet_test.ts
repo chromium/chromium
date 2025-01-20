@@ -38,11 +38,30 @@ suite('LoggingInfoBullet', function() {
     assertFalse(!!li.querySelector('cr-policy-pref-indicator'));
   });
 
-  test('infoBulletManaged', async () => {
+  test('infoBulletManagedWhenPolicyAllowedWithoutLogging', async () => {
     const pref: PrefObject = {
       key: 'some_ai_feature_enterprise_pref',
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    };
+    await createRow(pref);
+
+    const li = row.shadowRoot!.querySelector('li');
+    assertTrue(!!li);
+    assertEquals(
+        li.innerText,
+        loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled'));
+    assertFalse(!!li.querySelector('cr-icon'));
+    assertTrue(!!li.querySelector('cr-policy-pref-indicator'));
+  });
+
+  test('infoBulletManagedWhenPolicyDisabled', async () => {
+    const pref: PrefObject = {
+      key: 'some_ai_feature_enterprise_pref',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ModelExecutionEnterprisePolicyValue.DISABLE,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
     };

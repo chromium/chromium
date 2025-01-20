@@ -274,7 +274,7 @@ public class SearchActivityTest {
         mOmnibox.checkSuggestionsShown();
 
         // Type in anything.
-        mOmnibox.typeText("text", /* commit= */ false);
+        mOmnibox.typeText("text", /* execute= */ false);
         mOmnibox.checkText(Matchers.equalTo("text"), null);
 
         // Clear omnibox focus. This should always clear uncommitted text and hide suggestions.

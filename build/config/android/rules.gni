@@ -3318,6 +3318,7 @@ if (!is_robolectric && enable_java_templates) {
             "deps",
             "enable_lint",
             "enable_proguard_checks",
+            "errorprone_args",
             "disable_strict_mode_context",
             "enforce_resource_overlays_in_tests",
             "expected_android_manifest",

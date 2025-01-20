@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristicsJni;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
+import org.chromium.chrome.browser.preloading.PreloadingDataBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -79,6 +81,7 @@ public class CustomTabActivityUrlLoadingTest {
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock CustomTabAuthUrlHeuristics.Natives mCustomTabAuthUrlHeuristicsJniMock;
     @Mock WebContentsFactory.Natives mWebContentsFactoryJni;
+    @Mock PreloadingDataBridge.Natives mPreloadingDataBridgeMock;
 
     @Before
     public void setUp() {
@@ -86,6 +89,7 @@ public class CustomTabActivityUrlLoadingTest {
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         CustomTabAuthUrlHeuristicsJni.setInstanceForTesting(mCustomTabAuthUrlHeuristicsJniMock);
         WebContentsFactoryJni.setInstanceForTesting(mWebContentsFactoryJni);
+        PreloadingDataBridgeJni.setInstanceForTesting(mPreloadingDataBridgeMock);
 
         when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);

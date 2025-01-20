@@ -126,7 +126,7 @@ public class SingleTabSwitcherOnNtpMediator {
         }
 
         mTabListFaviconProvider.initWithNative(
-                tabModelSelector.getModel(/* isIncognito= */ false).getProfile());
+                tabModelSelector.getModel(/* incognito= */ false).getProfile());
     }
 
     private static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {

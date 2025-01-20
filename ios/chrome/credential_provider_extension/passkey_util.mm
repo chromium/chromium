@@ -37,7 +37,7 @@ void Append(std::vector<uint8_t>& container, NSData* data) {
 NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
   std::vector<uint8_t> authenticator_data =
       webauthn::passkey_model_utils::MakeAuthenticatorDataForAssertion(
-          SysNSStringToUTF8(rp_id));
+          SysNSStringToUTF8(rp_id), /*extension_input_data=*/{});
   return [NSData dataWithBytes:authenticator_data.data()
                         length:authenticator_data.size()];
 }
@@ -199,7 +199,7 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
               webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                                  user_name_str),
               trusted_vault_key, /*trusted_vault_key_version=*/0,
-              /*generate_hmac_secret=*/false);
+              /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
   sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
   std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
 
@@ -209,7 +209,7 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
                                          length:cred_id.size()];
   std::vector<uint8_t> attestation_object_for_creation =
       webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
-          rp_id_str, cred_id, public_key_spki_der);
+          rp_id_str, cred_id, public_key_spki_der, /*extension_input_data=*/{});
   NSData* attestation_object =
       [NSData dataWithBytes:attestation_object_for_creation.data()
                      length:attestation_object_for_creation.size()];

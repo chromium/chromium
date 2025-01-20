@@ -125,7 +125,7 @@ public class TabModelNotificationDotManager implements Destroyable {
         mTabGroupModelFilter =
                 tabModelSelector
                         .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(/* incognito= */ false);
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
         assert mTabGroupModelFilter != null : "TabModel & native should be initialized.";
 
         Profile profile = mTabGroupModelFilter.getTabModel().getProfile();

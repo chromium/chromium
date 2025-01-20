@@ -758,10 +758,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   GetWebAuthenticationRequestDelegate(
       content::RenderFrameHost* render_frame_host) override;
 #endif
-  void CreatePaymentCredential(
+  void CreateSecurePaymentConfirmationService(
       content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver)
-      override;
+      mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+          receiver) override;
 #if BUILDFLAG(IS_CHROMEOS)
   content::SmartCardDelegate* GetSmartCardDelegate() override;
 #endif

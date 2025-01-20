@@ -20,7 +20,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -105,7 +104,6 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/pref_names.h"
@@ -2178,20 +2176,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 class SupervisedProfilePickerHideGuestModeTest
-    : public ProfilePickerCreationFlowBrowserTest,
-      public testing::WithParamInterface<
-          /*HideGuestModeForSupervisedUsers=*/bool> {
+    : public ProfilePickerCreationFlowBrowserTest {
  public:
-  SupervisedProfilePickerHideGuestModeTest() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    scoped_feature_list_.InitWithFeatureState(
-        supervised_user::kHideGuestModeForSupervisedUsers,
-        HideGuestModeForSupervisedUsersEnabled());
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  }
-
-  static bool HideGuestModeForSupervisedUsersEnabled() { return GetParam(); }
-
   void OpenProfilePicker() {
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
@@ -2219,7 +2205,6 @@ class SupervisedProfilePickerHideGuestModeTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   static constexpr char kBrowseAsGuestButtonPath[] =
       "document.body.getElementsByTagName('"
       "profile-picker-app')[0].shadowRoot."
@@ -2227,7 +2212,7 @@ class SupervisedProfilePickerHideGuestModeTest
       "\'browseAsGuestButton\')";
 };
 
-IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
+IN_PROC_BROWSER_TEST_F(SupervisedProfilePickerHideGuestModeTest,
                        DeleteSupervisedProfile) {
   Profile* default_profile = browser()->profile();
   AccountInfo default_account_info =
@@ -2245,10 +2230,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
 
   OpenProfilePicker();
 
-  // Guest Mode button will be unavailable when a supervised user is added, and
-  // kHideGuestModeForSupervisedUsers is enabled.
-  EXPECT_EQ(IsGuestModeButtonHidden(),
-            HideGuestModeForSupervisedUsersEnabled());
+  // Guest Mode button will be unavailable when a supervised user is added.
+  EXPECT_TRUE(IsGuestModeButtonHidden());
 
   RemoveProfile(child_profile);
 
@@ -2257,7 +2240,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
   EXPECT_TRUE(ClickGuestModeButton());
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
+IN_PROC_BROWSER_TEST_F(SupervisedProfilePickerHideGuestModeTest,
                        DeleteLastSupervisedProfile) {
   base::FilePath child_path = CreateNewProfileWithoutBrowser();
   Profile* child_profile =
@@ -2268,8 +2251,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
 
   OpenProfilePicker();
 
-  EXPECT_EQ(IsGuestModeButtonHidden(),
-            HideGuestModeForSupervisedUsersEnabled());
+  EXPECT_TRUE(IsGuestModeButtonHidden());
 
   RemoveProfile(child_profile);
 
@@ -2277,7 +2259,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
   EXPECT_TRUE(ClickGuestModeButton());
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
+IN_PROC_BROWSER_TEST_F(SupervisedProfilePickerHideGuestModeTest,
                        RegularProfile_GuestModeAvailable) {
   Profile* default_profile = browser()->profile();
   AccountInfo default_account_info =
@@ -2286,23 +2268,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
   // Open the picker.
   OpenProfilePicker();
 
-  // Guest Mode button is available when kHideGuestModeForSupervisedUsers is
-  // enabled and disabled.
   EXPECT_FALSE(IsGuestModeButtonHidden());
   EXPECT_TRUE(ClickGuestModeButton());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SupervisedProfilePickerHideGuestModeTest,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-                         testing::Bool(),
-#else
-      testing::Values(false),
-#endif
-                         [](const auto& info) {
-                           return info.param ? "WithHideGuestModeEnabled"
-                                             : "WithHideGuestModeDisabled";
-                         });
 
 class SupervisedUserProfileIPHTest
     : public ProfilePickerCreationFlowBrowserTest,

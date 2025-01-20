@@ -193,12 +193,6 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
   // Navigation is allowed otherwise;
   switch (navigation_handle()->GetNavigatingFrameType()) {
     case content::FrameType::kSubframe:
-      if (!base::FeatureList::IsEnabled(
-              supervised_user::
-                  kAllowSupervisedUserReauthenticationForSubframes)) {
-        return content::NavigationThrottle::PROCEED;
-      }
-      break;
     case content::FrameType::kPrimaryMainFrame:
       break;
     case content::FrameType::kFencedFrameRoot:

@@ -122,7 +122,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "image_memory_cache_size_percentage",
-                /* default= */ 100);
+                /* defaultValue= */ 100);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "bitmap_pool_size_percentage",
-                /* default= */ 100);
+                /* defaultValue= */ 100);
     }
 
     @Override

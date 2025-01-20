@@ -300,6 +300,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
   GetCreateParams() const;
 
+  zoom::ZoomController* GetZoomController() const;
+
   // Convenience method for `CreateInnerPage` implementations when not creating
   // a guest.
   void RejectGuestCreation(std::unique_ptr<GuestViewBase> owned_this,

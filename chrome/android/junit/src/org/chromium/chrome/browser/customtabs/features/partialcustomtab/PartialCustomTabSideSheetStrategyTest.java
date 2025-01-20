@@ -667,7 +667,7 @@ public class PartialCustomTabSideSheetStrategyTest {
 
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
-        strategy.toggleMaximize(/* animation= */ false);
+        strategy.toggleMaximize(/* animate= */ false);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -679,7 +679,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
-        strategy.toggleMaximize(/* animation= */ false);
+        strategy.toggleMaximize(/* animate= */ false);
         // Even without animation, we still need to wait for task to be idle, since we post
         // the task for size init in |onMaximizeEnd|.
         PartialCustomTabTestRule.waitForAnimationToFinish();

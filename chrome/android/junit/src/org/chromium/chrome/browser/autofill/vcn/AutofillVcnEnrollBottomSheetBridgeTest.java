@@ -140,12 +140,12 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 "Message text",
                 "Description text. Learn more",
                 "Learn more",
-                /* issuerIcon= */ Bitmap.createBitmap(
+                /* issuerIconBitmap= */ Bitmap.createBitmap(
                         /* colors= */ new int[1],
                         /* width= */ 1,
                         /* height= */ 1,
                         Bitmap.Config.ARGB_8888),
-                /* issuerIconResource= */ ISSUER_ICON_RESOURCE_ID,
+                /* networkIconResource= */ ISSUER_ICON_RESOURCE_ID,
                 /* issuerIconUrl= */ ISSUER_ICON_URL,
                 "Card label",
                 googleLegalMessages,

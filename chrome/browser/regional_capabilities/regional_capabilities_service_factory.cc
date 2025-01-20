@@ -9,7 +9,7 @@
 #include "base/check_deref.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/country_codes/country_codes.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_client.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -17,33 +17,6 @@
 #endif
 
 namespace regional_capabilities {
-
-namespace {
-
-class RegionalCapabilitiesServiceClient
-    : public regional_capabilities::RegionalCapabilitiesService::Client {
- public:
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  // On ChromeOS and Linux, get it from `VariationsService`, by polling at
-  // every startup until it is found.
-  explicit RegionalCapabilitiesServiceClient(
-      variations::VariationsService* variations_service)
-      : country_id_(
-            variations_service
-                ? country_codes::CountryStringToCountryID(base::ToUpperASCII(
-                      variations_service->GetLatestCountry()))
-                : country_codes::kCountryIDUnknown) {}
-
-  void FetchCountryId(CountryIdCallback on_country_id_fetched) override {
-    std::move(on_country_id_fetched).Run(country_id_);
-  }
-
- private:
-  int country_id_;
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-};
-
-}  // namespace
 
 // static
 RegionalCapabilitiesService* RegionalCapabilitiesServiceFactory::GetForProfile(
@@ -83,12 +56,11 @@ RegionalCapabilitiesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   auto regional_capabilities_service_client =
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
       std::make_unique<RegionalCapabilitiesServiceClient>(
-          g_browser_process->variations_service());
-#else
-      std::make_unique<RegionalCapabilitiesServiceClient>();
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+          g_browser_process->variations_service()
 #endif
+      );
 
   return std::make_unique<RegionalCapabilitiesService>(
       CHECK_DEREF(profile->GetPrefs()),

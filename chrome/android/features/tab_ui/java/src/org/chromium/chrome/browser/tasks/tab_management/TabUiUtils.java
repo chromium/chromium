@@ -360,15 +360,15 @@ public class TabUiUtils {
 
         for (int i = 0; i < tabList.getCount(); i++) {
             if (tabList.getTabAt(i).getTabHasSensitiveContent()) {
-                contentSensitivitySetter.onResult(/* contentIsSensitive= */ true);
-                RecordHistogram.recordBooleanHistogram(histogram, /* contentIsSensitive= */ true);
+                contentSensitivitySetter.onResult(/* result= */ true);
+                RecordHistogram.recordBooleanHistogram(histogram, /* sample= */ true);
                 return;
             }
         }
         // If not marked as not sensitive, the tab switcher might remain sensitive from a previous
         // set of tabs.
-        contentSensitivitySetter.onResult(/* contentIsSensitive= */ false);
-        RecordHistogram.recordBooleanHistogram(histogram, /* contentIsSensitive= */ false);
+        contentSensitivitySetter.onResult(/* result= */ false);
+        RecordHistogram.recordBooleanHistogram(histogram, /* sample= */ false);
     }
 
     /** Returns whether any tabs have sensitive content. */

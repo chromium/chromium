@@ -1109,6 +1109,7 @@
 <translation id="2977847223286097084">鎖定和使用鍵盤</translation>
 <translation id="2978824962390592855">歌劇</translation>
 <translation id="2979424420072875974">作家資源</translation>
+<translation id="2979639724566107830">在新視窗中開啟</translation>
 <translation id="2980742331521553164">此付款卡的 CVC 經已加密並儲存至你的 Google 帳戶，以便快速結帳</translation>
 <translation id="2983666748527428214">開啟無痕式分頁</translation>
 <translation id="2985306909656435243">啟用後，Chromium 會在此裝置上儲存信用卡資料副本，以加快填表速度。</translation>
@@ -1966,6 +1967,7 @@
 <translation id="4434045419905280838">彈出式視窗和重新導向</translation>
 <translation id="443673843213245140">雖然已停用 Proxy，不過已明確指定了 Proxy 設定。</translation>
 <translation id="4438821706955556403">一般價格</translation>
+<translation id="444116852243722675">全部開啟 (<ph name="ITEMS" /> 個)</translation>
 <translation id="4441832193888514600">由於此政策只能設定為雲端使用者政策，因此系統已忽略。</translation>
 <translation id="4445133368066241428">熱門主題</translation>
 <translation id="4445964943162061557">這是實驗版功能，提供的建議不一定符合需求。</translation>

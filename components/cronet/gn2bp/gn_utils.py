@@ -556,11 +556,8 @@ class GnParser(object):
       target.transitive_jni_java_sources.update(
           metadata.get("jni_source_files", set()))
       self.jni_java_sources.update(metadata.get("jni_source_files", set()))
-    elif target.type == 'copy':
-      # TODO: copy rules are not currently implemented.
-      pass
-    elif target.type == 'group':
-      # Groups are bubbled upward without creating an equivalent GN target.
+    elif target.type in ('copy', 'group'):
+      # copy and group are bubbled upward without creating an equivalent GN target.
       pass
     elif target.type in ["rust_library", "rust_proc_macro"]:
       target.arch[arch].sources.update(source
@@ -611,6 +608,8 @@ class GnParser(object):
 
       if dep.type == 'proto_library':
         target.proto_deps.add(dep.name)
+      elif dep.type == 'copy':
+        target.update(dep, arch)
       elif dep.type == 'group':
         target.update(dep, arch)  # Bubble up groups's cflags/ldflags etc.
         target.transitive_jni_java_sources.update(

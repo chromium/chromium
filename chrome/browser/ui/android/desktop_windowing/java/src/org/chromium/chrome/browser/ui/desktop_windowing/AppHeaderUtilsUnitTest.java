@@ -37,7 +37,7 @@ public class AppHeaderUtilsUnitTest {
     public void isActivityFocused_nullLifecycleDispatcher() {
         assertTrue(
                 "Activity should be assumed to be focused if the lifecycle dispatcher is null.",
-                AppHeaderUtils.isActivityFocusedAtStartup(/* activityLifecycleDispatcher= */ null));
+                AppHeaderUtils.isActivityFocusedAtStartup(/* lifecycleDispatcher= */ null));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class AppHeaderUtilsUnitTest {
         // Assume that the supplier is not initialized.
         assertFalse(
                 "Desktop windowing mode status is incorrect.",
-                AppHeaderUtils.isAppInDesktopWindow(/* appHeaderStateProvider= */ null));
+                AppHeaderUtils.isAppInDesktopWindow(/* desktopWindowStateManager= */ null));
 
         // Assume that the provider does not has a valid AppHeaderState.
         assertFalse(

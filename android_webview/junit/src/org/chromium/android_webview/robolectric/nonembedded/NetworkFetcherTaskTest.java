@@ -109,7 +109,7 @@ public class NetworkFetcherTaskTest {
 
         NetworkFetcherTask.downloadToFile(
                 mConnection,
-                /* nativeNetworkFetcherTask= */ 0,
+                /* nativeDownloadFileTask= */ 0,
                 /* mainTaskRunner= */ 0,
                 mock(GURL.class),
                 file.getAbsolutePath());

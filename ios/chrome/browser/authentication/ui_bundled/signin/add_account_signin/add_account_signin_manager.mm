@@ -40,24 +40,6 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
       break;
   }
 }
-
-// Converts a SigninAddAccountToDeviceResult to a SigninCoordinatorResult.
-SigninCoordinatorResult ToSigninCoordinatorResult(
-    SigninAddAccountToDeviceResult addAccountResult) {
-  switch (addAccountResult) {
-    case SigninAddAccountToDeviceResult::kInterrupted:
-      return SigninCoordinatorResultInterrupted;
-    case SigninAddAccountToDeviceResult::kCancelledByUser:
-      return SigninCoordinatorResultCanceledByUser;
-    case SigninAddAccountToDeviceResult::kSuccess:
-      return SigninCoordinatorResultSuccess;
-    case SigninAddAccountToDeviceResult::kError:
-      // Errors for adding accounts to devices are mapped to operation being
-      // cancelled by the user (see `[AddAccountSigninManagerDelegate
-      // addAccountSigninManagerFailedWithError:]`).
-      return SigninCoordinatorResultCanceledByUser;
-  }
-}
 }  // namespace
 
 @interface AddAccountSigninManager ()
@@ -214,28 +196,29 @@ SigninCoordinatorResult ToSigninCoordinatorResult(
   DCHECK(self.identityInteractionManager);
   _addAccountFlowDone = YES;
   self.identityInteractionManager = nil;
-  SigninAddAccountToDeviceResult addAccountResult =
-      SigninAddAccountToDeviceResult::kSuccess;
+
+  SigninAddAccountToDeviceResult result;
+  id<SystemIdentity> resultIdentity = nil;
+  NSError* resultError = nil;
   if (self.signinInterrupted) {
-    addAccountResult = SigninAddAccountToDeviceResult::kInterrupted;
-    identity = nil;
+    result = SigninAddAccountToDeviceResult::kInterrupted;
   } else if (error) {
     // Filter out errors handled internally by `identity`.
     if (ShouldHandleSigninError(error)) {
-      addAccountResult = SigninAddAccountToDeviceResult::kError;
-      LogAddAccountToDeviceHistograms(addAccountResult, addAccountDuration);
-      [self.delegate addAccountSigninManagerFailedWithError:error];
-      return;
+      result = SigninAddAccountToDeviceResult::kError;
+      resultError = error;
+    } else {
+      result = SigninAddAccountToDeviceResult::kCancelledByUser;
     }
-    addAccountResult = SigninAddAccountToDeviceResult::kCancelledByUser;
-    identity = nil;
+  } else {
+    result = SigninAddAccountToDeviceResult::kSuccess;
+    resultIdentity = identity;
   }
 
-  LogAddAccountToDeviceHistograms(addAccountResult, addAccountDuration);
-  [self.delegate
-      addAccountSigninManagerFinishedWithSigninResult:ToSigninCoordinatorResult(
-                                                          addAccountResult)
-                                             identity:identity];
+  LogAddAccountToDeviceHistograms(result, addAccountDuration);
+  [self.delegate addAccountSigninManagerFinishedWithResult:result
+                                                  identity:resultIdentity
+                                                     error:resultError];
 }
 
 @end

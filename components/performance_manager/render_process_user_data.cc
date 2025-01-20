@@ -35,8 +35,7 @@ RenderProcessUserData::RenderProcessUserData(
                                             ? base::TaskPriority::LOWEST
                                             : base::TaskPriority::HIGHEST;
   process_node_ = PerformanceManagerImpl::CreateProcessNode(
-      RenderProcessHostProxy(RenderProcessHostId(host_->GetDeprecatedID())),
-      initial_priority);
+      RenderProcessHostProxy(host_->GetID()), initial_priority);
 }
 
 RenderProcessUserData::~RenderProcessUserData() {

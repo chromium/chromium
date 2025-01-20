@@ -87,7 +87,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
-#include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
+#include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/gurl.h"
@@ -1218,9 +1218,10 @@ void ContentBrowserClient::CreateManagedConfigurationService(
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver) {
 }
 
-void ContentBrowserClient::CreatePaymentCredential(
+void ContentBrowserClient::CreateSecurePaymentConfirmationService(
     RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {}
+    mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+        receiver) {}
 
 #if !BUILDFLAG(IS_ANDROID)
 SerialDelegate* ContentBrowserClient::GetSerialDelegate() {

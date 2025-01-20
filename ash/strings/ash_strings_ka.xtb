@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">ქსელების სიის ჩვენება. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">შეტყობინების ქმედების შესასრულებლად განბლოკეთ მოწყობილობა</translation>
 <translation id="1420408895951708260">ღამის განათების გადართვა. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">შემოთავაზებული ჯგუფი</translation>
 <translation id="1426410128494586442">დიახ</translation>
 <translation id="1435537621343861112">კარნახის დაწყება ვერ მოხერხდა. მიკროფონი გამორთულია.</translation>
 <translation id="1445031758921122223">სახის კონტროლის ფაილები ჩამოიტვირთა</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">გამოთვლები</translation>
 <translation id="1774796056689732716">კალენდარი, <ph name="CURRENT_MONTH_YEAR" />, ამჟამად არჩეულია <ph name="DATE" />.</translation>
 <translation id="178347895271755507">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილებისა და შეტყობინებების ნახვის დაყენება</translation>
+<translation id="1785317913592722944">ერთეულის ამოშლა შემოთავაზებული ჯგუფიდან</translation>
 <translation id="1786487376942610288">ეკრანი ეკრანში ფანჯრის მაქსიმალურ და მიმდინარე ზომებს შორის გადართვა</translation>
 <translation id="1787955149152357925">გამორთვა</translation>
 <translation id="1796561540704213354">ვებსაიტები, მათ შორის, თქვენ მიერ მონახულებული გვერდები და გახსნილი გვერდები</translation>
 <translation id="179842970735685253">Google-ის მომსახურების პირობები</translation>
 <translation id="1805407494113167797">ფოკუსის ხმების დაკვრა ვერ მოხერხდა</translation>
 <translation id="181103072419391116">სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
+<translation id="1815039896005206046">ქვევით დაწეული ცერის ღილაკზე დაჭერით გაგზავნით გამოხმაურებას, რომ ეს შემოთავაზებული ჯგუფი არ მოგწონთ</translation>
 <translation id="1816896987747843206">ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">მდებარეობაზე წვდომის ჩართვა</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">„გამარჯობა“ ჩინურად</translation>
 <translation id="2370971919968699910">ამის გამო, შესაძლოა, მობილური ინტერნეტის საფასურის გადახდა მოგიწიოთ.
 დაკავშირებულია <ph name="DEVICECOUNT" /> მოწყობილობა.</translation>
+<translation id="2383521554963939360">აპები და ჩანართების ჯგუფები</translation>
 <translation id="2386292613071805067">ყველაფრის არჩევა გვერდზე</translation>
 <translation id="2389423187722941333">Gemini-ს გადართვა</translation>
 <translation id="2392659840443812875">ხელმისაწვდომი უსადენო ქსელი არ არის. დარწმუნდით, რომ თქვენი მოწყობილობა ახლოს არის და მასზე ჩართულია Bluetooth.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">პორტრეტის რეტუში</translation>
 <translation id="4156293514828496577">დარჩენილია ბატარეის <ph name="PERCENTAGE" />% (დაახლოებით <ph name="TIME_LEFT" />).
 ზოგიერთი ფუნქცია შეზღუდულია, ბატარეის მუშაობის ხანგრძლივობა რომ გაიზარდოს.</translation>
+<translation id="4158003972857765638">ახალ სამუშაო მაგიდაზე ორგანიზება</translation>
 <translation id="4160919062868802509">აღმოჩენილია რამდენიმე აუდიო წყარო</translation>
 <translation id="416245495747357243">მზადაა!</translation>
 <translation id="4165275524535002941">კაბელს შეიძლება არ ჰქონდეს ეკრანების მხარდაჭერა</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">ჩამაგრების მოხსნა</translation>
 <translation id="428715201724021596">მიმდინარეობს პროფილთან დაკავშირება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="4287250812980588583">Chrome-ის ფანჯარა</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{მიკროფონის ხმას მართავს <ph name="APP_NAME" />}other{მიკროფონის ხმას მართავს # აპი}}</translation>
 <translation id="4294319844246081198">დილა მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875"><ph name="COUNT" />-ვე შეტყობინების გასუფთავება</translation>
 <translation id="4300272766492248925">აპის გახსნა</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">კლავიატურის მალსახმობი „Ctrl + Alt + ზემოთ მიმართული ისარი“ შეიცვალა. Home კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + მარცხნივ მიმართულ ისარს.</translation>
 <translation id="4324840740119394760"><ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
 <translation id="4327147325944669226">თამაშის ჩაწერა</translation>
+<translation id="4329076911374908740">მიღწეულია შენახული ჯგუფების მაქსიმალური ლიმიტი.</translation>
 <translation id="4338109981321384717">გამადიდებელი შუშა</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, დადუმებული</translation>
 <translation id="4351244548802238354">დიალოგის დახურვა</translation>
@@ -1264,6 +1271,7 @@
 <translation id="5245201184978705914">ტრანსკრიპტის შექმნა ვერ მოხერხდა</translation>
 <translation id="5251174953851719648">კონტენტის განახლება</translation>
 <translation id="5253783950165989294">დაკავშირებულია მოწყობილობასთან, სახელად <ph name="DEVICE_NAME" />, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">შეამოწმეთ თქვენი მიკროფონი</translation>
 <translation id="5258528442992323769">სამუშაო მაგიდები არ არის შენახული</translation>
 <translation id="5260676007519551770">დესკტოპი 4</translation>
 <translation id="5265391159779542051">შედეგები ჩაიტვირთა</translation>
@@ -1421,6 +1429,7 @@
 <translation id="5745612484876805746">ღამის განათება ავტომატურად ირთვება მზის ჩასვლისას</translation>
 <translation id="5750765938512549687">Bluetooth გამორთულია</translation>
 <translation id="5758114525425072423">ფოკუსირების რეჟიმის დაწყება. ტაიმერი დაყენებულია: <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">შეამოწმეთ, როგორ გაიგონებენ თქვენს ხმას სხვები. შესაწყვეტად დააწკაპუნეთ შემოწმების ხატულას ან დახურეთ ვიდეოზარის არე.</translation>
 <translation id="5760866832697883462">დააკავშირეთ თქვენი <ph name="NAME" /></translation>
 <translation id="5762420912707163638">მარკერის გადართვა. <ph name="STATE_TEXT" /> ეკრანზე მოხაზვისთვის გამოიყენეთ ტრეკპედი, სენსორული ეკრანი ან სტილუსი.</translation>
 <translation id="576341972084747908">ჩამოიტვირთოს სახიფათო <ph name="FILENAME" /></translation>
@@ -1939,6 +1948,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">შექმნა</translation>
 <translation id="7526573455193969409">ქსელზე შესაძლოა ხორციელდებოდეს მონიტორინგი</translation>
+<translation id="7534543072325030705">ზევით აწეული ცერის ღილაკზე დაჭერით გაგზავნით გამოხმაურებას, რომ ეს შემოთავაზებული ჯგუფი მოგწონთ</translation>
 <translation id="7536035074519304529">IP მისამართი: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">მარცხენა ფანჯრის განახლება</translation>
 <translation id="7543399541175347147">Linux აპები და ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
@@ -2103,6 +2113,7 @@
 <translation id="8004512796067398576">ზრდა</translation>
 <translation id="8005527720597583355">ფოკუსირების სესიის დაწყება</translation>
 <translation id="8015361438441228492">ამოცანის რედაქტირება ვერ მოხერხდა.</translation>
+<translation id="8027187124910699148">შემოთავაზებული ჯგუფის განახლება</translation>
 <translation id="802782383769312836">წინა სამუშაო მაგიდა: <ph name="DESK_NAME" />. სამუშაო მაგიდა <ph name="DESK_INDEX" /> / <ph name="DESK_COUNT" />-დან.</translation>
 <translation id="8029247720646289474">უსადენო ქსელმა ვერ მოახერხა კავშირის დამყარება</translation>
 <translation id="8029629653277878342">დამატებითი უსაფრთხოებისთვის საჭიროა PIN-კოდის ან პაროლის შეყვანა</translation>
@@ -2211,6 +2222,7 @@
 <translation id="8426708595819210923">საღამო მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-დან <ph name="KEY_TWO" />-მდე</translation>
+<translation id="8429547770382807369">ჯგუფის შენახვა მოგვიანებით სანახავად</translation>
 <translation id="8433186206711564395">ქსელის პარამეტრები</translation>
 <translation id="8433977262951327081">თაროზე შეყვანის ვარიანტების მენიუს ბუშტის გამოჩენის მალსახმობი შეიცვალა. გთხოვთ, გამოიყენოთ <ph name="NEW_SHORTCUT" /> და არა — <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">გამოხმაურების ხელსაწყოს გახსნა</translation>
@@ -2219,6 +2231,7 @@
 <translation id="8446884382197647889">შეიტყვეთ მეტი</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">წარმოსათქმელად მონიშვნის დახურვა</translation>
+<translation id="8466665972451889002">ერთეულების ჩვენება „<ph name="GROUP_NAME" />“-ში</translation>
 <translation id="8468806060683421065">შესრულების ვადა: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">ჩვენების მასშტაბის პარამეტრები</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ს აქვს <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
@@ -2241,6 +2254,7 @@
 <translation id="8551588720239073785">თარიღისა და დროის პარამეტრები</translation>
 <translation id="8553395910833293175">უკვე მიმაგრებულია ყველა სამუშაო მაგიდაზე.</translation>
 <translation id="8555757996376137129">ამჟამინდელი სამუშაო მაგიდის წაშლა</translation>
+<translation id="8558521694042102707">გენერაციული ხელოვნური ინტელექტი შეიძლება შეცდეს, მათ შორის, ხალხის შესახებ, ამიტომ გადაამოწმეთ მისი ინფორმაცია.</translation>
 <translation id="8559845965695780508"><ph name="USER" />-მა დაარედაქტირა</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">აი, რამდენიმე საცდელი შემოთავაზება</translation>
@@ -2263,6 +2277,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="8638637208069328956">მიკროფონის ჩართვა/გამორთვა</translation>
 <translation id="8639760480004882931">დარჩენილია <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">ჯგუფების ყველა შემოთავაზების დამალვა</translation>
 <translation id="8641510901370802679">ნაჩვენებია ინფორმაცია თემაზე <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />-იანი ტაიმერი</translation>
 <translation id="8647931990447795414">ადამიანის დასამატებლად შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის</translation>
@@ -2345,6 +2360,7 @@
 <translation id="8905919797434099235">(უსათაურო)</translation>
 <translation id="890616557918890486">წყაროს შეცვლა</translation>
 <translation id="8909138438987180327">ბატარეის დონე <ph name="PERCENTAGE" /> პროცენტზეა.</translation>
+<translation id="8916866375277139011">ერთეულების დამალვა „<ph name="GROUP_NAME" />“-ში</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ასისტენტი არ საუბრობს ამ ენაზე.</translation>
 <translation id="8926951137623668982">თარო ყოველთვის დამალულია</translation>

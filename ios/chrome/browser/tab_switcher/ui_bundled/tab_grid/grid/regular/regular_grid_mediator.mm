@@ -244,7 +244,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
     _messagingService->RemovePersistentMessageObserver(
         _messagingBackendServiceBridge.get());
     _messagingBackendServiceBridge.reset();
-    _messagingService = nil;
+    _messagingService = nullptr;
   }
   _tabsCloser.reset();
   _scopedSyncServiceObservation.reset();

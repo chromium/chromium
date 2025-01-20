@@ -32,6 +32,7 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/profiler/thread_group_profiler.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,6 +63,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/logging_chrome.h"
+#include "chrome/common/profiler/chrome_thread_group_profiler_client.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
@@ -1028,6 +1030,9 @@ bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 }
 
 void ChromeMainDelegate::CreateThreadPool(std::string_view name) {
+  // The ThreadGroupProfiler client must be set before thread pool is created.
+  base::ThreadGroupProfiler::SetClient(
+      std::make_unique<ChromeThreadGroupProfilerClient>());
   base::ThreadPoolInstance::Create(name);
 
   // The ThreadProfiler client must be set before main thread profiling is

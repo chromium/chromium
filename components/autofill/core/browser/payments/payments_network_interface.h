@@ -243,6 +243,12 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const BnplFetchVcnResponseDetails&)> callback);
 
+  // Get the BNPL redirect url details.
+  virtual void GetBnplPaymentInstrumentForFetchingUrl(
+      GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              const BnplFetchUrlResponseDetails&)> callback);
+
  private:
   friend class PaymentsNetworkInterfaceTest;
 };

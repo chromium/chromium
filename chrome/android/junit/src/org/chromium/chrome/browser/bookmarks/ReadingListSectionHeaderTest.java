@@ -47,8 +47,7 @@ public class ReadingListSectionHeaderTest {
                         read,
                         0,
                         false);
-        return BookmarkListEntry.createBookmarkEntry(
-                bookmarkItem, /* powerBookmarkMeta= */ null, 0);
+        return BookmarkListEntry.createBookmarkEntry(bookmarkItem, /* meta= */ null, 0);
     }
 
     private BookmarkListEntry createReadingListEntry(long id, boolean read) {

@@ -148,9 +148,10 @@ TEST_P(AddAccountSigninManagerTest, ConfirmWithPrefilledEmail) {
         return [identity.userEmail isEqual:expected_prefilled_email()];
       }];
   OCMExpect([mock_delegate()
-      addAccountSigninManagerFinishedWithSigninResult:
-          SigninCoordinatorResultSuccess
-                                             identity:checkIdentityEmail]);
+      addAccountSigninManagerFinishedWithResult:SigninAddAccountToDeviceResult::
+                                                    kSuccess
+                                       identity:checkIdentityEmail
+                                          error:nil]);
   [fake_interaction_manager() simulateDidTapAddAccount];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
@@ -181,9 +182,10 @@ TEST_P(AddAccountSigninManagerTest, ConfirmWithDifferentEmail) {
                             withUnknownCapabilities:NO];
 
   OCMExpect([mock_delegate()
-      addAccountSigninManagerFinishedWithSigninResult:
-          SigninCoordinatorResultSuccess
-                                             identity:differentIdentity]);
+      addAccountSigninManagerFinishedWithResult:SigninAddAccountToDeviceResult::
+                                                    kSuccess
+                                       identity:differentIdentity
+                                          error:nil]);
   [fake_interaction_manager() simulateDidTapAddAccount];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
@@ -211,9 +213,10 @@ TEST_P(AddAccountSigninManagerTest, Cancel) {
       }));
 
   OCMExpect([mock_delegate()
-      addAccountSigninManagerFinishedWithSigninResult:
-          SigninCoordinatorResultCanceledByUser
-                                             identity:nil]);
+      addAccountSigninManagerFinishedWithResult:SigninAddAccountToDeviceResult::
+                                                    kCancelledByUser
+                                       identity:nil
+                                          error:nil]);
   [fake_interaction_manager() simulateDidTapCancel];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
@@ -242,8 +245,11 @@ TEST_P(AddAccountSigninManagerTest, ErrorHandledByViewController) {
         return fake_interaction_manager().isActivityViewPresented;
       }));
 
-  OCMExpect(
-      [mock_delegate() addAccountSigninManagerFailedWithError:[OCMArg any]]);
+  OCMExpect([mock_delegate()
+      addAccountSigninManagerFinishedWithResult:SigninAddAccountToDeviceResult::
+                                                    kError
+                                       identity:nil
+                                          error:[OCMArg any]]);
   [fake_interaction_manager() simulateDidThrowUnhandledError];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
@@ -267,10 +273,10 @@ TEST_P(AddAccountSigninManagerTest, Interrupted) {
         return fake_interaction_manager().isActivityViewPresented;
       }));
 
-  OCMExpect([mock_delegate()
-      addAccountSigninManagerFinishedWithSigninResult:
-          SigninCoordinatorResultInterrupted
-                                             identity:nil]);
+  OCMExpect([mock_delegate() addAccountSigninManagerFinishedWithResult:
+                                 SigninAddAccountToDeviceResult::kInterrupted
+                                                              identity:nil
+                                                                 error:nil]);
   __block BOOL completionCalled = NO;
   [add_account_signin_manager()
       interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation

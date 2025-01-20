@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenzije: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nije povezano</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
+<translation id="3763034084412196440">Prilagodite jačinu zvuka</translation>
 <translation id="3767737419527918477">Pretražite fajlove snimaka</translation>
 <translation id="3771294271822695279">Video datoteke</translation>
 <translation id="3780740315729837296">Dodelite taster na tastaturi</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">neutralni</translation>
 <translation id="6747215703636344499">Zaustavljeno – posuda za odštampani materijal je puna</translation>
 <translation id="6749473226660745022">Slike</translation>
+<translation id="6752960629591143793">Izaberite jezik transkripcije i preuzimanje u Podešavanjima ili meniju <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="6753452347192452143">Uređaj je računar.</translation>
 <translation id="6756731097889387912">Otkazivanje skeniranja nije uspelo</translation>
 <translation id="6760706756348334449">Utišajte zvuk</translation>

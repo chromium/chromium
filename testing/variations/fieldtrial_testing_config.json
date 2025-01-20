@@ -2418,26 +2418,6 @@
             ]
         }
     ],
-    "AutofillOptimizeFormExtraction": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillOptimizeFormExtraction"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillPageLanguageDetection": [
         {
             "platforms": [
@@ -8854,6 +8834,21 @@
             ]
         }
     ],
+    "EnableASWebAuthenticationSession": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableASWebAuthenticationSession"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCertManagementUIV2": [
         {
             "platforms": [
@@ -12001,24 +11996,6 @@
                     "enable_features": [
                         "EnableMeasurementsExperience",
                         "EnableViewportIntents"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSModernTabStrip": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "modern-tab-strip-new-tab-button": "dynamic"
-                    },
-                    "enable_features": [
-                        "ModernTabStrip"
                     ]
                 }
             ]
@@ -17868,6 +17845,25 @@
             ]
         }
     ],
+    "PrivacyGuideAiSettings": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacyGuideAiSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyHubGeolocation": [
         {
             "platforms": [
@@ -19661,6 +19657,37 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReportingServiceAlwaysFlush"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ResamplingScrollEvents": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Latency375",
+                    "params": {
+                        "latency": "0.375",
+                        "mode": "frames"
+                    },
+                    "enable_features": [
+                        "ResamplingScrollEventsExperimentalPrediction"
+                    ]
+                },
+                {
+                    "name": "Latency500",
+                    "params": {
+                        "latency": "0.5",
+                        "mode": "frames"
+                    },
+                    "enable_features": [
+                        "ResamplingScrollEventsExperimentalPrediction"
                     ]
                 }
             ]

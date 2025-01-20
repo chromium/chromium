@@ -13,6 +13,21 @@ namespace switches {
 // All switches in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kCctSignInPrompt,
+             "CctSignInPrompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Migrate usages of USM flag to force child account sign-in to use the account
+// capability `IsSubjectToParentalControls`.
+BASE_FEATURE(kForceSupervisedSigninWithCapabilities,
+             "ForceSupervisedSigninWithCapabilities",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Add some history opt-in entry points on Android.
+BASE_FEATURE(kHistoryOptInEntryPoints,
+             "HistoryOptInEntryPoints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to bypass double-checking that signin callers have correctly gotten
 // the user to accept account management. This check is slow and not strictly
 // necessary, so disable it while we work on adding caching.
@@ -22,17 +37,7 @@ BASE_FEATURE(kSkipCheckForAccountManagementOnSignin,
              "SkipCheckForAccountManagementOnSignin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCctSignInPrompt,
-             "CctSignInPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUnoForAuto, "UnoForAuto", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Migrate usages of USM flag to force child account sign-in to use the account
-// capability `IsSubjectToParentalControls`.
-BASE_FEATURE(kForceSupervisedSigninWithCapabilities,
-             "ForceSupervisedSigninWithCapabilities",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseHostedDomainForManagementCheckOnSignin,
              "UseHostedDomainForManagementCheckOnSignin",

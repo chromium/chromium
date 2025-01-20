@@ -56,43 +56,17 @@ BASE_DECLARE_FEATURE(kCustomProfileStringsForSupervisedUsers);
 BASE_DECLARE_FEATURE(kShowKiteForSupervisedUsers);
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Uses supervised user strings on the signout dialog.
-BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
-
-// This hides the following guest mode entry points for supervised users:
-//
-// * In the Profile menu for supervised profiles
-// * In the Profile picker, if there are one or more supervised profiles
-BASE_DECLARE_FEATURE(kHideGuestModeForSupervisedUsers);
-#endif
-
 // Force enable SafeSearch for a supervised profile with an
 // unauthenticated (e.g. signed out of the content area) account.
 BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Uses supervised user strings on the signout dialog.
+BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
+
 // Force re-authentication when an unauthenticated supervised user tries to
 // access YouTube, so that content restrictions can be applied.
 BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForYouTube);
-
-// Force re-authentication when an unauthenticated supervised user tries to
-// access a blocked site, allowing the user to ask for parent's approval.
-BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites);
-
-// Specifies if we should close the sign-in tabs that can be opened from
-// the re-authentication interstitial.
-BASE_DECLARE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial);
-
-// Shows the subframe re-authentication interstitial for unauthenticated
-// supervised users when they try to access:
-// * Embedded YouTube videos if re-auth is forced for YouTube.
-// * Blocked sites in subframes if re-auth is forced for blocked sites.
-//
-// This flag is only effective if the flag
-// `kForceSupervisedUserReauthenticationForYouTube` or
-// `kForceSupervisedUserReauthenticationForBlockedSites` is enabled.
-BASE_DECLARE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes);
 
 // Specifies if infrastructure-related YouTube endpoints should be still
 // reachable even if parental controls related restrict YouTube access.

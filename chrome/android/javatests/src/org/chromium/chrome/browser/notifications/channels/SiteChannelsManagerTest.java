@@ -189,7 +189,7 @@ public class SiteChannelsManagerTest {
                         ContentSettingsType.NOTIFICATIONS,
                         "https://example-incognito.com",
                         null,
-                        /* isEmbargo= */ true,
+                        /* isEmbargoed= */ true,
                         SessionModel.DURABLE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -209,7 +209,7 @@ public class SiteChannelsManagerTest {
                         ContentSettingsType.NOTIFICATIONS,
                         "https://example-incognito.com",
                         null,
-                        /* isEmbargo= */ true,
+                        /* isEmbargoed= */ true,
                         SessionModel.DURABLE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

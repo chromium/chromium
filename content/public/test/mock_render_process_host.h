@@ -313,6 +313,8 @@ class MockRenderProcessHost : public RenderProcessHost {
       std::unique_ptr<mojo::AssociatedRemote<mojom::Renderer>>
           renderer_interface);
 
+  int GetPendingReuseRefCountForTesting() const;
+
   bool is_renderer_locked_to_site() const {
     return is_renderer_locked_to_site_;
   }

@@ -1265,6 +1265,7 @@
 <translation id="5245201184978705914">ट्रांसक्रिप्ट को जनरेट नहीं किया जा सका</translation>
 <translation id="5251174953851719648">कॉन्टेंट को रीफ़्रेश करें</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नाम वाले ब्लूटूथ डिवाइस से कनेक्ट किया गया है. इसकी बैटरी <ph name="BATTERY_PERCENTAGE" />% है</translation>
+<translation id="5256939106029293271">माइक की जांच करें</translation>
 <translation id="5258528442992323769">कोई डेस्क सेव नहीं किया गया है</translation>
 <translation id="5260676007519551770">डेस्क 4</translation>
 <translation id="5265391159779542051">नतीजे लोड हो गए हैं</translation>
@@ -1422,6 +1423,7 @@
 <translation id="5745612484876805746">सूरज ढलने पर 'नाइट लाइट' अपने-आप चालू हो जाती है</translation>
 <translation id="5750765938512549687">ब्लूटूथ बंद है</translation>
 <translation id="5758114525425072423">फ़ोकस मोड चालू करें. <ph name="FOCUS_DURATION" /> का टाइमर सेट है.</translation>
+<translation id="5759522586053040964">माइक की जांच करें और जानें कि आपकी आवाज़ दूसरों को कैसी सुनाई देगी. जांच रोकने के लिए, 'जांच करें' आइकॉन पर क्लिक करें या वीडियो कॉल वाला पैनल बंद करें.</translation>
 <translation id="5760866832697883462">अपना <ph name="NAME" /> कनेक्ट करें</translation>
 <translation id="5762420912707163638">मार्कर को टॉगल करें. <ph name="STATE_TEXT" /> स्क्रीन पर ड्रा करने के लिए ट्रैकपैड, टचस्क्रीन या स्टाइलस इस्तेमाल करें.</translation>
 <translation id="576341972084747908"><ph name="FILENAME" /> डाउनलोड हो रही है जिसमें खतरनाक कॉन्टेंट मौजूद है</translation>

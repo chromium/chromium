@@ -1268,6 +1268,7 @@
 <translation id="5245201184978705914">يتعذّر إنشاء النص المحوَّل إلى صوت.</translation>
 <translation id="5251174953851719648">إعادة تحميل المحتوى</translation>
 <translation id="5253783950165989294">تم الربط بجهاز يحمل الاسم <ph name="DEVICE_NAME" />، مستوى شحن البطارية <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="5256939106029293271">اختبار الميكروفون</translation>
 <translation id="5258528442992323769">ما مِن أسطح مكتب محفوظة.</translation>
 <translation id="5260676007519551770">مكتب 4</translation>
 <translation id="5265391159779542051">تم تحميل النتائج</translation>
@@ -1425,6 +1426,7 @@
 <translation id="5745612484876805746">تفعيل ميزة "الإضاءة الليلية" تلقائيًا عند غروب الشمس</translation>
 <translation id="5750765938512549687">تم إيقاف البلوتوث</translation>
 <translation id="5758114525425072423">بدء "وضع التركيز". تمّ ضبط الموقّت على <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">يمكنك الاستماع إلى صوتك كما سيسمعه الآخرون. لإيقاف الاختبار، يجب النقر على رمز الاختبار أو إغلاق لوحة مكالمة الفيديو.</translation>
 <translation id="5760866832697883462">توصيل جهاز <ph name="NAME" /></translation>
 <translation id="5762420912707163638">حالة إيقاف/تفعيل أداة التحديد: <ph name="STATE_TEXT" />. يمكنك استخدام لوحة اللمس أو شاشة تعمل باللمس أو قلم الشاشة للرسم على الشاشة.</translation>
 <translation id="576341972084747908">تنزيل الملف <ph name="FILENAME" /> الضار</translation>

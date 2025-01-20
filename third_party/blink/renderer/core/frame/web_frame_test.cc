@@ -4269,7 +4269,7 @@ TEST_F(WebFrameTest, DontZoomInOnFocusedInTouchAction) {
   ASSERT_EQ(initial_scale, web_view_helper.GetWebView()->PageScaleFactor());
 
   // Focus the third textbox that has a touch-action: pan-x ancestor, this
-  // should cause an autozoom since it's seperated from the node with the
+  // should cause an autozoom since it's separated from the node with the
   // touch-action by an overflow:scroll element.
   web_view_helper.GetWebView()->AdvanceFocus(false);
   web_view_helper.GetWebView()
@@ -4419,7 +4419,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
   const gfx::Rect edit_box_with_text(200, 200, 250, 20);
 
   web_view_helper.GetWebView()->AdvanceFocus(false);
-  // Set the caret to the begining of the input box.
+  // Set the caret to the beginning of the input box.
   web_view_helper.GetWebView()
       ->MainFrameImpl()
       ->GetDocument()
@@ -4446,7 +4446,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
       element_bounds, caret_bounds, kAutoZoomToLegibleScale, scale, scroll,
       need_animation);
   EXPECT_TRUE(need_animation);
-  // Edit box and caret should be left alinged
+  // Edit box and caret should be left aligned
   int h_scroll = edit_box_with_text.x();
   EXPECT_NEAR(h_scroll, scroll.x(), 1);
   int v_scroll = edit_box_with_text.y() -
@@ -5012,7 +5012,7 @@ TEST_F(WebFrameTest, ContextNotificationsIsolatedWorlds) {
   ASSERT_EQ(isolated_world_id, notification->world_id);
   ASSERT_EQ(web_view_helper.GetWebView()->MainFrame(), notification->frame);
 
-  // We don't have an API to enumarate isolated worlds for a frame, but we can
+  // We don't have an API to enumerate isolated worlds for a frame, but we can
   // at least assert that the context we got is *not* the main world's context.
   ASSERT_NE(web_view_helper.LocalMainFrame()->MainWorldScriptContext(),
             v8::Local<v8::Context>::New(isolate, notification->context));
@@ -5705,7 +5705,7 @@ TEST_F(WebFrameTest, FindInPageJavaScriptUpdatesDOM) {
       kFindIdentifier, search_text, *options, false, &active_now));
   EXPECT_TRUE(active_now);
 
-  // Insert new text, which contains occurence of |searchText|.
+  // Insert new text, which contains occurrence of |searchText|.
   frame->ExecuteScript(WebScriptSource(
       "var newTextNode = document.createTextNode('bar5 foo5');"
       "var textArea = document.getElementsByTagName('textarea')[0];"
@@ -5774,7 +5774,7 @@ TEST_F(WebFrameTest, FindInPageJavaScriptUpdatesDOMProperOrdinal) {
   EXPECT_EQ(2, find_in_page_client.ActiveIndex());
   EXPECT_FALSE(frame->EnsureTextFinder().ScopingInProgress());
 
-  // Insert new text, which contains occurence of |searchText|.
+  // Insert new text, which contains occurrence of |searchText|.
   frame->ExecuteScript(
       WebScriptSource("var textDiv = document.getElementById('new_text');"
                       "textDiv.innerHTML = 'foo abc';"));
@@ -8220,7 +8220,7 @@ TEST_F(WebFrameTest, FirstNonBlankSubframeNavigation) {
   EXPECT_FALSE(iframe->GetDocumentLoader()->ReplacesCurrentHistoryItem());
 }
 
-// Test verifies that layout will change a layer's scrollable attibutes
+// Test verifies that layout will change a layer's scrollable attributes
 TEST_F(WebFrameTest, overflowHiddenRewrite) {
   RegisterMockedHttpURLLoad("non-scrollable.html");
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -12831,7 +12831,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
   // focused editable element. However, the scroll and zoom is a smoothly
   // animated "PageScaleAnimation" that's performed in CC only on the viewport
   // layers. There are some situations in which the widget resize causes the
-  // focued input to be hidden by clipping parents that aren't the main frame.
+  // focused input to be hidden by clipping parents that aren't the main frame.
   // In these cases, there's no way to scroll just the viewport to make the
   // input visible, we need to also scroll those clip/scroller elements  This
   // test ensures we do so. https://crbug.com/270018.

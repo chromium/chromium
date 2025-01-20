@@ -99,7 +99,7 @@ sync_pb::WebauthnCredentialSpecifics TestPasskeyModel::CreatePasskey(
   auto [specifics, public_key_spki_der] =
       webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id, user_entity, trusted_vault_key, trusted_vault_key_version,
-          /*generate_hmac_secret=*/false);
+          /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
 
   AddShadowedCredentialIdsToNewPasskey(specifics);
   credentials_.push_back(specifics);

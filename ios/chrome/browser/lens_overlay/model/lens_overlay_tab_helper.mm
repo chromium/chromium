@@ -76,15 +76,21 @@ bool LensOverlayTabHelper::IsLensOverlayInvokedOnCurrentNavigationItem() {
 void LensOverlayTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  const web::NavigationManager* navigation_manager =
+      web_state_->GetNavigationManager();
+  const web::NavigationItem* pending_item =
+      navigation_manager ? navigation_manager->GetPendingItem() : nullptr;
+
   if (IsLensOverlaySameTabNavigationEnabled() && is_ui_attached_and_alive_ &&
-      navigation_context && !navigation_context->IsSameDocument()) {
-    if (invokation_navigation_id_ ==
-        web_state_->GetNavigationManager()->GetPendingItem()->GetUniqueID()) {
+      navigation_context && !navigation_context->IsSameDocument() &&
+      pending_item) {
+    if (invokation_navigation_id_ == pending_item->GetUniqueID()) {
       [commands_handler_ showLensUI:NO];
     } else {
       [commands_handler_ hideLensUI:NO completion:nil];
     }
   }
+
   if (web_state_ && snapshot_controller_) {
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(web_state_);

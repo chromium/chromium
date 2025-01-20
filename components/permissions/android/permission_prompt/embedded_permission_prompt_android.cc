@@ -48,11 +48,17 @@ Variant EmbeddedPermissionPromptAndroid::GetEmbeddedPromptVariant() const {
 
 void EmbeddedPermissionPromptAndroid::Closing() {
   delegate()->Dismiss();
+  delegate()->FinalizeCurrentRequests();
 }
 
 void EmbeddedPermissionPromptAndroid::Accept() {
   delegate()->Accept();
   MaybeUpdateDialogWithNewScreenVariant();
+}
+
+void EmbeddedPermissionPromptAndroid::Acknowledge() {
+  delegate()->Dismiss();
+  delegate()->FinalizeCurrentRequests();
 }
 
 void EmbeddedPermissionPromptAndroid::AcceptThisTime() {
@@ -62,6 +68,7 @@ void EmbeddedPermissionPromptAndroid::AcceptThisTime() {
 
 void EmbeddedPermissionPromptAndroid::Deny() {
   delegate()->Deny();
+  delegate()->FinalizeCurrentRequests();
 }
 
 bool EmbeddedPermissionPromptAndroid::ShouldCurrentRequestUseQuietUI() {
@@ -231,7 +238,7 @@ void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
     delegate()->FinalizeCurrentRequests();
     return;
   }
-  // TODO(crbug.com/388407640); update new screen.
+  permission_dialog_delegate()->UpdateDialog();
 }
 
 PermissionRequest::AnnotatedMessageText

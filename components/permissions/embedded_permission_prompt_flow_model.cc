@@ -108,6 +108,7 @@ void EmbeddedPermissionPromptFlowModel::PrioritizeAndMergeNewVariant(
 }
 
 void EmbeddedPermissionPromptFlowModel::CalculateCurrentVariant() {
+  Clear();
   auto* map = PermissionsClient::Get()->GetSettingsMap(
       web_contents()->GetBrowserContext());
   content_settings::SettingInfo info;
@@ -122,12 +123,10 @@ void EmbeddedPermissionPromptFlowModel::CalculateCurrentVariant() {
     PrioritizeAndMergeNewVariant(current_request_variant, type);
   }
 
-  if (requests_.size() != prompt_types_.size()) {
-    const auto& requests = delegate_->Requests();
-    for (PermissionRequest* request : requests) {
-      if (prompt_types_.contains(request->GetContentSettingsType())) {
-        requests_.push_back(request);
-      }
+  const auto& requests = delegate_->Requests();
+  for (PermissionRequest* request : requests) {
+    if (prompt_types_.contains(request->GetContentSettingsType())) {
+      requests_.push_back(request);
     }
   }
 }

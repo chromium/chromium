@@ -2226,8 +2226,13 @@ FindRequestManager* WebContentsImpl::GetFindRequestManagerForTesting() {
 }
 
 void WebContentsImpl::UpdateZoom() {
+  UpdateZoom(GetPrimaryMainFrame()->GetGlobalId());
+}
+
+void WebContentsImpl::UpdateZoom(const GlobalRenderFrameHostId& rfh_id) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::UpdateZoom");
-  RenderWidgetHostImpl* rwh = GetRenderViewHost()->GetWidget();
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
+  RenderWidgetHostImpl* rwh = rfh->GetRenderWidgetHost();
   if (rwh->GetView()) {
     rwh->SynchronizeVisualProperties();
   }
@@ -2235,9 +2240,15 @@ void WebContentsImpl::UpdateZoom() {
 
 void WebContentsImpl::UpdateZoomIfNecessary(const std::string& scheme,
                                             const std::string& host) {
+  UpdateZoomIfNecessary(scheme, host, GetPrimaryMainFrame());
+}
+
+void WebContentsImpl::UpdateZoomIfNecessary(const std::string& scheme,
+                                            const std::string& host,
+                                            RenderFrameHostImpl* rfh) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateZoomIfNecessary",
                         "scheme", scheme, "host", host);
-  NavigationEntry* entry = GetController().GetLastCommittedEntry();
+  NavigationEntry* entry = rfh->GetController().GetLastCommittedEntry();
   if (!entry) {
     return;
   }
@@ -2248,7 +2259,7 @@ void WebContentsImpl::UpdateZoomIfNecessary(const std::string& scheme,
     return;
   }
 
-  UpdateZoom();
+  UpdateZoom(rfh->GetGlobalId());
 }
 
 std::vector<WebContentsImpl*> WebContentsImpl::GetWebContentsAndAllInner() {
@@ -8641,20 +8652,46 @@ void WebContentsImpl::RunFileChooser(
   }
 }
 
-double WebContentsImpl::GetPendingPageZoomLevel() {
-  NavigationEntry* pending_entry = GetController().GetPendingEntry();
-  if (!pending_entry) {
-    return HostZoomMap::GetZoomLevel(this);
-  }
+double WebContentsImpl::GetPendingZoomLevel(RenderWidgetHostImpl* rwh) {
+  // TODO(372932834): This needs to be modified for the PDF-in-OOPIF case, as
+  // while the PDF will have its own RenderWidgetHost, the associated
+  // RenderFrameHost won't always be at the root of a FrameTree (and the
+  // FrameTree won't be of type kGuest).
+  // Note: this could involve (something like) detecting that the rfh for `rwh`
+  // is *not* a frame-tree root, but *does* have a temporary zoom level set in
+  // HostZoomMap.
+  RenderFrameHostImpl* rfh =
+      rwh->frame_tree()->root()->current_frame_host()->GetOutermostMainFrame();
 
-  GURL url = pending_entry->GetURL();
+  GURL url;
+  if (rfh->IsInBackForwardCache()) {
+    // If the `rfh`s page is in the bf cache, then the use of the pending (or
+    // last committed) entry would have the lookup be based on an unrelated URL.
+    // In that case use the RFH's last committed URL. While using the
+    // NavigationEntry is preferred in order to avoid a virtual URL, that
+    // shouldn't be a problem if the URL from the `rfh` is used. Note that
+    // subframes get their zoom updates asynchronously from the main frame, so
+    // it's possible to get here in a race condition for a page that is no
+    // longer visible. For example, it's possible to get here on Android in the
+    // tests FencedFrameParameterizedBrowserTest.NavigateUnfencedTopAndGoBack
+    // and All/FencedFrameAutomaticBeaconBrowserTest.MessageExceedsLengthLimit/
+    // fencedframe.
+    url = rfh->GetLastCommittedURL();
+  } else {
+    NavigationEntry* pending_entry = rfh->GetController().GetPendingEntry();
+    if (!pending_entry) {
+      return HostZoomMap::GetZoomLevel(this, rfh->GetGlobalId());
+    }
+    url = pending_entry->GetURL();
+  }
 #if BUILDFLAG(IS_ANDROID)
   return HostZoomMap::GetForWebContents(this)
       ->GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
                                             net::GetHostOrSpecFromURL(url));
 #else
-  return HostZoomMap::GetForWebContents(this)->GetZoomLevelForHostAndScheme(
-      url.scheme(), net::GetHostOrSpecFromURL(url));
+  return HostZoomMap::Get(rfh->GetSiteInstance())
+      ->GetZoomLevelForHostAndScheme(url.scheme(),
+                                     net::GetHostOrSpecFromURL(url));
 #endif
 }
 

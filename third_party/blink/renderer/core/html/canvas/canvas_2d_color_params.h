@@ -29,9 +29,6 @@ class CORE_EXPORT Canvas2DColorParams {
     return has_alpha_ ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
   }
 
-  SkColorInfo GetSkColorInfo() const {
-    return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
-  }
   SkColorType GetSkColorType() const;
   sk_sp<SkColorSpace> GetSkColorSpace() const;
   gfx::ColorSpace GetGfxColorSpace() const;

@@ -65,7 +65,7 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
                 /* privilegedServicesName= */ null,
                 packageName,
                 /* sandboxedServicesName= */ null,
-                /* isExternalService= */ true,
+                /* isExternalSandboxedService= */ true,
                 LibraryProcessType.PROCESS_CHILD,
                 bindToCaller,
                 ignoreVisibilityForImportance);

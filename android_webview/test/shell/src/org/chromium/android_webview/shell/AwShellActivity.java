@@ -244,7 +244,7 @@ public class AwShellActivity extends Activity {
         final AwSettings awSettings =
                 new AwSettings(
                         /* context= */ this,
-                        /* isAccessFromFileURLsGrantedByDefault= */ false,
+                        /* isAccessFromFileUrlsGrantedByDefault= */ false,
                         /* supportsLegacyQuirks= */ false,
                         /* allowEmptyDocumentPersistence= */ false,
                         /* allowGeolocationOnInsecureOrigins= */ true,

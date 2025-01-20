@@ -48,11 +48,12 @@ class ZoomControllerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(ZoomControllerTest, DidNavigateMainFrame) {
   double zoom_level = zoom_controller_->GetZoomLevel();
   ZoomController::ZoomChangedEventData zoom_change_data(
-      web_contents(), zoom_level, zoom_level, ZoomController::ZOOM_MODE_DEFAULT,
-      false);
+      web_contents(),
+      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(), zoom_level,
+      zoom_level, ZoomController::ZOOM_MODE_DEFAULT, false);
   ZoomChangedWatcher zoom_change_watcher(zoom_controller_.get(),
                                          zoom_change_data);
-  content::MockNavigationHandle handle;
+  content::MockNavigationHandle handle(web_contents());
   handle.set_has_committed(true);
   handle.set_is_in_primary_main_frame(true);
   zoom_controller_->DidFinishNavigation(&handle);
@@ -67,8 +68,10 @@ TEST_F(ZoomControllerTest, Observe_ZoomController) {
 
   // Changing from default to default so the bubble should not be shown.
   ZoomController::ZoomChangedEventData zoom_change_data1(
-      web_contents(), old_zoom_level, old_zoom_level,
-      ZoomController::ZOOM_MODE_ISOLATED, false /* can_show_bubble */);
+      web_contents(),
+      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      old_zoom_level, old_zoom_level, ZoomController::ZOOM_MODE_ISOLATED,
+      false /* can_show_bubble */);
 
   {
     ZoomChangedWatcher zoom_change_watcher1(zoom_controller_.get(),
@@ -78,8 +81,10 @@ TEST_F(ZoomControllerTest, Observe_ZoomController) {
   }
 
   ZoomController::ZoomChangedEventData zoom_change_data2(
-      web_contents(), old_zoom_level, new_zoom_level,
-      ZoomController::ZOOM_MODE_ISOLATED, true /* can_show_bubble */);
+      web_contents(),
+      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      old_zoom_level, new_zoom_level, ZoomController::ZOOM_MODE_ISOLATED,
+      true /* can_show_bubble */);
 
   {
     ZoomChangedWatcher zoom_change_watcher2(zoom_controller_.get(),
@@ -98,8 +103,10 @@ TEST_F(ZoomControllerTest, ObserveManualZoomCanShowBubble) {
   zoom_controller_->SetZoomMode(zoom::ZoomController::ZOOM_MODE_MANUAL);
   // By default, the zoom controller will send 'true' for can_show_bubble.
   ZoomController::ZoomChangedEventData zoom_change_data1(
-      web_contents(), old_zoom_level, new_zoom_level1,
-      ZoomController::ZOOM_MODE_MANUAL, true /* can_show_bubble */);
+      web_contents(),
+      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      old_zoom_level, new_zoom_level1, ZoomController::ZOOM_MODE_MANUAL,
+      true /* can_show_bubble */);
   {
     ZoomChangedWatcher zoom_change_watcher1(zoom_controller_.get(),
                                             zoom_change_data1);
@@ -110,8 +117,10 @@ TEST_F(ZoomControllerTest, ObserveManualZoomCanShowBubble) {
   // Override default and verify the subsequent event reflects this change.
   zoom_controller_->SetShowsNotificationBubble(false);
   ZoomController::ZoomChangedEventData zoom_change_data2(
-      web_contents(), new_zoom_level1, new_zoom_level2,
-      ZoomController::ZOOM_MODE_MANUAL, false /* can_show_bubble */);
+      web_contents(),
+      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      new_zoom_level1, new_zoom_level2, ZoomController::ZOOM_MODE_MANUAL,
+      false /* can_show_bubble */);
   {
     ZoomChangedWatcher zoom_change_watcher2(zoom_controller_.get(),
                                             zoom_change_data2);

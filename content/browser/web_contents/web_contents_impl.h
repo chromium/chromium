@@ -314,11 +314,19 @@ class CONTENT_EXPORT WebContentsImpl
   // Sets the zoom level for frames associated with this WebContents.
   void UpdateZoom();
 
+  // Sets the zoom level for frames associated with the subtree for which
+  // `rfh_id` is a local root. Used by guest views and oopif-pdfs.
+  void UpdateZoom(const GlobalRenderFrameHostId& rfh_id);
+
   // Sets the zoom level for frames associated with this WebContents if it
   // matches |host| and (if non-empty) |scheme|. Matching is done on the
-  // last committed entry.
+  // last committed entry of the main frame.
   void UpdateZoomIfNecessary(const std::string& scheme,
                              const std::string& host);
+  // Same as above, except uses the last committed entry on `rfh`.
+  void UpdateZoomIfNecessary(const std::string& scheme,
+                             const std::string& host,
+                             RenderFrameHostImpl* rfh);
 
   // Returns the focused WebContents.
   // If there are multiple inner/outer WebContents (when embedding <webview>,
@@ -1080,7 +1088,7 @@ class CONTENT_EXPORT WebContentsImpl
   int GetVirtualKeyboardResizeHeight() override;
   bool ShouldDoLearning() override;
 
-  double GetPendingPageZoomLevel() override;
+  double GetPendingZoomLevel(RenderWidgetHostImpl* rwh) override;
 
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;

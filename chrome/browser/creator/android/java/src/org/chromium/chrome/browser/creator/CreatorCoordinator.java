@@ -255,7 +255,7 @@ public class CreatorCoordinator
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
-                        /* shareSupplier= */ shareDelegateSupplier,
+                        /* shareDelegateSupplier= */ shareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,
                         feedActionDelegate,
                         /* feedContentFirstLoadWatcher= */ this,
@@ -271,7 +271,7 @@ public class CreatorCoordinator
         mStream.bind(
                 mRecyclerView,
                 mContentManager,
-                /* feedScrollState= */ null,
+                /* savedInstanceState= */ null,
                 mSurfaceScope,
                 mHybridListRenderer,
                 null,
@@ -330,8 +330,8 @@ public class CreatorCoordinator
                     (RecyclerView)
                             mHybridListRenderer.bind(
                                     mContentManager,
-                                    /* mViewportView= */ null,
-                                    /* useStaggeredLayout= */ false);
+                                    /* viewport= */ null,
+                                    /* shouldUseStaggeredLayout= */ false);
             view.setId(R.id.creator_feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));

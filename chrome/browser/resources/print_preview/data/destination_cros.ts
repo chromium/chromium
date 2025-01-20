@@ -5,10 +5,13 @@
 import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
+
 import type {Cdd, ColorCapability, ColorOption, CopiesCapability, DpiOption, DuplexType, MediaSizeOption, MediaTypeOption} from './cdd.js';
-import type {ManagedPrintOptions} from './managed_print_options_cros.ts';
+import type {ManagedPrintOptions} from './managed_print_options_cros.js';
+import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
 import type {PrinterStatus} from './printer_status_cros.js';
 import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
 
@@ -229,6 +232,11 @@ export class Destination {
    */
   private managedPrintOptions_: ManagedPrintOptions|null = null;
 
+  /**
+   * True if the managed print options applied restrictions on any setting.
+   */
+  private allowedManagedPrintOptionsApplied_: boolean = false;
+
   private type_: PrinterType;
 
   constructor(
@@ -320,6 +328,11 @@ export class Destination {
   set capabilities(capabilities: Cdd|null) {
     if (capabilities) {
       this.capabilities_ = capabilities;
+      if (loadTimeData.getBoolean(
+              'isUseManagedPrintJobOptionsInPrintPreviewEnabled') &&
+          this.managedPrintOptions_) {
+        this.applyAllowedManagedPrintOptions();
+      }
     }
   }
 
@@ -441,6 +454,144 @@ export class Destination {
    */
   get managedPrintOptions(): ManagedPrintOptions|null {
     return this.managedPrintOptions_;
+  }
+
+  get allowedManagedPrintOptionsApplied(): boolean {
+    return this.allowedManagedPrintOptionsApplied_;
+  }
+
+  private applyAllowedManagedPrintOptions() {
+    this.allowedManagedPrintOptionsApplied_ = false;
+    assert(this.capabilities_);
+
+    if (this.capabilities_.printer.media_size &&
+        this.managedPrintOptions_?.mediaSize?.allowedValues &&
+        this.managedPrintOptions_.mediaSize.allowedValues.length > 0) {
+      const allowedMediaSizeValues =
+          this.managedPrintOptions_.mediaSize.allowedValues;
+
+      const allowedSupportedValues =
+          this.capabilities_.printer.media_size.option.filter(
+              (supportedValue) => {
+                return allowedMediaSizeValues.some((allowedValue) => {
+                  return supportedValue.width_microns === allowedValue.width &&
+                      supportedValue.height_microns === allowedValue.height;
+                });
+              });
+
+      if (allowedSupportedValues.length > 0) {
+        this.capabilities_.printer.media_size.option = allowedSupportedValues;
+        this.allowedManagedPrintOptionsApplied_ = true;
+      }
+    }
+
+    if (this.capabilities_.printer.media_type &&
+        this.managedPrintOptions_?.mediaType?.allowedValues &&
+        this.managedPrintOptions_.mediaType.allowedValues.length > 0) {
+      const allowedMediaTypeValues =
+          this.managedPrintOptions_.mediaType.allowedValues;
+
+      const allowedSupportedValues =
+          this.capabilities_.printer.media_type.option.filter(
+              (supportedValue) => {
+                return allowedMediaTypeValues.some((allowedValue) => {
+                  return supportedValue.vendor_id === allowedValue;
+                });
+              });
+
+      if (allowedSupportedValues.length > 0) {
+        this.capabilities_.printer.media_type.option = allowedSupportedValues;
+        this.allowedManagedPrintOptionsApplied_ = true;
+      }
+    }
+
+    if (this.capabilities_.printer.duplex &&
+        this.managedPrintOptions_?.duplex?.allowedValues &&
+        this.managedPrintOptions_.duplex.allowedValues.length > 0) {
+      const allowedDuplexValues =
+          this.managedPrintOptions_.duplex.allowedValues;
+
+      const allowedSupportedValues =
+          this.capabilities_.printer.duplex.option.filter((supportedValue) => {
+            return allowedDuplexValues.some((allowedValue) => {
+              return supportedValue.type ===
+                  managedPrintOptionsDuplexToCdd(allowedValue);
+            });
+          });
+
+      if (allowedSupportedValues.length > 0) {
+        this.capabilities_.printer.duplex.option = allowedSupportedValues;
+        this.allowedManagedPrintOptionsApplied_ = true;
+      }
+    }
+
+    // Applying restrictions on the color setting only makes sense if the
+    // printer supports printing both in black&white and in color.
+    if (this.hasColorCapability &&
+        this.managedPrintOptions_?.color?.allowedValues &&
+        this.managedPrintOptions_.color.allowedValues.length > 0) {
+      const allowedColorValues = this.managedPrintOptions_.color.allowedValues;
+
+      const allowedSupportedValues =
+          this.capabilities_.printer.color!.option.filter((supportedValue) => {
+            return allowedColorValues.some((allowedValue) => {
+              const typesToLookFor =
+                  allowedValue ? COLOR_TYPES : MONOCHROME_TYPES;
+              return typesToLookFor.includes(supportedValue.type!);
+            });
+          });
+
+      if (allowedSupportedValues.length > 0) {
+        this.capabilities_.printer.color!.option = allowedSupportedValues!;
+        this.allowedManagedPrintOptionsApplied_ = true;
+      }
+    }
+
+    if (this.capabilities_.printer.dpi &&
+        this.managedPrintOptions_?.dpi?.allowedValues &&
+        this.managedPrintOptions_.dpi.allowedValues.length > 0) {
+      const allowedDpiValues = this.managedPrintOptions_.dpi.allowedValues;
+
+      const allowedSupportedValues =
+          this.capabilities_.printer.dpi.option.filter((supportedValue) => {
+            return allowedDpiValues.some((allowedValue) => {
+              return supportedValue.horizontal_dpi ===
+                  allowedValue.horizontal &&
+                  supportedValue.vertical_dpi === allowedValue.vertical;
+            });
+          });
+
+      if (allowedSupportedValues.length > 0) {
+        this.capabilities_.printer.dpi.option = allowedSupportedValues!;
+        this.allowedManagedPrintOptionsApplied_ = true;
+      }
+    }
+
+    if (this.capabilities_.printer.vendor_capability &&
+        this.managedPrintOptions_?.quality?.allowedValues &&
+        this.managedPrintOptions_.quality.allowedValues.length > 0) {
+      const allowedQualityValues =
+          this.managedPrintOptions_.quality.allowedValues;
+
+      const printQualityCapability =
+          this.capabilities_.printer.vendor_capability.find(o => {
+            return o.id === IPP_PRINT_QUALITY;
+          });
+      if (printQualityCapability?.select_cap?.option) {
+        const allowedSupportedValues =
+            printQualityCapability.select_cap.option.filter(
+                (supportedValue) => {
+                  return allowedQualityValues.some((allowedValue) => {
+                    return supportedValue.value ===
+                        managedPrintOptionsQualityToIpp(allowedValue);
+                  });
+                });
+        if (allowedSupportedValues.length > 0) {
+          printQualityCapability.select_cap.option = allowedSupportedValues;
+          this.allowedManagedPrintOptionsApplied_ = true;
+        }
+      }
+    }
   }
 
   /** @return Path to the SVG for the destination's icon. */

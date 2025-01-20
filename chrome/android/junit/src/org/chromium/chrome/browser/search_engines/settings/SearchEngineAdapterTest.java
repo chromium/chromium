@@ -143,7 +143,7 @@ public class SearchEngineAdapterTest {
         // Instead of using the test helper, call the method directly and explicitly compare
         // identity for the output instead of equality here, as all instances are equal.
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                templateUrls, p3, /* isInEeaChoiceCountry= */ true);
+                templateUrls, p3, /* isEeaChoiceCountry= */ true);
 
         Assert.assertSame(templateUrls.get(0), p2);
         Assert.assertSame(templateUrls.get(1), p1);

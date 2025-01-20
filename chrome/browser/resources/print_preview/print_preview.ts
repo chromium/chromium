@@ -20,7 +20,7 @@ export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from 
 export {PageLayoutInfo} from './data/document_info.js';
 export {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
 // <if expr="is_chromeos">
-export {ManagedPrintOptions, ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from './data/managed_print_options_cros.js';
+export {IPP_PRINT_QUALITY, ManagedPrintOptions, ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from './data/managed_print_options_cros.js';
 // </if>
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';

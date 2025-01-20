@@ -219,7 +219,6 @@ export function getCddTemplateWithAdvancedSettings(
       option: [
         {display_name: 'Draft', value: '3'},
         {display_name: 'Normal', value: '4', is_default: true},
-        {display_name: 'High', value: '5'},
       ],
     },
   });

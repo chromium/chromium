@@ -456,18 +456,10 @@ void MetricsLog::RecordPreviousSessionData(
 }
 
 void MetricsLog::RecordCurrentSessionData(
-    base::TimeDelta incremental_uptime,
-    base::TimeDelta uptime,
     DelegatingProvider* delegating_provider,
     PrefService* local_state) {
   DCHECK(!closed_);
   DCHECK(has_environment_);
-
-  // Record recent delta for critical stability metrics. We can't wait for a
-  // restart to gather these, as that delay biases our observation away from
-  // users that run happily for a looooong time.  We send increments with each
-  // UMA log upload, just as we send histogram data.
-  WriteRealtimeStabilityAttributes(incremental_uptime, uptime);
 
   delegating_provider->ProvideCurrentSessionData(uma_proto());
   // Schedule a Local State write to flush updated prefs to disk. This is done
@@ -498,24 +490,6 @@ void MetricsLog::WriteMetricsEnableDefault(EnableMetricsDefault metrics_default,
       system_profile->set_uma_default_state(
           SystemProfileProto_UmaDefaultState_OPT_OUT);
   }
-}
-
-void MetricsLog::WriteRealtimeStabilityAttributes(
-    base::TimeDelta incremental_uptime,
-    base::TimeDelta uptime) {
-  // Update the stats which are critical for real-time stability monitoring.
-  // Since these are "optional," only list ones that are non-zero, as the counts
-  // are aggregated (summed) server side.
-
-  SystemProfileProto::Stability* stability =
-      uma_proto()->mutable_system_profile()->mutable_stability();
-
-  const uint64_t incremental_uptime_sec = incremental_uptime.InSeconds();
-  if (incremental_uptime_sec)
-    stability->set_incremental_uptime_sec(incremental_uptime_sec);
-  const uint64_t uptime_sec = uptime.InSeconds();
-  if (uptime_sec)
-    stability->set_uptime_sec(uptime_sec);
 }
 
 const SystemProfileProto& MetricsLog::RecordEnvironment(

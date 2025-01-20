@@ -575,7 +575,7 @@ public class CredManHelperRobolectricTest {
         mCredManHelper.startPrefetchRequest(
                 mRequestOptions,
                 mOriginString,
-                /* clientDatJson= */ null,
+                /* clientDataJson= */ null,
                 mClientDataHash,
                 mCallback::onSignResponse,
                 mErrorCallback,

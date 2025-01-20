@@ -18722,6 +18722,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- Smart Card Readers -->
+    <if expr="is_chromeos">
+      <message name="IDS_SMART_CARD_POLICY_DESCRIPTION_FOR_ANY_DEVICE" desc="String describing a smart card reader permission granted by permission policy to a site for all devices.">
+        Any smart card reader
+      </message>
+    </if>
+
 
   <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE" desc="The title for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied.">
     Chrome will stop flagging notifications from <ph name="URL">$1<ex>https://www.example-url.com/</ex></ph> as spam

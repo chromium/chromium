@@ -64,6 +64,7 @@
   test_valid_prelude('@function --foo(--x <length>: 10px, --y)');
   test_valid_prelude('@function --foo(--x, --y <length>: 10px)');
   test_valid_prelude('@function --foo(--x type(<length> | auto): auto)');
+  test_valid_prelude('@function --foo(--x type(<length> | auto) : auto)');
   // The value does not have to match the type during @function parsing:
   test_valid_prelude('@function --foo(--x <angle>: 10px)');
 

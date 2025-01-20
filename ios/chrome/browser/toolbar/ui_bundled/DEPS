@@ -32,3 +32,10 @@ include_rules = [
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
 ];
+
+specific_include_rules = {
+  ".*_unittest.mm" : [
+    "+components/collaboration/test_support",
+    "+components/data_sharing/public",
+  ]
+}

@@ -974,6 +974,7 @@
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="428715201724021596">Повезује се са профилом. То може да потраје неколико минута.</translation>
 <translation id="4287250812980588583">Chrome прозор</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Јачину звука микрофона контролише <ph name="APP_NAME" />}one{Јачину звука микрофона контролише # апликација}few{Јачину звука микрофона контролишу # апликације}other{Јачину звука микрофона контролише # апликација}}</translation>
 <translation id="4294319844246081198">Добро јутро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Обришите сва обавештења (<ph name="COUNT" />)</translation>
 <translation id="4300272766492248925">Отвори апликацију</translation>

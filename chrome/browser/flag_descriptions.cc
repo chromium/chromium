@@ -1568,6 +1568,10 @@ const char kPipDoubleTapToResizeDescription[] =
 const char kPipTuckName[] = "Enable tuck for PiP windows";
 const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
 
+const char kPrivacyGuideAiSettingsName[] = "AI settings in Privacy Guide";
+const char kPrivacyGuideAiSettingsDescription[] =
+    "Enables the AI settings linkout in the Privacy Guide completion card.";
+
 const char kPrivateNetworkAccessRespectPreflightResultsName[] =
     "Respect the result of Private Network Access preflights";
 const char kPrivateNetworkAccessRespectPreflightResultsDescription[] =
@@ -8120,6 +8124,10 @@ const char kSupervisedUserLocalWebApprovalsDescription[] =
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
+const char kHistoryOptInEntryPointsName[] = "History opt-in entry points";
+const char kHistoryOptInEntryPointsDescription[] =
+    "Add some history opt-in entry points.";
+
 const char kSupervisedUserForceSigninWithCapabilitiesName[] =
     "Use capabilities for supervised user forced sign-in";
 const char kSupervisedUserForceSigninWithCapabilitiesDescription[] =

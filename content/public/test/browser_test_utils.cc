@@ -1424,6 +1424,12 @@ void BoundingBoxUpdateWaiter::Wait() {
 }
 #endif
 
+double GetPendingZoomLevel(RenderWidgetHost* render_widget_host) {
+  auto* rwhi = static_cast<RenderWidgetHostImpl*>(render_widget_host);
+  return WebContentsImpl::FromRenderWidgetHostImpl(rwhi)->GetPendingZoomLevel(
+      rwhi);
+}
+
 void SimulateKeyPress(WebContents* web_contents,
                       ui::DomKey key,
                       ui::DomCode code,

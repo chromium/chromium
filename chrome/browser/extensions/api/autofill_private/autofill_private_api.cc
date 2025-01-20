@@ -500,8 +500,10 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
       api::autofill_private::RemoveEntry::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
+  AddressDataManager* adm = address_data_manager();
   PaymentsDataManager* paydm = payments_data_manager();
-  if (!paydm || !paydm->is_payments_data_loaded()) {
+  if (!adm || !adm->has_initial_load_finished() || !paydm ||
+      !paydm->is_payments_data_loaded()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
@@ -519,7 +521,10 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
           base::UserMetricsAction("AutofillCreditCardDeletedAndHadNickname"));
     }
   }
-  paydm->RemoveByGUID(parameters->guid);
+
+  if (!paydm->RemoveByGUID(parameters->guid)) {
+    adm->RemoveProfile(parameters->guid);
+  }
   return RespondNow(NoArguments());
 }
 

@@ -25,6 +25,9 @@ extern const char kAddFakeIdentitiesAtStartup[];
 // Ignored if kForceRealSystemIdentityManager is used.
 extern const char kSignInAtStartup[];
 
+// Switch used to simulate a post device restore in EG tests.
+extern const char kSimulatePostDeviceRestore[];
+
 // Switch used to enable FakeTabGroupSyncService for testing. The feature
 // kTabGroupSync should be enabled as well.
 extern const char kEnableFakeTabGroupSyncService[];

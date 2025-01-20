@@ -493,6 +493,7 @@
 <translation id="3130863904455712965">История и другие данные</translation>
 <translation id="313283613037595347">Создать вкладку инкогнито.</translation>
 <translation id="3138611310073113613">Отменить выбор</translation>
+<translation id="3140825265190223781">Сохраненные пароли и ключи доступа</translation>
 <translation id="3143515551205905069">Отмена</translation>
 <translation id="314837624430314508">Будьте в курсе новостей, отслеживайте цены и не только.</translation>
 <translation id="3157387275655328056">Добавить в список для чтения</translation>
@@ -1641,7 +1642,6 @@
 <translation id="8195191503358432289">Добавить пароль</translation>
 <translation id="8202744799033457229">Показать историю</translation>
 <translation id="8205564605687841303">Отмена</translation>
-<translation id="820568752112382238">Часто посещаемые сайты</translation>
 <translation id="8206354486702514201">Этот параметр включен администратором.</translation>
 <translation id="8209050860603202033">Открыть изображение</translation>
 <translation id="8211030355252954494">Вы получили пароли для сайта <ph name="WEBSITE" />.</translation>
@@ -1670,6 +1670,7 @@
 <translation id="8299613349954694191">Чтобы просматривать веб-страницы анонимно, используйте режим инкогнито.</translation>
 <translation id="8307481894409578819">Ошибка при загрузке файла</translation>
 <translation id="8319076807703933069">Новый поиск</translation>
+<translation id="833647236762414178">Создавайте, сохраняйте и изменяйте пароли и ключи доступа, чтобы легко входить в аккаунты на сайтах и в приложениях. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Создайте резервную копию данных и используйте их на любом устройстве.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8364563001733875155">Чтобы изменить PIN-код, установите код доступа.</translation>

@@ -1937,6 +1937,7 @@
 <translation id="2323018538045954000">저장된 Wi-Fi 네트워크</translation>
 <translation id="2325444234681128157">비밀번호 저장</translation>
 <translation id="2326188115274135041">자동 잠금 해제를 사용 설정하려면 PIN을 확인하세요.</translation>
+<translation id="2326583548923775947">Google 계정이 아닙니다. Chrome에 저장한 항목은 다른 기기에서 사용할 수 없습니다.</translation>
 <translation id="2326906096734221931">앱 설정 열기</translation>
 <translation id="2326931316514688470">앱 새로고침(&amp;R)</translation>
 <translation id="2327492829706409234">앱 사용</translation>
@@ -2385,6 +2386,7 @@
 <translation id="2638662041295312666">로그인 이미지</translation>
 <translation id="2640299212685523844">GTK 사용</translation>
 <translation id="264083724974021997">휴대전화에 연결 - 대화상자</translation>
+<translation id="2641098199809442625">비밀번호가 업데이트되지 않았으며, 계속해서 이전 비밀번호로 사이트에 액세스할 수 있습니다.</translation>
 <translation id="2642111877055905627">축구공</translation>
 <translation id="2642206811783203764"><ph name="SITE_NAME" />에서 항상 사용</translation>
 <translation id="2643064289437760082">언제든지 인터넷 사용 기록을 삭제하여 광고 측정 데이터를 삭제할 수 있습니다.</translation>

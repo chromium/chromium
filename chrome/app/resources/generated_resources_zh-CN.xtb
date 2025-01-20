@@ -523,6 +523,7 @@
 <translation id="135389172849514421">可离线使用</translation>
 <translation id="1353980523955420967">找不到 PPD。请确保您的 Chromebook 已连接到网络，然后重试。</translation>
 <translation id="1354045473509304750">继续允许 <ph name="HOST" /> 使用和移动您的摄像头</translation>
+<translation id="1354148503392558902">正在更改密码…</translation>
 <translation id="1355088139103479645">删除所有数据？</translation>
 <translation id="1356376170199999104">已允许 - <ph name="PERMISSION_DETAILS" />。请使用实物开关开启麦克风。</translation>
 <translation id="1356959069439783953">闲置标签页外观焕然一新</translation>
@@ -1089,6 +1090,7 @@
 <translation id="1751335846119670066">帮我读</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
 <translation id="175196451752279553">重新打开关闭的标签页(&amp;E)</translation>
+<translation id="1752557850776261983">正在检查登录状态…</translation>
 <translation id="1753067873202720523">您的 Chromebook 在处于打开状态时可能无法充电。</translation>
 <translation id="1753557900380512635">室内</translation>
 <translation id="1753905327828125965">常去网站</translation>
@@ -1915,6 +1917,7 @@
 <translation id="2323018538045954000">保存的 WLAN 网络</translation>
 <translation id="2325444234681128157">记住密码</translation>
 <translation id="2326188115274135041">请确认 PIN 码以开启自动解锁功能</translation>
+<translation id="2326583548923775947">这不是 Google 账号。您保存到 Chrome 的内容将无法在其他设备上使用。</translation>
 <translation id="2326906096734221931">打开应用设置</translation>
 <translation id="2326931316514688470">重新加载应用(&amp;R)</translation>
 <translation id="2327492829706409234">启用应用</translation>
@@ -2362,6 +2365,7 @@
 <translation id="2638662041295312666">登录账号图片</translation>
 <translation id="2640299212685523844">使用 GTK</translation>
 <translation id="264083724974021997">连接到您的手机 - 对话框</translation>
+<translation id="2641098199809442625">密码未更新，但您应该仍能使用旧密码访问该网站。</translation>
 <translation id="2642111877055905627">足球</translation>
 <translation id="2642206811783203764">始终允许在 <ph name="SITE_NAME" /> 上运行</translation>
 <translation id="2643064289437760082">您可随时通过删除浏览数据来删除广告衡量数据</translation>

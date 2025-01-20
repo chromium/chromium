@@ -8,6 +8,8 @@ source_set("change_profile") {
   sources = [
     "change_profile_bookmarks_continuation.h",
     "change_profile_bookmarks_continuation.mm",
+    "change_profile_reading_list_continuation.h",
+    "change_profile_reading_list_continuation.mm",
     "change_profile_recent_tabs_continuation.h",
     "change_profile_recent_tabs_continuation.mm",
     "change_profile_settings_continuation.h",

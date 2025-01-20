@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -18,7 +17,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "profiles_state.h"
@@ -80,8 +78,7 @@ INSTANTIATE_TEST_SUITE_P(ProfilesState,
                          IsGuestModeRequestedTest,
                          testing::ValuesIn(kIsGuestModeRequestedParams));
 
-class IsGuestModeEnabledTest
-    : public testing::TestWithParam<std::tuple<bool, bool>> {
+class IsGuestModeEnabledTest : public testing::TestWithParam<bool> {
  public:
   IsGuestModeEnabledTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal(),
@@ -89,21 +86,16 @@ class IsGuestModeEnabledTest
         testing_local_state_(TestingBrowserProcess::GetGlobal()) {
     testing_local_state_.Get()->SetBoolean(prefs::kBrowserGuestModeEnabled,
                                            BrowserGuestModePrefValue());
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    scoped_feature_list_.InitWithFeatureState(
-        supervised_user::kHideGuestModeForSupervisedUsers,
-        HideGuestModeForSupervisedUsersFeatureEnabled());
-#endif
   }
 
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
   void TearDown() override { profile_manager_.DeleteAllTestingProfiles(); }
 
-  bool BrowserGuestModePrefValue() { return get<0>(GetParam()); }
+  bool BrowserGuestModePrefValue() { return GetParam(); }
 
   bool HideGuestModeForSupervisedUsersFeatureEnabled() {
-    return get<1>(GetParam());
+    return BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
   }
 
   Profile* CreateNormalProfile() {
@@ -138,7 +130,6 @@ class IsGuestModeEnabledTest
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   ScopedTestingLocalState testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(IsGuestModeEnabledTest, NoProfiles) {
@@ -178,16 +169,8 @@ TEST_P(IsGuestModeEnabledTest, MixedProfiles) {
                 !HideGuestModeForSupervisedUsersFeatureEnabled());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ProfilesState,
-    IsGuestModeEnabledTest,
-    testing::Combine(
-        /*BrowserGuestModePrefValue*/ testing::Bool(),
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-        /*HideGuestModeForSupervisedUsersFeatureEnabled*/ testing::Bool()));
-#else
-        /*HideGuestModeForSupervisedUsersFeatureEnabled*/ testing::Values(
-            false)));
-#endif
+INSTANTIATE_TEST_SUITE_P(ProfilesState,
+                         IsGuestModeEnabledTest,
+                         testing::Bool());
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -1196,6 +1196,19 @@ TEST_F(RenderProcessHostUnitTest, ProcessAssignmentDefault) {
   EXPECT_FALSE(site_instance->HasProcess());
 }
 
+// Tests the GetPendingReuseRefCount() function.
+TEST_F(RenderProcessHostUnitTest, GetPendingReuseRefCount) {
+  MockRenderProcessHost mock_host(browser_context());
+
+  EXPECT_EQ(0, mock_host.GetPendingReuseRefCountForTesting());
+
+  mock_host.IncrementPendingReuseRefCount();
+  EXPECT_EQ(1, mock_host.GetPendingReuseRefCountForTesting());
+
+  mock_host.DecrementPendingReuseRefCount();
+  EXPECT_EQ(0, mock_host.GetPendingReuseRefCountForTesting());
+}
+
 class SpareRenderProcessHostUnitTest : public RenderViewHostImplTestHarness {
  public:
   SpareRenderProcessHostUnitTest() {}

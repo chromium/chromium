@@ -1264,6 +1264,7 @@ Uporabite lahko tudi bližnjično tipko. Najprej označite besedilo in nato prit
 <translation id="5245201184978705914">Prepisa ni mogoče ustvariti</translation>
 <translation id="5251174953851719648">Osvežitev vsebine</translation>
 <translation id="5253783950165989294">Vzpostavljena je povezava z napravo <ph name="DEVICE_NAME" />, napolnjenost baterije: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="5256939106029293271">Preizkusite mikrofon</translation>
 <translation id="5258528442992323769">Ni shranjenih namizij</translation>
 <translation id="5260676007519551770">Namizje 4</translation>
 <translation id="5265391159779542051">Rezultati so naloženi</translation>
@@ -1421,6 +1422,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5745612484876805746">Nočna svetloba se samodejno vklopi ob sončnem zahodu</translation>
 <translation id="5750765938512549687">Bluetooth je izklopljen</translation>
 <translation id="5758114525425072423">Začetek Osredotočenosti. Časovnik je nastavljen na <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Poslušajte, kako boste zveneli drugim. Če želite ustaviti, kliknite ikono za preizkus ali zaprite podokno za videoklic.</translation>
 <translation id="5760866832697883462">Povežite napravo <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Preklopite označevalnik. <ph name="STATE_TEXT" /> Uporabite sledilno ploščico, zaslon na dotik ali pisalo za risanje po zaslonu.</translation>
 <translation id="576341972084747908">Nevaren prenos <ph name="FILENAME" /></translation>

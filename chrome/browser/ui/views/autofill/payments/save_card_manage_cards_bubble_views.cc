@@ -28,16 +28,18 @@ SaveCardManageCardsBubbleViews::SaveCardManageCardsBubbleViews(
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
-  SetExtraView(
-      std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              [](SaveCardManageCardsBubbleViews* bubble) {
-                bubble->controller()->OnManageCardsClicked();
-                bubble->CloseBubble();
-              },
-              base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_SAVED_PAYMENT_METHODS)))
-      ->SetID(autofill::DialogViewId::MANAGE_CARDS_BUTTON);
+  auto* const extra_view = SetExtraView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(
+          [](SaveCardManageCardsBubbleViews* bubble) {
+            bubble->controller()->OnManageCardsClicked();
+            bubble->CloseBubble();
+          },
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_SAVED_PAYMENT_METHODS)));
+  // TODO(crbug.com/391160867): Use ElementIdentifiers instead of arbitrary
+  // numeric ID.
+  extra_view->SetID(DialogViewId::MANAGE_CARDS_BUTTON);
+  extra_view->SetStyle(ui::ButtonStyle::kTonal);
 }
 
 std::unique_ptr<views::View>

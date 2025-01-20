@@ -486,6 +486,56 @@ struct BnplFetchVcnResponseDetails {
   std::string cardholder_name;
 };
 
+// A collection of information required to fetch the BNPL redirect URL details.
+struct GetBnplPaymentInstrumentForFetchingUrlRequestDetails {
+  GetBnplPaymentInstrumentForFetchingUrlRequestDetails();
+  GetBnplPaymentInstrumentForFetchingUrlRequestDetails(
+      const GetBnplPaymentInstrumentForFetchingUrlRequestDetails& other);
+  GetBnplPaymentInstrumentForFetchingUrlRequestDetails& operator=(
+      const GetBnplPaymentInstrumentForFetchingUrlRequestDetails& other);
+  GetBnplPaymentInstrumentForFetchingUrlRequestDetails(
+      GetBnplPaymentInstrumentForFetchingUrlRequestDetails&&);
+  GetBnplPaymentInstrumentForFetchingUrlRequestDetails& operator=(
+      GetBnplPaymentInstrumentForFetchingUrlRequestDetails&&);
+  ~GetBnplPaymentInstrumentForFetchingUrlRequestDetails();
+
+  // The number for the Google Payments account this request is sent to.
+  int64_t billing_customer_number;
+  // The instrument ID is used by the server to identify a specific BNPL issuer.
+  std::string_view instrument_id;
+  // The fingerprint data for the user and the device.
+  std::string_view risk_data;
+  // The merchant domain (including the scheme).
+  GURL merchant_domain;
+  // The total purchase amount (in micros) from the merchant checkout page.
+  uint64_t total_amount;
+  // Currency of the amount represented by a three-letter currency code.
+  std::string_view currency;
+};
+
+// Information retrieved from a BNPL FetchUrlRequest.
+struct BnplFetchUrlResponseDetails {
+  BnplFetchUrlResponseDetails();
+  BnplFetchUrlResponseDetails(const BnplFetchUrlResponseDetails& other);
+  BnplFetchUrlResponseDetails(BnplFetchUrlResponseDetails&&);
+  BnplFetchUrlResponseDetails& operator=(
+      const BnplFetchUrlResponseDetails& other);
+  BnplFetchUrlResponseDetails& operator=(BnplFetchUrlResponseDetails&&);
+  ~BnplFetchUrlResponseDetails();
+
+  // The URL used to redirect the user to the partner website.
+  GURL redirect_url;
+  // The prefix of the URL the partner redirects the user to after finishing the
+  // BNPL flow successfully on the partner website.
+  GURL success_url_prefix;
+  // The prefix of the URL the partner redirects the user to after failing to
+  // finish the BNPL flow on the partner website.
+  GURL failure_url_prefix;
+  // An opaque token used to chain consecutive payments requests together.
+  // Client should not update or modify this token.
+  std::string context_token;
+};
+
 }  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_DETAILS_H_

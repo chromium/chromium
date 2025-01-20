@@ -179,15 +179,15 @@ _BENCHMARKS = [
     ),
     Benchmark(
         name='base_java_nosig',
-        from_string='"SysUtil',
-        to_string='"SysUtil1',
-        change_file='base/android/java/src/org/chromium/base/SysUtils.java',
+        from_string='"PathUtil',
+        to_string='"PathUtil1',
+        change_file='base/android/java/src/org/chromium/base/PathUtils.java',
     ),
     Benchmark(
         name='base_java_sig',
-        from_string='SysUtils";',
-        to_string='SysUtils";public void NewInterfaceMethod(){}',
-        change_file='base/android/java/src/org/chromium/base/SysUtils.java',
+        from_string='PathUtils";',
+        to_string='PathUtils";public void NewInterfaceMethod(){}',
+        change_file='base/android/java/src/org/chromium/base/PathUtils.java',
     ),
     Benchmark(
         name='turbine_headers',

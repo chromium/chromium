@@ -293,7 +293,7 @@ public class SyncDerivedSuggestionEntrySourceUnitTest extends TestSupport {
                         /* signinManager= */ mSigninManager,
                         /* identityManager= */ mIdentityManager,
                         /* syncService= */ mSyncService,
-                        /* foreignSessionHelper= */ mSuggestionBackend,
+                        /* suggestionBackend= */ mSuggestionBackend,
                         servesLocalTabs);
         mSource.addObserver(mSourceDataChangedObserver);
 

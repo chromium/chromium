@@ -10,6 +10,11 @@
 
 namespace regional_capabilities {
 
+// Returns whether `country_id` refers to a country member of the European
+// Economic Area.
+// See `//components/country_codes` for the Country ID format.
+bool IsEeaCountry(int country_id);
+
 // The state of the search engine choice country command line override.
 // See `switches::kSearchEngineChoiceCountry`.
 enum class SearchEngineCountryListOverride {

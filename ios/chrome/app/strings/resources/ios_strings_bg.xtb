@@ -493,6 +493,7 @@
 <translation id="3130863904455712965">История и др.</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="3138611310073113613">Отхвърляне на избора</translation>
+<translation id="3140825265190223781">Запазени пароли и ключове за достъп</translation>
 <translation id="3143515551205905069">Анулиране на синхронизирането</translation>
 <translation id="314837624430314508">Получавайте последните новини, актуализации за проследяване на цени и др.</translation>
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
@@ -650,6 +651,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">Имате ненадеждни пароли.</translation>
 <translation id="3958312024468322930">Преместете с плъзгане до лентата Dock в долната част на началния екран</translation>
+<translation id="3960218941754097036">Търсете цялото съдържание на екрана си посредством Google Обектив</translation>
 <translation id="3962326069546168954">Запазване</translation>
 <translation id="3967327056943561740">Отметки</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
@@ -692,6 +694,7 @@
 <translation id="4147897805161313378">Google Снимки</translation>
 <translation id="4148023517926189160">Този уебсайт иска да изтегли файл и да го добави към календара ви.</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
+<translation id="4154753961803534698">Търсене с камерата</translation>
 <translation id="4158491215857439601">Мениджър на пароли</translation>
 <translation id="4163699139741158298">{count,plural, =1{Отметката е запазена в(ъв) „{title}“. Тя е запазена само на това устройство.}other{{count} отметки са запазени в(ъв) „{title}“. Те са запазени само на това устройство.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, завършваща на <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1158,6 +1161,7 @@
 <translation id="6168647875670665004">Предложения за статии</translation>
 <translation id="6169031022444660352">За да изтриете всички запазени идентификационни данни, първо трябва да зададете код за достъп на устройството си.</translation>
 <translation id="6173499589275053515">Паролата е запазена в профила ви в Google <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Търсене на съдържанието на екрана</translation>
 <translation id="6187302354554850004">Последно синхр.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Създадено на <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочетени</translation>
@@ -1595,6 +1599,7 @@
 <translation id="8005666035647241369">Към мениджъра на паролите в Google на това устройство</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
+<translation id="8023170444051056234">Незабавно ще загубите достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всичките ви устройства</translation>
 <translation id="8023878949384262191">Разгъва секцията.</translation>
 <translation id="8027581147000338959">Отваряне в нов прозорец</translation>
 <translation id="8032569120109842252">Следено</translation>
@@ -1637,7 +1642,6 @@
 <translation id="8195191503358432289">Добавяне на парола</translation>
 <translation id="8202744799033457229">Показване на историята</translation>
 <translation id="8205564605687841303">Отказ</translation>
-<translation id="820568752112382238">Най-посещавани сайтове</translation>
 <translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
 <translation id="8209050860603202033">Отваряне на изображението</translation>
 <translation id="8211030355252954494">Получихте пароли за <ph name="WEBSITE" /></translation>
@@ -1666,6 +1670,7 @@
 <translation id="8299613349954694191">Отворете раздел в режим „инкогнито“, за да сърфирате частно в мрежата.</translation>
 <translation id="8307481894409578819">Този файл не бе качен</translation>
 <translation id="8319076807703933069">Ново търсене</translation>
+<translation id="833647236762414178">Създавайте, запазвайте и управлявайте паролите и ключовете си за достъп, за да влизате лесно в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
 <translation id="8349305172487531364">Лента на отметките</translation>
 <translation id="8364563001733875155">За да промените ПИН кода си, първо настройте код за достъп на устройството си.</translation>

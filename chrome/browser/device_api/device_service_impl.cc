@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/device_api/device_service_impl.h"
 
+#include <optional>
+
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
@@ -29,46 +31,71 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
-#include "chrome/common/url_constants.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/common/url_constants.h"
 #include "components/user_manager/user_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
+#if BUILDFLAG(IS_CHROMEOS)
+// Checks that current user is a web kiosk.
+bool IsWebKiosk() {
+  return user_manager::UserManager::IsInitialized() &&
+         user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp();
+}
+
+// Checks that current user is an IWA kiosk.
+bool IsIwaKiosk() {
+  return ash::features::IsIsolatedWebAppKioskEnabled() &&
+         user_manager::UserManager::IsInitialized() &&
+         user_manager::UserManager::Get()->IsLoggedInAsKioskIWA();
+}
+
+// Returns an origin of the current kiosk web app.
+// Should only be called when the current user is a web kiosk.
+url::Origin GetWebKioskOrigin() {
+  const AccountId& account_id =
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+  CHECK(ash::WebKioskAppManager::IsInitialized());
+  const ash::WebKioskAppData* app_data =
+      ash::WebKioskAppManager::Get()->GetAppByAccountId(account_id);
+  return url::Origin::Create(CHECK_DEREF(app_data).install_url());
+}
+
+// Returns an origin of the current kiosk isolated web app.
+// Should only be called when the current user is an IWA kiosk.
+url::Origin GetIwaKioskOrigin() {
+  const AccountId& account_id =
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+  const ash::KioskIwaData* iwa_data =
+      CHECK_DEREF(ash::KioskIwaManager::Get()).GetApp(account_id);
+  return CHECK_DEREF(iwa_data).origin();
+}
+
+std::optional<url::Origin> MaybeGetCurrentKioskOrigin() {
+  if (IsWebKiosk()) {
+    return GetWebKioskOrigin();
+  }
+  if (IsIwaKiosk()) {
+    return GetIwaKioskOrigin();
+  }
+  return std::nullopt;
+}
 
 // Check whether the target origin is the same as the main application running
 // in the Kiosk session.
 bool IsEqualToKioskOrigin(const url::Origin& origin) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const AccountId& account_id =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
-  const ash::WebKioskAppData* app_data =
-      ash::WebKioskAppManager::Get()->GetAppByAccountId(account_id);
-  if (!app_data) {
-    // This can happen when the device service APIs are accessed from inside a
-    // ChromeApp.
-    return false;
-  }
-
-  return url::Origin::Create(app_data->install_url()) == origin;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(KioskSessionServiceLacros::Get());
-  return url::Origin::Create(
-             KioskSessionServiceLacros::Get()->GetInstallURL()) == origin;
-#else
-  return false;
-#endif
+  std::optional<url::Origin> current_kiosk_origin =
+      MaybeGetCurrentKioskOrigin();
+  return current_kiosk_origin.has_value() &&
+         (current_kiosk_origin.value() == origin);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 Profile* GetProfile(content::RenderFrameHost& host) {
   return Profile::FromBrowserContext(host.GetBrowserContext());
@@ -109,12 +136,10 @@ const PrefService* GetPrefs(content::RenderFrameHost& host) {
 }
 
 bool IsAffiliatedUser() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   return (user != nullptr) && user->IsAffiliated();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return policy::PolicyLoaderLacros::IsMainUserAffiliated();
 #else
   return false;
 #endif
@@ -127,6 +152,7 @@ bool IsTrustedContext(content::RenderFrameHost& host,
     return false;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsRunningInAppMode()) {
     if (base::FeatureList::IsEnabled(
             permissions::features::
@@ -137,6 +163,8 @@ bool IsTrustedContext(content::RenderFrameHost& host,
 
     return IsEqualToKioskOrigin(origin);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   return IsForceInstalledOrigin(host, origin);
 }
 

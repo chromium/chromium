@@ -2668,6 +2668,13 @@ void RenderFrameHostImpl::DisableProactiveBrowsingInstanceSwapForTesting() {
   has_test_disabled_proactive_browsing_instance_swap_ = true;
 }
 
+NavigationController& RenderFrameHostImpl::GetController() {
+  // Note: owner_ is null for bfcached and pending deletion cases.
+  CHECK(!IsPendingDeletion());
+  CHECK(!IsInBackForwardCache());
+  return owner_->GetCurrentNavigator().controller();
+}
+
 SiteInstanceImpl* RenderFrameHostImpl::GetSiteInstance() const {
   return site_instance_.get();
 }
@@ -13156,11 +13163,12 @@ void RenderFrameHostImpl::CreatePaymentManager(
       BackForwardCacheDisablingFeature::kPaymentManager);
 }
 
-void RenderFrameHostImpl::CreatePaymentCredential(
-    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
+void RenderFrameHostImpl::CreateSecurePaymentConfirmationService(
+    mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+        receiver) {
   if (IsFrameAllowedToUseSecurePaymentConfirmation(this)) {
-    GetContentClient()->browser()->CreatePaymentCredential(this,
-                                                           std::move(receiver));
+    GetContentClient()->browser()->CreateSecurePaymentConfirmationService(
+        this, std::move(receiver));
   }
 }
 

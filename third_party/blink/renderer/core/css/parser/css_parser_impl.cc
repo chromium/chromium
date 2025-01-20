@@ -2245,6 +2245,7 @@ static std::optional<CSSSyntaxDefinition> ConsumeFunctionType(
     std::optional<CSSSyntaxDefinition> type =
         CSSSyntaxDefinition::Consume(stream);
     if (type.has_value() && guard.Release()) {
+      stream.ConsumeWhitespace();
       return type;
     }
   }

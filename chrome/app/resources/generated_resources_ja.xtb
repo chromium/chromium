@@ -1917,6 +1917,7 @@
 <translation id="2323018538045954000">保存済みの Wi-Fi ネットワーク</translation>
 <translation id="2325444234681128157">パスワードを保存する</translation>
 <translation id="2326188115274135041">PIN を入力して自動ロック解除を有効にする</translation>
+<translation id="2326583548923775947">これは Google アカウントではありません。Chrome に保存したアイテムを他のデバイスで使用することはできません。</translation>
 <translation id="2326906096734221931">アプリの設定を開く</translation>
 <translation id="2326931316514688470">アプリを再読み込み(&amp;R)</translation>
 <translation id="2327492829706409234">アプリを有効にする</translation>
@@ -2364,6 +2365,7 @@
 <translation id="2638662041295312666">サインイン画像</translation>
 <translation id="2640299212685523844">GTK を使用</translation>
 <translation id="264083724974021997">電話に接続 - ダイアログ</translation>
+<translation id="2641098199809442625">パスワードは更新されませんでしたが、古いパスワードでサイトにアクセスできます。</translation>
 <translation id="2642111877055905627">サッカーボール</translation>
 <translation id="2642206811783203764"><ph name="SITE_NAME" /> では常に許可</translation>
 <translation id="2643064289437760082">閲覧データを消去することで、ユーザーは広告効果の測定データをいつでも削除できます</translation>

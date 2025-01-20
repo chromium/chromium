@@ -959,6 +959,16 @@ void BookmarkModel::ReorderChildren(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!client_->IsNodeManaged(parent));
 
+  // Workaround for callers that provide an unexpected vector size in
+  // `ordered_nodes`, as there is evidence that Java callers may run into this
+  // scenario. While the underlying issue is investigated, avoid CHECK failures
+  // or other undesired side effects by simply ignoring the call.
+  // TODO(crbug.com/390764681): Investigate and fix the actual issue in Java
+  // instead of ignoring the call here.
+  if (parent->children().size() != ordered_nodes.size()) {
+    return;
+  }
+
   // Ensure that all children in `parent` are in `ordered_nodes`.
   CHECK_EQ(parent->children().size(), ordered_nodes.size());
   for (const BookmarkNode* node : ordered_nodes) {

@@ -434,16 +434,6 @@ class MetricsService {
 
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
-  // Get the amount of uptime since this process started and since the last
-  // call to this function.  Also updates the cumulative uptime metric (stored
-  // as a pref) for uninstall.  Uptimes are measured using TimeTicks, which
-  // guarantees that it is monotonic and does not jump if the user changes
-  // their clock.  The TimeTicks implementation also makes the clock not
-  // count time the computer is suspended.
-  void GetUptimes(PrefService* pref,
-                  base::TimeDelta* incremental_uptime,
-                  base::TimeDelta* uptime);
-
   // Turns recording on or off.
   // DisableRecording() also forces a persistent save of logging state (if
   // anything has been recorded, or transmitted).
@@ -600,12 +590,6 @@ class MetricsService {
 
   // The scheduler for determining when log rotations should happen.
   std::unique_ptr<MetricsRotationScheduler> rotation_scheduler_;
-
-  // Stores the time of the first call to |GetUptimes()|.
-  base::TimeTicks first_updated_time_;
-
-  // Stores the time of the last call to |GetUptimes()|.
-  base::TimeTicks last_updated_time_;
 
   // Indicates if loading of independent metrics is currently active.
   bool independent_loader_active_ = false;

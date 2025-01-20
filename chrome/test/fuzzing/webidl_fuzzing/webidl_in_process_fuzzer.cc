@@ -10,12 +10,12 @@
 #include "chrome/test/fuzzing/webidl_fuzzing/webidl_fuzzer_grammar.h"
 #include "chrome/test/fuzzing/webidl_fuzzing/webidl_fuzzer_grammar.pb.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
 
 struct Environment {
   Environment() {}
-  const bool kDumpStats = getenv("DUMP_FUZZER_STATS");
   const bool kDumpNativeInput = getenv("LPM_DUMP_NATIVE_INPUT");
 };
 
@@ -32,6 +32,7 @@ class WebIDLInProcessFuzzer
  public:
   using FuzzCase = domatolpm::generated::webidl_fuzzer_grammar::fuzzcase;
   WebIDLInProcessFuzzer();
+  void SetUpOnMainThread() override;
 
   int Fuzz(const FuzzCase& fuzz_case) override;
   base::CommandLine::StringVector GetChromiumCommandLineArguments() override {
@@ -43,6 +44,14 @@ class WebIDLInProcessFuzzer
 };
 
 REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(WebIDLInProcessFuzzer)
+
+void WebIDLInProcessFuzzer::SetUpOnMainThread() {
+  // host_resolver()->AddRule("*", "127.0.0.1");
+  net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("/echo")));
+}
 
 WebIDLInProcessFuzzer::WebIDLInProcessFuzzer()
     : InProcessBinaryProtoFuzzer(InProcessFuzzerOptions{

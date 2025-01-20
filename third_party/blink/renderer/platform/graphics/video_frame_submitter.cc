@@ -831,7 +831,7 @@ bool VideoFrameSubmitter::SubmitFrame(
   auto compositor_frame = CreateCompositorFrame(
       frame_token, begin_frame_ack, std::move(video_frame), transform);
 
-  WebVector<viz::ResourceId> resources;
+  std::vector<viz::ResourceId> resources;
   const auto& quad_list = compositor_frame.render_pass_list.back()->quad_list;
   if (!quad_list.empty()) {
     DCHECK_EQ(quad_list.size(), 1u);
@@ -841,9 +841,8 @@ bool VideoFrameSubmitter::SubmitFrame(
     }
   }
 
-  WebVector<viz::TransferableResource> resource_list;
-  resource_provider_->PrepareSendToParent(resources, &resource_list);
-  compositor_frame.resource_list = resource_list.ReleaseVector();
+  compositor_frame.resource_list =
+      resource_provider_->PrepareSendToParent(resources);
 
   // We can pass nullptr for the HitTestData as the CompositorFram will not
   // contain any SurfaceDrawQuads.

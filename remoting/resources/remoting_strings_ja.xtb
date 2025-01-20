@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">クライアントで <ph name="URL" /> を開けませんでした。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2366718077645204424">ホストにアクセスできません。お使いのネットワークの設定が原因であることが考えられます。</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. All Rights Reserved.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />に「アクセシビリティ」権限を付与する</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> に接続されました</translation>
 <translation id="2540992418118313681">このパソコンの閲覧と制御の権限を別のユーザーと共有しますか？</translation>
@@ -133,6 +134,7 @@
 <translation id="7067321367069083429">画面がタッチ スクリーンとして機能します</translation>
 <translation id="7116737094673640201">Chrome リモート デスクトップへようこそ</translation>
 <translation id="7144878232160441200">再読み込み</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="7312846573060934304">ホストはオフラインです。</translation>
 <translation id="7319983568955948908">共有を停止</translation>
 <translation id="7359298090707901886">選択されたブラウザでは、ローカルマシンで URL を開けません。</translation>

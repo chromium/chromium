@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">Показване на списъка с мрежи. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Отключете устройството, за да се изпълни действието от известието</translation>
 <translation id="1420408895951708260">Превключване на функцията за нощно осветление. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Предложена група</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Функцията за диктуване не може да стартира. Микрофонът ви е изключен.</translation>
 <translation id="1445031758921122223">Файловете за контролиране с лице бяха изтеглени</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">Изчисления</translation>
 <translation id="1774796056689732716">Календар, текущата дата е <ph name="CURRENT_MONTH_YEAR" />, а понастоящем е избрана <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Настройване на прегледа на скорошните снимки, мултимедийни файлове и известия на телефона ви</translation>
+<translation id="1785317913592722944">Премахване на елемента от предложената група</translation>
 <translation id="1786487376942610288">Превключване между максималния и текущия размер на прозореца в режим „Картина в картината“</translation>
 <translation id="1787955149152357925">Изкл.</translation>
 <translation id="1796561540704213354">Уебсайтове, включително посетените от вас и отворените страници</translation>
 <translation id="179842970735685253">Общите условия на Google</translation>
 <translation id="1805407494113167797">Звуците за „Концентрация“ не бяха възпроизведени</translation>
 <translation id="181103072419391116">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
+<translation id="1815039896005206046">Чрез бутона „Не ми харесва“ отбелязвате, че не харесвате тази предложена група</translation>
 <translation id="1816896987747843206">Това разрешава достъп до камерата за всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Включване на достъпа до местоположението</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">„Hello“ in Chinese</translation>
 <translation id="2370971919968699910">Това може да доведе до разходи за данни.
 <ph name="DEVICECOUNT" /> устройства са свързани.</translation>
+<translation id="2383521554963939360">Групи приложения и раздели</translation>
 <translation id="2386292613071805067">Избиране на всичко на страницата</translation>
 <translation id="2389423187722941333">Превключване на Gemini</translation>
 <translation id="2392659840443812875">Няма точки за достъп. Уверете се, че устройството ви е в близост и функцията за Bluetooth е включена.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">Ретуширане на лицето</translation>
 <translation id="4156293514828496577">Оставащият заряд на батерията е <ph name="PERCENTAGE" />% (около <ph name="TIME_LEFT" />).
 Някои функции са ограничени с цел удължаване на живота ѝ.</translation>
+<translation id="4158003972857765638">Организиране в нов работен кът</translation>
 <translation id="4160919062868802509">Открити са няколко аудиоизточника</translation>
 <translation id="416245495747357243">Готово!</translation>
 <translation id="4165275524535002941">Кабелът не поддържа видеосигнал</translation>
@@ -984,6 +989,7 @@
 <translation id="4322742403972824594">Клавишната комбинация Ctrl + Alt + стрелка нагоре се промени. За да използвате клавиша Home, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката наляво.</translation>
 <translation id="4324840740119394760">Това разрешава достъп до камерата за <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="4327147325944669226">Записване на играта</translation>
+<translation id="4329076911374908740">Достигнат е максималният брой запазени групи.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звукът е спрян</translation>
 <translation id="4351244548802238354">Затваряне на диалоговия прозорец</translation>
@@ -1264,6 +1270,7 @@
 <translation id="5245201184978705914">Преписът не може да се генерира</translation>
 <translation id="5251174953851719648">Опресняване на съдържанието</translation>
 <translation id="5253783950165989294">Установена е връзка с устройство на име <ph name="DEVICE_NAME" />. Ниво на батерията: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">Тестване на микрофона ви</translation>
 <translation id="5258528442992323769">Няма запазени работни кътове</translation>
 <translation id="5260676007519551770">Работен кът 4</translation>
 <translation id="5265391159779542051">Резултатите са заредени</translation>
@@ -1421,6 +1428,7 @@
 <translation id="5745612484876805746">Функцията за нощно осветление се включва автоматично при залез</translation>
 <translation id="5750765938512549687">Функцията за Bluetooth е изключена</translation>
 <translation id="5758114525425072423">Стартиране на сесия за концентрация. Таймерът е зададен на <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Чуйте как ще звучи гласът ви за другите хора. За да спрете възпроизвеждането, кликнете върху иконата за тест или затворете панела за видеообаждане.</translation>
 <translation id="5760866832697883462">Свържете устройството си <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Превключване на маркера. <ph name="STATE_TEXT" /> Използвайте тракпада, сензорния екран или писалката, за да рисувате на екрана.</translation>
 <translation id="576341972084747908">Изтегляне на опасен файл <ph name="FILENAME" /></translation>
@@ -1939,6 +1947,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Създаване</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
+<translation id="7534543072325030705">Чрез бутона „Харесва ми“ отбелязвате, че харесвате тази предложена група</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Актуализиране на левия прозорец</translation>
 <translation id="7543399541175347147">Понастоящем не се поддържат приложения за Linux и прозорци в режим „инкогнито“. Другите приложения ще бъдат запазени.</translation>
@@ -2103,6 +2112,7 @@
 <translation id="8004512796067398576">Увеличаване</translation>
 <translation id="8005527720597583355">Стартиране на сесия за концентрация</translation>
 <translation id="8015361438441228492">Задачата не бе редактирана.</translation>
+<translation id="8027187124910699148">Възобновяване на предложената група</translation>
 <translation id="802782383769312836">Предишен работен кът: <ph name="DESK_NAME" />. Работен кът <ph name="DESK_INDEX" /> от <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Не бе установена връзка с точката за достъп</translation>
 <translation id="8029629653277878342">За по-висока сигурност се изисква парола или ПИН</translation>
@@ -2211,6 +2221,7 @@
 <translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Запазване на групата за по-късно</translation>
 <translation id="8433186206711564395">Настройки на мрежата</translation>
 <translation id="8433977262951327081">Комбинацията за показване в лавицата на балончето с менюто за опциите за въвеждане е променена. Моля, използвайте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Отваряне на инструмента за отзиви</translation>
@@ -2219,6 +2230,7 @@
 <translation id="8446884382197647889">Научете повече</translation>
 <translation id="8456543082656546101">„<ph name="SHORTCUT_KEY_NAME" />“ + V</translation>
 <translation id="8462305545768648477">Затваряне на функцията „Прочитане на глас“</translation>
+<translation id="8466665972451889002">Показване на елементите в(ъв) „<ph name="GROUP_NAME" />“</translation>
 <translation id="8468806060683421065">Краен срок: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Настройки за мащаба на показване</translation>
 <translation id="8473301994082929012">Функцията „<ph name="FEATURE_NAME" />“ е <ph name="FEATURE_STATE" /> от <ph name="ORGANIZATION_NAME" />.</translation>
@@ -2241,6 +2253,7 @@
 <translation id="8551588720239073785">Настройки за дата и час</translation>
 <translation id="8553395910833293175">Вече е прехвърлено във всички работни кътове.</translation>
 <translation id="8555757996376137129">Премахване на текущия работен кът</translation>
+<translation id="8558521694042102707">Генеративният AI може да допуска грешки, включително за хора, затова проверявайте отговорите.</translation>
 <translation id="8559845965695780508">Редактирано от <ph name="USER" /></translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Ето няколко предложения, които да изпробвате</translation>
@@ -2263,6 +2276,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="8638637208069328956">Включване/изключване на микрофона</translation>
 <translation id="8639760480004882931">Батерия: <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">Скриване на всички предложения за групи</translation>
 <translation id="8641510901370802679">Показана е информация за <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Таймер за <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">За да добавите човек, въведете кода си за достъп на родител от Family Link</translation>
@@ -2345,6 +2359,7 @@
 <translation id="8905919797434099235">(Без заглавие)</translation>
 <translation id="890616557918890486">Промяна на източника</translation>
 <translation id="8909138438987180327">Батерията е на <ph name="PERCENTAGE" /> процента.</translation>
+<translation id="8916866375277139011">Скриване на елементите в(ъв) „<ph name="GROUP_NAME" />“</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Асистент не поддържа този език.</translation>
 <translation id="8926951137623668982">Лавицата е винаги скрита</translation>

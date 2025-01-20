@@ -9,10 +9,22 @@
 #include <variant>
 
 #include "base/command_line.h"
-#include "components/country_codes/country_codes.h"
-#include "components/search_engines/search_engines_switches.h"
+#include "components/regional_capabilities/eea_countries_ids.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 
 namespace regional_capabilities {
+
+bool IsEeaCountry(int country_id) {
+  // The `HasSearchEngineCountryListOverride()` check is here for compatibility
+  // with the way EEA presence was checked from `search_engines`. But it should
+  // logically be done only when the EEA presence is checked specifically for
+  // the current profile country.
+  // TODO(crbug.com/328040066): Move this check to
+  // `RegionalCapabilitiesService::IsInEeaCountry()`.
+  return HasSearchEngineCountryListOverride()
+             ? true
+             : kEeaChoiceCountriesIds.contains(country_id);
+}
 
 std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

@@ -89,3 +89,11 @@ source_set("event_exporter") {
     "//components/feature_engagement/public",
   ]
 }
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}

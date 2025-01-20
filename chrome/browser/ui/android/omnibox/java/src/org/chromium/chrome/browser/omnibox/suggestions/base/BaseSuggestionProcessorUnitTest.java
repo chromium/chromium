@@ -204,7 +204,7 @@ public class BaseSuggestionProcessorUnitTest {
         touchDownListener.run();
 
         histogramWatcher.assertExpected();
-        verify(mSuggestionHost, times(1)).onSuggestionTouchDown(mSuggestion, /* matchIndex= */ 0);
+        verify(mSuggestionHost, times(1)).onSuggestionTouchDown(mSuggestion, /* position= */ 0);
     }
 
     @Test

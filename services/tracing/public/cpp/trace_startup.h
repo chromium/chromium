@@ -65,7 +65,7 @@ base::ReadOnlySharedMemoryRegion COMPONENT_EXPORT(TRACING_CPP)
 // flags and launch options, given a SMB config obtained with
 // CreateTracingConfigSharedMemory().
 void COMPONENT_EXPORT(TRACING_CPP) AddTraceConfigToLaunchParameters(
-    base::ReadOnlySharedMemoryRegion,
+    const base::ReadOnlySharedMemoryRegion& read_only_memory_region,
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
     base::GlobalDescriptors::Key descriptor_key,
     base::ScopedFD& out_descriptor_to_share,

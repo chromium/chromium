@@ -439,7 +439,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildHorizontalSuggestionsGroup(
-                        mInput, SECTION_1_NO_HEADER, matches, /* firstVerticalPosition= */ 5);
+                        mInput, SECTION_1_NO_HEADER, matches, /* position= */ 5);
 
         var captor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMockSuggestionProcessor).getViewTypeId();
@@ -469,7 +469,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildHorizontalSuggestionsGroup(
-                        mInput, SECTION_2_WITH_HEADER, matches, /* firstVerticalPosition= */ 7);
+                        mInput, SECTION_2_WITH_HEADER, matches, /* position= */ 7);
 
         verify(mMockHeaderProcessor).createModel();
         verify(mMockHeaderProcessor, atLeastOnce()).getViewTypeId();

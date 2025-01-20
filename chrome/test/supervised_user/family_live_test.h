@@ -58,7 +58,7 @@ class FamilyLiveTest : public signin::test::LiveTest {
   // The provided family identifier will be used to select the test accounts.
   // Navigation will be allowed to extra hosts.
   FamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode,
-                 const std::vector<std::string>& extra_enabled_hosts);
+                 const std::vector<std::string_view>& extra_enabled_hosts);
 
   ~FamilyLiveTest() override;
 
@@ -127,7 +127,7 @@ class InteractiveFamilyLiveTest
   explicit InteractiveFamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode);
   InteractiveFamilyLiveTest(
       FamilyLiveTest::RpcMode rpc_mode,
-      const std::vector<std::string>& extra_enabled_hosts);
+      const std::vector<std::string_view>& extra_enabled_hosts);
 
  protected:
   // After completion, supervised user settings are in `state`.

@@ -129,7 +129,7 @@ public class WebsiteParentApprovalNativesTest {
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(
                                 "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration")
-                        .expectIntRecord("FamilyLinkUser.LocalWebApprovalResult", /* Approved= */ 0)
+                        .expectIntRecord("FamilyLinkUser.LocalWebApprovalResult", /* value= */ 0)
                         .build();
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
@@ -151,7 +151,7 @@ public class WebsiteParentApprovalNativesTest {
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(
                                 "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration")
-                        .expectIntRecord("FamilyLinkUser.LocalWebApprovalResult", /* Declined= */ 1)
+                        .expectIntRecord("FamilyLinkUser.LocalWebApprovalResult", /* value= */ 1)
                         .build();
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
@@ -171,7 +171,7 @@ public class WebsiteParentApprovalNativesTest {
         mTabbedActivityTestRule.loadUrl(mBlockedUrl);
         var histograms =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "FamilyLinkUser.LocalWebApprovalResult", /* Cancelled= */ 2);
+                        "FamilyLinkUser.LocalWebApprovalResult", /* value= */ 2);
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
 
@@ -191,8 +191,8 @@ public class WebsiteParentApprovalNativesTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 "FamilyLinkUser.LocalWebApprovalResult",
-                                /* Approved= */ 0,
-                                /* Cancelled= */ 2)
+                                /* values...= */ 0,
+                                /* Cancelled */ 2)
                         .build();
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);

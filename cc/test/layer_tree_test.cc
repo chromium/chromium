@@ -1184,12 +1184,6 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
   }
   InitializeSettings(&settings_);
 
-  if (mode_ == CompositorMode::SINGLE_THREADED &&
-      settings_.UseLayerContextForDisplay()) {
-    GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
-                    "threaded mode";
-  }
-
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&LayerTreeTest::DoBeginTest, base::Unretained(this)));

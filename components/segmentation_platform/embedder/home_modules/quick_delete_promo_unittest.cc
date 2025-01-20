@@ -25,6 +25,25 @@ class QuickDeletePromoTest : public testing::Test {
 
   void TearDown() override { Test::TearDown(); }
 
+  void TestComputeCardResultImpl(
+      bool hasQuickDeletePromoInteracted,
+      float countOfClearingBrowsingData,
+      float countOfClearingBrowsingDataThroughQuickDelete,
+      float quickDeletePromoShownCount,
+      EphemeralHomeModuleRank position) {
+    pref_service_.SetUserPref(
+        kQuickDeletePromoInteractedPref,
+        std::make_unique<base::Value>(hasQuickDeletePromoInteracted));
+    auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
+    AllCardSignals all_signals = CreateAllCardSignals(
+        card.get(), {countOfClearingBrowsingData,
+                     countOfClearingBrowsingDataThroughQuickDelete,
+                     quickDeletePromoShownCount});
+    CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
+    CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
+    EXPECT_EQ(position, result.position);
+  }
+
  protected:
   TestingPrefServiceSimple pref_service_;
 };
@@ -49,16 +68,11 @@ TEST_F(QuickDeletePromoTest, GetInputsReturnsExpectedInputs) {
 // 30 days.
 TEST_F(QuickDeletePromoTest,
        TestComputeCardResultWithCardEnabledForNeverClearedBrowsingData) {
-  pref_service_.SetUserPref(kQuickDeletePromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kCountOfClearingBrowsingData */ 0,
-                   /* kCountOfClearingBrowsingDataThroughQuickDelete */ 0,
-                   /* kQuickDeletePromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kLast, result.position);
+  TestComputeCardResultImpl(
+      /* hasQuickDeletePromoInteracted */ false,
+      /* countOfClearingBrowsingData */ 0,
+      /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
+      /* quickDeletePromoShownCount */ 0, EphemeralHomeModuleRank::kLast);
 }
 
 // Validates that ComputeCardResult() returns kLast when quick delete promo card
@@ -66,16 +80,11 @@ TEST_F(QuickDeletePromoTest,
 // Quick Delete feature in the past 30 days.
 TEST_F(QuickDeletePromoTest,
        TestComputeCardResultWithCardEnabledForNotUseQuickDelete) {
-  pref_service_.SetUserPref(kQuickDeletePromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kCountOfClearingBrowsingData */ 5,
-                   /* kCountOfClearingBrowsingDataThroughQuickDelete */ 0,
-                   /* kQuickDeletePromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kLast, result.position);
+  TestComputeCardResultImpl(
+      /* hasQuickDeletePromoInteracted */ false,
+      /* countOfClearingBrowsingData */ 5,
+      /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
+      /* quickDeletePromoShownCount */ 0, EphemeralHomeModuleRank::kLast);
 }
 
 // Validates that when the quick delete promo card is disabled because the user
@@ -83,16 +92,11 @@ TEST_F(QuickDeletePromoTest,
 // kNotShown.
 TEST_F(QuickDeletePromoTest,
        TestComputeCardResultWithCardDisabledForHaveUsedQuickDelete) {
-  pref_service_.SetUserPref(kQuickDeletePromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kCountOfClearingBrowsingData */ 5,
-                   /* kCountOfClearingBrowsingDataThroughQuickDelete */ 3,
-                   /* kQuickDeletePromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(
+      /* hasQuickDeletePromoInteracted */ false,
+      /* countOfClearingBrowsingData */ 5,
+      /* countOfClearingBrowsingDataThroughQuickDelete */ 3,
+      /* quickDeletePromoShownCount */ 0, EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -100,16 +104,11 @@ TEST_F(QuickDeletePromoTest,
 // allows.
 TEST_F(QuickDeletePromoTest,
        TestComputeCardResultWithCardDisabledForHasReachedSessionLimit) {
-  pref_service_.SetUserPref(kQuickDeletePromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kCountOfClearingBrowsingData */ 5,
-                   /* kCountOfClearingBrowsingDataThroughQuickDelete */ 0,
-                   /* kQuickDeletePromoShownCount */ 3});
-  CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(
+      /* hasQuickDeletePromoInteracted */ false,
+      /* countOfClearingBrowsingData */ 5,
+      /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
+      /* quickDeletePromoShownCount */ 3, EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -117,16 +116,11 @@ TEST_F(QuickDeletePromoTest,
 // the card.
 TEST_F(QuickDeletePromoTest,
        TestComputeCardResultWithCardDisabledForUserInteraction) {
-  pref_service_.SetUserPref(kQuickDeletePromoInteractedPref,
-                            std::make_unique<base::Value>(true));
-  auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kCountOfClearingBrowsingData */ 5,
-                   /* kCountOfClearingBrowsingDataThroughQuickDelete */ 0,
-                   /* kQuickDeletePromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(
+      /* hasQuickDeletePromoInteracted */ true,
+      /* countOfClearingBrowsingData */ 5,
+      /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
+      /* quickDeletePromoShownCount */ 0, EphemeralHomeModuleRank::kNotShown);
 }
 
 }  // namespace segmentation_platform::home_modules

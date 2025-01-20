@@ -811,7 +811,7 @@ public class SafetyCheckMediatorTest {
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         click(getPasswordsClickListener(mPasswordCheckModel));
@@ -893,7 +893,7 @@ public class SafetyCheckMediatorTest {
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.LOCAL_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
                 PasswordsState.COMPROMISED_EXIST, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
@@ -921,14 +921,14 @@ public class SafetyCheckMediatorTest {
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
                 PasswordsState.COMPROMISED_EXIST, passwordCheckAccountModel.get(PASSWORDS_STATE));
         assertEquals(PasswordsState.CHECKING, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.LOCAL_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 0));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 0));
         assertEquals(PasswordsState.UNCHECKED, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
         mMediator.performSafetyCheck();
@@ -937,14 +937,14 @@ public class SafetyCheckMediatorTest {
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.LOCAL_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
                 PasswordsState.COMPROMISED_EXIST, passwordCheckLocalModel.get(PASSWORDS_STATE));
         assertEquals(PasswordsState.CHECKING, passwordCheckAccountModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
                 PasswordsState.COMPROMISED_EXIST, passwordCheckAccountModel.get(PASSWORDS_STATE));
     }

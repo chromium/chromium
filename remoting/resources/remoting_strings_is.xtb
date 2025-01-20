@@ -28,6 +28,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="2329392777730037872">Ekki tókst að opna <ph name="URL" /> í biðlaranum.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2366718077645204424">Ekki næst í hýsilinn. Þetta er líklega vegna grunnstillingar á netkerfinu sem þú notar.</translation>
+<translation id="242591256144136845">Höfundarréttur 2025 Google LLC. Öll réttindi áskilin.</translation>
 <translation id="2504109125669302160">Veittu <ph name="PRODUCT_NAME" /> heimildina „Aðgengi“</translation>
 <translation id="2509394361235492552">Tengt við <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Viltu deila þessari tölvu þannig að annar notandi hafi aðgang og stjórn á henni?</translation>
@@ -133,6 +134,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="7067321367069083429">Skjárinn virkar sem snertiskjár</translation>
 <translation id="7116737094673640201">Velkomin(n) í fjarstjórnun tölvu í Chrome</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
+<translation id="7298392173540380852">Höfundarréttur 2025 höfundar Chromium. Öll réttindi áskilin.</translation>
 <translation id="7312846573060934304">Hýsillinn er ekki tengdur.</translation>
 <translation id="7319983568955948908">Hætta að deila</translation>
 <translation id="7359298090707901886">Ekki er hægt að nota valinn vafra til að opna vefslóðir í staðbundna tækinu.</translation>

@@ -43,7 +43,7 @@ class PermissionDialogJavaDelegate {
 
   virtual void DismissDialog();
 
-  virtual void UpdateDialogWithNewScreenVariant();
+  virtual void UpdateDialog();
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_delegate_;
@@ -81,7 +81,8 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // JNI methods.
   void Accept(JNIEnv* env, const JavaParamRef<jobject>& obj);
   void AcceptThisTime(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  void Cancel(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Acknowledge(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Deny(JNIEnv* env, const JavaParamRef<jobject>& obj);
   void Dismissed(JNIEnv* env,
                  const JavaParamRef<jobject>& obj,
                  int dismissalType);
@@ -92,7 +93,7 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
 
   // Notify Java side to update content view of the dialog associated with this
   // object.
-  void UpdateDialogWithNewScreenVariant();
+  void UpdateDialog();
 
  private:
   // On navigation or page destruction, hide the dialog.

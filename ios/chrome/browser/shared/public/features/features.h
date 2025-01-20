@@ -192,26 +192,6 @@ BASE_DECLARE_FEATURE(kShareInWebContextMenuIOS);
 // Feature flag to enable the modern tabstrip.
 BASE_DECLARE_FEATURE(kModernTabStrip);
 
-// Feature parameters for `kModernTabStrip`feature. If no parameter is set,
-// `kModernTabStripNTBDynamicParam` will be used.
-extern const char kModernTabStripParameterName[];
-extern const char kModernTabStripNTBDynamicParam[];
-extern const char kModernTabStripNTBStaticParam[];
-
-// Feature parameters for V2 of Modern Tab Strip.
-extern const char kModernTabStripCloserNTB[];
-extern const char kModernTabStripDarkerBackground[];
-extern const char kModernTabStripNTBNoBackground[];
-extern const char kModernTabStripBlackBackground[];
-extern const char kModernTabStripBiggerNTB[];
-
-// Feature parameters for V3 of Modern Tab Strip.
-extern const char kModernTabStripDarkerBackgroundV3[];
-extern const char kModernTabStripCloseButtonsVisible[];
-extern const char kModernTabStripInactiveTabsHighContrast[];
-extern const char kModernTabStripHighContrastNTB[];
-extern const char kModernTabStripDetachedTabs[];
-
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 

@@ -35,6 +35,12 @@ AddressSignInPromoView::AddressSignInPromoView(
   AddChildView(std::make_unique<AutofillBubbleSignInPromoView>(
       web_contents, signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
       syncer::LocalDataItemModel::DataId(autofill_profile.guid())));
+
+  // Notify the screen reader that the bubble changed.
+  views::ViewAccessibility& ax = GetViewAccessibility();
+  ax.SetRole(ax::mojom::Role::kAlert);
+  ax.SetName(GetWindowTitle(), ax::mojom::NameFrom::kAttribute);
+  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
 AddressSignInPromoView::~AddressSignInPromoView() = default;

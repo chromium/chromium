@@ -28,6 +28,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="2329392777730037872">Gagal membuka <ph name="URL" /> di klien.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2366718077645204424">Tidak dapat menjangkau host. Ini mungkin karena konfigurasi jaringan yang Anda gunakan.</translation>
+<translation id="242591256144136845">Hak Cipta 2025 Google LLC. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="2504109125669302160">Beri izin 'Accessibility' ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Terhubung ke <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Ingin membagikan komputer ini agar dapat dilihat dan dikontrol oleh pengguna lain?</translation>
@@ -133,6 +134,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="7067321367069083429">Layar berfungsi seperti layar sentuh</translation>
 <translation id="7116737094673640201">Selamat Datang di Chrome Desktop Jarak Jauh</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
+<translation id="7298392173540380852">Hak Cipta 2025 The Chromium Authors. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="7312846573060934304">Hosting offline.</translation>
 <translation id="7319983568955948908">Hentikan Berbagi</translation>
 <translation id="7359298090707901886">Browser yang dipilih tidak dapat digunakan untuk membuka URL di perangkat lokal.</translation>

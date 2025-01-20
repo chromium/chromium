@@ -490,7 +490,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetCookie() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kNotASecureCookie= */ 3);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 3);
         String url = "http://www.example.com";
         String cookie = "name=test";
         mCookieManager.setCookie(url, cookie);
@@ -554,7 +554,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpUrlNotTargetingAndroidR() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kFixedUp= */ 4);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 4);
 
         mCookieManager.setWorkaroundHttpSecureCookiesForTesting(true);
         String url = "http://www.example.com";
@@ -573,7 +573,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpUrlTargetingAndroidR() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kDisallowedAndroidR= */ 5);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 5);
 
         mCookieManager.setWorkaroundHttpSecureCookiesForTesting(false);
         String url = "http://www.example.com";
@@ -593,7 +593,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpsUrl() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kAlreadySecureScheme= */ 1);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 1);
 
         String secureUrl = "https://www.example.com";
         String cookie = "name=test";
@@ -633,7 +633,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetCookieCallback_badUrl() throws Throwable {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kInvalidUrl= */ 0);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 0);
         final String cookie = "name=test";
         final String brokenUrl = "foo";
 

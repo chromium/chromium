@@ -218,9 +218,9 @@ public class TabStateFlatBufferTest {
                         temporaryFolder.getRoot(),
                         /* tabId= */ 4,
                         /* encrypted= */ true,
-                        /* isFlatBuffer= */ true),
+                        /* isFlatbuffer= */ true),
                 state,
-                /* isEncrypted= */ true,
+                /* encrypted= */ true,
                 sCipherFactory);
         TabState restored =
                 TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 4, sCipherFactory);

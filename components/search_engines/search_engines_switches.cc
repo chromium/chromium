@@ -13,11 +13,6 @@ namespace switches {
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const char kExtraSearchQueryParams[] = "extra-search-query-params";
 
-// Override the country used for search engine choice region checks.
-// Intended for testing. Expects 2-letter country codes.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-const char kSearchEngineChoiceCountry[] = "search-engine-choice-country";
-
 // Override the --no-first-run dialog suppression for the search dialog
 // for testing
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

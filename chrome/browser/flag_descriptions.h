@@ -818,6 +818,9 @@ extern const char kPipDoubleTapToResizeDescription[];
 extern const char kPipTuckName[];
 extern const char kPipTuckDescription[];
 
+extern const char kPrivacyGuideAiSettingsName[];
+extern const char kPrivacyGuideAiSettingsDescription[];
+
 extern const char kPrivateNetworkAccessSendPreflightsName[];
 extern const char kPrivateNetworkAccessSendPreflightsDescription[];
 
@@ -4788,6 +4791,9 @@ extern const char kSupervisedUserLocalWebApprovalsDescription[];
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kHistoryOptInEntryPointsName[];
+extern const char kHistoryOptInEntryPointsDescription[];
+
 extern const char kSupervisedUserForceSigninWithCapabilitiesName[];
 extern const char kSupervisedUserForceSigninWithCapabilitiesDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

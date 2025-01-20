@@ -2079,6 +2079,7 @@ if (!is_android) {
       "//chrome/browser/profiling_host:profiling_browsertests",
       "//chrome/browser/promos:utils",
       "//chrome/browser/reading_list",
+      "//chrome/browser/regional_capabilities:browser_tests",
       "//chrome/browser/resource_coordinator:mojo_bindings",
       "//chrome/browser/resource_coordinator:tab_manager_features",
       "//chrome/browser/safe_browsing:advanced_protection",
@@ -3455,6 +3456,11 @@ if (!is_android) {
         "//components/compose/core/browser",
         "//components/compose/core/browser:features",
       ]
+    }
+
+    if (is_win || is_mac || is_linux) {
+      sources +=
+          [ "../browser/supervised_user/kids_profile_interactive_uitest.cc" ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos_ash) {
@@ -6441,6 +6447,7 @@ test("unit_tests") {
     "//chrome/browser/profiling_host",
     "//chrome/browser/push_messaging:budget_proto",
     "//chrome/browser/reading_list",
+    "//chrome/browser/regional_capabilities:unit_tests",
     "//chrome/browser/request_header_integrity:unit_tests",
     "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/safe_browsing:metrics_collector",
@@ -7242,7 +7249,6 @@ test("unit_tests") {
       "../browser/android/metrics/android_session_durations_service_unittest.cc",
       "../browser/android/omnibox/autocomplete_controller_android_unittest.cc",
       "../browser/android/omnibox/chrome_omnibox_navigation_observer_android_unittest.cc",
-      "../browser/android/oom_intervention/near_oom_monitor_unittest.cc",
       "../browser/android/oom_intervention/near_oom_reduction_message_delegate_unittest.cc",
       "../browser/android/oom_intervention/oom_intervention_decider_unittest.cc",
       "../browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory_unittest.cc",
@@ -7358,6 +7364,7 @@ test("unit_tests") {
       "//chrome/browser/readaloud/android:native",
       "//chrome/browser/reading_list/android:reading_list",
       "//chrome/browser/reading_list/android:unit_tests",
+      "//chrome/browser/regional_capabilities/android:test_utils_java",
       "//chrome/browser/safety_hub/android:unit_tests",
       "//chrome/browser/share",
       "//chrome/browser/thumbnail:unit_tests",

@@ -1264,6 +1264,7 @@ Anda juga dapat menggunakan pintasan keyboard. Pertama, tandai teks, lalu tekan 
 <translation id="5245201184978705914">Tidak dapat membuat transkrip</translation>
 <translation id="5251174953851719648">Muat ulang konten</translation>
 <translation id="5253783950165989294">Terhubung ke perangkat bernama <ph name="DEVICE_NAME" />, baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">Uji mikrofon Anda</translation>
 <translation id="5258528442992323769">Tidak ada desktop tersimpan</translation>
 <translation id="5260676007519551770">Halaman kerja 4</translation>
 <translation id="5265391159779542051">Hasil dimuat</translation>
@@ -1421,6 +1422,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5745612484876805746">Fitur Cahaya Malam akan otomatis aktif saat matahari terbenam</translation>
 <translation id="5750765938512549687">Bluetooth nonaktif</translation>
 <translation id="5758114525425072423">Mulai Fokus. Timer disetel ke <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Dengarkan suara Anda di telinga orang lain. Untuk berhenti, klik ikon pengujian atau tutup panel panggilan video.</translation>
 <translation id="5760866832697883462">Hubungkan <ph name="NAME" /> Anda</translation>
 <translation id="5762420912707163638">Aktifkan/nonaktifkan penanda. <ph name="STATE_TEXT" /> Gunakan trackpad, layar sentuh, atau stilus untuk menggambar pada layar.</translation>
 <translation id="576341972084747908">Download <ph name="FILENAME" /> berbahaya</translation>

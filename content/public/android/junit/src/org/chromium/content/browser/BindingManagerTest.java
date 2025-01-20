@@ -51,7 +51,7 @@ public class BindingManagerTest {
         TestChildProcessConnection connection =
                 new TestChildProcessConnection(
                         new ComponentName("org.chromium.test", "TestService"),
-                        /* bindToCallerCheck= */ false,
+                        /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
                         /* serviceBundle= */ null);
         connection.setPid(pid);

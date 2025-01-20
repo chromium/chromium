@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_requests/create_bnpl_payment_instrument_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_url_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_vcn_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_bnpl_payment_instrument_request.h"
@@ -238,4 +239,16 @@ void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingVcn(
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
       std::move(callback)));
 }
+
+void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingUrl(
+    GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                            const BnplFetchUrlResponseDetails&)> callback) {
+  IssueRequest(std::make_unique<GetBnplPaymentInstrumentForFetchingUrlRequest>(
+      request_details,
+      /*full_sync_enabled=*/
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
+}
+
 }  // namespace autofill::payments

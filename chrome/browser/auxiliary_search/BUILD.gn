@@ -76,7 +76,6 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/auxiliary_search_module_icon.xml",
     "java/res/layout/auxiliary_search_module_layout.xml",
     "java/res/values/dimens.xml",
   ]

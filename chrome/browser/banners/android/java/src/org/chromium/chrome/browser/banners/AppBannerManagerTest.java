@@ -395,7 +395,7 @@ public class AppBannerManagerTest {
                     Assert.assertEquals(
                             1,
                             RecordHistogram.getHistogramValueCountForTesting(
-                                    INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiatedInstall= */ 3));
+                                    INSTALL_PATH_HISTOGRAM_NAME, /* sample= */ 3));
                 });
     }
 
@@ -429,7 +429,7 @@ public class AppBannerManagerTest {
                     Assert.assertEquals(
                             1,
                             RecordHistogram.getHistogramValueCountForTesting(
-                                    INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiatedInstall= */ 3));
+                                    INSTALL_PATH_HISTOGRAM_NAME, /* sample= */ 3));
                 });
     }
 
@@ -735,7 +735,7 @@ public class AppBannerManagerTest {
                     Assert.assertEquals(
                             1,
                             RecordHistogram.getHistogramValueCountForTesting(
-                                    INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateBottomSheet= */ 6));
+                                    INSTALL_PATH_HISTOGRAM_NAME, /* sample= */ 6));
                 });
     }
 
@@ -824,7 +824,7 @@ public class AppBannerManagerTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(),
                 mTabbedActivityTestRule.getActivity(),
-                /* isIncognito= */ false,
+                /* incognito= */ false,
                 /* waitForNtpLoad= */ true);
 
         Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);

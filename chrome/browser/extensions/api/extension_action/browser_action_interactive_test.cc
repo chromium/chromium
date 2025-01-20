@@ -499,7 +499,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   double tab_old_zoom_level = zoom_controller->GetZoomLevel();
   double tab_new_zoom_level = tab_old_zoom_level + 1.0;
   zoom::ZoomController::ZoomChangedEventData zoom_change_data(
-      tab_contents, tab_old_zoom_level, tab_new_zoom_level,
+      tab_contents, tab_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      tab_old_zoom_level, tab_new_zoom_level,
       zoom::ZoomController::ZOOM_MODE_DEFAULT, true);
   zoom::ZoomChangedWatcher zoom_change_watcher(tab_contents, zoom_change_data);
   zoom_controller->SetZoomLevel(tab_new_zoom_level);
@@ -532,7 +533,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   tab_old_zoom_level = zoom_controller->GetZoomLevel();
   tab_new_zoom_level = tab_old_zoom_level + 1.0;
   zoom::ZoomController::ZoomChangedEventData zoom_change_data2(
-      tab_contents, tab_old_zoom_level, tab_new_zoom_level,
+      tab_contents, tab_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      tab_old_zoom_level, tab_new_zoom_level,
       zoom::ZoomController::ZOOM_MODE_DEFAULT, true);
   zoom::ZoomChangedWatcher zoom_change_watcher2(tab_contents,
                                                 zoom_change_data2);

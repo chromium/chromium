@@ -176,7 +176,7 @@ public class CurrentPageVerifierTest {
                 NavigationHandle.createForTesting(
                         gurl,
                         /* isRendererInitiated= */ false,
-                        /* pageTransition= */ 0,
+                        /* transition= */ 0,
                         /* hasUserGesture= */ false);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidStartNavigationInPrimaryMainFrame(mTab, navigation);
@@ -186,12 +186,12 @@ public class CurrentPageVerifierTest {
                 gurl,
                 /* isErrorPage= */ false,
                 /* hasCommitted= */ true,
-                /* isFragmentNavigation= */ false,
+                /* isPrimaryMainFrameFragmentNavigation= */ false,
                 /* isDownload= */ false,
                 /* isValidSearchFormUrl= */ false,
-                /* pageTransition= */ 0,
+                /* transition= */ 0,
                 /* errorCode= */ 0,
-                /* httpStatusCode= */ 200,
+                /* httpStatuscode= */ 200,
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",

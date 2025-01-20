@@ -247,6 +247,13 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     bnpl_vcn_response_details_ = std::move(response_details);
   }
 
+  void OnDidGetBnplPaymentInstrumentForFetchingUrl(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      const BnplFetchUrlResponseDetails& response_details) {
+    result_ = result;
+    bnpl_url_response_details_ = std::move(response_details);
+  }
+
  protected:
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
@@ -443,6 +450,11 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     return bnpl_vcn_response_details_;
   }
 
+  const std::optional<BnplFetchUrlResponseDetails>& bnpl_url_response_details()
+      const {
+    return bnpl_url_response_details_;
+  }
+
   base::WeakPtr<PaymentsNetworkInterfaceTest> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -482,6 +494,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
   std::optional<UnmaskResponseDetails> unmask_response_details_;
   std::optional<BnplFetchVcnResponseDetails> bnpl_vcn_response_details_;
+  std::optional<BnplFetchUrlResponseDetails> bnpl_url_response_details_;
   base::WeakPtrFactory<PaymentsNetworkInterfaceTest> weak_ptr_factory_{this};
 };
 
@@ -1966,7 +1979,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
   request_details.risk_data = "RISK_DATA";
   request_details.instrument_id = "INSTRUMENT_ID";
   request_details.context_token = "CONTEXT_TOKEN";
-  request_details.redirect_url = GURL("http://redirect.url/");
+  request_details.redirect_url = GURL("http://test.redirect-url/");
 
   payments_network_interface_->GetBnplPaymentInstrumentForFetchingVcn(
       request_details,
@@ -2015,6 +2028,82 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
     EXPECT_EQ(bnpl_vcn_response_details()->expiration_month, "1");
     EXPECT_EQ(bnpl_vcn_response_details()->expiration_year, "2025");
     EXPECT_EQ(bnpl_vcn_response_details()->cardholder_name, "Akagi Shigeru");
+  }
+}
+
+// Test GetBnplPaymentInstrumentForFetchingUrl() with all the different
+// PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       GetBnplPaymentInstrumentForFetchingUrl) {
+  GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details;
+  request_details.billing_customer_number = 555666777888;
+  request_details.instrument_id = "INSTRUMENT_ID";
+  request_details.risk_data = "RISK_DATA";
+  request_details.merchant_domain = GURL("http://test.merchant-domain/");
+  request_details.total_amount = 1000000000;
+  request_details.currency = "CAD";
+
+  payments_network_interface_->GetBnplPaymentInstrumentForFetchingUrl(
+      request_details,
+      base::BindOnce(&PaymentsNetworkInterfaceTest::
+                         OnDidGetBnplPaymentInstrumentForFetchingUrl,
+                     GetWeakPtr()));
+
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(
+          payments_network_interface_.get(), net::HTTP_OK,
+          "{ \"buy_now_pay_later_info\": { "
+          "\"get_redirect_url_response_info\": "
+          "{ \"redirect_url\": \"http://test.redirect-url/\", "
+          "\"base_success_return_url\": \"http://test.success-url/\", "
+          "\"base_failure_return_url\": \"http://test.failure-url/\", "
+          "\"get_payment_instrument_context_token\": "
+          "\"CONTEXT_TOKEN\" } } }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+
+  AssertIncludedInRequest("\"external_customer_id\":\"555666777888\"");
+  AssertIncludedInRequest("\"instrument_id\":\"INSTRUMENT_ID\"");
+  AssertIncludedInRequest("\"value\":\"RISK_DATA\"");
+  AssertIncludedInRequest(
+      "\"merchant_domain\":\"http://test.merchant-domain/\"");
+  AssertIncludedInRequest("\"amount_in_micros\":\"1000000000\"");
+  AssertIncludedInRequest("\"currency\":\"CAD\"");
+
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(bnpl_url_response_details()->redirect_url,
+              GURL("http://test.redirect-url/"));
+    EXPECT_EQ(bnpl_url_response_details()->success_url_prefix,
+              GURL("http://test.success-url/"));
+    EXPECT_EQ(bnpl_url_response_details()->failure_url_prefix,
+              GURL("http://test.failure-url/"));
+    EXPECT_EQ(bnpl_url_response_details()->context_token, "CONTEXT_TOKEN");
   }
 }
 

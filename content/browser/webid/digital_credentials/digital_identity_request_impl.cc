@@ -289,19 +289,11 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
                            base::OptionalFromExpected(response));
 }
 
-std::optional<base::Value> BuildGetRequest(
+base::Value BuildGetRequest(
     blink::mojom::DigitalCredentialProviderPtr provider) {
   auto result = Value::Dict();
-
-  if (!provider->protocol) {
-    return std::nullopt;
-  }
-  result.Set("protocol", *provider->protocol);
-
-  if (!provider->request) {
-    return std::nullopt;
-  }
-  result.Set("request", *provider->request);
+  result.Set("protocol", provider->protocol);
+  result.Set("request", provider->request);
 
   base::Value::Dict out =
       Value::Dict().Set("providers", Value::List().Append(std::move(result)));
@@ -373,9 +365,9 @@ void DigitalIdentityRequestImpl::Get(
   std::optional<std::string> protocol = digital_credential_provider->protocol;
   std::optional<std::string> request_json_string =
       digital_credential_provider->request;
-  std::optional<base::Value> request_to_send =
+  base::Value request_to_send =
       BuildGetRequest(std::move(digital_credential_provider));
-  if (!request_json_string || !request_to_send) {
+  if (!request_json_string) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
   }
@@ -384,7 +376,7 @@ void DigitalIdentityRequestImpl::Get(
       *request_json_string,
       base::BindOnce(&DigitalIdentityRequestImpl::OnGetRequestJsonParsed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
-                     std::move(*request_to_send)));
+                     std::move(request_to_send)));
 }
 
 void DigitalIdentityRequestImpl::Create(

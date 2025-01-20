@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_coordinator.h"
 
-#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -36,10 +35,7 @@
   Browser* browser = self.browser;
 
   _secondaryToolbarMediator = [[SecondaryToolbarMediator alloc]
-      initWithWebStateList:browser->GetWebStateList()
-          messagingService:collaboration::messaging::
-                               MessagingBackendServiceFactory::GetForProfile(
-                                   browser->GetProfile())];
+      initWithWebStateList:browser->GetWebStateList()];
 
   self.viewController = [[SecondaryToolbarViewController alloc] init];
   self.viewController.buttonFactory =

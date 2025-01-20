@@ -101,7 +101,7 @@ public class SigninAccountPickerCoordinatorTest {
                         bottomSheetStrings,
                         AccountPickerLaunchMode.DEFAULT,
                         mAccessPoint,
-                        /* selectedCoreAccountId= */ null);
+                        /* selectedAccountId= */ null);
     }
 
     @Test

@@ -186,7 +186,7 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         PlatformServiceBridge.getInstance()
                 .getMediaIntegrityProvider2(
                         cloudProjectNumber,
-                        /* requestMode= */ apiStatus,
+                        /* apiStatus= */ apiStatus,
                         new ValueOrErrorCallback<>() {
                             @Override
                             public void onResult(MediaIntegrityProvider provider) {

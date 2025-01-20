@@ -124,7 +124,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
                     PaymentDetailsUpdateServiceHelper.getInstance()
                             .initialize(
                                     mPackageManager,
-                                    /* packageName= */ "com.bobpay",
+                                    /* invokedAppPackageName= */ "com.bobpay",
                                     mUpdateListener);
                 });
     }
@@ -160,7 +160,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
                         total,
                         shippingOptions,
                         /* error= */ "error message",
-                        /* pstringifiedPaymentMethodErrors= */ "stringified payment method",
+                        /* stringifiedPaymentMethodErrors= */ "stringified payment method",
                         bundledShippingAddressErrors);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

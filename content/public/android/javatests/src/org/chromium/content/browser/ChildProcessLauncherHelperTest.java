@@ -163,7 +163,7 @@ public class ChildProcessLauncherHelperTest {
                 /* privilegedServicesName= */ null,
                 context.getPackageName(),
                 /* sandboxedServicesName= */ null,
-                /* isExternalService= */ false,
+                /* isExternalSandboxedService= */ false,
                 LibraryProcessType.PROCESS_CHILD,
                 /* bindToCallerCheck= */ true,
                 /* ignoreVisibilityForImportance= */ false);
@@ -280,7 +280,7 @@ public class ChildProcessLauncherHelperTest {
                 /* privilegedServicesName= */ null,
                 context.getPackageName(),
                 /* sandboxedServicesName= */ null,
-                /* isExternalService= */ false,
+                /* isExternalSandboxedService= */ false,
                 LibraryProcessType.PROCESS_CHILD,
                 /* bindToCallerCheck= */ true,
                 /* ignoreVisibilityForImportance= */ false);

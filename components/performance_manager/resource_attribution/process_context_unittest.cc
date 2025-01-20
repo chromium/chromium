@@ -84,8 +84,7 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   ASSERT_TRUE(rfh);
   content::RenderProcessHost* rph = rfh->GetProcess();
   ASSERT_TRUE(rph);
-  const auto rph_id = RenderProcessHostId(rph->GetDeprecatedID());
-
+  const RenderProcessHostId rph_id = rph->GetID();
   std::optional<ProcessContext> process_context =
       ProcessContext::FromRenderProcessHost(rph);
   ASSERT_TRUE(process_context.has_value());

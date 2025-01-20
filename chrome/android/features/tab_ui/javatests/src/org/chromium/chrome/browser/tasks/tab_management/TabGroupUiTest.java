@@ -406,7 +406,9 @@ public class TabGroupUiTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     coordinator.simulateEdgeToEdgeChangeForTesting(
-                            100, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ true);
+                            100,
+                            /* isDrawingToEdge= */ true,
+                            /* isPageOptedIntoEdgeToEdge= */ true);
                 });
 
         assertFalse(

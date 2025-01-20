@@ -973,6 +973,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4285498937028063278">Atsegti</translation>
 <translation id="428715201724021596">Prisijungiama prie profilio. Tai gali užtrukti kelias minutes.</translation>
 <translation id="4287250812980588583">„Chrome“ langas</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Mikrofono garsumą valdo „<ph name="APP_NAME" />“}one{Mikrofono garsumą valdo # programa}few{Mikrofono garsumą valdo # programos}many{Mikrofono garsumą valdo # programos}other{Mikrofono garsumą valdo # programų}}</translation>
 <translation id="4294319844246081198">Labas rytas, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Išvalykite visus pranešimus (<ph name="COUNT" />)</translation>
 <translation id="4300272766492248925">Atidaryti programą</translation>

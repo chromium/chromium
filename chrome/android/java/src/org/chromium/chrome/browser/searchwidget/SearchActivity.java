@@ -360,7 +360,7 @@ public class SearchActivity extends AsyncInitializationActivity
                                 null),
                         null,
                         backPressManager,
-                        /* OmniboxSuggestionsDropdownScrollListener= */ null,
+                        /* omniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ null,
                         mLocationBarUiOverrides,
                         null,
@@ -811,7 +811,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url);
         boolean isNative =
                 NativePage.isNativePageUrl(
-                        url, /* incognito= */ false, /* hasPdfDownload= */ false);
+                        url, /* isIncognito= */ false, /* hasPdfDownload= */ false);
 
         int targetType =
                 isNative

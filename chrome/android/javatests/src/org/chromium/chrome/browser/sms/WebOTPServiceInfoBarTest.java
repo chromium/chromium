@@ -66,7 +66,7 @@ public class WebOTPServiceInfoBarTest {
                     WebOTPServiceInfoBar infoBar =
                             WebOTPServiceInfoBar.create(
                                     mActivity.getWindowAndroid(),
-                                    /* enumeratedIconId= */ 0,
+                                    /* iconId= */ 0,
                                     "title",
                                     "message",
                                     "ok");

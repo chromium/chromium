@@ -10912,7 +10912,6 @@ VM. Se pueden instalar varias VMs desde la misma configuración en el mismo disp
       Si esta política cambia mientras se ejecuta <ph name="PRODUCT_NAME" />, el cambio solo se aplicará a las pestañas que se abran a partir de ese momento.</translation>
 <translation id="8685748277907759932">Impide que los usuarios usen Tocar para buscar</translation>
 <translation id="8686700500128191717">Habilitar los informes de usuarios del dispositivo</translation>
-<translation id="8687570136798972353">Habilitar <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">Vuelve a habilitar la API Web Components v0 hasta la versión M84</translation>
 <translation id="8693243869659262736">Utilizar cliente DNS integrado</translation>
 <translation id="8695006038397632296">Crear y subir solicitudes de instalación de extensiones a la Consola del administrador</translation>

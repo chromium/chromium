@@ -11037,6 +11037,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kLanguageDetectionAPI)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"history-opt-in-entry-points",
+     flag_descriptions::kHistoryOptInEntryPointsName,
+     flag_descriptions::kHistoryOptInEntryPointsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kHistoryOptInEntryPoints)},
+
     {"supervised-force-signin-with-capabilities",
      flag_descriptions::kSupervisedUserForceSigninWithCapabilitiesName,
      flag_descriptions::kSupervisedUserForceSigninWithCapabilitiesDescription,
@@ -11045,12 +11050,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    {"supervised-profile-hide-guest",
-     flag_descriptions::kSupervisedProfileHideGuestName,
-     flag_descriptions::kSupervisedProfileHideGuestDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(supervised_user::kHideGuestModeForSupervisedUsers)},
-
     {"supervised-profile-safe-search",
      flag_descriptions::kSupervisedProfileSafeSearchName,
      flag_descriptions::kSupervisedProfileSafeSearchDescription,
@@ -11064,20 +11063,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(
          supervised_user::kForceSupervisedUserReauthenticationForYouTube)},
-
-    {"supervised-profile-blocked-site-reauth",
-     flag_descriptions::kSupervisedProfileReauthForBlockedSiteName,
-     flag_descriptions::kSupervisedProfileReauthForBlockedSiteDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kForceSupervisedUserReauthenticationForBlockedSites)},
-
-    {"supervised-profile-subframe-reauth",
-     flag_descriptions::kSupervisedProfileSubframeReauthName,
-     flag_descriptions::kSupervisedProfileSubframeReauthDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kAllowSupervisedUserReauthenticationForSubframes)},
 
     {"supervised-profile-filtering-fallback",
      flag_descriptions::kSupervisedProfileFilteringFallbackName,
@@ -11460,6 +11445,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"ai-settings-page-refresh", flag_descriptions::kAiSettingsPageRefreshName,
      flag_descriptions::kAiSettingsPageRefreshDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(optimization_guide::features::kAiSettingsPageRefresh)},
+    {"privacy-guide-ai-settings",
+     flag_descriptions::kPrivacyGuideAiSettingsName,
+     flag_descriptions::kPrivacyGuideAiSettingsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(optimization_guide::features::kPrivacyGuideAiSettings)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"password-form-clientside-classifier",

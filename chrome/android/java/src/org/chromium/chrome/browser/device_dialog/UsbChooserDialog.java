@@ -70,7 +70,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
                 chromeAutocompleteSchemeClassifier,
                 securityLevel,
                 useDarkColors,
-                /* emphasizeHttpsScheme= */ true);
+                /* emphasizeScheme= */ true);
         chromeAutocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =

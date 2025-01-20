@@ -113,7 +113,7 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
                                         GURL urlBeforeRedirects,
                                         boolean didFollowRedirect,
                                         Callback<Boolean> resultCallback) {
-                                    resultCallback.onResult(/* allow= */ true);
+                                    resultCallback.onResult(/* result= */ true);
                                 }
                             });
                     mTestOrigin = PaymentManifestDownloader.createOpaqueOriginForTest();

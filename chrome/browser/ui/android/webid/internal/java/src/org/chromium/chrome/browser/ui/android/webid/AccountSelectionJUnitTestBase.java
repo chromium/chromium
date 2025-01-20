@@ -278,7 +278,7 @@ public class AccountSelectionJUnitTestBase {
                                 mTestRpBrandIconUrl.getSpec()),
                         RpContext.SIGN_IN,
                         DEFAULT_DISCLOSURE_FIELDS,
-                        /* has_login_status_mismatch= */ false);
+                        /* hasLoginStatusMismatch= */ false);
 
         mIdpMetadataWithUseDifferentAccount =
                 new IdentityProviderMetadata(
@@ -298,7 +298,7 @@ public class AccountSelectionJUnitTestBase {
                                 mTestRpBrandIconUrl.getSpec()),
                         RpContext.SIGN_IN,
                         DEFAULT_DISCLOSURE_FIELDS,
-                        /* has_login_status_mismatch= */ false);
+                        /* hasLoginStatusMismatch= */ false);
 
         mNewAccountsSingleReturningAccount = Arrays.asList(mAnaAccount);
         mNewAccountsSingleNewAccount = Arrays.asList(mNewUserAccount);

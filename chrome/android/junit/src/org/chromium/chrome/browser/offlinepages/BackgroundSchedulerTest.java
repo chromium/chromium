@@ -39,10 +39,12 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 public class BackgroundSchedulerTest {
     private TriggerConditions mConditions1 =
             new TriggerConditions(
-                    /* power= */ true, 10 /* battery percentage */, true /* requires unmetered */);
+                    /* requirePowerConnected= */ true,
+                    10 /* battery percentage */,
+                    true /* requires unmetered */);
     private TriggerConditions mConditions2 =
             new TriggerConditions(
-                    /* power= */ false,
+                    /* requirePowerConnected= */ false,
                     0 /* battery percentage */,
                     false /* does not require unmetered */);
 

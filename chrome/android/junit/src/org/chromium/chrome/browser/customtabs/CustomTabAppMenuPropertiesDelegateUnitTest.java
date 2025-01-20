@@ -111,7 +111,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* showShare= */ true,
                         /* showStar= */ true,
                         /* showDownload= */ true,
-                        /* isIncognito= */ false,
+                        /* isIncognitoBranded= */ false,
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,

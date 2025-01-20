@@ -474,6 +474,9 @@
     <message name="IDS_PAGE_INFO_DELETE_HID_DEVICE_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a HID device that the user previously granted to the site.">
       Revoke access for <ph name="DEVICE_NAME">$1<ex>Stadia Controller</ex></ph>
     </message>
+    <message name="IDS_PAGE_INFO_SMART_CARD_READER_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a Smart card reader device explicitly allowed by the user's enterprise policy.">
+      Smart card reader allowed by your administrator
+    </message>
     <message name="IDS_PAGE_INFO_SMART_CARD_READER_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the item refers to a smart card reader.">
       Smart card reader
     </message>

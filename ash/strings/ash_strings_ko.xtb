@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">네트워크 목록을 표시합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">알림 작업을 실행하려면 기기의 잠금을 해제하세요.</translation>
 <translation id="1420408895951708260">야간 조명을 전환합니다. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">추천 그룹</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1435537621343861112">음성기록을 시작할 수 없습니다. 마이크가 꺼져 있습니다.</translation>
 <translation id="1445031758921122223">얼굴 인식 파일 다운로드됨</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">계산</translation>
 <translation id="1774796056689732716">현재 캘린더에서 <ph name="CURRENT_MONTH_YEAR" />을 표시 중이며 선택된 날짜는 <ph name="DATE" />입니다.</translation>
 <translation id="178347895271755507">휴대전화의 최근 사진, 미디어, 알림 보기 설정</translation>
+<translation id="1785317913592722944">추천 그룹에서 항목 삭제</translation>
 <translation id="1786487376942610288">PIP 모드 창의 최대 크기 또는 현재 크기 간에 전환</translation>
 <translation id="1787955149152357925">꺼짐</translation>
 <translation id="1796561540704213354">방문한 페이지 및 열린 페이지를 포함한 웹사이트</translation>
 <translation id="179842970735685253">Google 서비스 약관</translation>
 <translation id="1805407494113167797">집중 모드 사운드를 재생할 수 없음</translation>
 <translation id="181103072419391116">신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
+<translation id="1815039896005206046">싫어요를 누르면 이 추천 그룹이 마음에 들지 않는다는 의견이 제출됩니다.</translation>
 <translation id="1816896987747843206">카메라 액세스 권한이 있는 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
 <translation id="1823873187264960516">이더넷: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">위치 액세스 사용 설정</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">중국어로 '안녕'</translation>
 <translation id="2370971919968699910">데이터 요금이 발생할 수 있습니다.
 기기 <ph name="DEVICECOUNT" />대가 연결되었습니다.</translation>
+<translation id="2383521554963939360">앱 및 탭 그룹</translation>
 <translation id="2386292613071805067">페이지의 모든 항목 선택</translation>
 <translation id="2389423187722941333">Gemini 전환</translation>
 <translation id="2392659840443812875">사용 가능한 핫스팟이 없습니다. 기기가 근처에 있고 블루투스가 켜져 있어야 합니다.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">인물 보정</translation>
 <translation id="4156293514828496577">배터리가 <ph name="PERCENTAGE" />% 남았습니다(약 <ph name="TIME_LEFT" />).
 배터리 수명을 늘리기 위해 일부 기능이 제한됩니다.</translation>
+<translation id="4158003972857765638">새 데스크에서 정리</translation>
 <translation id="4160919062868802509">여러 오디오 소스가 감지되었습니다</translation>
 <translation id="416245495747357243">훌륭합니다.</translation>
 <translation id="4165275524535002941">케이블이 디스플레이를 지원하지 않을 수 있습니다</translation>
@@ -984,6 +989,7 @@
 <translation id="4322742403972824594">Ctrl + Alt + 위쪽 화살표 단축키가 변경되었습니다. Home 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 왼쪽 화살표 키를 누르세요.</translation>
 <translation id="4324840740119394760">카메라 액세스 권한이 있는 <ph name="APP_NAME" /> 앱을 포함한 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
 <translation id="4327147325944669226">게임 녹화</translation>
+<translation id="4329076911374908740">저장된 그룹의 최대 수에 도달했습니다.</translation>
 <translation id="4338109981321384717">돋보기</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, 음소거됨</translation>
 <translation id="4351244548802238354">대화상자 닫기</translation>
@@ -1264,6 +1270,7 @@
 <translation id="5245201184978705914">스크립트를 생성할 수 없음</translation>
 <translation id="5251174953851719648">콘텐츠 새로고침</translation>
 <translation id="5253783950165989294">이름이 <ph name="DEVICE_NAME" />인 기기에 연결됨(배터리 <ph name="BATTERY_PERCENTAGE" />%)</translation>
+<translation id="5256939106029293271">마이크 테스트</translation>
 <translation id="5258528442992323769">저장된 데스크 없음</translation>
 <translation id="5260676007519551770">데스크 4</translation>
 <translation id="5265391159779542051">결과 로드됨</translation>
@@ -1421,6 +1428,7 @@
 <translation id="5745612484876805746">일몰 시 야간 조명이 자동으로 켜짐</translation>
 <translation id="5750765938512549687">블루투스가 사용 중지됨</translation>
 <translation id="5758114525425072423">집중 모드를 시작합니다. 타이머가 <ph name="FOCUS_DURATION" />(으)로 설정되었습니다.</translation>
+<translation id="5759522586053040964">다른 사람에게 내 목소리가 어떻게 들리는지 들어보세요. 중지하려면 테스트 아이콘을 클릭하거나 영상 통화 패널을 닫으세요.</translation>
 <translation id="5760866832697883462"><ph name="NAME" />에 연결</translation>
 <translation id="5762420912707163638">마커를 전환합니다. <ph name="STATE_TEXT" /> 화면에 그리려면 트랙패드, 터치스크린 또는 스타일러스를 사용하세요.</translation>
 <translation id="576341972084747908">위험한 <ph name="FILENAME" /> 파일을 다운로드합니다</translation>
@@ -1939,6 +1947,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">만들기</translation>
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
+<translation id="7534543072325030705">좋아요를 누르면 이 추천 그룹이 마음에 든다는 의견이 제출됩니다.</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">왼쪽 창 업데이트</translation>
 <translation id="7543399541175347147">Linux 앱 및 시크릿 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
@@ -2103,6 +2112,7 @@
 <translation id="8004512796067398576">올리기</translation>
 <translation id="8005527720597583355">집중 모드 세션 시작</translation>
 <translation id="8015361438441228492">할 일을 수정할 수 없습니다.</translation>
+<translation id="8027187124910699148">추천 그룹 재개</translation>
 <translation id="802782383769312836">이전 데스크는 <ph name="DESK_NAME" />입니다. 데스크 <ph name="DESK_COUNT" />개 중 <ph name="DESK_INDEX" />번째입니다.</translation>
 <translation id="8029247720646289474">핫스팟에 연결할 수 없음</translation>
 <translation id="8029629653277878342">보안 강화를 위해 PIN 또는 비밀번호가 필요합니다.</translation>
@@ -2211,6 +2221,7 @@
 <translation id="8426708595819210923">편안한 저녁 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />~<ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">나중을 위해 그룹 저장</translation>
 <translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="8433977262951327081">앱 표시줄에서 입력 옵션 메뉴 도움말 풍선을 표시하는 단축키가 변경되었습니다. <ph name="OLD_SHORTCUT" /> 대신 <ph name="NEW_SHORTCUT" />을(를) 사용하세요.</translation>
 <translation id="8437311513256731931">의견 도구 열기</translation>
@@ -2219,6 +2230,7 @@
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">텍스트 읽어주기 닫기</translation>
+<translation id="8466665972451889002"><ph name="GROUP_NAME" />의 항목 표시</translation>
 <translation id="8468806060683421065">마감일: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">배율 설정 표시</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />에서 <ph name="FEATURE_NAME" /> 기능을 <ph name="FEATURE_STATE" /> 상태로 설정했습니다.</translation>
@@ -2241,6 +2253,7 @@
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
 <translation id="8553395910833293175">이미 모든 데스크에 할당되어 있습니다.</translation>
 <translation id="8555757996376137129">현재 데스크를 삭제합니다.</translation>
+<translation id="8558521694042102707">생성형 AI는 인물 등에 관한 정보 제공 시 실수를 할 수 있으니 다시 한번 확인하세요.</translation>
 <translation id="8559845965695780508"><ph name="USER" />님이 수정함</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">다음은 몇 가지 제안사항입니다.</translation>
@@ -2263,6 +2276,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="8638637208069328956">마이크 켜기/끄기</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> 남음</translation>
+<translation id="8640470573049727749">모든 그룹 추천 숨기기</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> 정보 표시</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> 타이머</translation>
 <translation id="8647931990447795414">사용자를 추가하려면 Family Link 부모 액세스 코드를 입력하세요</translation>
@@ -2345,6 +2359,7 @@
 <translation id="8905919797434099235">(제목 없음)</translation>
 <translation id="890616557918890486">소스 변경</translation>
 <translation id="8909138438987180327">남은 배터리는 <ph name="PERCENTAGE" />%입니다.</translation>
+<translation id="8916866375277139011"><ph name="GROUP_NAME" />의 항목 숨기기</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 어시스턴트가 이 언어를 지원하지 않음</translation>
 <translation id="8926951137623668982">앱 표시줄 항상 숨김</translation>

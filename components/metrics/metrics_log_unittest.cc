@@ -809,8 +809,7 @@ TEST_F(MetricsLogTest, OngoingLogStabilityMetrics) {
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  log.RecordCurrentSessionData(base::TimeDelta(), base::TimeDelta(),
-                               &delegating_provider, &prefs_);
+  log.RecordCurrentSessionData(&delegating_provider, &prefs_);
 
   // The test provider should have been called upon to provide regular but not
   // initial stability metrics.

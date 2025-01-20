@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -66,16 +67,10 @@ const FakeSystemIdentity* kManagedIdentity =
 
 @end
 
-// The test param determines whether `kSeparateProfilesForManagedAccounts` is
-// enabled.
-class AccountMenuCoordinatorTest : public PlatformTest,
-                                   public testing::WithParamInterface<bool> {
+// Base class for `AccountMenuCoordinatorNonManagedTest` and
+// `AccountMenuCoordinatorManagedTest`.
+class AccountMenuCoordinatorTest : public PlatformTest {
  public:
-  AccountMenuCoordinatorTest() {
-    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
-                                       GetParam());
-  }
-
   void SetUp() override {
     PlatformTest::SetUp();
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
@@ -85,7 +80,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     stub_browser_interface_provider_ =
@@ -228,13 +223,22 @@ class AccountMenuCoordinatorTest : public PlatformTest,
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   bool completionCalled_ = false;
 };
 
-class AccountMenuCoordinatorNonManagedTest : public AccountMenuCoordinatorTest {
+// The test param determines whether `kSeparateProfilesForManagedAccounts` is
+// enabled.
+class AccountMenuCoordinatorNonManagedTest
+    : public AccountMenuCoordinatorTest,
+      public testing::WithParamInterface<bool> {
  public:
+  AccountMenuCoordinatorNonManagedTest() {
+    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
+                                       GetParam());
+  }
   const FakeSystemIdentity* primary_identity() override {
     return kPrimaryIdentity;
   }
@@ -242,6 +246,12 @@ class AccountMenuCoordinatorNonManagedTest : public AccountMenuCoordinatorTest {
 
 class AccountMenuCoordinatorManagedTest : public AccountMenuCoordinatorTest {
  public:
+  AccountMenuCoordinatorManagedTest() {
+    // TODO(crbug.com/374281861): This class needs to run with multi profile
+    // enabled. To do that, account switching needs to be supported in unttests.
+    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
+                                       false);
+  }
   const FakeSystemIdentity* primary_identity() override {
     return kManagedIdentity;
   }
@@ -345,7 +355,7 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testSnackbar) {
 
 // Tests that `triggerAccountSwitchSnackbarWithIdentity` shows a snackbar with
 // `managed` set to true.
-TEST_P(AccountMenuCoordinatorManagedTest, testSnackbarManaged) {
+TEST_F(AccountMenuCoordinatorManagedTest, testSnackbarManaged) {
   OCMExpect([mock_snackbar_commands_handler_
       showSnackbarMessageOverBrowserToolbar:[OCMArg checkWithBlock:^BOOL(
                                                         IdentitySnackbarMessage*
@@ -396,14 +406,6 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testMDMError) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          AccountMenuCoordinatorNonManagedTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "WithSeparateProfiles"
-                                             : "WithoutSeparateProfiles";
-                         });
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AccountMenuCoordinatorManagedTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "WithSeparateProfiles"

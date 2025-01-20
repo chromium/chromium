@@ -173,7 +173,7 @@ public class TabStripSceneLayerTest {
                         /* tint= */ anyInt(),
                         /* backgroundTint= */ anyInt(),
                         /* buttonAlpha= */ anyFloat(),
-                        /* backgroundTint= */ eq(mResourceManager));
+                        /* resourceManager= */ eq(mResourceManager));
         verify(mTabStripSceneMock)
                 .updateTabStripLeftFade(
                         1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, leftPadding);

@@ -292,7 +292,7 @@ public class AutofillProviderTest {
                 .onShowBottomSheetResult(
                         mMockedNativeAndroidAutofillProvider,
                         /* isShown= */ true,
-                        /* provided_structure= */ true);
+                        /* providedAutofillStructure= */ true);
     }
 
     @Test

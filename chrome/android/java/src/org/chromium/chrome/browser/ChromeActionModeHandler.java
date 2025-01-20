@@ -270,8 +270,8 @@ public class ChromeActionModeHandler {
                         .share(
                                 new ShareParams.Builder(
                                                 mTab.getWindowAndroid(),
-                                                /* url= */ "",
-                                                /* title= */ "")
+                                                /* title= */ "",
+                                                /* url= */ "")
                                         .setText(sanitizeTextForShare(mHelper.getSelectedText()))
                                         .build(),
                                 new ChromeShareExtras.Builder()

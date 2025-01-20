@@ -74,7 +74,7 @@ public class PaymentRequestHeader extends FrameLayout {
                 chromeAutocompleteSchemeClassifier,
                 securityLevel,
                 useDarkColors,
-                /* emphasizeHttpsScheme= */ true);
+                /* emphasizeScheme= */ true);
         chromeAutocompleteSchemeClassifier.destroy();
         hostName.setText(url);
 

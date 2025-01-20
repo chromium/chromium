@@ -607,7 +607,7 @@ public class DownloadNotificationService {
                         notification,
                         new NotificationMetadata(
                                 NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES,
-                                /* tag= */ null,
+                                /* notificationTag= */ null,
                                 id)));
     }
 

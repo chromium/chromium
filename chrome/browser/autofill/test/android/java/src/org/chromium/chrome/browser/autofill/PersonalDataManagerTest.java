@@ -397,7 +397,7 @@ public class PersonalDataManagerTest {
                         /* isLocal= */ false,
                         "John Doe Server",
                         "41111111111111111",
-                        /* obfuscatedCardNumber= */ "",
+                        /* networkAndLastFourDigits= */ "",
                         "3",
                         "2019",
                         "Visa",
@@ -543,7 +543,7 @@ public class PersonalDataManagerTest {
                         .setSortingCode("", VerificationStatus.NO_STATUS)
                         .setCountryCode("Canada", VerificationStatus.USER_VERIFIED)
                         .setPhoneNumber("", VerificationStatus.NO_STATUS)
-                        .setEmailAddress(/* email= */ "", VerificationStatus.NO_STATUS)
+                        .setEmailAddress(/* emailAddress= */ "", VerificationStatus.NO_STATUS)
                         .setLanguageCode("")
                         .build();
         String guid = mHelper.setProfile(profileWithDifferentStatuses);
@@ -1107,7 +1107,7 @@ public class PersonalDataManagerTest {
                         /* isLocal= */ false,
                         "John Doe Server",
                         "41111111111111111",
-                        /* obfuscatedCardNumber= */ "",
+                        /* networkAndLastFourDigits= */ "",
                         "3",
                         "2019",
                         "MasterCard",
@@ -1155,7 +1155,7 @@ public class PersonalDataManagerTest {
                         /* isLocal= */ false,
                         "John Doe Server",
                         "41111111111111111",
-                        /* obfuscatedCardNumber= */ "",
+                        /* networkAndLastFourDigits= */ "",
                         "3",
                         "2019",
                         "MasterCard",
@@ -1200,7 +1200,7 @@ public class PersonalDataManagerTest {
                         /* isLocal= */ false,
                         "John Doe Server",
                         "41111111111111111",
-                        /* obfuscatedCardNumber= */ "",
+                        /* networkAndLastFourDigits= */ "",
                         "3",
                         "2019",
                         "",

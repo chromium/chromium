@@ -47,11 +47,16 @@ BrowserUser::~BrowserUser() = default;
 
 void BrowserUser::TurnOnSync() {
   sign_in_functions_.TurnOnSync({credentials_.username, credentials_.password},
-                                0);
+                                /*previously_signed_in_accounts=*/0);
 }
 
 void BrowserUser::SignOutFromWeb() {
   sign_in_functions_.SignOutFromWeb();
+}
+void BrowserUser::SignInFromWeb() {
+  sign_in_functions_.SignInFromSettings(
+      {credentials_.username, credentials_.password},
+      /*previously_signed_in_accounts=*/0);
 }
 
 FamilyLinkSettingsState::Services BrowserUser::GetServices() const {

@@ -131,7 +131,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         mPCCTTestRule.mActivityLifecycleDispatcher,
                         mPCCTTestRule.mFullscreenManager,
                         /* isTablet= */ false,
-                        /* startMaxmized= */ false,
+                        /* startMaximized= */ false,
                         mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
                 mPCCTTestRule.mSpinnerView,

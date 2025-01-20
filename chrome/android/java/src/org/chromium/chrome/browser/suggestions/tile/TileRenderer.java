@@ -329,7 +329,8 @@ public class TileRenderer {
 
     public void setTileIconFromRes(Tile tile, @DrawableRes int res) {
         tile.setIcon(ResourcesCompat.getDrawable(mContext.getResources(), res, null));
-        tile.setIconTint(ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
+        tile.setIconTint(
+                ChromeColors.getSecondaryIconTint(mContext, /* forceLightIconTint= */ false));
         tile.setType(TileVisualType.ICON_DEFAULT);
     }
 

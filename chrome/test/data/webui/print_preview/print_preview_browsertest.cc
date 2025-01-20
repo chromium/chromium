@@ -408,21 +408,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
                        UserSelectedOptionsOverridePolicyDefaults) {
   RunTestCase("UserSelectedOptionsOverridePolicyDefaults");
 }
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
-                       ManagedPrintOptionsDisabledViaExperiment) {
-  RunTestCase("ManagedPrintOptionsDisabledViaExperiment");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
-                       ManagedPrintOptionsSupportedDefaultValues) {
-  RunTestCase("ManagedPrintOptionsSupportedDefaultValues");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
-                       ManagedPrintOptionsUnsupportedDefaultValues) {
-  RunTestCase("ManagedPrintOptionsUnsupportedDefaultValues");
-}
 #endif
 
 class PrintPreviewPreviewGenerationTest : public PrintPreviewBrowserTest {
@@ -1442,3 +1427,40 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest,
                        InputNotDisabledOnValidityChange) {
   RunTestCase("InputNotDisabledOnValidityChange");
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PrintPreviewManagedPrintOptionsTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/managed_print_options_test_chromeos.js",
+        base::StringPrintf("runMochaTest('ManagedPrintOptionsTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
+                       DisabledViaExperiment) {
+  RunTestCase("DisabledViaExperiment");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
+                       SupportedDefaultValues) {
+  RunTestCase("SupportedDefaultValues");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
+                       UnsupportedDefaultValues) {
+  RunTestCase("UnsupportedDefaultValues");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
+                       AllowedValuesApplied) {
+  RunTestCase("AllowedValuesApplied");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
+                       AllowedValuesIgnored) {
+  RunTestCase("AllowedValuesIgnored");
+}
+#endif

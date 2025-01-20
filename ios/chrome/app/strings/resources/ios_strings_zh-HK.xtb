@@ -493,6 +493,7 @@
 <translation id="3130863904455712965">記錄和其他</translation>
 <translation id="313283613037595347">新增無痕式分頁。</translation>
 <translation id="3138611310073113613">要捨棄所選項目嗎？</translation>
+<translation id="3140825265190223781">已儲存的密碼和密鑰</translation>
 <translation id="3143515551205905069">取消同步處理</translation>
 <translation id="314837624430314508">隨時掌握最新消息、價格追蹤動態等資訊。</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
@@ -650,6 +651,7 @@
 <translation id="3955740319737378355">完成</translation>
 <translation id="3955822496205734389">你有安全度低的密碼。</translation>
 <translation id="3958312024468322930">將圖示拖曳至主畫面底部的 Dock</translation>
+<translation id="3960218941754097036">使用「Google 智能鏡頭」搜尋畫面上的任何內容</translation>
 <translation id="3962326069546168954">儲存</translation>
 <translation id="3967327056943561740">書籤</translation>
 <translation id="3967822245660637423">下載完成</translation>
@@ -692,6 +694,7 @@
 <translation id="4147897805161313378">Google 相片</translation>
 <translation id="4148023517926189160">此網站想下載檔案並將其新增至您的日曆中。</translation>
 <translation id="4152011295694446843">您可在此查看書籤</translation>
+<translation id="4154753961803534698">透過相機搜尋</translation>
 <translation id="4158491215857439601">密碼管理工具</translation>
 <translation id="4163699139741158298">{count,plural, =1{書籤已儲存至「{title}」，且只會儲存至此裝置。}other{{count} 個書籤已儲存至「{title}」，且只會儲存至此裝置。}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，尾碼係 <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1158,6 +1161,7 @@
 <translation id="6168647875670665004">文章建議</translation>
 <translation id="6169031022444660352">如要刪除所有已儲存的憑證，你必須先為裝置設定密碼。</translation>
 <translation id="6173499589275053515">密碼已儲存至您的 Google 帳戶 (<ph name="EMAIL" />)</translation>
+<translation id="6181969657494915430">搜尋畫面</translation>
 <translation id="6187302354554850004">上次同步時間：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未讀</translation>
@@ -1595,6 +1599,7 @@
 <translation id="8005666035647241369">儲存至此裝置的「Google 密碼管理工具」</translation>
 <translation id="8011489434346330032">網絡檢查工具</translation>
 <translation id="802154636333426148">下載失敗</translation>
+<translation id="8023170444051056234">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
 <translation id="8023878949384262191">展開嗰個部份。</translation>
 <translation id="8027581147000338959">在新視窗中開啟</translation>
 <translation id="8032569120109842252">追蹤中</translation>
@@ -1637,7 +1642,6 @@
 <translation id="8195191503358432289">新增密碼</translation>
 <translation id="8202744799033457229">顯示記錄</translation>
 <translation id="8205564605687841303">取消</translation>
-<translation id="820568752112382238">最常瀏覽的網站</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
 <translation id="8209050860603202033">開啟圖片</translation>
 <translation id="8211030355252954494">你已收到 <ph name="WEBSITE" /> 的新密碼</translation>
@@ -1666,6 +1670,7 @@
 <translation id="8299613349954694191">開啟無痕式分頁就能以私密模式瀏覽網頁。</translation>
 <translation id="8307481894409578819">無法上載這個檔案</translation>
 <translation id="8319076807703933069">新搜尋</translation>
+<translation id="833647236762414178">建立、儲存及管理密碼和密鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8349305172487531364">書籤列</translation>
 <translation id="8364563001733875155">如要更改 PIN，請先在裝置上設定密碼。</translation>

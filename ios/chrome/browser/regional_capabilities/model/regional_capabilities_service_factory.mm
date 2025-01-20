@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/check_deref.h"
+#import "components/country_codes/country_codes.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/browser_state.h"
@@ -19,6 +20,15 @@ class RegionalCapabilitiesServiceClient
     : public regional_capabilities::RegionalCapabilitiesService::Client {
  public:
   RegionalCapabilitiesServiceClient() = default;
+
+  int GetFallbackCountryId() override {
+    return country_codes::GetCurrentCountryID();
+  }
+
+  void FetchCountryId(CountryIdCallback country_id_fetched_callback) override {
+    std::move(country_id_fetched_callback)
+        .Run(country_codes::GetCurrentCountryID());
+  }
 };
 
 }  // namespace

@@ -3574,6 +3574,21 @@ function testAddFencedFrame() {
   document.body.appendChild(webview);
 }
 
+function testZoomFencedFrame() {
+  let fencedFrameHostURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/fenced_frame_host.html';
+
+  let webview = new WebView();
+  webview.src = fencedFrameHostURL;
+  webview.addEventListener('loadstop', async () => {
+    // Adjust zoom. Verify in native test that the RenderWidgetHost for the
+    // FencedFrame has the expected zoom.
+    await setZoomP(webview, 0.95);
+    embedder.test.succeed();
+  });
+  document.body.appendChild(webview);
+}
+
 // This test and several tests below test scenarios where a webview element is
 // created and/or attached by different documents. In this test, we create a
 // webview element with the main frame's document, but embed it in an iframe's
@@ -4094,6 +4109,7 @@ embedder.test.testList = {
   'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
   'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
   'testAddFencedFrame': testAddFencedFrame,
+  'testZoomFencedFrame': testZoomFencedFrame,
   'testInsertIntoIframe': testInsertIntoIframe,
   'testCreateAndInsertInIframe': testCreateAndInsertInIframe,
   'testInsertIntoMainFrameFromIframe': testInsertIntoMainFrameFromIframe,

@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">שגיאת אימות</translation>
 <translation id="1780152987505130652">סגירת הקבוצה</translation>
 <translation id="178400879184240105">הסיסמאות שלך ייחודיות</translation>
+<translation id="17906873777101817">הצעה לשמירת סיסמאות ומפתחות גישה</translation>
 <translation id="1807893857950749072">הרשאה לקבלת התראות על מעקב מחירים…</translation>
 <translation id="1810976980198522421">ביטול</translation>
 <translation id="1815941218935345331">קוד גישה</translation>
@@ -650,6 +651,7 @@
 <translation id="3955740319737378355">סיום</translation>
 <translation id="3955822496205734389">יש לך סיסמאות חלשות.</translation>
 <translation id="3958312024468322930">‏גוררים את הסמל אל ה-Dock שבחלק התחתון של מסך הבית</translation>
+<translation id="3960218941754097036">‏אפשר לחפש מה שמוצג במסך באמצעות Google Lens</translation>
 <translation id="3962326069546168954">שמירה</translation>
 <translation id="3967327056943561740">סימניות</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
@@ -692,6 +694,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">האתר הזה מבקש להוריד קובץ ולהוסיף אותו ליומן שלך.</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
+<translation id="4154753961803534698">חיפוש באמצעות המצלמה</translation>
 <translation id="4158491215857439601">מנהל הסיסמאות</translation>
 <translation id="4163699139741158298">{count,plural, =1{הסימנייה נשמרה בתיקייה ‘{title}'. היא שמורה רק במכשיר הזה.}one{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}two{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}other{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> המסתיים בספרות <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1158,6 +1161,7 @@
 <translation id="6168647875670665004">מאמרים מוצעים</translation>
 <translation id="6169031022444660352">כדי למחוק את כל פרטי הכניסה שנשמרו, קודם כל צריך להגדיר קוד גישה במכשיר.</translation>
 <translation id="6173499589275053515">‏הסיסמה נשמרה בחשבון Google שלך, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">חיפוש במסך</translation>
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">נוצר בתאריך <ph name="DATE" /></translation>
 <translation id="6189413832092199491">פריטים שלא נקראו</translation>
@@ -1319,6 +1323,7 @@
 <translation id="6732087373923685049">מצלמה</translation>
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6755200887046212842">נהל חשבונות</translation>
+<translation id="6755733078693946548">גישה לסיסמאות ולמפתחות הגישה מכל אפליקציה</translation>
 <translation id="6761393919622941301">אודיו</translation>
 <translation id="6779455296366983087">נתוני הגלישה יימחקו</translation>
 <translation id="6790502149545262384">בקרוב יוצגו סטוריז מהאתר <ph name="CHANNEL_NAME" /> בפתיחת כרטיסייה חדשה.</translation>
@@ -1586,6 +1591,7 @@
 <translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
 <translation id="7977482887663636093">מספר הכרטיסיות החדשות: <ph name="NUMBER_OF_TABS_ADDED" />. מספר הכרטיסיות שנסגרו: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק לתמיד.</translation>
+<translation id="797874245254030665">גישה לסיסמאות ולמפתחות הגישה שלך מכל אפליקציה</translation>
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7987685713885608670">‏כדי לשפר את הבטיחות, כדאי להצפין את הסיסמאות במכשיר שלך לפני שהן נשמרות במנהל הסיסמאות של Google.</translation>
 <translation id="798991908416757345">קבוצות הכרטיסיות לא זמינות</translation>
@@ -1595,6 +1601,7 @@
 <translation id="8005666035647241369">‏נשמרה במנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="8011489434346330032">סוקר האינטרנט</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
+<translation id="8023170444051056234">הגישה שלך לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />" תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
 <translation id="8023878949384262191">מרחיב את הקטע.</translation>
 <translation id="8027581147000338959">פתיחה בחלון חדש</translation>
 <translation id="8032569120109842252">במעקב</translation>
@@ -1637,7 +1644,6 @@
 <translation id="8195191503358432289">הוספת סיסמה</translation>
 <translation id="8202744799033457229">הצגת ההיסטוריה</translation>
 <translation id="8205564605687841303">ביטול</translation>
-<translation id="820568752112382238">האתרים שאליהם נכנסת בתדירות הגבוהה ביותר</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
 <translation id="8209050860603202033">פתיחת התמונה</translation>
 <translation id="8211030355252954494">קיבלת סיסמאות עבור <ph name="WEBSITE" /></translation>
@@ -1666,6 +1672,7 @@
 <translation id="8299613349954694191">אפשר לפתוח כרטיסיית מצב אנונימי כדי לגלוש בפרטיות באינטרנט.</translation>
 <translation id="8307481894409578819">לא ניתן להעלות את הקובץ הזה</translation>
 <translation id="8319076807703933069">חיפוש חדש</translation>
+<translation id="8328607660158575887">פתיחת ההגדרות של המילוי האוטומטי והסיסמאות</translation>
 <translation id="8343993175958086504">כדאי לגבות את הנתונים כדי להשתמש בהם בכל מכשיר.</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8364563001733875155">כדי לשנות את קוד האימות, קודם עליך להגדיר קוד גישה במכשיר.</translation>
@@ -1817,6 +1824,7 @@
 <translation id="8909459547399237818">בוחרים במנהל הסיסמאות ולוחצים על 'הוספת ווידג'ט'</translation>
 <translation id="891282356902782456">‏הסיסמה הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך לשמור אותה בחשבון Google שלך, <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">סגירת הכול</translation>
+<translation id="892185197271200809">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", והיא תימחק מכל המכשירים</translation>
 <translation id="8921902386312975525">אפשרויות למעקב אחרי חבילות</translation>
 <translation id="8923178205567790913">סיסמאות</translation>
 <translation id="892776311701544612">למידע נוסף…</translation>

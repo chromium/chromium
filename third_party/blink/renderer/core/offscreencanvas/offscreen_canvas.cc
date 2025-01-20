@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -555,11 +554,10 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
 
   const SkAlphaType alpha_type = GetRenderingContextAlphaType();
   const SkColorType sk_color_type = GetRenderingContextSkColorType();
-  const sk_sp<SkColorSpace> sk_color_space = GetRenderingContextSkColorSpace();
+  const gfx::ColorSpace color_space = GetRenderingContextColorSpace();
   if (use_shared_image) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        Size(), sk_color_type, alpha_type,
-        SkColorSpaceToGfxColorSpace(sk_color_space),
+        Size(), sk_color_type, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
@@ -569,8 +567,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        Size(), sk_color_type, alpha_type,
-        SkColorSpaceToGfxColorSpace(sk_color_space),
+        Size(), sk_color_type, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
@@ -583,8 +580,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // another type of resource prover above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), sk_color_type, alpha_type,
-        SkColorSpaceToGfxColorSpace(sk_color_space),
+        Size(), sk_color_type, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 

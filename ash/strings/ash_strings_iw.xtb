@@ -968,6 +968,7 @@
 <translation id="4285498937028063278">ביטול ההצמדה</translation>
 <translation id="428715201724021596">מתבצע חיבור לפרופיל. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="4287250812980588583">‏חלון Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{עוצמת הקול של המיקרופון נשלטת על ידי <ph name="APP_NAME" />}one{עוצמת הקול של המיקרופון נשלטת על ידי # אפליקציות}two{עוצמת הקול של המיקרופון נשלטת על ידי # אפליקציות}other{עוצמת הקול של המיקרופון נשלטת על ידי # אפליקציות}}</translation>
 <translation id="4294319844246081198">בוקר טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ניקוי כל <ph name="COUNT" /> ההתראות</translation>
 <translation id="4300272766492248925">פתיחת האפליקציה</translation>
@@ -1264,6 +1265,7 @@
 <translation id="5245201184978705914">לא ניתן ליצור תמליל</translation>
 <translation id="5251174953851719648">רענון התוכן</translation>
 <translation id="5253783950165989294">המכשיר <ph name="DEVICE_NAME" /> מחובר, <ph name="BATTERY_PERCENTAGE" />% סוללה</translation>
+<translation id="5256939106029293271">בדיקת המיקרופון</translation>
 <translation id="5258528442992323769">אין שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="5260676007519551770">שולחן עבודה 4</translation>
 <translation id="5265391159779542051">טעינת התוצאות הסתיימה</translation>
@@ -1421,6 +1423,7 @@
 <translation id="5745612484876805746">תאורת לילה נדלקת באופן אוטומטי בשעת השקיעה</translation>
 <translation id="5750765938512549687">‏Bluetooth כבוי</translation>
 <translation id="5758114525425072423">הפעלת מצב הריכוז. הוגדר טיימר ל-<ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">ככה הקול שלך נשמע כדי להפסיק, לוחצים על סמל הבדיקה או סוגרים את החלונית של שיחת הווידאו.</translation>
 <translation id="5760866832697883462">חיבור של <ph name="NAME" /></translation>
 <translation id="5762420912707163638">החלפת המצב של כלי הסימון. <ph name="STATE_TEXT" /> אפשר להשתמש במשטח המגע, במסך המגע או בסטיילוס כדי לשרטט במסך.</translation>
 <translation id="576341972084747908">הורדת קובץ (<ph name="FILENAME" />) מסוכן</translation>

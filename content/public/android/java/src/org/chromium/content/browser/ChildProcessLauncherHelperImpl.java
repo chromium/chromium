@@ -723,7 +723,7 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     private void start() {
-        mLauncher.start(/* doSetupConnection= */ true, /* queueIfNoFreeConnection= */ true);
+        mLauncher.start(/* setupConnection= */ true, /* queueIfNoFreeConnection= */ true);
         mStartTimeMs = System.currentTimeMillis();
     }
 

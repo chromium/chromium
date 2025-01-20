@@ -78,8 +78,9 @@ CredentialRequestOptions* CreateGetOptionsWithProviders(
 CredentialRequestOptions* CreateValidGetOptions() {
   IdentityRequestProvider* identity_provider =
       IdentityRequestProvider::Create();
+  identity_provider->setProtocol("openid4vp");
   identity_provider->setRequest(
-      MakeGarbageCollected<V8UnionObjectOrString>(String()));
+      MakeGarbageCollected<V8UnionObjectOrString>(String("request")));
   HeapVector<Member<IdentityRequestProvider>> identity_providers;
   identity_providers.push_back(identity_provider);
   return CreateGetOptionsWithProviders(identity_providers);

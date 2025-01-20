@@ -26,7 +26,7 @@ GlicProfileConfiguration::GlicProfileConfiguration(Profile* profile)
     : profile_(*profile) {
   pref_registrar_.Init(profile_->GetPrefs());
   pref_registrar_.Add(
-      prefs::kGlicEnabledByPolicy,
+      prefs::kGlicSettingsPolicy,
       base::BindRepeating(&GlicProfileConfiguration::OnEnabledByPolicyChanged,
                           base::Unretained(this)));
 }
@@ -37,8 +37,8 @@ GlicProfileConfiguration::~GlicProfileConfiguration() = default;
 void GlicProfileConfiguration::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
-      prefs::kGlicEnabledByPolicy,
-      static_cast<int>(prefs::EnabledByPolicyState::kEnabled));
+      prefs::kGlicSettingsPolicy,
+      static_cast<int>(prefs::SettingsPolicyState::kEnabled));
   registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
@@ -46,8 +46,8 @@ void GlicProfileConfiguration::RegisterProfilePrefs(
 }
 
 bool GlicProfileConfiguration::IsEnabledByPolicy() const {
-  return profile_->GetPrefs()->GetInteger(prefs::kGlicEnabledByPolicy) ==
-         static_cast<int>(prefs::EnabledByPolicyState::kEnabled);
+  return profile_->GetPrefs()->GetInteger(prefs::kGlicSettingsPolicy) ==
+         static_cast<int>(prefs::SettingsPolicyState::kEnabled);
 }
 
 void GlicProfileConfiguration::OnEnabledByPolicyChanged() {

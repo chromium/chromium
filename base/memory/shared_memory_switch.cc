@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/platform_shared_memory_handle.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/launch.h"
@@ -60,42 +61,47 @@
 // 3. The high 64 bits of the shared memory block GUID.
 // 4. The low 64 bits of the shared memory block GUID.
 // 5. The size of the shared memory segment as a string.
+//
+// TODO(crbug.com/389713696): Refactor the platform specific parts of this file.
 
 namespace base::shared_memory {
 namespace {
 
-using subtle::PlatformSharedMemoryRegion;
-using subtle::ScopedPlatformSharedMemoryHandle;
+using base::subtle::PlatformSharedMemoryRegion;
+using base::subtle::ScopedPlatformSharedMemoryHandle;
 
 // The max shared memory size is artificially limited. This serves as a sanity
 // check when serializing/deserializing the handle info. This value should be
 // slightly larger than the largest shared memory size used in practice.
 constexpr size_t kMaxSharedMemorySize = 8 << 20;  // 8 MiB
 
+#if BUILDFLAG(IS_FUCHSIA)
 // Return a scoped platform shared memory handle for |shmem_region|, possibly
 // with permissions reduced to make the handle read-only.
-ScopedPlatformSharedMemoryHandle GetPlatformHandle(
-    PlatformSharedMemoryRegion& shmem_region,
-    [[maybe_unused]] bool make_read_only) {
-#if BUILDFLAG(IS_FUCHSIA)
-  if (make_read_only) {
-    // For Fuchsia, ScopedPlatformSharedMemoryHandle <==> zx::vmo
-    zx::vmo scoped_handle;
-    zx_status_t status = shmem_region.GetPlatformHandle()->duplicate(
-        ZX_RIGHT_READ | ZX_RIGHT_MAP | ZX_RIGHT_TRANSFER |
-            ZX_RIGHT_GET_PROPERTY | ZX_RIGHT_DUPLICATE,
-        &scoped_handle);
-    ZX_CHECK(status == ZX_OK, status) << "zx_handle_duplicate";
-    return scoped_handle;
+// For Fuchsia:
+// * ScopedPlatformSharedMemoryHandle <==> zx::vmo
+zx::vmo GetFuchsiaHandle(ScopedPlatformSharedMemoryHandle shmem_handle,
+                         bool make_read_only) {
+  if (!make_read_only) {
+    return shmem_handle;
   }
-#endif  // BUILDFLAG(IS_FUCHSIA)
-  return shmem_region.PassPlatformHandle();
+  zx::vmo scoped_handle;
+  zx_status_t status =
+      shmem_handle.duplicate(ZX_RIGHT_READ | ZX_RIGHT_MAP | ZX_RIGHT_TRANSFER |
+                                 ZX_RIGHT_GET_PROPERTY | ZX_RIGHT_DUPLICATE,
+                             &scoped_handle);
+  ZX_CHECK(status == ZX_OK, status) << "zx_handle_duplicate";
+  return scoped_handle;
 }
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // Serializes the shared memory region metadata to a string that can be added
 // to the command-line of a child-process.
-std::string Serialize(PlatformSharedMemoryRegion shmem_region,
-                      bool is_read_only,
+template <typename HandleType>
+std::string Serialize(HandleType shmem_handle,
+                      const UnguessableToken& shmem_token,
+                      size_t shmem_size,
+                      [[maybe_unused]] bool is_read_only,
 #if BUILDFLAG(IS_APPLE)
                       MachPortsForRendezvous::key_type rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
@@ -106,12 +112,6 @@ std::string Serialize(PlatformSharedMemoryRegion shmem_region,
 #if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_APPLE)
   CHECK(launch_options != nullptr);
 #endif
-
-  CHECK(shmem_region.IsValid());
-
-  auto shmem_token = shmem_region.GetGUID();
-  auto shmem_size = shmem_region.GetSize();
-  auto shmem_handle = GetPlatformHandle(shmem_region, is_read_only);
 
   CHECK(shmem_token);
   CHECK_NE(shmem_size, 0u);
@@ -127,15 +127,16 @@ std::string Serialize(PlatformSharedMemoryRegion shmem_region,
   serialized.reserve(kSerializedReservedSize);
 
 #if BUILDFLAG(IS_WIN)
-  // Ownership of the handle is passed to |launch_options|. We keep a non-
-  // owning alias for a moment, so we can serialize the handle's numeric
-  // value.
-  HANDLE handle = shmem_handle.release();
-  launch_options->handles_to_inherit.push_back(handle);
+  // If the child is launched in elevated privilege mode, it will query the
+  // parent for the handle. Otherwise, in non-elevated mode, the handle will
+  // be passed via process inheritance.
+  if (!launch_options->elevated) {
+    launch_options->handles_to_inherit.push_back(shmem_handle);
+  }
 
   // Tell the child process the name of the HANDLE and whether to handle can
   // be inherited ('i') or must be duplicate from the parent process ('p').
-  StrAppend(&serialized, {NumberToString(win::HandleToUint32(handle)),
+  StrAppend(&serialized, {NumberToString(win::HandleToUint32(shmem_handle)),
                           (launch_options->elevated ? ",p," : ",i,")});
 #elif BUILDFLAG(IS_APPLE)
   // In the receiving child, the handle is looked up using the rendezvous key.
@@ -146,8 +147,10 @@ std::string Serialize(PlatformSharedMemoryRegion shmem_region,
   // The handle is passed via the handles to transfer launch options. The child
   // will use the returned handle_id to lookup the handle. Ownership of the
   // handle is transferred to |launch_options|.
+  zx::vmo scoped_handle =
+      GetFuchsiaHandle(std::move(shmem_handle), is_read_only);
   uint32_t handle_id = LaunchOptions::AddHandleToTransfer(
-      &launch_options->handles_to_transfer, shmem_handle.release());
+      &launch_options->handles_to_transfer, scoped_handle.release());
   StrAppend(&serialized, {NumberToString(handle_id), ",i,"});
 #elif BUILDFLAG(IS_POSIX)
   // Serialize the key by which the child can lookup the shared memory handle.
@@ -304,22 +307,32 @@ expected<PlatformSharedMemoryRegion, SharedMemoryError> Deserialize(
       std::move(scoped_handle), mode, checked_cast<size_t>(size), guid.value());
 }
 
-}  // namespace
-
-void AddToLaunchParameters(std::string_view switch_name,
-                           ReadOnlySharedMemoryRegion read_only_memory_region,
+template <typename RegionType>
+void AddToLaunchParametersImpl(std::string_view switch_name,
+                               const RegionType& memory_region,
 #if BUILDFLAG(IS_APPLE)
-                           MachPortsForRendezvous::key_type rendezvous_key,
+                               MachPortsForRendezvous::key_type rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
-                           GlobalDescriptors::Key descriptor_key,
-                           ScopedFD& out_descriptor_to_share,
+                               GlobalDescriptors::Key descriptor_key,
+                               ScopedFD& out_descriptor_to_share,
 #endif
-                           CommandLine* command_line,
-                           LaunchOptions* launch_options) {
+                               CommandLine* command_line,
+                               LaunchOptions* launch_options) {
+#if BUILDFLAG(IS_WIN)
+  auto token = memory_region.GetGUID();
+  auto size = memory_region.GetSize();
+  auto handle = memory_region.GetPlatformHandle();
+#else
+  auto region =
+      RegionType::TakeHandleForSerialization(memory_region.Duplicate());
+  auto token = region.GetGUID();
+  auto size = region.GetSize();
+  auto handle = region.PassPlatformHandle();
+#endif  // !BUILDFLAG(IS_WIN)
+  constexpr bool is_read_only =
+      std::is_same<RegionType, ReadOnlySharedMemoryRegion>::value;
   std::string switch_value =
-      Serialize(ReadOnlySharedMemoryRegion::TakeHandleForSerialization(
-                    std::move(read_only_memory_region)),
-                /*is_read_only=*/true,
+      Serialize(std::move(handle), token, size, is_read_only,
 #if BUILDFLAG(IS_APPLE)
                 rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
@@ -329,8 +342,30 @@ void AddToLaunchParameters(std::string_view switch_name,
   command_line->AppendSwitchASCII(switch_name, switch_value);
 }
 
+}  // namespace
+
+void AddToLaunchParameters(
+    std::string_view switch_name,
+    const ReadOnlySharedMemoryRegion& read_only_memory_region,
+#if BUILDFLAG(IS_APPLE)
+    MachPortsForRendezvous::key_type rendezvous_key,
+#elif BUILDFLAG(IS_POSIX)
+    GlobalDescriptors::Key descriptor_key,
+    ScopedFD& out_descriptor_to_share,
+#endif
+    CommandLine* command_line,
+    LaunchOptions* launch_options) {
+  AddToLaunchParametersImpl(switch_name, read_only_memory_region,
+#if BUILDFLAG(IS_APPLE)
+                            rendezvous_key,
+#elif BUILDFLAG(IS_POSIX)
+                            descriptor_key, out_descriptor_to_share,
+#endif
+                            command_line, launch_options);
+}
+
 void AddToLaunchParameters(std::string_view switch_name,
-                           UnsafeSharedMemoryRegion unsafe_memory_region,
+                           const UnsafeSharedMemoryRegion& unsafe_memory_region,
 #if BUILDFLAG(IS_APPLE)
                            MachPortsForRendezvous::key_type rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
@@ -339,17 +374,13 @@ void AddToLaunchParameters(std::string_view switch_name,
 #endif
                            CommandLine* command_line,
                            LaunchOptions* launch_options) {
-  std::string switch_value =
-      Serialize(UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-                    std::move(unsafe_memory_region)),
-                /*is_read_only=*/false,
+  AddToLaunchParametersImpl(switch_name, unsafe_memory_region,
 #if BUILDFLAG(IS_APPLE)
-                rendezvous_key,
+                            rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
-                descriptor_key, out_descriptor_to_share,
+                            descriptor_key, out_descriptor_to_share,
 #endif
-                launch_options);
-  command_line->AppendSwitchASCII(switch_name, switch_value);
+                            command_line, launch_options);
 }
 
 expected<UnsafeSharedMemoryRegion, SharedMemoryError>
@@ -378,7 +409,7 @@ ReadOnlySharedMemoryRegionFrom(std::string_view switch_value) {
   auto shmem_region = ReadOnlySharedMemoryRegion::Deserialize(
       std::move(platform_handle).value());
   if (!shmem_region.IsValid()) {
-    LOG(ERROR) << "Faield to deserialize read-only memory handle";
+    LOG(ERROR) << "Failed to deserialize read-only memory handle";
     return unexpected(SharedMemoryError::kDeserializeFailed);
   }
   return ok(std::move(shmem_region));

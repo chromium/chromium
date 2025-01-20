@@ -17,6 +17,17 @@ import stat
 import sys
 import tempfile
 
+# Keys that should not be copied from mobileprovision
+BANNED_KEYS = [
+    "com.apple.developer.cs.allow-jit",
+    "com.apple.developer.memory.transfer-send",
+    "com.apple.developer.web-browser",
+    "com.apple.developer.web-browser-engine.host",
+    "com.apple.developer.web-browser-engine.networking",
+    "com.apple.developer.web-browser-engine.rendering",
+    "com.apple.developer.web-browser-engine.webcontent",
+]
+
 if sys.version_info.major < 3:
   basestring_compat = basestring
 else:
@@ -266,7 +277,7 @@ class Entitlements(object):
 
   def LoadDefaults(self, defaults):
     for key, value in defaults.items():
-      if key not in self._data:
+      if key not in self._data and key not in BANNED_KEYS:
         self._data[key] = value
 
   def WriteTo(self, target_path):

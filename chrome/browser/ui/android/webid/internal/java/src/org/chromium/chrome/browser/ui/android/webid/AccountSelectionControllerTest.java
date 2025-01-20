@@ -188,7 +188,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                         clientMetadataNoBrandIconUrl,
                         RpContext.SIGN_IN,
                         DEFAULT_DISCLOSURE_FIELDS,
-                        /* isAutoReauthn= */ false);
+                        /* hasLoginStatusMismatch= */ false);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,

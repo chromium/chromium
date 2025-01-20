@@ -504,7 +504,6 @@ class ProfileMenuViewPixelTest
                 policy::EnterpriseManagementAuthority::CLOUD);
         break;
       case ManagementStatus::kBrowserManaged:
-        enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
         scoped_browser_management_ =
             std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
                 policy::ManagementServiceFactory::GetForProfile(GetProfile()),

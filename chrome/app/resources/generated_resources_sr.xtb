@@ -525,6 +525,7 @@
 <translation id="135389172849514421">Ради офлајн</translation>
 <translation id="1353980523955420967">Не можемо да пронађемо PPD. Проверите да ли је Chromebook онлајн и пробајте поново.</translation>
 <translation id="1354045473509304750">Наставите да дозвољавате сајту <ph name="HOST" /> да користи и помера камеру</translation>
+<translation id="1354148503392558902">Мења се лозинка…</translation>
 <translation id="1355088139103479645">Желите ли да избришете све податке?</translation>
 <translation id="1356376170199999104">Дозвољено је – <ph name="PERMISSION_DETAILS" />. Укључите микрофон помоћу физичког прекидача.</translation>
 <translation id="1356959069439783953">Неактивне картице добијају нови изглед</translation>
@@ -1093,6 +1094,7 @@
 <translation id="1751335846119670066">Помоћ при читању</translation>
 <translation id="17513872634828108">Отворене картице</translation>
 <translation id="175196451752279553">П&amp;оново отвори затворену картицу</translation>
+<translation id="1752557850776261983">Проверава се пријављивање…</translation>
 <translation id="1753067873202720523">Chromebook се можда неће пунити док је укључен.</translation>
 <translation id="1753557900380512635">Ентеријер</translation>
 <translation id="1753905327828125965">Најпосећеније</translation>
@@ -3732,6 +3734,7 @@
 <translation id="3629664892718440872">Запамти овај избор</translation>
 <translation id="3630132874740063857">Телефон</translation>
 <translation id="3630995161997703415">Додајте овај сајт на полицу да бисте га користили у било ком тренутку</translation>
+<translation id="3632929818790223729">Подели картицу са активном картицом</translation>
 <translation id="3634652306074934350">Захтев за дозволу је истекао</translation>
 <translation id="3635199270495525546">Откривен је модул поуздане платформе (TPM)</translation>
 <translation id="3635353578505343390">Пошаљите повратне информације Google-у</translation>
@@ -10028,6 +10031,7 @@
 <translation id="8140869601171867148">Google налог је исти онај налог који користите за Gmail, YouTube, Chrome и друге Google производе.
     Користите налог да бисте лако приступали свим обележивачима, фајловима и другом садржају.</translation>
 <translation id="8141418916163800697">Можете да подесите још функција у подешавањима Phone Hub-а</translation>
+<translation id="814156740715940972">Подели картицу са активном картицом</translation>
 <translation id="8141584439523427891">Сада се отвара у алтернативном прегледачу</translation>
 <translation id="8141725884565838206">Управљајте лозинкама</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}few{# видео снимка}other{# видеа}}</translation>

@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_resource_provider.h"
 
 #include <memory>
+
+#include "base/containers/adapters.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
@@ -134,22 +137,19 @@ void VideoFrameResourceProvider::ClearFrameResources() {
   }
 }
 
-void VideoFrameResourceProvider::PrepareSendToParent(
-    const WebVector<viz::ResourceId>& resource_ids,
-    WebVector<viz::TransferableResource>* transferable_resources) {
+std::vector<viz::TransferableResource>
+VideoFrameResourceProvider::PrepareSendToParent(
+    const std::vector<viz::ResourceId>& resource_ids) {
   std::vector<viz::TransferableResource> resources_list;
-  resource_provider_->PrepareSendToParent(
-      const_cast<WebVector<viz::ResourceId>&>(resource_ids).ReleaseVector(),
-      &resources_list, context_provider_);
-  *transferable_resources = std::move(resources_list);
+  resource_provider_->PrepareSendToParent(resource_ids, &resources_list,
+                                          context_provider_);
+  return resources_list;
 }
 
 void VideoFrameResourceProvider::ReceiveReturnsFromParent(
     Vector<viz::ReturnedResource> transferable_resources) {
-  std::vector<viz::ReturnedResource> returned_resources(
-      std::make_move_iterator(transferable_resources.begin()),
-      std::make_move_iterator(transferable_resources.end()));
-  resource_provider_->ReceiveReturnsFromParent(std::move(returned_resources));
+  resource_provider_->ReceiveReturnsFromParent(
+      base::ToVector(base::RangeAsRvalues(std::move(transferable_resources))));
 }
 
 }  // namespace blink

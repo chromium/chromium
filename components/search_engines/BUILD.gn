@@ -14,7 +14,6 @@ static_library("search_engines") {
     "choice_made_location.h",
     "default_search_manager.cc",
     "default_search_manager.h",
-    "eea_countries_ids.h",
     "enterprise/default_search_policy_handler.cc",
     "enterprise/default_search_policy_handler.h",
     "enterprise/enterprise_search_manager.cc",
@@ -283,7 +282,12 @@ component("search_engines_switches") {
     "search_engines_switches.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+
+    # TODO(crbug.com/390993114): Remove with the header forwarding.
+    "//components/regional_capabilities",
+  ]
 }
 
 if (!is_android) {

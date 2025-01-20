@@ -4,12 +4,14 @@
 
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 
+#include "base/check_deref.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -18,6 +20,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using testing::InSequence;
 using testing::StrictMock;
@@ -338,6 +341,13 @@ TEST_F(SmartCardPermissionContextTest, AllowedByPolicy) {
   SetAllowlistedByPolicy(origin_1);
 
   EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  auto grants = permission_context.GetGrantedObjects(origin_1);
+  ASSERT_EQ(1u, grants.size());
+  EXPECT_EQ(content_settings::SettingSource::kPolicy, grants[0]->source);
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_SMART_CARD_POLICY_DESCRIPTION_FOR_ANY_DEVICE),
+            CHECK_DEREF(grants[0]->value.FindString("reader-name")));
 }
 
 TEST_F(SmartCardPermissionContextTest, BlockedByPolicy) {

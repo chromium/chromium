@@ -968,6 +968,7 @@
 <translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="428715201724021596">กำลังเชื่อมต่อโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="4287250812980588583">หน้าต่าง Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{ระดับเสียงของไมค์ควบคุมโดย <ph name="APP_NAME" />}other{ระดับเสียงของไมค์ควบคุมโดย # แอป}}</translation>
 <translation id="4294319844246081198">สวัสดียามเช้า <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">ล้างการแจ้งเตือนทั้งหมด <ph name="COUNT" /> รายการ</translation>
 <translation id="4300272766492248925">เปิดแอป</translation>

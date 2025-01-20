@@ -25,7 +25,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/choice_made_location.h"
-#include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -141,11 +140,7 @@ ChoiceScreenData::ChoiceScreenData(
 ChoiceScreenData::~ChoiceScreenData() = default;
 
 bool IsEeaChoiceCountry(int country_id) {
-  // Consider the search engine list command line country override as an EEA
-  // region country to display the search engine choice screen.
-  return regional_capabilities::HasSearchEngineCountryListOverride()
-             ? true
-             : kEeaChoiceCountriesIds.contains(country_id);
+  return regional_capabilities::IsEeaCountry(country_id);
 }
 
 void RecordChoiceScreenProfileInitCondition(

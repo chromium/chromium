@@ -156,7 +156,7 @@ public class ShareImageFileUtils {
         FileOutputStreamWriter fileWriter =
                 (fos, cb) -> {
                     writeImageData(fos, imageData);
-                    cb.onResult(/* success= */ true);
+                    cb.onResult(/* result= */ true);
                 };
 
         saveImage(
@@ -191,7 +191,7 @@ public class ShareImageFileUtils {
         FileOutputStreamWriter fileWriter =
                 (fos, cb) -> {
                     writeBitmap(fos, bitmap);
-                    cb.onResult(/* success= */ true);
+                    cb.onResult(/* result= */ true);
                 };
 
         saveImage(

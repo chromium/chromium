@@ -202,7 +202,7 @@ public class OptionalButtonCoordinatorTest {
                         /* isEnabled= */ isEnabled,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false);
+                        /* showHoverhighlight= */ false);
 
         View backgroundView = Mockito.mock(View.class);
         doReturn(View.VISIBLE).when(backgroundView).getVisibility();
@@ -240,7 +240,7 @@ public class OptionalButtonCoordinatorTest {
                         /* isEnabled= */ isEnabled,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false);
+                        /* showHoverhighlight= */ false);
 
         View backgroundView = Mockito.mock(View.class);
         doReturn(View.GONE).when(backgroundView).getVisibility();
@@ -279,7 +279,7 @@ public class OptionalButtonCoordinatorTest {
                         /* isEnabled= */ isEnabled,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false);
+                        /* showHoverhighlight= */ false);
 
         ArgumentCaptor<Runnable> onShowCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         ArgumentCaptor<Runnable> onDismissCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
@@ -435,7 +435,7 @@ public class OptionalButtonCoordinatorTest {
                         /* isEnabled= */ true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false);
+                        /* showHoverhighlight= */ false);
 
         // Call update button with an enabled button.
         mOptionalButtonCoordinator.updateButton(buttonData);

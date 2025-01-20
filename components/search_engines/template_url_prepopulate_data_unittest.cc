@@ -20,12 +20,12 @@
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_switches.h"
-#include "components/search_engines/eea_countries_ids.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
@@ -930,8 +930,8 @@ class TemplateURLPrepopulateDataListTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     TemplateURLPrepopulateDataListTest,
-    ::testing::ValuesIn(search_engines::kEeaChoiceCountriesIds.begin(),
-                        search_engines::kEeaChoiceCountriesIds.end()),
+    ::testing::ValuesIn(regional_capabilities::kEeaChoiceCountriesIds.begin(),
+                        regional_capabilities::kEeaChoiceCountriesIds.end()),
     TemplateURLPrepopulateDataListTest::ParamToTestSuffix);
 
 // Quick version of the test intended to flag glaring issues as part of the

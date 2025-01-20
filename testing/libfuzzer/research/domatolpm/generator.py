@@ -641,7 +641,14 @@ class DomatoBuilder:
 
       creator = None
       if rule['type'] == 'code' and ret_vars > 0:
-        creator = {'var_type': creator_name, 'var_prefix': 'var'}
+        creates = rule['creates']
+        # For some reason, Domato sets a dictionary when the creator is a line
+        # and a list when its a helper. Thus the unpacking code below. The
+        # assertion ensures we are not dealing with another unknown format.
+        if isinstance(creates, list):
+          assert len(creates) == 1
+          creates = creates[0]
+        creator = {'var_type': creates['tagname'], 'var_prefix': 'var'}
       proto_type = to_proto_type(creator_name)
       rule_msg = ProtoMessage(name=f'{proto_type}_{rule_id}',
                               fields=proto_fields)

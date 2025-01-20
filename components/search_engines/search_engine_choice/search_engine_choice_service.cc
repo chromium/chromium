@@ -32,7 +32,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
-#include "components/search_engines/eea_countries_ids.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
@@ -193,7 +193,7 @@ SearchEngineChoiceService::SearchEngineChoiceService(
       is_profile_eligbile_for_dse_guest_propagation &&
       base::FeatureList::IsEnabled(
           switches::kSearchEngineChoiceGuestExperience) &&
-      IsEeaChoiceCountry(GetCountryId());
+      regional_capabilities_service_->IsInEeaCountry();
 
   ProcessPendingChoiceScreenDisplayState();
   PreprocessPrefsForReprompt();
@@ -242,7 +242,7 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
-  if (!IsEeaChoiceCountry(GetCountryId())) {
+  if (!regional_capabilities_service_->IsInEeaCountry()) {
     return SearchEngineChoiceScreenConditions::kNotInRegionalScope;
   }
 
@@ -337,7 +337,7 @@ void SearchEngineChoiceService::RecordChoiceMade(
   CHECK_NE(choice_location, ChoiceMadeLocation::kOther);
 
   // Don't modify the pref if the user is not in the EEA region.
-  if (!IsEeaChoiceCountry(GetCountryId())) {
+  if (!regional_capabilities_service_->IsInEeaCountry()) {
     return;
   }
 
