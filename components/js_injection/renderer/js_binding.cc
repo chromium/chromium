@@ -37,6 +37,7 @@
 #include "v8/include/v8.h"
 
 namespace {
+
 constexpr char kPostMessage[] = "postMessage";
 constexpr char kOnMessage[] = "onmessage";
 constexpr char kAddEventListener[] = "addEventListener";
@@ -72,7 +73,7 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
   v8::Local<v8::ArrayBuffer> array_buffer_;
 };
 
-}  // anonymous namespace
+}  // namespace
 
 namespace js_injection {
 
@@ -192,7 +193,7 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   }
   for (const auto& listener : listeners_copy) {
     // Ensure the listener is still registered.
-    if (base::Contains(listeners_, listener)) {
+    if (find_listener(listener) != listeners_.end()) {
       web_frame->RequestExecuteV8Function(context, listener, self, 1, argv, {});
     }
   }
@@ -294,8 +295,9 @@ void JsBinding::AddEventListener(gin::Arguments* args) {
     return;
   }
 
-  if (base::Contains(listeners_, listener))
+  if (find_listener(listener) != listeners_.end()) {
     return;
+  }
 
   v8::Local<v8::Context> context = args->GetHolderCreationContext();
   listeners_.push_back(
@@ -326,11 +328,9 @@ void JsBinding::RemoveEventListener(gin::Arguments* args) {
     return;
   }
 
-  auto iter = base::ranges::find(listeners_, listener);
-  if (iter == listeners_.end())
-    return;
-
-  listeners_.erase(iter);
+  if (auto iter = find_listener(listener); iter != listeners_.end()) {
+    listeners_.erase(iter);
+  }
 }
 
 v8::Local<v8::Function> JsBinding::GetOnMessage(v8::Isolate* isolate) {
