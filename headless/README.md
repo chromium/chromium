@@ -9,14 +9,20 @@ As of M118, precompiled `headless_shell` binaries are available for download
 under the name `chrome-headless-shell` via [Chrome for Testing
 infrastructure](https://googlechromelabs.github.io/chrome-for-testing/).
 
+As of M132, headless shell functionality is no longer part of
+the Chrome binary, so --headless=old has no effect.
+If you are using old Headless functionality you should
+now migrate to `chrome-headless-shell`.
+[Read more](https://developer.chrome.com/blog/removing-headless-old-from-chrome).
+
 There are two ways to use Headless Chromium:
 
 ## Usage via the DevTools remote debugging protocol
 
-1. Start a normal Chrome binary with the `--headless=old` command line flag:
+1. Start Chrome in headless mode using the `--headless` command line flag:
 
 ```sh
-$ chrome --headless=old --remote-debugging-port=9222 https://chromium.org/
+$ chrome --headless --remote-debugging-port=9222 https://chromium.org/
 ```
 
 2. Navigate to `chrome://inspect/` in another instance of Chrome.
