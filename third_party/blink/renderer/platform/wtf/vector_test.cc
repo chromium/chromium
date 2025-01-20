@@ -33,6 +33,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/adapters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -810,6 +811,32 @@ TEST(VectorTest, ToVectorWithProjection) {
     auto v2 = ToVector(v1, std::negate<>());
     EXPECT_THAT(v2, testing::ElementsAre(-1, -2, -3, -4, -5, -6));
   }
+}
+
+TEST(VectorTest, ToVectorMoveOnly) {
+  std::vector<std::unique_ptr<int>> v;
+  v.push_back(std::make_unique<int>(1));
+  v.push_back(std::make_unique<int>(2));
+  v.push_back(std::make_unique<int>(3));
+
+  auto v2 = ToVector(base::RangeAsRvalues(std::move(v)));
+  EXPECT_THAT(v2, testing::ElementsAre(testing::Pointee(1), testing::Pointee(2),
+                                       testing::Pointee(3)));
+
+  // The old vector should be consumed. The standard guarantees that a
+  // moved-from std::unique_ptr will be null.
+  // NOLINT(bugprone-use-after-move)
+  EXPECT_THAT(v, testing::ElementsAre(testing::IsNull(), testing::IsNull(),
+                                      testing::IsNull()));
+
+  // Another method which is more verbose so not preferable.
+  auto v3 = ToVector(std::move(v2),
+                     [](std::unique_ptr<int>& p) { return std::move(p); });
+  EXPECT_THAT(v3, testing::ElementsAre(testing::Pointee(1), testing::Pointee(2),
+                                       testing::Pointee(3)));
+  // NOLINT(bugprone-use-after-move)
+  EXPECT_THAT(v2, testing::ElementsAre(testing::IsNull(), testing::IsNull(),
+                                       testing::IsNull()));
 }
 
 static_assert(VectorTraits<int>::kCanCopyWithMemcpy,

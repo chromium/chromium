@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/ranges.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,20 +43,29 @@ TEST(ToVectorTest, Projection) {
 }
 
 TEST(ToVectorTest, MoveOnly) {
-  struct MoveOnly {
-    MoveOnly() = default;
+  std::vector<std::unique_ptr<int>> v;
+  v.push_back(std::make_unique<int>(1));
+  v.push_back(std::make_unique<int>(2));
+  v.push_back(std::make_unique<int>(3));
 
-    MoveOnly(const MoveOnly&) = delete;
-    MoveOnly& operator=(const MoveOnly&) = delete;
+  auto v2 = base::ToVector(base::RangeAsRvalues(std::move(v)));
+  EXPECT_THAT(v2, testing::ElementsAre(testing::Pointee(1), testing::Pointee(2),
+                                       testing::Pointee(3)));
 
-    MoveOnly(MoveOnly&&) = default;
-    MoveOnly& operator=(MoveOnly&&) = default;
-  };
+  // The old vector should be consumed. The standard guarantees that a
+  // moved-from std::unique_ptr will be null.
+  // NOLINT(bugprone-use-after-move)
+  EXPECT_THAT(v, testing::ElementsAre(testing::IsNull(), testing::IsNull(),
+                                      testing::IsNull()));
 
-  std::vector<MoveOnly> vec(/*size=*/10);
-  auto mapped_vec = ToVector(std::move(vec),
-                             [](MoveOnly& value) { return std::move(value); });
-  EXPECT_EQ(mapped_vec.size(), 10U);
+  // Another method which is more verbose so not preferable.
+  auto v3 = base::ToVector(
+      std::move(v2), [](std::unique_ptr<int>& p) { return std::move(p); });
+  EXPECT_THAT(v3, testing::ElementsAre(testing::Pointee(1), testing::Pointee(2),
+                                       testing::Pointee(3)));
+  // NOLINT(bugprone-use-after-move)
+  EXPECT_THAT(v2, testing::ElementsAre(testing::IsNull(), testing::IsNull(),
+                                       testing::IsNull()));
 }
 
 template <typename C, typename Proj, typename T>
