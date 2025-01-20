@@ -3905,6 +3905,8 @@ if (enable_java_templates) {
             filter_exclude(_java_files, [ "$root_gen_dir*" ])
         _enable_errorprone =
             _enable_errorprone && _errorprone_source_files != []
+      } else {
+        not_needed(invoker, [ "errorprone_args" ])
       }
 
       if (defined(invoker.resources_package) && _type == "java_library") {
