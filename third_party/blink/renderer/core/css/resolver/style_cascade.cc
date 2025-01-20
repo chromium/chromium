@@ -1539,19 +1539,31 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   for (const StyleRuleFunction::Parameter& parameter :
        function->GetParameters()) {
     stream.ConsumeWhitespace();
-    if (!first_parameter) {
-      if (stream.Peek().GetType() != kCommaToken) {
+
+    StringView argument_string;
+
+    if (first_parameter || stream.Peek().GetType() == kCommaToken) {
+      first_parameter = false;
+      if (stream.Peek().GetType() == kCommaToken) {
+        stream.ConsumeIncludingWhitespace();
+      }
+      wtf_size_t value_start_offset = stream.LookAheadOffset();
+      stream.SkipUntilPeekedTypeIs<kCommaToken>();
+      wtf_size_t value_end_offset = stream.LookAheadOffset();
+      argument_string = stream.StringRangeAt(
+          value_start_offset, value_end_offset - value_start_offset);
+      // Explicitly empty values, e.g. --foo(1,,3), are not allowed.
+      if (argument_string.empty()) {
         return false;
       }
-      stream.ConsumeIncludingWhitespace();
+    } else if (parameter.default_value) {
+      argument_string = parameter.default_value->OriginalText();
+    } else {
+      // Argument was missing, with no default.
+      return false;
     }
-    first_parameter = false;
 
-    wtf_size_t value_start_offset = stream.LookAheadOffset();
-    stream.SkipUntilPeekedTypeIs<kCommaToken, kRightParenthesisToken>();
-    wtf_size_t value_end_offset = stream.LookAheadOffset();
-    StringView argument_string = stream.StringRangeAt(
-        value_start_offset, value_end_offset - value_start_offset);
+    DCHECK(!argument_string.empty());
 
     // We need to resolve the argument in the context of this function,
     // so that we can do type coercion on the resolved value before the call.
@@ -1571,6 +1583,12 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     }
 
     function_arguments.insert(parameter.name, argument_value);
+  }
+
+  if (!stream.AtEnd()) {
+    // This could mean that we have more arguments than we have parameters,
+    // which isn't allowed.
+    return false;
   }
 
   // For now, we only support @function rules that contain a single

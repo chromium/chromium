@@ -976,9 +976,13 @@ StyleRuleStartingStyle::StyleRuleStartingStyle(
     HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleGroup(kStartingStyle, std::move(rules)) {}
 
+void StyleRuleFunction::Parameter::Trace(blink::Visitor* visitor) const {
+  visitor->Trace(default_value);
+}
+
 StyleRuleFunction::StyleRuleFunction(
     AtomicString name,
-    Vector<StyleRuleFunction::Parameter> parameters,
+    HeapVector<StyleRuleFunction::Parameter> parameters,
     HeapVector<Member<StyleRuleBase>> child_rules,
     CSSSyntaxDefinition return_type)
     : StyleRuleGroup(kFunction, std::move(child_rules)),
@@ -988,6 +992,7 @@ StyleRuleFunction::StyleRuleFunction(
 
 void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
+  visitor->Trace(parameters_);
 }
 
 StyleRuleMixin::StyleRuleMixin(AtomicString name, StyleRule* fake_parent_rule)
