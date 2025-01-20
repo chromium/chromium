@@ -651,7 +651,7 @@ const LayoutResult* BlockNode::SimplifiedLayout(
   const LayoutResult* previous_result = box_->GetSingleCachedLayoutResult();
   DCHECK(previous_result);
 
-  // We might be be trying to perform simplfied layout on a fragment in the
+  // We might be trying to perform simplified layout on a fragment in the
   // "measure" cache slot, abort if this is the case.
   if (&previous_result->GetPhysicalFragment() != &previous_fragment) {
     return nullptr;
