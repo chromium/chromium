@@ -103,11 +103,8 @@ public class ContentViewRenderView extends FrameLayout {
                                                 holder.getSurface(),
                                                 browserInputToken);
                         if (surfaceId != null && browserInputToken != null) {
-                            InputTransferHandler.Delegate delegate =
-                                    new InputTransferHandler.Delegate() {};
                             InputTransferHandler handler =
-                                    new InputTransferHandler(
-                                            browserInputToken, delegate, mWindowAndroid);
+                                    new InputTransferHandler(browserInputToken);
                             assert mSurfaceId == null;
                             mSurfaceId = surfaceId;
                             SurfaceInputTransferHandlerMap.getMap().put(mSurfaceId, handler);
@@ -149,7 +146,7 @@ public class ContentViewRenderView extends FrameLayout {
                                 .surfaceDestroyed(
                                         mNativeContentViewRenderView, ContentViewRenderView.this);
                         if (mSurfaceId != null) {
-                            SurfaceInputTransferHandlerMap.remove(mSurfaceId);
+                            SurfaceInputTransferHandlerMap.getMap().remove(mSurfaceId);
                             mSurfaceId = null;
                         }
                     }
