@@ -215,8 +215,7 @@ void ScannerSession::OnActionsReturned(
     if (proto_action.action_case() !=
         manta::proto::ScannerAction::ACTION_NOT_SET) {
       action_view_models.emplace_back(std::move(proto_action),
-                                      downscaled_jpeg_bytes,
-                                      command_delegate_->GetWeakPtr());
+                                      downscaled_jpeg_bytes);
     }
   }
 

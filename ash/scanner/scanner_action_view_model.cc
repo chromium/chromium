@@ -8,11 +8,9 @@
 #include <utility>
 
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/scanner/scanner_command_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/manta/proto/scanner.pb.h"
@@ -22,11 +20,9 @@ namespace ash {
 
 ScannerActionViewModel::ScannerActionViewModel(
     manta::proto::ScannerAction unpopulated_action,
-    scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
-    base::WeakPtr<ScannerCommandDelegate> delegate)
+    scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes)
     : unpopulated_action_(std::move(unpopulated_action)),
-      downscaled_jpeg_bytes_(std::move(downscaled_jpeg_bytes)),
-      delegate_(std::move(delegate)) {}
+      downscaled_jpeg_bytes_(std::move(downscaled_jpeg_bytes)) {}
 
 ScannerActionViewModel::ScannerActionViewModel(const ScannerActionViewModel&) =
     default;

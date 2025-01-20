@@ -315,6 +315,11 @@ void ScannerController::ExecuteAction(
   if (!scanner_session_) {
     return;
   }
+  // During an active user session, the first successful `StartNewSession()`
+  // call will create both the session and the command delegate. The command
+  // delegate is never reset afterwards, so the command delegate should always
+  // exist here.
+  CHECK(command_delegate_);
   const manta::proto::ScannerAction::ActionCase action_case =
       scanner_action.GetActionCase();
   scanner_session_->PopulateAction(
@@ -322,7 +327,7 @@ void ScannerController::ExecuteAction(
       scanner_action.unpopulated_action(),
       base::BindOnce(
           &ExecutePopulatedAction, action_case, base::TimeTicks::Now(),
-          scanner_action.delegate(),
+          command_delegate_->GetWeakPtr(),
           base::BindOnce(&ScannerController::OnActionFinished,
                          weak_ptr_factory_.GetWeakPtr(), action_case)));
   ShowActionProgressNotification(action_case);

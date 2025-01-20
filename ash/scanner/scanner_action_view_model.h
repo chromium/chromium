@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/manta/proto/scanner.pb.h"
 
 namespace gfx {
@@ -20,16 +19,13 @@ struct VectorIcon;
 
 namespace ash {
 
-class ScannerCommandDelegate;
-
 // A view model wrapper around a `ScannerUnpopulatedAction`, which handles the
 // conversion to a user-facing text string, icon, and a callback.
 class ASH_EXPORT ScannerActionViewModel {
  public:
   explicit ScannerActionViewModel(
       manta::proto::ScannerAction unpopulated_action,
-      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
-      base::WeakPtr<ScannerCommandDelegate> delegate);
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes);
   ScannerActionViewModel(const ScannerActionViewModel&);
   ScannerActionViewModel& operator=(const ScannerActionViewModel&);
   ScannerActionViewModel(ScannerActionViewModel&&);
@@ -48,12 +44,10 @@ class ASH_EXPORT ScannerActionViewModel {
   const scoped_refptr<base::RefCountedMemory>& downscaled_jpeg_bytes() const {
     return downscaled_jpeg_bytes_;
   }
-  base::WeakPtr<ScannerCommandDelegate> delegate() const { return delegate_; }
 
  private:
   manta::proto::ScannerAction unpopulated_action_;
   scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes_;
-  base::WeakPtr<ScannerCommandDelegate> delegate_;
 };
 
 }  // namespace ash
