@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
-#import "ios/chrome/browser/tabs/model/tab_parenting_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/view_source/model/view_source_browser_agent.h"
@@ -69,7 +68,6 @@ void AttachBrowserAgents(Browser* browser) {
   // LensBrowserAgent must be created before WebNavigationBrowserAgent.
   LensBrowserAgent::CreateForBrowser(browser);
   WebNavigationBrowserAgent::CreateForBrowser(browser);
-  TabParentingBrowserAgent::CreateForBrowser(browser);
 
   if (!browser_is_off_record) {
     ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser);
