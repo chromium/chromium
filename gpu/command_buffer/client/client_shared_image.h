@@ -83,10 +83,6 @@ class GPU_EXPORT ClientSharedImage
         uint64_t tracing_process_id,
         int importance) = 0;
 
-    // Returns a memory dump GUID consistent across processes. Should be called
-    // only if IsSharedMemory() is true.
-    virtual base::UnguessableToken GetSharedMemoryGuid() = 0;
-
    private:
     friend class ClientSharedImage;
 

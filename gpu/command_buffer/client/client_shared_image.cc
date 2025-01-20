@@ -66,9 +66,6 @@ class ScopedMappingSharedMemoryMapping
       int importance) override {
     NOTREACHED();
   }
-  base::UnguessableToken GetSharedMemoryGuid() override {
-    return mapping_->guid();
-  }
 
  private:
   SharedImageMetadata metadata_;
@@ -136,13 +133,6 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
     buffer_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id,
                           importance);
   }
-  base::UnguessableToken GetSharedMemoryGuid() override {
-    CHECK(buffer_);
-    CHECK(IsSharedMemory());
-    return static_cast<GpuMemoryBufferImplSharedMemory*>(buffer_)
-        ->GetSharedMemoryGUID();
-  }
-
   bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped) {
     if (!gpu_memory_buffer) {
       LOG(ERROR) << "No GpuMemoryBuffer.";
