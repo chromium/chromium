@@ -3458,6 +3458,11 @@ if (!is_android) {
       ]
     }
 
+    if (is_win || is_mac || is_linux) {
+      sources +=
+          [ "../browser/supervised_user/kids_profile_interactive_uitest.cc" ]
+    }
+
     if (is_win || is_mac || is_linux || is_chromeos_ash) {
       sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
     }

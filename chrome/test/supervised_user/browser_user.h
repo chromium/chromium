@@ -38,6 +38,7 @@ class BrowserUser {
 
   void TurnOnSync();
   void SignOutFromWeb();
+  void SignInFromWeb();
 
   CoreAccountId GetAccountId() const;
   std::string_view GetAccountPassword() const;

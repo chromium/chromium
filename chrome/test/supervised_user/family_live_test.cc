@@ -115,8 +115,10 @@ test_accounts::FamilyMember CreateTestAccountFromCredentialsSwitch(
 FamilyLiveTest::FamilyLiveTest(RpcMode rpc_mode) : rpc_mode_(rpc_mode) {}
 FamilyLiveTest::FamilyLiveTest(
     RpcMode rpc_mode,
-    const std::vector<std::string>& extra_enabled_hosts)
-    : extra_enabled_hosts_(extra_enabled_hosts), rpc_mode_(rpc_mode) {}
+    const std::vector<std::string_view>& extra_enabled_hosts)
+    : extra_enabled_hosts_(extra_enabled_hosts.begin(),
+                           extra_enabled_hosts.end()),
+      rpc_mode_(rpc_mode) {}
 FamilyLiveTest::~FamilyLiveTest() = default;
 
 BrowserUser& FamilyLiveTest::head_of_household() const {
@@ -294,7 +296,7 @@ InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
     : InteractiveBrowserTestT<FamilyLiveTest>(rpc_mode) {}
 InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
     FamilyLiveTest::RpcMode rpc_mode,
-    const std::vector<std::string>& extra_enabled_hosts)
+    const std::vector<std::string_view>& extra_enabled_hosts)
     : InteractiveBrowserTestT<FamilyLiveTest>(rpc_mode, extra_enabled_hosts) {}
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
