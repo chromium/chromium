@@ -1184,11 +1184,6 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
   }
   InitializeSettings(&settings_);
 
-  // Tests may be skipped at this point for unsupported setting combinations.
-  if (skip_test_) {
-    return;
-  }
-
   if (mode_ == CompositorMode::SINGLE_THREADED &&
       settings_.UseLayerContextForDisplay()) {
     GTEST_SKIP() << "TODO(crbug.com/389147356) TreesInViz: Implement single "
