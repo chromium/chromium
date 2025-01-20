@@ -222,13 +222,15 @@
       [_pendingBlocks addObject:block];
       _applicationModeRequestStatus = ApplicationModeRequestStatus::kRequested;
       __weak __typeof(self) weakSelf = self;
-      auto callback = base::BindOnce(
-          [](AppStartupParameters* startupParams, bool isAppSwitcherIncognito) {
-            [startupParams handleApplicationModeRequest:isAppSwitcherIncognito];
+      auto fetching_response = base::BindOnce(
+          [](AppStartupParameters* startupParams, bool isAppSwitcherIncognito,
+             NSError* error) {
+            [startupParams handleApplicationModeRequest:isAppSwitcherIncognito
+                                                  error:error];
           },
           weakSelf);
       ios::provider::FetchApplicationMode(_externalURL, _sourceAppID,
-                                          std::move(callback));
+                                          std::move(fetching_response));
       break;
     }
   }
@@ -255,7 +257,8 @@
   return _applicationMode;
 }
 
-- (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito {
+- (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito
+                               error:(NSError*)error {
   _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
   if (isAppSwitcherIncognito) {
     _applicationMode = ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO;

@@ -14,17 +14,14 @@ namespace ios::provider {
 
 // Callback to run once the fetching is done. `is_incognito` is false doesn't
 // mean that the URL will open in regular mode, it means that chrome should
-// resume its original flow.
-using AppModeFetchingCallback = base::OnceCallback<void(bool is_incognito)>;
+// resume its original flow. When an error occurs, depending on the current
+// flag, the original flow will resume or the incognito interstitial will be
+// presented.
 using AppModeFetchingResponse =
     base::OnceCallback<void(bool is_incognito, NSError* error)>;
 
 // Fetches the application mode for a given `url` and `app_id`. The callback
-// will be invoked asynchronously on the calling sequence
-void FetchApplicationMode(const GURL& url,
-                          NSString* app_id,
-                          AppModeFetchingCallback callback);
-
+// response will be invoked asynchronously on the calling sequence
 void FetchApplicationMode(const GURL& url,
                           NSString* app_id,
                           AppModeFetchingResponse fetching_response);

@@ -11,14 +11,6 @@
 namespace ios::provider {
 
 void FetchApplicationMode(const GURL& url,
-                          NSString* appID,
-                          AppModeFetchingCallback callback) {
-  // Application update is not supported in Chromium.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), false));
-}
-
-void FetchApplicationMode(const GURL& url,
                           NSString* app_id,
                           AppModeFetchingResponse fetching_response) {
   // Application update is not supported in Chromium.
