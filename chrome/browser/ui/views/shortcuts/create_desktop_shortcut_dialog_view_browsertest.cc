@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
 
   std::optional<std::u16string> dialog_result = test_future.Get();
   EXPECT_TRUE(dialog_result.has_value());
-  EXPECT_EQ(dialog_result.value(), u"ABC (Person 2)");
+  EXPECT_EQ(dialog_result.value(), u"ABC (Person 1)");
 }
 
 IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,

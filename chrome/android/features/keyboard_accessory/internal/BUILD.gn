@@ -133,7 +133,6 @@ android_library("internal_java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/ic_password_manager_key_off.xml",
     "java/res/layout/accessory_sheet_header.xml",
     "java/res/layout/address_accessory_sheet.xml",
     "java/res/layout/all_passwords_bottom_sheet.xml",

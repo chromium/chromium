@@ -857,11 +857,6 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
     attributes.emplace_back(AttributeType(kPassportIssueDate),
                             options.issue_date, AttributeInstance::Context{});
   }
-  if (options.place_of_birth) {
-    attributes.emplace_back(AttributeType(kPassportPlaceOfBirth),
-                            options.place_of_birth,
-                            AttributeInstance::Context{});
-  }
   return EntityInstance(
       EntityType(EntityTypeName::kPassport), std::move(attributes),
       base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),

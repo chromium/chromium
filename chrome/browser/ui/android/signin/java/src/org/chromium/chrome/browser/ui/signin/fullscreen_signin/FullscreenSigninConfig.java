@@ -32,14 +32,24 @@ public final class FullscreenSigninConfig implements Parcelable {
                 }
             };
 
+    /** Constructor of FullscreenSigninConfig using default values. */
     public FullscreenSigninConfig() {
         this(
                 /* titleId= */ R.string.signin_fre_title,
                 /* subtitleId= */ R.string.signin_fre_subtitle,
                 /* dismissTextId= */ R.string.signin_fre_dismiss_button,
-                /* logoId= */ R.drawable.fre_product_logo);
+                /* logoId= */ 0);
     }
 
+    /**
+     * Constructor of FullscreenSigninConfig.
+     *
+     * @param titleId the resource ID of the title string.
+     * @param subtitleId the resource ID of the subtitle string.
+     * @param dismissTextId the resource ID of the dismiss button string.
+     * @param logoId the resource ID of the logo drawable. Can be set to 0 to use the default
+     *     sign-in logo.
+     */
     public FullscreenSigninConfig(
             @StringRes int titleId,
             @StringRes int subtitleId,

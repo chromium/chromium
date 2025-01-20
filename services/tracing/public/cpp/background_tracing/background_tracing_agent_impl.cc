@@ -60,11 +60,11 @@ bool BackgroundTracingAgentImpl::DoEmitNamedTrigger(
 
 void BackgroundTracingAgentImpl::OnHistogramChanged(
     const std::string& rule_id,
-    base::Histogram::Sample histogram_lower_value,
-    base::Histogram::Sample histogram_upper_value,
+    base::Histogram::Sample32 histogram_lower_value,
+    base::Histogram::Sample32 histogram_upper_value,
     const char* histogram_name,
     uint64_t name_hash,
-    base::Histogram::Sample actual_value) {
+    base::Histogram::Sample32 actual_value) {
   if (actual_value < histogram_lower_value ||
       actual_value > histogram_upper_value) {
     return;

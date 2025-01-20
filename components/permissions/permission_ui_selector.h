@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 
 namespace permissions {
@@ -89,9 +90,15 @@ class PermissionUiSelector {
 
   // Will return the selector's discretized prediction value, if any is
   // applicable to be recorded in UKMs. This is specific only to a selector that
-  // makes use of the Web Permission Predictions Service to make decisions.
+  // uses of the Web Permission Predictions Service to make decisions.
   virtual std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
   PredictedGrantLikelihoodForUKM();
+
+  // Will return the selector's discretized permission request relevance, if any
+  // is applicable to be recorded in UKMs. This is specific only to a selector
+  // that uses Gemini Nano on-device model to make decisions.
+  virtual std::optional<PermissionRequestRelevance>
+  PermissionRequestRelevanceForUKM();
 
   // Will return if the selector's decision was heldback. Currently only the
   // Web Prediction Service selector supports holdbacks.

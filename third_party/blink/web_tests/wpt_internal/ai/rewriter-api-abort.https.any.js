@@ -1,38 +1,25 @@
 // META: script=resources/utils.js
 
-promise_test(async (t) => {
-  testAbort(t, (signal) => {
+promise_test(async t => {
+  await testAbortPromise(t, signal => {
     return ai.rewriter.create({
       signal: signal
     });
   });
-}, 'Aborting AIRewriter.create().');
+}, "Aborting AIRewriter.create().");
 
-promise_test(async (t) => {
-  const rewriter = await ai.rewriter.create();
-  testAbort(t, (signal) => {
-    return rewriter.rewrite(
-      "Rewrite a poem",
-      { signal: signal }
+promise_test(async t => {
+  const session = await ai.rewriter.create();
+  await testAbortPromise(t, signal => {
+    return session.rewrite(kTestPrompt, { signal: signal });
+  });
+}, "Aborting AIRewriter.rewrite().");
+
+promise_test(async t => {
+  const session = await ai.rewriter.create();
+  await testAbortReadableStream(t, signal => {
+    return session.rewriteStreaming(
+      kTestPrompt, { signal: signal }
     );
   });
-}, 'Aborting AIRwriter.rewrite().');
-
-promise_test(async (t) => {
-  const rewriter = await ai.rewriter.create();
-  const controller = new AbortController();
-  const streamingResponse =
-    rewriter.rewriteStreaming('hello', { signal: controller.signal });
-  controller.abort();
-  const reader = streamingResponse.getReader();
-  await promise_rejects_dom(t, 'AbortError', reader.read());
-}, 'Aborting AIRewriter.rewriteStreaming()');
-
-promise_test(async (t) => {
-  const rewriter = await ai.rewriter.create();
-  const controller = new AbortController();
-  controller.abort();
-  assert_throws_dom(
-    'AbortError',
-    () => rewriter.rewriteStreaming('hello', { signal: controller.signal }));
-}, 'AIRewriter.rewriteStreaming() call with an aborted signal.');
+}, "Aborting AIRewriter.rewriteStreaming().");

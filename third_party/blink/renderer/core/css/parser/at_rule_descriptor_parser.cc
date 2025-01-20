@@ -270,6 +270,7 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
                             AtRuleDescriptorID id,
+                            const AtomicString& variable_name,
                             CSSParserTokenStream& stream,
                             const CSSParserContext& context) {
   using Parser = AtRuleDescriptorParser;
@@ -520,9 +521,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtFunctionDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
-  // TODO(crbug.com/325504770): Handle local variables.
-
-  if (id != AtRuleDescriptorID::Result) {
+  if (id != AtRuleDescriptorID::Result && id != AtRuleDescriptorID::Variable) {
     return nullptr;
   }
 
@@ -543,10 +542,12 @@ CSSValue* AtRuleDescriptorParser::ParseAtFunctionDescriptor(
 bool AtRuleDescriptorParser::ParseDescriptorValue(
     StyleRule::RuleType rule_type,
     AtRuleDescriptorID id,
+    const AtomicString& variable_name,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     HeapVector<CSSPropertyValue, 64>& parsed_descriptors) {
-  CSSValue* result = ConsumeDescriptor(rule_type, id, stream, context);
+  CSSValue* result =
+      ConsumeDescriptor(rule_type, id, variable_name, stream, context);
 
   if (!result) {
     return false;
@@ -555,8 +556,10 @@ bool AtRuleDescriptorParser::ParseDescriptorValue(
   // TODO(crbug.com/752745): Refactor CSSParserImpl to avoid using
   // the CSSPropertyID.
   CSSPropertyID equivalent_property_id = AtRuleDescriptorIDAsCSSPropertyID(id);
-  parsed_descriptors.push_back(
-      CSSPropertyValue(CSSPropertyName(equivalent_property_id), *result));
+  CSSPropertyName name = equivalent_property_id == CSSPropertyID::kVariable
+                             ? CSSPropertyName(variable_name)
+                             : CSSPropertyName(equivalent_property_id);
+  parsed_descriptors.push_back(CSSPropertyValue(name, *result));
   context.Count(context.Mode(), equivalent_property_id);
   return true;
 }

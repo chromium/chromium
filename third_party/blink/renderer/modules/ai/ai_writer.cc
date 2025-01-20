@@ -99,12 +99,10 @@ ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
                              int(input.CharactersSizeInBytes()));
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    // TODO(crbug.com/374879796): figure out how to handling aborted signal for
-    // the streaming API.
-    ThrowAbortedException(exception_state);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
     return nullptr;
   }
+
   const String context_string = options->getContextOr(g_empty_string);
 
   if (!remote_) {

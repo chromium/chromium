@@ -2418,6 +2418,26 @@
             ]
         }
     ],
+    "AutofillOptimizeFormExtraction": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillOptimizeFormExtraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillPageLanguageDetection": [
         {
             "platforms": [
@@ -14397,21 +14417,6 @@
             ]
         }
     ],
-    "MigrateSyncingUserToSignedInAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MigrateSyncingUserToSignedIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoChannelAssociatedSendUsesRunOrPostTask": [
         {
             "platforms": [
@@ -16964,6 +16969,24 @@
                     },
                     "enable_features": [
                         "PermissionElementPromptPositioning"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PermissionsAIv1": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PermissionsAIv1"
                     ]
                 }
             ]

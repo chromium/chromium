@@ -6,10 +6,12 @@
 #define ASH_SCANNER_SCANNER_CONTROLLER_H_
 
 #include <memory>
+#include <utility>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/scanner/scanner_session.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -27,6 +29,8 @@ class ScannerDelegate;
 // between Scanner and any consuming features.
 class ASH_EXPORT ScannerController : public SessionObserver {
  public:
+  using OnActionFinishedCallback = base::OnceCallback<void(bool success)>;
+
   explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate);
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
@@ -70,7 +74,13 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
   ScannerDelegate* delegate_for_testing() { return delegate_.get(); }
 
+  void SetOnActionFinishedForTesting(OnActionFinishedCallback callback);
+
  private:
+  // Should be called when an action finishes execution.
+  void OnActionFinished(manta::proto::ScannerAction::ActionCase action_case,
+                        bool success);
+
   std::unique_ptr<ScannerDelegate> delegate_;
 
   // Delegate to handle Scanner commands for actions fetched during a session.
@@ -80,6 +90,8 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
   // May hold an active Scanner session, to allow access to the Scanner feature.
   std::unique_ptr<ScannerSession> scanner_session_;
+
+  OnActionFinishedCallback on_action_finished_for_testing_;
 
   ScopedSessionObserver session_observer_{this};
 

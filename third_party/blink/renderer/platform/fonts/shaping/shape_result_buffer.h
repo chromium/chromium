@@ -46,6 +46,9 @@ class PLATFORM_EXPORT ShapeResultBuffer {
 
   HeapVector<ShapeResult::RunFontData> GetRunFontData() const;
 
+  wtf_size_t ShapeResultSize() const { return results_.size(); }
+  ShapeResultView* ViewAt(wtf_size_t index) const;
+
   GlyphData EmphasisMarkGlyphData(const FontDescription&) const;
 
  private:

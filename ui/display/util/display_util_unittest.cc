@@ -222,7 +222,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                 .ToString());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kSuccess),
       1);
 
@@ -247,7 +247,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                 .ToString());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kSuccess),
       2);
 
@@ -272,7 +272,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                 .ToString());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kSuccess),
       3);
 
@@ -297,7 +297,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                 .ToString());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kSuccess),
       4);
 
@@ -309,7 +309,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
   EXPECT_FALSE(no_gamma_color_space.IsValid());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kErrorBadGamma),
       1);
   histogram_tester.ExpectTotalCount(
@@ -351,7 +351,7 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
             GetColorSpaceFromEdid(display::EdidParser(std::move(empty_edid))));
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       1);
 
@@ -362,7 +362,7 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
   EXPECT_FALSE(invalid_color_space.IsValid());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       2);
 
@@ -372,7 +372,7 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
   EXPECT_FALSE(sst210_color_space.IsValid()) << sst210_color_space.ToString();
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kErrorBadCoordinates),
       1);
 
@@ -384,7 +384,7 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
       << sst210_color_space_2.ToString();
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       3);
 
@@ -397,7 +397,7 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
       << broken_blue_color_space.ToString();
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           EdidColorSpaceChecksOutcome::kErrorBluePrimaryIsBroken),
       1);
   histogram_tester.ExpectTotalCount(

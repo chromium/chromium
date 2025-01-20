@@ -708,7 +708,7 @@ void ImageDecoder::UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
     density_histogram = &density_14plus_mp_histogram;
   }
 
-  density_histogram->Count(base::saturated_cast<base::Histogram::Sample>(
+  density_histogram->Count(base::saturated_cast<base::Histogram::Sample32>(
       density_centi_bpp.ValueOrDie()));
 }
 

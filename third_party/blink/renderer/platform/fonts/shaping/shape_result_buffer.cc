@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -174,6 +175,10 @@ HeapVector<ShapeResult::RunFontData> ShapeResultBuffer::GetRunFontData() const {
   for (const auto& result : results_)
     result->GetRunFontData(&font_data);
   return font_data;
+}
+
+ShapeResultView* ShapeResultBuffer::ViewAt(wtf_size_t index) const {
+  return ShapeResultView::Create(results_[index]);
 }
 
 GlyphData ShapeResultBuffer::EmphasisMarkGlyphData(

@@ -430,7 +430,7 @@ TEST_P(SparseHistogramTest, FactoryTime) {
 
 TEST_P(SparseHistogramTest, ExtremeValues) {
   struct Cases {
-    Histogram::Sample sample;
+    HistogramBase::Sample32 sample;
     int64_t expected_max;
   };
   static const auto cases = std::to_array<Cases>({
@@ -452,7 +452,7 @@ TEST_P(SparseHistogramTest, ExtremeValues) {
     std::unique_ptr<SampleCountIterator> it = snapshot->Iterator();
     ASSERT_FALSE(it->Done());
 
-    base::Histogram::Sample min;
+    base::HistogramBase::Sample32 min;
     int64_t max;
     base::Histogram::Count count;
     it->Get(&min, &max, &count);

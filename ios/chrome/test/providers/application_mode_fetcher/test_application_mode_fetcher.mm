@@ -11,15 +11,6 @@
 namespace ios::provider {
 
 void FetchApplicationMode(const GURL& url,
-                          NSString* appID,
-                          AppModeFetchingCallback callback) {
-  // TODO(crbug.com/374934680): Add a factory to test different callback
-  // configurations.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), false));
-}
-
-void FetchApplicationMode(const GURL& url,
                           NSString* app_id,
                           AppModeFetchingResponse fetching_response) {
   // TODO(crbug.com/374934680): Add a factory to test different callback

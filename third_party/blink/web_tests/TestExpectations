@@ -2760,9 +2760,6 @@ crbug.com/387777047 external/wpt/css/css-align/blocks/align-content-block-012.ht
 crbug.com/387626415 external/wpt/css/css-backgrounds/background-clip/clip-border-area-on-body-not-propagated-to-root.html [ Failure ]
 crbug.com/387378128 external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-001.html [ Failure ]
 crbug.com/387626415 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-border-area-on-body-not-propagated-to-root.html [ Failure ]
-crbug.com/386860174 [ Win ] external/wpt/css/css-fonts/parsing/font-weight-computed.html [ Crash ]
-crbug.com/386860174 [ Mac14 ] external/wpt/css/css-fonts/parsing/font-weight-computed.html [ Crash ]
-crbug.com/386860174 [ Linux ] external/wpt/css/css-fonts/parsing/font-weight-computed.html [ Crash ]
 crbug.com/386713385 external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
 crbug.com/385918146 [ Win11 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
 crbug.com/386713385 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
@@ -9061,10 +9058,6 @@ crbug.com/376320405 [ Debug Linux ] external/wpt/css/css-sizing/keyword-sizes-fo
 
 # Gardener 2025-01-10
 crbug.com/389012014 [ Mac13 ] fast/peerconnection/RTCRtpSender-getParameters.html [ Pass Timeout ]
-
-# TODO(crrev.com/c/6172391): Re-enable after landing CL.
-crbug.com/40659523 http/tests/devtools/profiler/heap-snapshot-orphan-nodes.js [ Failure Skip ]
-crbug.com/40659523 http/tests/devtools/profiler/heap-snapshot-statistics.js [ Failure Skip ]
 
 # Flaky performance API tests
 crbug.com/387096438 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-video.tentative.html [ Failure Pass ]

@@ -137,7 +137,7 @@ void HistogramBase::AddKiB(Sample32 value, int count) {
 }
 
 void HistogramBase::AddTimeMillisecondsGranularity(const TimeDelta& time) {
-  Add(saturated_cast<Sample>(time.InMilliseconds()));
+  Add(saturated_cast<Sample32>(time.InMilliseconds()));
 }
 
 void HistogramBase::AddTimeMicrosecondsGranularity(const TimeDelta& time) {
@@ -145,7 +145,7 @@ void HistogramBase::AddTimeMicrosecondsGranularity(const TimeDelta& time) {
   // clocks. High-resolution metrics cannot make use of low-resolution data and
   // reporting it merely adds noise to the metric. https://crbug.com/807615#c16
   if (TimeTicks::IsHighResolution()) {
-    Add(saturated_cast<Sample>(time.InMicroseconds()));
+    Add(saturated_cast<Sample32>(time.InMicroseconds()));
   }
 }
 

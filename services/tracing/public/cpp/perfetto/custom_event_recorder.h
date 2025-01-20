@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
   // the trace config, all the histograms will be monitored.
   static void OnMetricsSampleCallback(const char* histogram_name,
                                       uint64_t name_hash,
-                                      base::HistogramBase::Sample sample);
+                                      base::HistogramBase::Sample32 sample);
   bool IsPrivacyFilteringEnabled();
 
  private:

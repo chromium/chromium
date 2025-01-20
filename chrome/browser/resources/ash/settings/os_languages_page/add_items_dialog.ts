@@ -91,11 +91,18 @@ export class OsSettingsAddItemsDialogElement extends
 
       searchLabel: String,
 
+      managedByPolicyLabel: String,
+
       suggestedItemsLabel: String,
 
       allItemsLabel: String,
 
       policyTooltip: String,
+
+      showManagedByPolicy: {
+        type: Boolean,
+        value: false,
+      },
 
       lowercaseQueryString_: String,
 
@@ -172,9 +179,11 @@ export class OsSettingsAddItemsDialogElement extends
   // them (downwards data flow).
   header: string;
   searchLabel: string;
+  managedByPolicyLabel: string;
   suggestedItemsLabel: string;
   allItemsLabel: string;
   policyTooltip: string;
+  showManagedByPolicy: boolean;
 
   // Internal state.
   private itemIdsToAdd_: Set<string>;

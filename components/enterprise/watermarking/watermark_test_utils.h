@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_TEST_UTILS_H_
 #define COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_TEST_UTILS_H_
 
+#include <string>
+
 #include "components/enterprise/watermarking/mojom/watermark.mojom-forward.h"
 #include "third_party/skia/include/core/SkSize.h"
 

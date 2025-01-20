@@ -539,6 +539,7 @@ void GraphicsContext::DrawEmphasisMarksInternal(
   });
 }
 
+// This function is not used if TextCombineEmphasisNG flag is enabled.
 void GraphicsContext::DrawEmphasisMarks(const Font& font,
                                         const TextRunPaintInfo& text_info,
                                         const AtomicString& mark,

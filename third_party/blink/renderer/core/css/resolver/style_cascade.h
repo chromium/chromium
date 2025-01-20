@@ -383,15 +383,41 @@ class CORE_EXPORT StyleCascade {
 
   // Certain parts of CSS function evaluation may need some local context
   // supplied by the caller. Given the current scoping strategy, the only
-  // relevant context is the arguments given to the function in current
-  // scope. (If we are not currently evaluating a function, this will be
-  // empty.) If we get to the point of supporting more dynamic scope,
-  // there may be a call stack or similar here, and possibly also locals.
+  // relevant context is the arguments given to the function in current scope,
+  // as well as locals within that function. (If we are not currently
+  // evaluating a function, this will be nullptr.) If we get to the point of
+  // supporting more dynamic scope, there may be a call stack or similar here.
+  //
+  // Arguments and Locals
+  // ====================
+  //
+  // Generally, when a var() is encountered, it must be substituted by some
+  // value that does not itself contain any substitution functions (e.g. another
+  // var()). For a var() that is evaluated in the context of a function, we try
+  // the following things, in order:
+  //
+  //  1. If there is a matching local variable, resolve any substitution
+  //     functions in its value, and substitute the result.
+  //  2. Otherwise, if there is a matching argument, substitute its value.
+  //     Note that argument values (stored within FunctionContext) never
+  //     contain substitution functions.
+  //  3. Otherwise, if there is a matching custom property, substitute its
+  //     computed value.
+  //  4. Otherwise, if there is a fallback, resolve any substitution functions
+  //     in the fallback value, and substitute that result.
+  //  5. Otherwise, it's invalid at computed-value time.
   struct FunctionContext {
     STACK_ALLOCATED();
 
    public:
+    // Note that `arguments` only contains resolved values, meaning that
+    // they never contain any substitution functions, such as var().
+    // This is because arguments are evaluated at the call site.
     HeapHashMap<String, Member<const CSSValue>> arguments;
+    // Locals, however, are stored here unresolved; they *may* contain
+    // substitution functions, such as var(). This is because locals,
+    // unlike arguments, can refer to other locals using var().
+    HeapHashMap<String, Member<const CSSValue>> locals;
   };
 
   // The Resolve*Into functions either resolve dependencies, append to the

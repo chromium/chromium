@@ -288,21 +288,21 @@ void V8MetricsRecorder::AddMainThreadEvent(
         CustomCountHistogram, collection_rate_histogram,                       \
         ("V8.GC.Cycle" priority ".CollectionRate.Full", 1, 100, 20));          \
     collection_rate_histogram.Count(                                           \
-        base::saturated_cast<base::Histogram::Sample>(                         \
+        base::saturated_cast<base::Histogram::Sample32>(                       \
             100 * event.collection_rate_in_percent));                          \
                                                                                \
     DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
         CustomCountHistogram, collection_weight_histogram,                     \
         ("V8.GC.Cycle" priority ".CollectionWeight.Full", 1, 1000, 20));       \
     collection_weight_histogram.Count(                                         \
-        base::saturated_cast<base::Histogram::Sample>(                         \
+        base::saturated_cast<base::Histogram::Sample32>(                       \
             1000 * event.collection_weight_in_percent));                       \
     DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
         CustomCountHistogram, main_thread_collection_weight_histogram,         \
         ("V8.GC.Cycle" priority ".CollectionWeight.MainThread.Full", 1, 1000,  \
          20));                                                                 \
     main_thread_collection_weight_histogram.Count(                             \
-        base::saturated_cast<base::Histogram::Sample>(                         \
+        base::saturated_cast<base::Histogram::Sample32>(                         \
             1000 * event.main_thread_collection_weight_in_percent));           \
   }
 
@@ -400,14 +400,14 @@ void V8MetricsRecorder::AddMainThreadEvent(
         CustomCountHistogram, collection_rate_cpp_histogram,                   \
         ("V8.GC.Cycle" priority ".CollectionRate.Full.Cpp", 1, 100, 20));      \
     collection_rate_cpp_histogram.Count(                                       \
-        base::saturated_cast<base::Histogram::Sample>(                         \
+        base::saturated_cast<base::Histogram::Sample32>(                       \
             100 * event.collection_rate_cpp_in_percent));                      \
                                                                                \
     DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
         CustomCountHistogram, collection_weight_cpp_histogram,                 \
         ("V8.GC.Cycle" priority ".CollectionWeight.Full.Cpp", 1, 1000, 20));   \
     collection_weight_cpp_histogram.Count(                                     \
-        base::saturated_cast<base::Histogram::Sample>(                         \
+        base::saturated_cast<base::Histogram::Sample32>(                       \
             1000 * event.collection_weight_cpp_in_percent));                   \
                                                                                \
     DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
@@ -415,7 +415,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
         ("V8.GC.Cycle" priority ".CollectionWeight.MainThread.Full.Cpp", 1,    \
          1000, 20));                                                           \
     main_thread_collection_weight_cpp_histogram.Count(                         \
-        base::saturated_cast<base::Histogram::Sample>(                         \
+        base::saturated_cast<base::Histogram::Sample32>(                       \
             1000 * event.main_thread_collection_weight_cpp_in_percent));       \
   }
 
@@ -528,7 +528,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
         CustomCountHistogram, collection_rate_histogram,                       \
         ("V8.GC.Cycle" priority ".CollectionRate.Young", 1, 100, 20));         \
     collection_rate_histogram.Count(                                           \
-        base::saturated_cast<base::Histogram::Sample>(                         \
+        base::saturated_cast<base::Histogram::Sample32>(                       \
             100 * event.collection_rate_in_percent));                          \
   }
 

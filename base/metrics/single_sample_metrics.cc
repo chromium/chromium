@@ -71,7 +71,7 @@ DefaultSingleSampleMetric::~DefaultSingleSampleMetric() {
   histogram_->Add(sample_);
 }
 
-void DefaultSingleSampleMetric::SetSample(HistogramBase::Sample sample) {
+void DefaultSingleSampleMetric::SetSample(HistogramBase::Sample32 sample) {
   DCHECK_GE(sample, 0);
   sample_ = sample;
 }

@@ -41,7 +41,7 @@ found in the LICENSE file.
             <ImageView
                 android:id="@+id/fre_logo"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/fre_tos_image_height"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/fre_product_logo" />
@@ -62,7 +62,7 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:paddingHorizontal="60dp"
+                android:paddingHorizontal="24dp"
                 android:paddingTop="8dp"
                 android:text="@string/signin_fre_subtitle"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"

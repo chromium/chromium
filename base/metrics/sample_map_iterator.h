@@ -51,7 +51,7 @@ class SampleMapIterator : public SampleCountIterator {
     SkipEmptyBuckets();
   }
 
-  void Get(HistogramBase::Sample* min,
+  void Get(HistogramBase::Sample32* min,
            int64_t* max,
            HistogramBase::Count* count) override {
     DCHECK(!Done());

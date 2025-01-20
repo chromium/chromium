@@ -47,11 +47,11 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   // HistogramBase:
   uint64_t name_hash() const override;
   HistogramType GetHistogramType() const override;
-  bool HasConstructionArguments(Sample expected_minimum,
-                                Sample expected_maximum,
+  bool HasConstructionArguments(Sample32 expected_minimum,
+                                Sample32 expected_maximum,
                                 size_t expected_bucket_count) const override;
-  void Add(Sample value) override;
-  void AddCount(Sample value, int count) override;
+  void Add(Sample32 value) override;
+  void AddCount(Sample32 value, int count) override;
   bool AddSamples(const HistogramSamples& samples) override;
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
   std::unique_ptr<HistogramSamples> SnapshotSamples() const override;

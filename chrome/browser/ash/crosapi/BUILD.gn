@@ -466,10 +466,6 @@ static_library("crosapi") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/input_method",
-    "//chrome/browser/ash/login",
-    "//chrome/browser/ash/login/app_mode",
-    "//chrome/browser/ash/login/screens",
-    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/mahi/media_app",
     "//chrome/browser/ash/policy/core",

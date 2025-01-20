@@ -51,7 +51,7 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithTitle(
       bookmarks::GetBookmarksMatchingProperties(bookmark_model, query,
                                                 kMaxCountOfBookmarks);
 
-  base::ranges::remove_if(nodes, [=](const bookmarks::BookmarkNode* node) {
+  std::erase_if(nodes, [=](const bookmarks::BookmarkNode* node) {
     return type !=
            bookmark_utils_ios::GetBookmarkStorageType(node, bookmark_model);
   });

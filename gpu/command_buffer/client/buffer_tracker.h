@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <unordered_map>
+
 #include "base/memory/raw_ptr.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"

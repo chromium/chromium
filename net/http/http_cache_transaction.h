@@ -499,7 +499,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // resumed or not.
   void DoneWithEntry(bool entry_is_complete);
 
-  // Dooms the given entry so that it will not be re-used for other requests,
+  // Dooms the given entry so that it will not be reused for other requests,
   // then calls `DoneWithEntry()`.
   //
   // This happens when network conditions have changed since the entry was
@@ -533,7 +533,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // between the byte range request and the cached entry.
   int DoRestartPartialRequest();
 
-  // Resets the relavant internal state to remove traces of internal processing
+  // Resets the relevant internal state to remove traces of internal processing
   // related to range requests. Deletes |partial_| if |delete_object| is true.
   void ResetPartialState(bool delete_object);
 
@@ -617,6 +617,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Returns true if the current transaction is in-scope for No-Vary-Search
   // treatment.
   bool IsNoVarySearchApplicable() const;
+
+  // Returns true if the current transaction is using a URL that was rewritten
+  // by the NoVarySearchCache.
+  bool IsUsingURLFromNoVarySearchCache() const;
 
   // Checks for a matching entry in the NoVarySearchCache. If one is found, and
   // the URL is different, modifies `request_` to use the matching entry, and

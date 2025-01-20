@@ -9,7 +9,6 @@ namespace net {
 
 // The reason why multiplexed session was created. It is used to distinguish
 // between preconnect initiated session and other sessions.
-// TODO(crbug.com/376304027): Add more precise reasons why preconnect happened.
 //
 // These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.

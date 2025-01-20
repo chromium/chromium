@@ -78,6 +78,7 @@
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -1159,7 +1160,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
       profile_name = base::UTF16ToUTF8(storage.ChooseNameForNewProfile());
 #else
-      profile_name = l10n_util::GetStringUTF8(IDS_DEFAULT_PROFILE_NAME);
+      profile_name =
+          l10n_util::GetStringUTF8(IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME);
 #endif
     }
   }

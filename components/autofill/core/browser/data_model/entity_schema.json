@@ -1,7 +1,7 @@
 [
   {
     "name": "Passport",
-    "attributes": [ "Name", "Number", "Country", "Expiry date", "Issue date", "Place of birth" ],
+    "attributes": [ "Name", "Number", "Country", "Expiry date", "Issue date" ],
     "unique keys": [
       [ "Number", "Expiry date" ]
     ],

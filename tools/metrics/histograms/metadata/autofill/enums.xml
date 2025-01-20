@@ -722,6 +722,9 @@ Called by update_autofill_enums.py.-->
   <int value="10048"
       label="ADDRESS_HOME_APT_TYPE: Not autofilled or autofilled value edited"/>
   <int value="10049" label="ADDRESS_HOME_APT_TYPE: Autofilled value accepted"/>
+  <int value="10112"
+      label="LOYALTY_MEMBERSHIP_ID: Not autofilled or autofilled value edited"/>
+  <int value="10113" label="LOYALTY_MEMBERSHIP_ID: Autofilled value accepted"/>
   <int value="10240"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Not autofilled or
              autofilled value edited"/>
@@ -771,20 +774,15 @@ Called by update_autofill_enums.py.-->
   <int value="11009"
       label="PASSPORT_ISSUE_DATE_TAG: Autofilled value accepted"/>
   <int value="11072"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG: Not autofilled or autofilled
-             value edited"/>
-  <int value="11073"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG: Autofilled value accepted"/>
-  <int value="11136"
-      label="LOYALTY_CARD_PROGRAM: Not autofilled or autofilled value edited"/>
-  <int value="11137" label="LOYALTY_CARD_PROGRAM: Autofilled value accepted"/>
-  <int value="11200"
-      label="LOYALTY_CARD_PROVIDER: Not autofilled or autofilled value edited"/>
-  <int value="11201" label="LOYALTY_CARD_PROVIDER: Autofilled value accepted"/>
-  <int value="11264"
-      label="LOYALTY_CARD_MEMBER_ID: Not autofilled or autofilled value
+      label="LOYALTY_MEMBERSHIP_PROGRAM: Not autofilled or autofilled value
              edited"/>
-  <int value="11265" label="LOYALTY_CARD_MEMBER_ID: Autofilled value accepted"/>
+  <int value="11073"
+      label="LOYALTY_MEMBERSHIP_PROGRAM: Autofilled value accepted"/>
+  <int value="11136"
+      label="LOYALTY_MEMBERSHIP_PROVIDER: Not autofilled or autofilled value
+             edited"/>
+  <int value="11137"
+      label="LOYALTY_MEMBERSHIP_PROVIDER: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -1040,6 +1038,8 @@ Called by update_autofill_enums.py.-->
   <int value="2497" label="ADDRESS_HOME_APT: accepted"/>
   <int value="2512" label="ADDRESS_HOME_APT_TYPE: edited"/>
   <int value="2513" label="ADDRESS_HOME_APT_TYPE: accepted"/>
+  <int value="2528" label="LOYALTY_MEMBERSHIP_ID: edited"/>
+  <int value="2529" label="LOYALTY_MEMBERSHIP_ID: accepted"/>
   <int value="2560" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: edited"/>
   <int value="2561" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: accepted"/>
   <int value="2592" label="IMPROVED_PREDICTION: edited"/>
@@ -1064,14 +1064,10 @@ Called by update_autofill_enums.py.-->
   <int value="2737" label="PASSPORT_EXPIRATION_DATE_TAG: accepted"/>
   <int value="2752" label="PASSPORT_ISSUE_DATE_TAG: edited"/>
   <int value="2753" label="PASSPORT_ISSUE_DATE_TAG: accepted"/>
-  <int value="2768" label="PASSPORT_COUNTRY_OF_BIRTH_TAG: edited"/>
-  <int value="2769" label="PASSPORT_COUNTRY_OF_BIRTH_TAG: accepted"/>
-  <int value="2784" label="LOYALTY_CARD_PROGRAM: edited"/>
-  <int value="2785" label="LOYALTY_CARD_PROGRAM: accepted"/>
-  <int value="2800" label="LOYALTY_CARD_PROVIDER: edited"/>
-  <int value="2801" label="LOYALTY_CARD_PROVIDER: accepted"/>
-  <int value="2816" label="LOYALTY_CARD_MEMBER_ID: edited"/>
-  <int value="2817" label="LOYALTY_CARD_MEMBER_ID: accepted"/>
+  <int value="2768" label="LOYALTY_MEMBERSHIP_PROGRAM: edited"/>
+  <int value="2769" label="LOYALTY_MEMBERSHIP_PROGRAM: accepted"/>
+  <int value="2784" label="LOYALTY_MEMBERSHIP_PROVIDER: edited"/>
+  <int value="2785" label="LOYALTY_MEMBERSHIP_PROVIDER: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -1877,6 +1873,7 @@ Called by update_autofill_enums.py.-->
   <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
   <int value="156" label="ADDRESS_HOME_APT"/>
   <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
+  <int value="158" label="LOYALTY_MEMBERSHIP_ID"/>
   <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
   <int value="161" label="SERVER_RESPONSE_PENDING"/>
   <int value="162" label="IMPROVED_PREDICTION"/>
@@ -1890,10 +1887,8 @@ Called by update_autofill_enums.py.-->
   <int value="170" label="PASSPORT_ISSUING_COUNTRY_TAG"/>
   <int value="171" label="PASSPORT_EXPIRATION_DATE_TAG"/>
   <int value="172" label="PASSPORT_ISSUE_DATE_TAG"/>
-  <int value="173" label="PASSPORT_COUNTRY_OF_BIRTH_TAG"/>
-  <int value="174" label="LOYALTY_CARD_PROGRAM"/>
-  <int value="175" label="LOYALTY_CARD_PROVIDER"/>
-  <int value="176" label="LOYALTY_CARD_MEMBER_ID"/>
+  <int value="173" label="LOYALTY_MEMBERSHIP_PROGRAM"/>
+  <int value="174" label="LOYALTY_MEMBERSHIP_PROVIDER"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3832,6 +3827,22 @@ Called by update_autofill_enums.py.-->
   <int value="948"
       label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
              with both predictions"/>
+  <int value="949"
+      label="LOYALTY_MEMBERSHIP_ID - Predictions equal - Value agrees"/>
+  <int value="950"
+      label="LOYALTY_MEMBERSHIP_ID - Predictions equal - Value disagrees"/>
+  <int value="951"
+      label="LOYALTY_MEMBERSHIP_ID - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="952"
+      label="LOYALTY_MEMBERSHIP_ID - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="953"
+      label="LOYALTY_MEMBERSHIP_ID - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="954"
+      label="LOYALTY_MEMBERSHIP_ID - Predictions different - Value agrees
+             with both predictions"/>
   <int value="961"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions equal -
              Value agrees"/>
@@ -4026,70 +4037,38 @@ Called by update_autofill_enums.py.-->
       label="PASSPORT_ISSUE_DATE_TAG - Predictions different - Value agrees
              with both predictions"/>
   <int value="1039"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG - Predictions equal - Value agrees"/>
+      label="LOYALTY_MEMBERSHIP_PROGRAM - Predictions equal - Value agrees"/>
   <int value="1040"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG - Predictions equal - Value
-             disagrees"/>
+      label="LOYALTY_MEMBERSHIP_PROGRAM - Predictions equal - Value disagrees"/>
   <int value="1041"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG - Predictions different - Value
+      label="LOYALTY_MEMBERSHIP_PROGRAM - Predictions different - Value
              agrees with old prediction"/>
   <int value="1042"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG - Predictions different - Value
+      label="LOYALTY_MEMBERSHIP_PROGRAM - Predictions different - Value
              agrees with new prediction"/>
   <int value="1043"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG - Predictions different - Value
+      label="LOYALTY_MEMBERSHIP_PROGRAM - Predictions different - Value
              agrees with neither prediction"/>
   <int value="1044"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG - Predictions different - Value
+      label="LOYALTY_MEMBERSHIP_PROGRAM - Predictions different - Value
              agrees with both predictions"/>
   <int value="1045"
-      label="LOYALTY_CARD_PROGRAM - Predictions equal - Value agrees"/>
+      label="LOYALTY_MEMBERSHIP_PROVIDER - Predictions equal - Value agrees"/>
   <int value="1046"
-      label="LOYALTY_CARD_PROGRAM - Predictions equal - Value disagrees"/>
+      label="LOYALTY_MEMBERSHIP_PROVIDER - Predictions equal - Value
+             disagrees"/>
   <int value="1047"
-      label="LOYALTY_CARD_PROGRAM - Predictions different - Value agrees with
-             old prediction"/>
+      label="LOYALTY_MEMBERSHIP_PROVIDER - Predictions different - Value
+             agrees with old prediction"/>
   <int value="1048"
-      label="LOYALTY_CARD_PROGRAM - Predictions different - Value agrees with
-             new prediction"/>
+      label="LOYALTY_MEMBERSHIP_PROVIDER - Predictions different - Value
+             agrees with new prediction"/>
   <int value="1049"
-      label="LOYALTY_CARD_PROGRAM - Predictions different - Value agrees with
-             neither prediction"/>
+      label="LOYALTY_MEMBERSHIP_PROVIDER - Predictions different - Value
+             agrees with neither prediction"/>
   <int value="1050"
-      label="LOYALTY_CARD_PROGRAM - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="1051"
-      label="LOYALTY_CARD_PROVIDER - Predictions equal - Value agrees"/>
-  <int value="1052"
-      label="LOYALTY_CARD_PROVIDER - Predictions equal - Value disagrees"/>
-  <int value="1053"
-      label="LOYALTY_CARD_PROVIDER - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="1054"
-      label="LOYALTY_CARD_PROVIDER - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="1055"
-      label="LOYALTY_CARD_PROVIDER - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="1056"
-      label="LOYALTY_CARD_PROVIDER - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="1057"
-      label="LOYALTY_CARD_MEMBER_ID - Predictions equal - Value agrees"/>
-  <int value="1058"
-      label="LOYALTY_CARD_MEMBER_ID - Predictions equal - Value disagrees"/>
-  <int value="1059"
-      label="LOYALTY_CARD_MEMBER_ID - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="1060"
-      label="LOYALTY_CARD_MEMBER_ID - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="1061"
-      label="LOYALTY_CARD_MEMBER_ID - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="1062"
-      label="LOYALTY_CARD_MEMBER_ID - Predictions different - Value agrees
-             with both predictions"/>
+      label="LOYALTY_MEMBERSHIP_PROVIDER - Predictions different - Value
+             agrees with both predictions"/>
 </enum>
 
 <enum name="AutofillPreferenceSetter">
@@ -4359,6 +4338,8 @@ Called by update_autofill_enums.py.-->
   <int value="2497" label="ADDRESS_HOME_APT: Empty on page load"/>
   <int value="2512" label="ADDRESS_HOME_APT_TYPE: Pre-filled on page load"/>
   <int value="2513" label="ADDRESS_HOME_APT_TYPE: Empty on page load"/>
+  <int value="2528" label="LOYALTY_MEMBERSHIP_ID: Pre-filled on page load"/>
+  <int value="2529" label="LOYALTY_MEMBERSHIP_ID: Empty on page load"/>
   <int value="2560"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Pre-filled on page
              load"/>
@@ -4389,14 +4370,11 @@ Called by update_autofill_enums.py.-->
   <int value="2752" label="PASSPORT_ISSUE_DATE_TAG: Pre-filled on page load"/>
   <int value="2753" label="PASSPORT_ISSUE_DATE_TAG: Empty on page load"/>
   <int value="2768"
-      label="PASSPORT_COUNTRY_OF_BIRTH_TAG: Pre-filled on page load"/>
-  <int value="2769" label="PASSPORT_COUNTRY_OF_BIRTH_TAG: Empty on page load"/>
-  <int value="2784" label="LOYALTY_CARD_PROGRAM: Pre-filled on page load"/>
-  <int value="2785" label="LOYALTY_CARD_PROGRAM: Empty on page load"/>
-  <int value="2800" label="LOYALTY_CARD_PROVIDER: Pre-filled on page load"/>
-  <int value="2801" label="LOYALTY_CARD_PROVIDER: Empty on page load"/>
-  <int value="2816" label="LOYALTY_CARD_MEMBER_ID: Pre-filled on page load"/>
-  <int value="2817" label="LOYALTY_CARD_MEMBER_ID: Empty on page load"/>
+      label="LOYALTY_MEMBERSHIP_PROGRAM: Pre-filled on page load"/>
+  <int value="2769" label="LOYALTY_MEMBERSHIP_PROGRAM: Empty on page load"/>
+  <int value="2784"
+      label="LOYALTY_MEMBERSHIP_PROVIDER: Pre-filled on page load"/>
+  <int value="2785" label="LOYALTY_MEMBERSHIP_PROVIDER: Empty on page load"/>
 </enum>
 
 <enum name="AutofillProfileImportDecision">
@@ -5307,6 +5285,8 @@ Called by update_autofill_enums.py.-->
   <int value="625" label="ADDRESS_HOME_APT: Accepted"/>
   <int value="628" label="ADDRESS_HOME_APT_TYPE: Ignored"/>
   <int value="629" label="ADDRESS_HOME_APT_TYPE: Accepted"/>
+  <int value="632" label="LOYALTY_MEMBERSHIP_ID: Ignored"/>
+  <int value="633" label="LOYALTY_MEMBERSHIP_ID: Accepted"/>
   <int value="640" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Ignored"/>
   <int value="641" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Accepted"/>
   <int value="648" label="IMPROVED_PREDICTION: Ignored"/>
@@ -5331,14 +5311,10 @@ Called by update_autofill_enums.py.-->
   <int value="685" label="PASSPORT_EXPIRATION_DATE_TAG: Accepted"/>
   <int value="688" label="PASSPORT_ISSUE_DATE_TAG: Ignored"/>
   <int value="689" label="PASSPORT_ISSUE_DATE_TAG: Accepted"/>
-  <int value="692" label="PASSPORT_COUNTRY_OF_BIRTH_TAG: Ignored"/>
-  <int value="693" label="PASSPORT_COUNTRY_OF_BIRTH_TAG: Accepted"/>
-  <int value="696" label="LOYALTY_CARD_PROGRAM: Ignored"/>
-  <int value="697" label="LOYALTY_CARD_PROGRAM: Accepted"/>
-  <int value="700" label="LOYALTY_CARD_PROVIDER: Ignored"/>
-  <int value="701" label="LOYALTY_CARD_PROVIDER: Accepted"/>
-  <int value="704" label="LOYALTY_CARD_MEMBER_ID: Ignored"/>
-  <int value="705" label="LOYALTY_CARD_MEMBER_ID: Accepted"/>
+  <int value="692" label="LOYALTY_MEMBERSHIP_PROGRAM: Ignored"/>
+  <int value="693" label="LOYALTY_MEMBERSHIP_PROGRAM: Accepted"/>
+  <int value="696" label="LOYALTY_MEMBERSHIP_PROVIDER: Ignored"/>
+  <int value="697" label="LOYALTY_MEMBERSHIP_PROVIDER: Accepted"/>
 </enum>
 
 <enum name="IbanCountry">

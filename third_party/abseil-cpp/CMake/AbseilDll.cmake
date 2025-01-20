@@ -837,6 +837,7 @@ function(absl_make_dll)
     PRIVATE
       ${_dll_libs}
       ${ABSL_DEFAULT_LINKOPTS}
+      $<$<BOOL:${ANDROID}>:-llog>
   )
   set_target_properties(${_dll} PROPERTIES
     LINKER_LANGUAGE "CXX"

@@ -32,6 +32,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
@@ -46,6 +47,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -1920,6 +1922,29 @@ TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
+TEST_F(ProfileAttributesStorageTest, ChooseNameForNewProfile) {
+  DisableObserver();  // This test doesn't test observers.
+
+  // Default profile names should be "Your Chrome" and then "Person 1",
+  // "Person 2", etc...
+  const auto kExpectedProfileNames = std::to_array<std::u16string>(
+      {l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME),
+       u"Person 1", u"Person 2", u"Person 3"});
+
+  for (size_t i = 0; i < kExpectedProfileNames.size(); ++i) {
+    const std::u16string expected_name = kExpectedProfileNames[i];
+    std::u16string profile_name = storage()->ChooseNameForNewProfile();
+    EXPECT_EQ(profile_name, expected_name);
+
+    // Add the profile, so that the next call to `ChooseNameForNewProfile()`
+    // generates the next name.
+    ProfileAttributesInitParams params;
+    params.profile_name = std::move(profile_name);
+    params.profile_path = GetProfilePath(base::StringPrintf("path_%u", i));
+    storage()->AddProfile(std::move(params));
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileAttributesStorageTest,
        MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
@@ -1977,10 +2002,18 @@ TEST_F(ProfileAttributesStorageTest,
   EXPECT_EQ(base::ASCIIToUTF16(kTestCases[10].profile_name), entry->GetName());
 
   // Legacy profile names like "Default Profile" and "First user" should be
-  // migrated to "Person %n" type names, i.e. any permutation of "Person %n".
+  // migrated to "Your Chrome" and "Person %n" type names.
   std::set<std::u16string> expected_profile_names{
-      u"Person 1", u"Person 2", u"Person 3", u"Person 4", u"Person 5",
-      u"Person 6", u"Person 7", u"Person 8", u"Person 9", u"Person 10"};
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME),
+      u"Person 1",
+      u"Person 2",
+      u"Person 3",
+      u"Person 4",
+      u"Person 5",
+      u"Person 6",
+      u"Person 7",
+      u"Person 8",
+      u"Person 9"};
 
   const char* profile_paths[] = {
       kTestCases[0].profile_path, kTestCases[1].profile_path,

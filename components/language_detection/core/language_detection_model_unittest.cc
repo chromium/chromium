@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_provider.h"
 #include "components/language_detection/testing/language_detection_test_utils.h"
 #include "components/translate/core/common/translate_constants.h"

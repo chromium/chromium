@@ -380,6 +380,13 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
 void HttpResponseInfo::Persist(base::Pickle* pickle,
                                bool skip_transient_headers,
                                bool response_truncated) const {
+  // Pre-reserve memory for the Pickle contents to reduce allocations and
+  // copies. This doesn't affect the size of the data that is written to disk.
+  // The Pickle object only lives long enough to be written to disk, so it
+  // doesn't matter if we briefly overallocate memory. 10,900 bytes is enough to
+  // cover 99% percentile of HttpResponseInfo pickle sizes based on Dev/Canary
+  // data from 2025-01-20 (the mean is 4,773).
+  pickle->Reserve(10900);
   int flags = RESPONSE_INFO_VERSION;
   int extra_flags = 0;
   if (ssl_info.is_valid()) {

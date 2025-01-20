@@ -290,11 +290,14 @@ class StreamingResponder final
 
  private:
   void OnAborted() {
-    // TODO(crbug.com/374879795): fix the abort handling for streaming
-    // responder.
-    Controller()->Error(DOMException::Create(
-        kExceptionMessageRequestAborted,
-        DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
+    auto reason = abort_signal_->reason(script_state_);
+    if (reason.IsEmpty()) {
+      Controller()->Error(DOMException::Create(
+          kExceptionMessageRequestAborted,
+          DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
+    } else {
+      Controller()->Error(reason.V8Value());
+    }
     Cleanup();
   }
 

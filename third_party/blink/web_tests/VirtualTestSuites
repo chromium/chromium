@@ -764,18 +764,6 @@
     "args": ["--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory"],
     "expires": "Jul 1, 2025"
   },
-  {
-    "prefix": "css-sign-related-functions-disabled",
-    "owners": ["seokho@chromium.org", "sakhapov@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/css/css-values/signs-abs-computed.html",
-      "external/wpt/css/css-values/signs-abs-serialize.html",
-      "external/wpt/css/css-values/signs-abs-invalid.html"
-    ],
-    "args": ["--disable-blink-features=CSSSignRelatedFunctions"],
-    "expires": "Jan 1, 2025"
-  },
   "The overlay-scrollbar virtual suite is testing a feature that is enabled",
   "or not based on platform and settings, so it should not expire.",
   {
@@ -891,7 +879,7 @@
     "owners": ["drott@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],
-    "args": ["--enable-font-antialiasing"],
+    "args": ["--enable-font-antialiasing",  "--text-contrast=0.5", "--text-gamma=0.0"],
     "expires": "Jan 1, 2026"
   },
   " Temporary test suite running virtual/text-antialias using FreeType, until   ",

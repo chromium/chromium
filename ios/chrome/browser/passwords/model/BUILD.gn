@@ -297,7 +297,6 @@ source_set("unit_tests") {
     "//ios/testing:ocmock_support",
     "//ios/web",
     "//ios/web/js_messaging:web_view_js_utils",
-    "//ios/web/public/deprecated:deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

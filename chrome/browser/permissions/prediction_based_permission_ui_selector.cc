@@ -106,6 +106,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   VLOG(1) << "[CPSS] Selector activated";
   callback_ = std::move(callback);
   last_request_grant_likelihood_ = std::nullopt;
+  last_permission_request_relevance_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
   const PredictionSource prediction_source =
       GetPredictionTypeToUse(request->request_type());
@@ -220,6 +221,11 @@ PredictionBasedPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;
 }
 
+std::optional<permissions::PermissionRequestRelevance>
+PredictionBasedPermissionUiSelector::PermissionRequestRelevanceForUKM() {
+  return last_permission_request_relevance_;
+}
+
 std::optional<bool>
 PredictionBasedPermissionUiSelector::WasSelectorDecisionHeldback() {
   return was_decision_held_back_;
@@ -247,6 +253,13 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
                                permissions::features::kPermissionPredictionsV3)
                                ? 1
                                : 0;
+
+  last_permission_request_relevance_ =
+      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)
+          ? permissions::PermissionRequestRelevance::kVeryLow
+          : permissions::PermissionRequestRelevance::kUnspecified;
+
+  features.permission_relevance = last_permission_request_relevance_.value();
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
 

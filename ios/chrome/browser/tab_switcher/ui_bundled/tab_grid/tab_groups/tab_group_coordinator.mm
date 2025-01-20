@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
+#import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
@@ -357,6 +358,18 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 - (void)gridViewControllerDropSessionDidExit:
     (BaseGridViewController*)gridViewController {
   // No-op
+}
+
+- (void)didTapButtonInActivitySummary:
+    (BaseGridViewController*)gridViewController {
+  collaboration::messaging::MessagingBackendService* messagingService =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+  if (!_tabGroup || !messagingService) {
+    return;
+  }
+
+  messagingService->ClearDirtyTabMessagesForGroup(_tabGroup->tab_group_id());
 }
 
 #pragma mark - TabGroupPresentationCommands

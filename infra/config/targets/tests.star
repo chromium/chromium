@@ -2184,6 +2184,7 @@ targets.tests.gtest_test(
     name = "trees_in_viz_cc_unittests",
     args = [
         "--enable-features=TreesInViz",
+        "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",
     ],
     binary = "cc_unittests",
 )

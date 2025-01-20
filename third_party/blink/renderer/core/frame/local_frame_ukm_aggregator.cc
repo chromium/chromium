@@ -23,8 +23,8 @@
 
 namespace {
 
-inline base::HistogramBase::Sample ToSample(int64_t value) {
-  return base::saturated_cast<base::HistogramBase::Sample>(value);
+inline base::HistogramBase::Sample32 ToSample(int64_t value) {
+  return base::saturated_cast<base::HistogramBase::Sample32>(value);
 }
 
 inline int64_t ApplyBucket(int64_t value) {

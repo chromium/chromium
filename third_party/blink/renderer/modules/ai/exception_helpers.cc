@@ -10,6 +10,8 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -76,6 +78,23 @@ DOMException* CreateInternalErrorException() {
   return DOMException::Create(
       kExceptionMessageServiceUnavailable,
       DOMException::GetErrorName(DOMExceptionCode::kOperationError));
+}
+
+bool HandleAbortSignal(AbortSignal* signal,
+                       ScriptState* script_state,
+                       ExceptionState& exception_state) {
+  if (signal && signal->aborted()) {
+    auto reason = signal->reason(script_state);
+    if (reason.IsEmpty()) {
+      ThrowAbortedException(exception_state);
+    } else {
+      V8ThrowException::ThrowException(script_state->GetIsolate(),
+                                       reason.V8Value());
+    }
+    return true;
+  }
+
+  return false;
 }
 
 namespace {

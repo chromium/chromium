@@ -1418,7 +1418,6 @@ ActionButtonView* CaptureModeSession::AddActionButton(
   ActionButtonView* action_button = action_container_view_->AddActionButton(
       std::move(callback), text, icon, rank, id);
   CHECK(action_button);
-  CaptureModeSessionFocusCycler::HighlightHelper::Install(action_button);
 
   UpdateActionContainerWidget();
 

@@ -533,6 +533,7 @@ ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
   }
 }
 
+// This function is not used if TextCombineEmphasisNG flag is enabled.
 ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
     const FontDescription& font_description,
     const TextRunPaintInfo& run_info,

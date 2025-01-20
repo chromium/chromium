@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/permissions/permission_actions_history.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/request_type.h"
@@ -56,6 +57,9 @@ class PredictionBasedPermissionUiSelector
   std::optional<PredictionGrantLikelihood> PredictedGrantLikelihoodForUKM()
       override;
 
+  std::optional<permissions::PermissionRequestRelevance>
+  PermissionRequestRelevanceForUKM() override;
+
   std::optional<bool> WasSelectorDecisionHeldback() override;
 
  private:
@@ -88,6 +92,8 @@ class PredictionBasedPermissionUiSelector
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
   std::optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
+  std::optional<permissions::PermissionRequestRelevance>
+      last_permission_request_relevance_;
   std::optional<bool> was_decision_held_back_;
 
   std::optional<PredictionGrantLikelihood> likelihood_override_for_testing_;

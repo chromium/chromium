@@ -2264,7 +2264,7 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
       stream.Peek()
           .Value()
           .ToAtomicString();  // Includes the opening parenthesis.
-  std::optional<Vector<StyleRuleFunction::Parameter>> parameters;
+  std::optional<HeapVector<StyleRuleFunction::Parameter>> parameters;
   {
     CSSParserTokenStream::BlockGuard guard(stream);
     stream.ConsumeWhitespace();
@@ -2373,11 +2373,11 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
 }
 
 // Parse the parameters of a CSS function: Zero or more comma-separated
-// instances of [<name> <colon> <type>]. Returns the empty value
-// on parse error.
-std::optional<Vector<StyleRuleFunction::Parameter>>
+// instances of [ <name> <type>? [ : <default-value> ]? ].
+// Returns the empty value on parse error.
+std::optional<HeapVector<StyleRuleFunction::Parameter>>
 CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
-  Vector<StyleRuleFunction::Parameter> parameters;
+  HeapVector<StyleRuleFunction::Parameter> parameters;
   bool first_parameter = true;
   for (;;) {
     stream.ConsumeWhitespace();
@@ -2398,8 +2398,24 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
     CSSSyntaxDefinition type = ConsumeFunctionType(stream).value_or(
         CSSSyntaxDefinition::CreateUniversal());
 
-    parameters.push_back(
-        StyleRuleFunction::Parameter{parameter_name, std::move(type)});
+    CSSVariableData* default_value = nullptr;
+    if (stream.Peek().GetType() == kColonToken) {
+      stream.ConsumeIncludingWhitespace();
+
+      // Note that this is a comma-containing production [1], and therefore
+      // the value may not contain commas until we support the {} wrapper
+      // defined by the spec.
+      // [1] https://drafts.csswg.org/css-values-5/#component-function-commas
+      bool important_ignored;
+      default_value = CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false, /*restricted_value=*/false,
+          /*comma_ends_declaration=*/true, important_ignored, *context_);
+    }
+
+    parameters.push_back(StyleRuleFunction::Parameter{
+        parameter_name, std::move(type), default_value});
     if (stream.Peek().GetType() == kRightParenthesisToken) {
       // No more arguments.
       break;
@@ -2873,8 +2889,13 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   if (id) {
     if (parsing_descriptor) {
       const AtRuleDescriptorID atrule_id = static_cast<AtRuleDescriptorID>(id);
+      const AtomicString& variable_name =
+          (atrule_id == AtRuleDescriptorID::Variable
+               ? lhs.Value().ToAtomicString()
+               : g_null_atom);
       AtRuleDescriptorParser::ParseDescriptorValue(
-          rule_type, atrule_id, stream, *context_, parsed_properties_);
+          rule_type, atrule_id, variable_name, stream, *context_,
+          parsed_properties_);
     } else {
       const CSSPropertyID unresolved_property = static_cast<CSSPropertyID>(id);
       if (unresolved_property == CSSPropertyID::kVariable) {

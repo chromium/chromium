@@ -146,6 +146,10 @@ void MantisUntrustedServiceManager::Create(
                      std::move(processor)));
 }
 
+void MantisUntrustedServiceManager::ResetService() {
+  mantis_untrusted_service_.reset();
+}
+
 void MantisUntrustedServiceManager::OnInitializeDone(
     CreateCallback callback,
     mojo::PendingRemote<mantis::mojom::MantisProcessor> processor,
@@ -157,7 +161,9 @@ void MantisUntrustedServiceManager::OnInitializeDone(
   mantis_untrusted_service_ =
       std::make_unique<MantisUntrustedService>(std::move(processor));
   std::move(callback).Run(CreateResult::NewService(
-      mantis_untrusted_service_->BindNewPipeAndPassRemote()));
+      mantis_untrusted_service_->BindNewPipeAndPassRemote(
+          base::BindOnce(&MantisUntrustedServiceManager::ResetService,
+                         weak_ptr_factory_.GetWeakPtr()))));
 }
 
 }  // namespace ash

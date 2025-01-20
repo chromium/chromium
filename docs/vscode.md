@@ -240,8 +240,8 @@ Note: See also [Key Bindings for Visual Studio Code
 
 There are two extensions you can use to get Java/Android support in VSCode:
 
-a. [ChromiumIDE](https://marketplace.visualstudio.com/items?itemName=Google.cros-ide)
-b. [Language Support for Java™ by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.java)
+*   a. [ChromiumIDE](https://marketplace.visualstudio.com/items?itemName=Google.cros-ide)
+*   b. [Language Support for Java™ by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.java)
 
 ChromiumIDE is much faster and more stable than the other extension, mainly
 because it does not rely on background indexing and persistent cache. It works
@@ -259,15 +259,10 @@ checkout, forcing you to clear the cache and wait indexing again).
 
 Install the latest **pre-release** version of
 [ChromiumIDE](https://marketplace.visualstudio.com/items?itemName=Google.cros-ide)
-from the VSCode marketplace. Make sure the extension version is **0.35.26** or
+from the VSCode marketplace. Make sure the extension version is **0.35.32** or
 later.
 
-After installing the pre-release version, **enable the experimental setting for
-Chromium Java support**. Note that settings should be enabled before opening
-a Chromium workspace; if you have opened one already, please reload the window
-after updating the setting.
-
-Then open a VSCode workspace containing Chromium source tree (opening
+Then just open a VSCode workspace containing Chromium source tree (opening
 subdirectories is fine) and open a Java file. If you haven't, you're prompted to
 select the default build output directory (e.g. `out/Default`).
 

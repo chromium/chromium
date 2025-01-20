@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -246,10 +247,7 @@ ReadableStream* AILanguageModel::promptStreaming(
   }
 
   AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    // TODO(crbug.com/374879796): figure out how to handling aborted signal for
-    // the streaming API.
-    ThrowAbortedException(exception_state);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
     return nullptr;
   }
 

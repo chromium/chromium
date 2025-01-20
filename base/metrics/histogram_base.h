@@ -95,9 +95,6 @@ BASE_EXPORT HistogramBase* DeserializeHistogramInfo(base::PickleIterator* iter);
 class BASE_EXPORT HistogramBase {
  public:
   typedef int32_t Sample32;  // Used for samples.
-  // Temporary alias for backward compatibility.
-  // TODO(crbug.com/40899968): Remove this alias.
-  typedef Sample32 Sample;
   typedef subtle::Atomic32 AtomicCount;  // Used to count samples.
   typedef int32_t Count;  // Used to manipulate counts in temporaries.
 

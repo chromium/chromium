@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -57,6 +58,7 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
@@ -1046,7 +1048,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   EXPECT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(profile()));
-  EXPECT_EQ(u"Person 1", GetProfileName());
+  EXPECT_EQ(
+      // "Your Chrome"
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME),
+      GetProfileName());
   EXPECT_TRUE(IsUsingDefaultProfileName());
 
   // Checking the expected metrics from this flow.

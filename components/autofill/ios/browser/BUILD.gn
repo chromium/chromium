@@ -66,7 +66,6 @@ source_set("browser") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/common",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//services/metrics/public/cpp:metrics_cpp",

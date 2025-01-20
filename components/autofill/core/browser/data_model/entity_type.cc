@@ -21,14 +21,12 @@ FieldType AttributeTypeNameToFieldType(AttributeTypeName a) {
       return PASSPORT_EXPIRATION_DATE_TAG;
     case AttributeTypeName::kPassportIssueDate:
       return PASSPORT_ISSUE_DATE_TAG;
-    case AttributeTypeName::kPassportPlaceOfBirth:
-      return PASSPORT_COUNTRY_OF_BIRTH_TAG;
     case AttributeTypeName::kLoyaltyCardProgram:
-      return LOYALTY_CARD_PROGRAM;
+      return LOYALTY_MEMBERSHIP_PROGRAM;
     case AttributeTypeName::kLoyaltyCardProvider:
-      return LOYALTY_CARD_PROVIDER;
+      return LOYALTY_MEMBERSHIP_PROVIDER;
     case AttributeTypeName::kLoyaltyCardMemberId:
-      return LOYALTY_CARD_MEMBER_ID;
+      return LOYALTY_MEMBERSHIP_ID;
   }
   NOTREACHED();
 }

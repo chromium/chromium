@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,19 +20,25 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_command_delegate_impl.h"
 #include "ash/scanner/scanner_feedback.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/feedback/feedback_constants.h"
@@ -43,6 +50,8 @@
 namespace ash {
 
 namespace {
+
+using enum ScannerFeatureUserState;
 
 constexpr char kScannerActionNotificationId[] = "scanner_action_notification";
 constexpr char kScannerNotifierId[] = "ash.scanner";
@@ -78,31 +87,154 @@ void ShowActionProgressNotification(
       message_center::SystemNotificationWarningLevel::NORMAL));
 }
 
-// Should be called when an action finishes execution.
-void OnActionFinished(manta::proto::ScannerAction::ActionCase action_case,
-                      bool success) {
-  // Remove the action progress notification.
-  message_center::MessageCenter::Get()->RemoveNotification(
-      kScannerActionNotificationId,
-      /*by_user=*/false);
-
-  if (success) {
-    // TODO: crbug.com/375967525 - Finalize the action toast string.
-    if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
-      ToastManager::Get()->Show(ToastData(
-          kScannerActionSuccessToastId, ToastCatalogName::kScannerActionSuccess,
-          u"Text copied to clipboard"));
-    }
-    // TODO: crbug.com/383925780 - We should also show a toast for other action
-    // cases once the feedback mechanism is ready.
-  } else {
-    // TODO: crbug.com/383926250 - The action failure text should depend on the
-    // type of action attempted.
-    constexpr char16_t kPlaceholderActionFailureText[] = u"Action Failed";
-    ToastManager::Get()->Show(ToastData(kScannerActionFailureToastId,
-                                        ToastCatalogName::kScannerActionFailure,
-                                        kPlaceholderActionFailureText));
+void RecordExecutePopulatedActionTimer(
+    manta::proto::ScannerAction::ActionCase action_case,
+    base::TimeTicks execute_start_time) {
+  // TODO(b/363101363): Add tests.
+  std::string_view variant_name;
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      variant_name = kScannerFeatureTimerExecutePopulatedNewCalendarEventAction;
+      break;
+    case manta::proto::ScannerAction::kNewContact:
+      variant_name = kScannerFeatureTimerExecutePopulatedNewContactAction;
+      break;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      variant_name = kScannerFeatureTimerExecutePopulatedNewGoogleDocAction;
+      break;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      variant_name = kScannerFeatureTimerExecutePopulatedNewGoogleSheetAction;
+      break;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      variant_name =
+          kScannerFeatureTimerExecutePopulatedNewCopyToClipboardAction;
+      break;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      break;
   }
+  if (variant_name.empty()) {
+    return;
+  }
+  base::UmaHistogramMediumTimes(variant_name,
+                                base::TimeTicks::Now() - execute_start_time);
+}
+
+void RecordPopulateActionTimer(
+    manta::proto::ScannerAction::ActionCase action_case,
+    base::TimeTicks request_start_time) {
+  // TODO(b/363101363): Add tests.
+  std::string_view variant_name;
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      variant_name = kScannerFeatureTimerPopulateNewCalendarEventAction;
+      break;
+    case manta::proto::ScannerAction::kNewContact:
+      variant_name = kScannerFeatureTimerPopulateNewContactAction;
+      break;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      variant_name = kScannerFeatureTimerPopulateNewGoogleDocAction;
+      break;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      variant_name = kScannerFeatureTimerPopulateNewGoogleSheetAction;
+      break;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      variant_name = kScannerFeatureTimerPopulateNewCopyToClipboardAction;
+      break;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      break;
+  }
+  if (variant_name.empty()) {
+    return;
+  }
+  base::UmaHistogramMediumTimes(variant_name,
+                                base::TimeTicks::Now() - request_start_time);
+}
+
+void RecordPopulateActionFailure(
+    manta::proto::ScannerAction::ActionCase action_case) {
+  // TODO(b/363101363): Add tests.
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      RecordScannerFeatureUserState(kNewCalendarEventActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::kNewContact:
+      RecordScannerFeatureUserState(kNewContactActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      RecordScannerFeatureUserState(kNewGoogleDocActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      RecordScannerFeatureUserState(kNewGoogleSheetActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      RecordScannerFeatureUserState(kCopyToClipboardActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      return;
+  }
+}
+
+void RecordActionExecutionAndRun(
+    manta::proto::ScannerAction::ActionCase action_case,
+    base::TimeTicks execute_start_time,
+    ScannerCommandCallback action_finished_callback,
+    bool success) {
+  // TODO(b/363101363): Add tests.
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      RecordScannerFeatureUserState(
+          success ? kNewCalendarEventActionFinishedSuccessfully
+                  : kNewCalendarEventPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::kNewContact:
+      RecordScannerFeatureUserState(
+          success ? kNewContactActionFinishedSuccessfully
+                  : kNewContactPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      RecordScannerFeatureUserState(
+          success ? kNewGoogleDocActionFinishedSuccessfully
+                  : kNewGoogleDocPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      RecordScannerFeatureUserState(
+          success ? kNewGoogleSheetActionFinishedSuccessfully
+                  : kNewGoogleSheetPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      RecordScannerFeatureUserState(
+          success ? kCopyToClipboardActionFinishedSuccessfully
+                  : kCopyToClipboardPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      break;
+  }
+  RecordExecutePopulatedActionTimer(action_case, execute_start_time);
+  std::move(action_finished_callback).Run(success);
+}
+
+// Executes the populated action, if it exists, calling
+// `action_finished_callback` with the result of the execution.
+void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
+                            base::TimeTicks request_start_time,
+                            base::WeakPtr<ScannerCommandDelegate> delegate,
+                            ScannerCommandCallback action_finished_callback,
+                            manta::proto::ScannerAction populated_action) {
+  RecordPopulateActionTimer(action_case, request_start_time);
+  if (populated_action.action_case() ==
+      manta::proto::ScannerAction::ACTION_NOT_SET) {
+    RecordPopulateActionFailure(action_case);
+    std::move(action_finished_callback).Run(false);
+    return;
+  }
+
+  ScannerCommandCallback record_metrics_callback = base::BindOnce(
+      &RecordActionExecutionAndRun, action_case, base::TimeTicks::Now(),
+      std::move(action_finished_callback));
+
+  HandleScannerCommand(std::move(delegate),
+                       ScannerActionToCommand(std::move(populated_action)),
+                       std::move(record_metrics_callback));
 }
 
 void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
@@ -150,16 +282,8 @@ ScannerSession* ScannerController::StartNewSession() {
   // (to avoid subtle issues from having simultaneously existing sessions).
   scanner_session_ = nullptr;
   if (CanStartSession()) {
-    ScannerProfileScopedDelegate* profile_scoped_delegate =
-        delegate_->GetProfileScopedDelegate();
-    // Keep the existing `command_delegate_` if there is one, to allow commands
-    // from previous sessions to continue in the background if needed.
-    if (command_delegate_ == nullptr) {
-      command_delegate_ =
-          std::make_unique<ScannerCommandDelegateImpl>(profile_scoped_delegate);
-    }
-    scanner_session_ = std::make_unique<ScannerSession>(
-        profile_scoped_delegate, command_delegate_.get());
+    scanner_session_ =
+        std::make_unique<ScannerSession>(delegate_->GetProfileScopedDelegate());
   }
   return scanner_session_.get();
 }
@@ -180,9 +304,25 @@ void ScannerController::OnSessionUIClosed() {
 
 void ScannerController::ExecuteAction(
     const ScannerActionViewModel& scanner_action) {
+  if (!scanner_session_) {
+    return;
+  }
+  // Keep the existing `command_delegate_` if there is one, to allow commands
+  // from previous sessions to continue in the background if needed.
+  if (!command_delegate_) {
+    command_delegate_ = std::make_unique<ScannerCommandDelegateImpl>(
+        delegate_->GetProfileScopedDelegate());
+  }
   const manta::proto::ScannerAction::ActionCase action_case =
       scanner_action.GetActionCase();
-  scanner_action.ExecuteAction(base::BindOnce(&OnActionFinished, action_case));
+  scanner_session_->PopulateAction(
+      scanner_action.downscaled_jpeg_bytes(),
+      scanner_action.unpopulated_action(),
+      base::BindOnce(
+          &ExecutePopulatedAction, action_case, base::TimeTicks::Now(),
+          command_delegate_->GetWeakPtr(),
+          base::BindOnce(&ScannerController::OnActionFinished,
+                         weak_ptr_factory_.GetWeakPtr(), action_case)));
   ShowActionProgressNotification(action_case);
 }
 
@@ -208,8 +348,45 @@ void ScannerController::OpenFeedbackDialog(
       base::BindOnce(&OnFeedbackFormSendButtonClicked, account_id));
 }
 
+void ScannerController::SetOnActionFinishedForTesting(
+    OnActionFinishedCallback callback) {
+  on_action_finished_for_testing_ = std::move(callback);
+}
+
 bool ScannerController::HasActiveSessionForTesting() const {
   return !!scanner_session_;
+}
+
+void ScannerController::OnActionFinished(
+    manta::proto::ScannerAction::ActionCase action_case,
+    bool success) {
+  // Remove the action progress notification.
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kScannerActionNotificationId,
+      /*by_user=*/false);
+
+  if (success) {
+    // TODO: crbug.com/375967525 - Finalize the action toast string.
+    if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
+      ToastManager::Get()->Show(ToastData(
+          kScannerActionSuccessToastId, ToastCatalogName::kScannerActionSuccess,
+          u"Text copied to clipboard"));
+    }
+    // TODO: crbug.com/383925780 - We should also show a toast for other action
+    // cases once the feedback mechanism is ready.
+  } else {
+    // TODO: crbug.com/383926250 - The action failure text should depend on the
+    // type of action attempted.
+    constexpr char16_t kPlaceholderActionFailureText[] = u"Action Failed";
+    ToastManager::Get()->Show(ToastData(kScannerActionFailureToastId,
+                                        ToastCatalogName::kScannerActionFailure,
+                                        kPlaceholderActionFailureText));
+  }
+
+  if (!on_action_finished_for_testing_.is_null()) {
+    CHECK_IS_TEST();
+    std::move(on_action_finished_for_testing_).Run(success);
+  }
 }
 
 }  // namespace ash

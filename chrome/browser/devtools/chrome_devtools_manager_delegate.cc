@@ -316,15 +316,10 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
 
   if (auto* web_app_provider =
           web_app::WebAppProvider::GetForWebApps(profile)) {
-    // TODO(crbug.com/340952100): Evaluate call sites of
-    // FindBestAppWithUrlInScope for correctness.
     std::optional<webapps::AppId> app_id =
         web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
             rfh->GetMainFrame()->GetLastCommittedURL(),
-            {
-                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-            });
+            web_app::WebAppFilter::InstalledInChrome());
     if (app_id) {
       const auto* web_app =
           web_app_provider->registrar_unsafe().GetAppById(app_id.value());

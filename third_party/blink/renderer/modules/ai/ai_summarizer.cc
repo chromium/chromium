@@ -108,12 +108,10 @@ ReadableStream* AISummarizer::summarizeStreaming(
   }
 
   AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    // TODO(crbug.com/374879796): figure out how to handling aborted signal for
-    // the streaming API.
-    ThrowAbortedException(exception_state);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
     return nullptr;
   }
+
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
           script_state, signal, task_runner_,

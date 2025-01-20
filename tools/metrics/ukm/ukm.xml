@@ -17878,6 +17878,12 @@ be describing additional metrics about the same event.
       permission has been automatically revoked in the past at least once.
     </summary>
   </metric>
+  <metric name="PermissionRequestRelevance" enum="PermissionRequestRelevance">
+    <summary>
+      An enum of type PermissionRequestRelevance describing the permission
+      request relevance returned by a genAI and/or TFLite on-device model.
+    </summary>
+  </metric>
   <metric name="PermissionType">
     <summary>
       An enum of type ContentSettingsType.

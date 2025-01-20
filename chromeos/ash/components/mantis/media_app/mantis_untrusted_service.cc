@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,8 +20,12 @@ MantisUntrustedService::MantisUntrustedService(
 MantisUntrustedService::~MantisUntrustedService() = default;
 
 mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedService>
-MantisUntrustedService::BindNewPipeAndPassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
+MantisUntrustedService::BindNewPipeAndPassRemote(
+    base::OnceClosure disconnect_handler) {
+  mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedService> remote =
+      receiver_.BindNewPipeAndPassRemote();
+  receiver_.set_disconnect_handler(std::move(disconnect_handler));
+  return remote;
 }
 
 void MantisUntrustedService::SegmentImage(const std::vector<uint8_t>& image,

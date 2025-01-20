@@ -9,10 +9,6 @@ source_set("model") {
     "synced_window_delegate_browser_agent.h",
     "tab_helper_delegate_installer.h",
     "tab_helper_util.h",
-    "tab_parenting_browser_agent.h",
-    "tab_parenting_browser_agent.mm",
-    "tab_parenting_global_observer.cc",
-    "tab_parenting_global_observer.h",
     "tab_title_util.h",
     "tabs_closer.h",
   ]

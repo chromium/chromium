@@ -140,8 +140,6 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   void RealEndTest();
 
-  void SkipTest() { skip_test_ = true; }
-
   std::unique_ptr<LayerTreeFrameSink>
   ReleaseLayerTreeFrameSinkOnLayerTreeHost();
   void SetVisibleOnLayerTreeHost(bool visible);
@@ -285,8 +283,6 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   mutable base::Lock test_ended_lock_;
   bool ended_ = false;
-
-  bool skip_test_ = false;
 
   int timeout_seconds_ = 0;
 

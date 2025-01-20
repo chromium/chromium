@@ -297,7 +297,7 @@ class BASE_EXPORT SampleCountIterator {
                    HistogramBase::Count* count) = 0;
   static_assert(std::numeric_limits<HistogramBase::Sample32>::max() <
                     std::numeric_limits<int64_t>::max(),
-                "Get() |max| must be able to hold Histogram::Sample max + 1");
+                "Get() |max| must be able to hold Histogram::Sample32 max + 1");
 
   // Get the index of current histogram bucket.
   // For histograms that don't use predefined buckets, it returns false.

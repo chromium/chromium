@@ -22,6 +22,7 @@ class AtRuleDescriptorParser {
  public:
   static bool ParseDescriptorValue(StyleRule::RuleType,
                                    AtRuleDescriptorID,
+                                   const AtomicString& variable_name,
                                    CSSParserTokenStream&,
                                    const CSSParserContext&,
                                    HeapVector<CSSPropertyValue, 64>&);

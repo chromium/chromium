@@ -17,13 +17,13 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language_detection/core/constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -72,7 +72,7 @@ void TranslateInfoBarDelegate::Create(
       DCHECK(step == translate::TRANSLATE_STEP_TRANSLATING ||
              step == translate::TRANSLATE_STEP_AFTER_TRANSLATE);
 #endif
-      DCHECK_EQ(translate::kUnknownLanguageCode, source_language);
+      DCHECK_EQ(language_detection::kUnknownLanguageCode, source_language);
     }
   }
 

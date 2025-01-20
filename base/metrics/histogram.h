@@ -465,7 +465,7 @@ class BASE_EXPORT LinearHistogram : public Histogram {
 // cause overflows of the 31-bit counters, usually with an enum as the value.
 class BASE_EXPORT ScaledLinearHistogram {
   using AtomicCount = Histogram::AtomicCount;
-  using Sample32 = Histogram::Sample;
+  using Sample32 = Histogram::Sample32;
 
  public:
   // Currently only works with "exact" linear histograms: minimum=1, maximum=N,

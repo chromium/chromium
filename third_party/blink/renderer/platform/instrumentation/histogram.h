@@ -28,11 +28,11 @@ class PLATFORM_EXPORT CustomCountHistogram {
  public:
   // Min values should be >=1 as emitted 0s still go into the underflow bucket.
   CustomCountHistogram(const char* name,
-                       base::HistogramBase::Sample min,
-                       base::HistogramBase::Sample max,
+                       base::HistogramBase::Sample32 min,
+                       base::HistogramBase::Sample32 max,
                        int32_t bucket_count);
-  void Count(base::HistogramBase::Sample);
-  void CountMany(base::HistogramBase::Sample, int count);
+  void Count(base::HistogramBase::Sample32);
+  void CountMany(base::HistogramBase::Sample32, int count);
   void CountMicroseconds(base::TimeDelta);
 
  protected:
@@ -79,9 +79,9 @@ class ScopedHighResUsHistogramTimer
   static bool ShouldRecord() { return base::TimeTicks::IsHighResolution(); }
 };
 
-static constexpr base::HistogramBase::Sample kTimeBasedHistogramMinSample = 1;
-static constexpr base::HistogramBase::Sample kTimeBasedHistogramMaxSample =
-    static_cast<base::Histogram::Sample>(base::Seconds(10).InMicroseconds());
+static constexpr base::HistogramBase::Sample32 kTimeBasedHistogramMinSample = 1;
+static constexpr base::HistogramBase::Sample32 kTimeBasedHistogramMaxSample =
+    static_cast<base::Histogram::Sample32>(base::Seconds(10).InMicroseconds());
 static constexpr int32_t kTimeBasedHistogramBucketCount = 50;
 
 #define SCOPED_BLINK_UMA_HISTOGRAM_TIMER_IMPL(name, allow_cross_thread)  \

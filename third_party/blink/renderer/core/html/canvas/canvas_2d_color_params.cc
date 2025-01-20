@@ -35,4 +35,8 @@ sk_sp<SkColorSpace> Canvas2DColorParams::GetSkColorSpace() const {
   return PredefinedColorSpaceToSkColorSpace(color_space_);
 }
 
+gfx::ColorSpace Canvas2DColorParams::GetGfxColorSpace() const {
+  return PredefinedColorSpaceToGfxColorSpace(color_space_);
+}
+
 }  // namespace blink
