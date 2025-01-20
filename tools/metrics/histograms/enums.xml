@@ -25294,6 +25294,7 @@ from previous Chrome versions.
   <int value="1886462832" label="EnableTouchscreenMappingExperience:enabled"/>
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887085478" label="WallpaperGooglePhotosSharedAlbums:enabled"/>
+  <int value="1887360012" label="PrivacyGuideAiSettings:disabled"/>
   <int value="1887882558" label="RTCUnifiedPlanByDefault:enabled"/>
   <int value="1888075407" label="CrOSDspBasedNsAllowed:enabled"/>
   <int value="1888665816"
@@ -25762,6 +25763,7 @@ from previous Chrome versions.
   <int value="2072231406" label="SingleProcessMash:disabled"/>
   <int value="2072755432" label="AndroidBcivBottomControls:disabled"/>
   <int value="2073113207" label="SensorContentSetting:disabled"/>
+  <int value="2073207038" label="PrivacyGuideAiSettings:enabled"/>
   <int value="2073762173" label="ToolbarPhoneCleanup:disabled"/>
   <int value="2074475824" label="tab-link-drag-drop:enabled"/>
   <int value="2075207488" label="AutomaticPasswordGeneration:disabled"/>

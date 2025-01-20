@@ -1568,6 +1568,10 @@ const char kPipDoubleTapToResizeDescription[] =
 const char kPipTuckName[] = "Enable tuck for PiP windows";
 const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
 
+const char kPrivacyGuideAiSettingsName[] = "AI settings in Privacy Guide";
+const char kPrivacyGuideAiSettingsDescription[] =
+    "Enables the AI settings linkout in the Privacy Guide completion card.";
+
 const char kPrivateNetworkAccessRespectPreflightResultsName[] =
     "Respect the result of Private Network Access preflights";
 const char kPrivateNetworkAccessRespectPreflightResultsDescription[] =

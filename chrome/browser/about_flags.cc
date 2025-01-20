@@ -11465,6 +11465,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"ai-settings-page-refresh", flag_descriptions::kAiSettingsPageRefreshName,
      flag_descriptions::kAiSettingsPageRefreshDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(optimization_guide::features::kAiSettingsPageRefresh)},
+    {"privacy-guide-ai-settings",
+     flag_descriptions::kPrivacyGuideAiSettingsName,
+     flag_descriptions::kPrivacyGuideAiSettingsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(optimization_guide::features::kPrivacyGuideAiSettings)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"password-form-clientside-classifier",
