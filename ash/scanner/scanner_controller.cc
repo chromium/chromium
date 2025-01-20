@@ -282,16 +282,8 @@ ScannerSession* ScannerController::StartNewSession() {
   // (to avoid subtle issues from having simultaneously existing sessions).
   scanner_session_ = nullptr;
   if (CanStartSession()) {
-    ScannerProfileScopedDelegate* profile_scoped_delegate =
-        delegate_->GetProfileScopedDelegate();
-    // Keep the existing `command_delegate_` if there is one, to allow commands
-    // from previous sessions to continue in the background if needed.
-    if (command_delegate_ == nullptr) {
-      command_delegate_ =
-          std::make_unique<ScannerCommandDelegateImpl>(profile_scoped_delegate);
-    }
-    scanner_session_ = std::make_unique<ScannerSession>(
-        profile_scoped_delegate, command_delegate_.get());
+    scanner_session_ =
+        std::make_unique<ScannerSession>(delegate_->GetProfileScopedDelegate());
   }
   return scanner_session_.get();
 }
@@ -315,11 +307,12 @@ void ScannerController::ExecuteAction(
   if (!scanner_session_) {
     return;
   }
-  // During an active user session, the first successful `StartNewSession()`
-  // call will create both the session and the command delegate. The command
-  // delegate is never reset afterwards, so the command delegate should always
-  // exist here.
-  CHECK(command_delegate_);
+  // Keep the existing `command_delegate_` if there is one, to allow commands
+  // from previous sessions to continue in the background if needed.
+  if (!command_delegate_) {
+    command_delegate_ = std::make_unique<ScannerCommandDelegateImpl>(
+        delegate_->GetProfileScopedDelegate());
+  }
   const manta::proto::ScannerAction::ActionCase action_case =
       scanner_action.GetActionCase();
   scanner_session_->PopulateAction(

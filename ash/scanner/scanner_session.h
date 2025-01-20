@@ -21,7 +21,6 @@
 
 namespace ash {
 
-class ScannerCommandDelegate;
 class ScannerProfileScopedDelegate;
 
 // A ScannerSession represents a single "use" of the Scanner feature. A session
@@ -38,8 +37,7 @@ class ASH_EXPORT ScannerSession {
   using PopulateActionCallback =
       base::OnceCallback<void(manta::proto::ScannerAction action)>;
 
-  ScannerSession(ScannerProfileScopedDelegate* delegate,
-                 ScannerCommandDelegate* command_delegate);
+  explicit ScannerSession(ScannerProfileScopedDelegate* delegate);
   ScannerSession(const ScannerSession&) = delete;
   ScannerSession& operator=(const ScannerSession&) = delete;
   ~ScannerSession();
@@ -65,10 +63,6 @@ class ASH_EXPORT ScannerSession {
       manta::MantaStatus status);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
-
-  // Delegate for performing relevant commands after an action is fetched.
-  // Should outlive `this`.
-  const raw_ptr<ScannerCommandDelegate> command_delegate_;
 
   base::WeakPtrFactory<ScannerSession> weak_ptr_factory_{this};
 };

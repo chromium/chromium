@@ -11,7 +11,6 @@
 
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
-#include "ash/scanner/scanner_command_delegate_impl.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,8 +58,7 @@ TEST(ScannerSessionTest, FetchActionsForImageReturnsEmptyWhenDelegateErrors) {
       .WillOnce(RunOnceCallback<1>(
           nullptr, manta::MantaStatus{
                        .status_code = manta::MantaStatusCode::kInvalidInput}));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
 
   base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
@@ -75,8 +73,7 @@ TEST(ScannerSessionTest,
       .WillOnce(RunOnceCallback<1>(
           std::make_unique<manta::proto::ScannerOutput>(),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
 
   base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
@@ -99,8 +96,7 @@ TEST(ScannerSessionTest, FetchActionsForImageRecordsNumberOfActionsMetrics) {
       .WillOnce(RunOnceCallback<1>(
           std::move(output),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
   session.FetchActionsForImage(nullptr, base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
@@ -128,8 +124,7 @@ TEST(ScannerSessionTest, FetchActionsForImageNoActionRecordsMetrics) {
       .WillOnce(RunOnceCallback<1>(
           std::move(output),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
   session.FetchActionsForImage(nullptr, base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
@@ -144,9 +139,7 @@ TEST(ScannerSessionTest, FetchActionsForImageRecordsTimerMetric) {
   FetchActionsForImageFuture future;
   FakeScannerProfileScopedDelegate delegate;
   EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
-
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
   session.FetchActionsForImage(nullptr, base::DoNothing());
   task_environment.FastForwardBy(base::Milliseconds(500));
   auto output = std::make_unique<manta::proto::ScannerOutput>();
@@ -172,8 +165,7 @@ TEST(ScannerSessionTest,
       .WillOnce(RunOnceCallback<1>(
           std::move(output),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
 
   base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
@@ -185,8 +177,7 @@ TEST(ScannerSessionTest, ResizesImageHeightToMaxEdge) {
   FakeScannerProfileScopedDelegate delegate;
   FetchActionsForImageFuture future;
   EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
 
   scoped_refptr<base::RefCountedMemory> bytes =
       MakeJpegBytes(/*width=*/2300, /*height=*/23000);
@@ -204,8 +195,7 @@ TEST(ScannerSessionTest, ResizesImageWidthToMaxEdge) {
   FakeScannerProfileScopedDelegate delegate;
   FetchActionsForImageFuture future;
   EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
 
   scoped_refptr<base::RefCountedMemory> bytes =
       MakeJpegBytes(/*width=*/23000, /*height=*/2300);
@@ -223,8 +213,7 @@ TEST(ScannerSessionTest, NoResizeIfWithinLimit) {
   FakeScannerProfileScopedDelegate delegate;
   FetchActionsForImageFuture future;
   EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
 
   scoped_refptr<base::RefCountedMemory> bytes =
       MakeJpegBytes(/*width=*/1000, /*height=*/1000);
@@ -239,8 +228,7 @@ TEST(ScannerSessionTest, DoesNotResizeIfTotalPixelSizeLowerThanMax) {
   FakeScannerProfileScopedDelegate delegate;
   FetchActionsForImageFuture future;
   EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
-  ScannerCommandDelegateImpl command_delegate(&delegate);
-  ScannerSession session(&delegate, &command_delegate);
+  ScannerSession session(&delegate);
 
   scoped_refptr<base::RefCountedMemory> bytes =
       MakeJpegBytes(/*width=*/4600, /*height=*/1100);

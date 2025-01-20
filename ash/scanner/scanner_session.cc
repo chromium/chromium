@@ -13,7 +13,6 @@
 
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
-#include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -168,9 +167,8 @@ void RecordAllDetectedActions(const manta::proto::ScannerOutput& output) {
 
 }  // namespace
 
-ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate,
-                               ScannerCommandDelegate* command_delegate)
-    : delegate_(delegate), command_delegate_(command_delegate) {}
+ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate)
+    : delegate_(delegate) {}
 
 ScannerSession::~ScannerSession() = default;
 
