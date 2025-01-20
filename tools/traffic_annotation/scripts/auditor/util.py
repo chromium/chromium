@@ -290,9 +290,9 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
     # Comments.
     line += "\t{}".format(escape_for_tsv(annotation.proto.comments))
     # Source.
-    source = annotation.proto.source
     code_search_link = "https://cs.chromium.org/chromium/src/"
-    line += "\t{}{}?l={}".format(code_search_link, source.file, source.line)
+    line += "\t{}{}?l={}".format(code_search_link, annotation.file,
+                                 annotation.line)
     lines.append(line)
 
   lines.sort()
