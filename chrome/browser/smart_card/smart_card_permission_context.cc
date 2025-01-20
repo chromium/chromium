@@ -21,16 +21,19 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace {
 constexpr char kReaderNameKey[] = "reader-name";
 
-static base::Value::Dict ReaderNameToValue(const std::string& reader_name) {
+template <typename StringType>
+static base::Value::Dict ReaderNameToValue(const StringType& reader_name) {
   base::Value::Dict value;
   value.Set(kReaderNameKey, reader_name);
   return value;
@@ -422,4 +425,19 @@ bool SmartCardPermissionContext::IsAllowlistedByPolicy(
                               &setting_info);
   return setting_info.source == content_settings::SettingSource::kPolicy &&
          content_setting == CONTENT_SETTING_ALLOW;
+}
+
+std::vector<std::unique_ptr<SmartCardPermissionContext::Object>>
+SmartCardPermissionContext::GetGrantedObjects(const url::Origin& origin) {
+  std::vector<std::unique_ptr<Object>> objects =
+      ObjectPermissionContextBase::GetGrantedObjects(origin);
+
+  if (IsAllowlistedByPolicy(origin)) {
+    objects.push_back(std::make_unique<Object>(
+        origin,
+        ReaderNameToValue(l10n_util::GetStringUTF16(
+            IDS_SMART_CARD_POLICY_DESCRIPTION_FOR_ANY_DEVICE)),
+        content_settings::SettingSource::kPolicy, IsOffTheRecord()));
+  }
+  return objects;
 }

@@ -76,6 +76,11 @@ class SmartCardPermissionContext
   // - set by policy
   bool IsAllowlistedByPolicy(const url::Origin& origin);
 
+  // Overridden to expose a symbolic "All readers" device in case of
+  // allowlisting via policy.
+  std::vector<std::unique_ptr<Object>> GetGrantedObjects(
+      const url::Origin& origin) override;
+
  private:
   friend class SmartCardPermissionContextTest;
   friend class settings::SmartCardReaderPermissionsSiteSettingsHandlerTest;
